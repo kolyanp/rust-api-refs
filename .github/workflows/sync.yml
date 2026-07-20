@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   sync:
@@ -68,6 +69,42 @@ jobs:
           echo "carbon:${{ env.carbon_hash }}" >> .hashes
           echo "oxide_version:${{ steps.oxide_meta.outputs.tag }}" >> .hashes
           echo "updated:$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .hashes
+
+      - name: Check API compat (open Issue if breaking changes)
+        if: env.oxide_hash != steps.prev.outputs.oxide_hash || env.carbon_hash != steps.prev.outputs.carbon_hash
+        run: |
+          if bash scripts/check-compat.sh; then
+            echo "compat=ok" >> $GITHUB_ENV
+          else
+            echo "compat=broken" >> $GITHUB_ENV
+          fi
+
+      - name: Open GitHub Issue on breaking API changes
+        if: env.compat == 'broken'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OXIDE_VER="${{ steps.oxide_meta.outputs.tag }}"
+          BODY="## ⚠️ Breaking API changes detected
+
+          Oxide version: **${OXIDE_VER}** (Carbon: production_build)
+
+          One or more game/Oxide/Carbon symbols used by RustForge are missing from the decompiled refs after today's sync.
+
+          **Action required:** review the diff in this repo and update \`plugin/RustForgeCore.cs\` in the main project accordingly.
+
+          <details><summary>Compat check output</summary>
+
+          \`\`\`
+          $(bash scripts/check-compat.sh 2>&1 || true)
+          \`\`\`
+
+          </details>"
+          gh issue create \
+            --title "⚠️ Breaking API change after Oxide ${OXIDE_VER}" \
+            --body "$BODY" \
+            --label "breaking-change" \
+            --repo "${{ github.repository }}" || true
 
       - name: Commit if changed
         run: |
