@@ -1,0 +1,82 @@
+name: Sync Rust API References
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Install ILSpy CLI
+        run: dotnet tool install -g ilspycmd
+
+      - name: Load previous hashes
+        id: prev
+        run: |
+          if [ -f .hashes ]; then
+            echo "oxide_hash=$(grep '^oxide:' .hashes | cut -d: -f2)" >> $GITHUB_OUTPUT
+            echo "carbon_hash=$(grep '^carbon:' .hashes | cut -d: -f2)" >> $GITHUB_OUTPUT
+          else
+            echo "oxide_hash=" >> $GITHUB_OUTPUT
+            echo "carbon_hash=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get latest Oxide release tag
+        id: oxide_meta
+        run: |
+          TAG=$(curl -sf https://api.github.com/repos/OxideMod/Oxide.Rust/releases/latest \
+               | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "url=https://github.com/OxideMod/Oxide.Rust/releases/download/${TAG}/Oxide.Rust.zip" >> $GITHUB_OUTPUT
+
+      - name: Download Oxide.Rust.zip
+        run: |
+          curl -fL "${{ steps.oxide_meta.outputs.url }}" -o /tmp/Oxide.Rust.zip
+          echo "oxide_hash=$(sha256sum /tmp/Oxide.Rust.zip | cut -d' ' -f1)" >> $GITHUB_ENV
+
+      - name: Decompile Oxide (if changed)
+        if: env.oxide_hash != steps.prev.outputs.oxide_hash
+        run: bash scripts/sync-oxide.sh /tmp/Oxide.Rust.zip
+
+      - name: Download Carbon.Windows.Release.zip
+        run: |
+          curl -fL "https://github.com/CarbonCommunity/Carbon/releases/download/production_build/Carbon.Windows.Release.zip" \
+               -o /tmp/Carbon.Windows.Release.zip
+          echo "carbon_hash=$(sha256sum /tmp/Carbon.Windows.Release.zip | cut -d' ' -f1)" >> $GITHUB_ENV
+
+      - name: Decompile Carbon (if changed)
+        if: env.carbon_hash != steps.prev.outputs.carbon_hash
+        run: bash scripts/sync-carbon.sh /tmp/Carbon.Windows.Release.zip
+
+      - name: Update hashes
+        run: |
+          echo "oxide:${{ env.oxide_hash }}" > .hashes
+          echo "carbon:${{ env.carbon_hash }}" >> .hashes
+          echo "oxide_version:${{ steps.oxide_meta.outputs.tag }}" >> .hashes
+          echo "updated:$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .hashes
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "rust-api-bot"
+          git config user.email "bot@rustforge.cloud"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "Nothing new — skipping commit."
+          else
+            git commit -m "sync: Oxide ${{ steps.oxide_meta.outputs.tag }} / Carbon $(date +%Y-%m-%d)"
+            git push
+          fi
