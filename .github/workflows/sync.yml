@@ -78,5 +78,6 @@ jobs:
             echo "Nothing new — skipping commit."
           else
             git commit -m "sync: Oxide ${{ steps.oxide_meta.outputs.tag }} / Carbon $(date +%Y-%m-%d)"
+            git pull --rebase origin main
             git push
           fi
