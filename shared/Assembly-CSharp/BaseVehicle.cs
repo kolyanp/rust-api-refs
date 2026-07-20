@@ -1,0 +1,2067 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using ConVar;
+using Development.Attributes;
+using Facepunch;
+using Network;
+using Oxide.Core;
+using ProtoBuf;
+using Rust;
+using Rust.Ai.Gen2;
+using Rust.Ai.Gen2.Nav;
+using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.Serialization;
+
+public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
+{
+	public enum DismountStyle
+	{
+		Closest,
+		Ordered
+	}
+
+	public enum NpcVisibilityCategory
+	{
+		LikeNormalPlayer,
+		QuiteObious,
+		VeryObvious
+	}
+
+	[Serializable]
+	public class MountPointInfo
+	{
+		public bool isDriver;
+
+		public Vector3 pos;
+
+		public Vector3 rot;
+
+		public string bone = "";
+
+		public GameObjectRef prefab;
+
+		[NonSerialized]
+		[HideInInspector]
+		public BaseMountable mountable;
+	}
+
+	public enum RagdollMode
+	{
+		Collide,
+		FallThrough
+	}
+
+	public enum ClippingCheckMode
+	{
+		OnMountOnly,
+		Always
+	}
+
+	public enum ClippingCheckAiMode
+	{
+		All,
+		PlayerOnly
+	}
+
+	public readonly struct Enumerable : IEnumerable<MountPointInfo>, IEnumerable
+	{
+		private readonly BaseVehicle _vehicle;
+
+		public Enumerable(BaseVehicle vehicle)
+		{
+			if ((Object)(object)vehicle == (Object)null)
+			{
+				throw new ArgumentNullException("vehicle");
+			}
+			_vehicle = vehicle;
+		}
+
+		public Enumerator GetEnumerator()
+		{
+			return new Enumerator(_vehicle);
+		}
+
+		IEnumerator<MountPointInfo> IEnumerable<MountPointInfo>.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+	}
+
+	public struct Enumerator : IEnumerator<MountPointInfo>, IEnumerator, IDisposable
+	{
+		private enum State
+		{
+			Direct,
+			EnterChild,
+			EnumerateChild,
+			Finished
+		}
+
+		private class Box : IPooled
+		{
+			public Enumerator Value;
+
+			public void EnterPool()
+			{
+				Value = default(Enumerator);
+			}
+
+			public void LeavePool()
+			{
+				Value = default(Enumerator);
+			}
+		}
+
+		private readonly BaseVehicle _vehicle;
+
+		private State _state;
+
+		private int _index;
+
+		private int _childIndex;
+
+		private Box _enumerator;
+
+		public MountPointInfo Current { get; private set; }
+
+		object IEnumerator.Current => Current;
+
+		public Enumerator(BaseVehicle vehicle)
+		{
+			if ((Object)(object)vehicle == (Object)null)
+			{
+				throw new ArgumentNullException("vehicle");
+			}
+			_vehicle = vehicle;
+			_state = State.Direct;
+			_index = -1;
+			_childIndex = -1;
+			_enumerator = null;
+			Current = null;
+		}
+
+		public bool MoveNext()
+		{
+			Current = null;
+			switch (_state)
+			{
+			case State.Direct:
+				_index++;
+				if (_index >= _vehicle.mountPoints.Count)
+				{
+					_state = State.EnterChild;
+					goto case State.EnterChild;
+				}
+				Current = _vehicle.mountPoints[_index];
+				return true;
+			case State.EnterChild:
+				do
+				{
+					_childIndex++;
+				}
+				while (_childIndex < _vehicle.childVehicles.Count && (Object)(object)_vehicle.childVehicles[_childIndex] == (Object)null);
+				if (_childIndex >= _vehicle.childVehicles.Count)
+				{
+					_state = State.Finished;
+					return false;
+				}
+				_enumerator = Pool.Get<Box>();
+				_enumerator.Value = _vehicle.childVehicles[_childIndex].allMountPoints.GetEnumerator();
+				_state = State.EnumerateChild;
+				goto case State.EnumerateChild;
+			case State.EnumerateChild:
+				if (_enumerator.Value.MoveNext())
+				{
+					Current = _enumerator.Value.Current;
+					return true;
+				}
+				_enumerator.Value.Dispose();
+				Pool.Free<Box>(ref _enumerator);
+				_state = State.EnterChild;
+				goto case State.EnterChild;
+			case State.Finished:
+				return false;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
+		public void Dispose()
+		{
+			if (_enumerator != null)
+			{
+				_enumerator.Value.Dispose();
+				Pool.Free<Box>(ref _enumerator);
+			}
+		}
+
+		public void Reset()
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+	private const float MIN_TIME_BETWEEN_PUSHES = 1f;
+
+	public TimeSince timeSinceLastPush;
+
+	private bool prevSleeping;
+
+	private float nextCollisionFXTime;
+
+	private CollisionDetectionMode savedCollisionDetectionMode;
+
+	protected IAiInputProvider aiInputProvider;
+
+	private Action AIDriverUpdateAction;
+
+	private TimeSince timeSinceLastAIUpdate;
+
+	private const float NavmeshMoveThreshold = 1f;
+
+	private const float NavmeshStillTime = 1f;
+
+	private Vector3 lastPosition;
+
+	private Bounds lastNavmeshBuildBounds;
+
+	private float lastNavmeshMoveTime;
+
+	private bool navmeshRebuildPending;
+
+	private BaseVehicle pendingLoad;
+
+	public Queue<BasePlayer> recentDrivers = new Queue<BasePlayer>();
+
+	public Action clearRecentDriverAction;
+
+	public float safeAreaRadius;
+
+	public Vector3 safeAreaOrigin;
+
+	public float spawnTime = -1f;
+
+	[Header("Base Vehicle")]
+	[Tooltip("Check for vehicles clipping into our mount point as well as static stuff")]
+	public bool checkVehicleClipping;
+
+	[Tooltip("Exclude any problematic physics layers from colliding with this vehicle. Requires a DoPrepare to update")]
+	public LayerMask excludeCollisionLayers;
+
+	[Tooltip("Closest: Play will use the closest valid dismount point.\nOrdered: Player will use the first valid dismount point in the dismount array.")]
+	public DismountStyle dismountStyle;
+
+	public bool ignoreDamageFromOutside;
+
+	public NpcVisibilityCategory npcVisibilityCategory;
+
+	[Header("Base Vehicle - Mount Points")]
+	public List<MountPointInfo> mountPoints;
+
+	[Tooltip("Only set this if you want each BaseMountable to handle dismount without caring about the parent vehicle")]
+	public bool childMountableHandleDismountPoints;
+
+	public RagdollMode mountedPlayerRagdolls;
+
+	public ClippingCheckMode clippingChecks;
+
+	public ClippingCheckAiMode clippingAiChecks;
+
+	[Header("Base Vehicle - Damage")]
+	public DamageRenderer damageRenderer;
+
+	[FormerlySerializedAs("explosionDamageMultiplier")]
+	public float explosionForceMultiplier = 100f;
+
+	public float explosionForceMax = 10000f;
+
+	public const Flags Flag_OnlyOwnerEntry = Flags.Locked;
+
+	public const Flags Flag_Headlights = Flags.Reserved5;
+
+	public const Flags Flag_Stationary = Flags.Reserved7;
+
+	public const Flags Flag_SeatsFull = Flags.Reserved11;
+
+	public const Flags Flag_HasDriver = Flags.Reserved17;
+
+	[Header("Base Vehicle - Priv")]
+	public bool HasBuildingPrivilege;
+
+	protected const Flags Flag_AnyMounted = Flags.InUse;
+
+	private readonly List<BaseVehicle> childVehicles = new List<BaseVehicle>(0);
+
+	public bool IsClient => base.isClient;
+
+	public virtual bool AlwaysAllowBradleyTargeting => false;
+
+	protected bool RecentlyPushed => TimeSince.op_Implicit(timeSinceLastPush) < 1f;
+
+	protected TimeSince TimeSinceLastAIUpdate => timeSinceLastAIUpdate;
+
+	public override bool PositionTickFixedTime
+	{
+		protected get
+		{
+			return true;
+		}
+	}
+
+	protected virtual bool CanSwapSeats => true;
+
+	public bool IsMovingOrOn
+	{
+		get
+		{
+			if (!IsMoving())
+			{
+				return IsOn();
+			}
+			return true;
+		}
+	}
+
+	public override float RealisticMass
+	{
+		get
+		{
+			if ((Object)(object)rigidBody != (Object)null)
+			{
+				return rigidBody.mass;
+			}
+			return base.RealisticMass;
+		}
+	}
+
+	public Enumerable allMountPoints => new Enumerable(this);
+
+	public event Action<HitInfo> BeenAttacked;
+
+	public event Action OnDismountAll;
+
+	public event Action Died;
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		using (TimeWarning.New("BaseVehicle.OnRpcMessage"))
+		{
+			if (rpc == 2115395408 && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RPC_WantsPush"));
+				}
+				using (TimeWarning.New("RPC_WantsPush"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.MaxDistance.Test(2115395408u, "RPC_WantsPush", this, player, 5f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg2 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RPC_WantsPush(msg2);
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in RPC_WantsPush");
+					}
+				}
+				return true;
+			}
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public virtual void AddAIDriver(IAiInputProvider provider)
+	{
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		if (aiInputProvider != null)
+		{
+			RemoveAIDriver();
+		}
+		aiInputProvider = provider;
+		if (AIDriverUpdateAction == null)
+		{
+			AIDriverUpdateAction = AIDriverUpdateLoop;
+		}
+		aiInputProvider.OnAdd(this);
+		timeSinceLastAIUpdate = TimeSince.op_Implicit(0f);
+		if (!IsInvoking(AIDriverUpdateAction))
+		{
+			InvokeRandomized(AIDriverUpdateAction, 0f, 0f, 0.05f);
+		}
+	}
+
+	public virtual void RemoveAIDriver(bool runCallbacks = true)
+	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		if (runCallbacks && aiInputProvider != null)
+		{
+			aiInputProvider.OnRemove(this);
+			aiInputProvider = null;
+		}
+		if (IsInvoking(AIDriverUpdateAction))
+		{
+			CancelInvoke(AIDriverUpdateAction);
+		}
+		timeSinceLastAIUpdate = TimeSince.op_Implicit(0f);
+	}
+
+	public override void OnAttacked(HitInfo info)
+	{
+		if (IsSafe() && !info.damageTypes.Has(DamageType.Decay))
+		{
+			info.damageTypes.ScaleAll(0f);
+		}
+		this.BeenAttacked?.Invoke(info);
+		base.OnAttacked(info);
+	}
+
+	public override void OnDied(HitInfo info)
+	{
+		this.Died?.Invoke();
+		base.OnDied(info);
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		ClearOwnerEntry();
+		CheckAndSpawnMountPoints();
+		Invoke(DisableTransferProtectionIfEmpty, 0f);
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		base.Save(info);
+		if (!base.isServer || !info.forDisk)
+		{
+			return;
+		}
+		info.msg.baseVehicle = Pool.Get<BaseVehicle>();
+		info.msg.baseVehicle.mountPoints = Pool.Get<List<MountPoint>>();
+		for (int i = 0; i < mountPoints.Count; i++)
+		{
+			MountPointInfo mountPointInfo = mountPoints[i];
+			if (!((Object)(object)mountPointInfo.mountable == (Object)null))
+			{
+				MountPoint val = Pool.Get<MountPoint>();
+				val.index = i;
+				val.mountableId = mountPointInfo.mountable.net.ID;
+				info.msg.baseVehicle.mountPoints.Add(val);
+			}
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (base.isServer && info.fromDisk && info.msg.baseVehicle != null)
+		{
+			BaseVehicle obj = pendingLoad;
+			if (obj != null)
+			{
+				obj.Dispose();
+			}
+			pendingLoad = info.msg.baseVehicle;
+			info.msg.baseVehicle = null;
+		}
+	}
+
+	public override float GetNetworkTime()
+	{
+		return Time.fixedTime;
+	}
+
+	public void AIDriverUpdateLoop()
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		if (aiInputProvider == null)
+		{
+			RemoveAIDriver();
+			return;
+		}
+		RunAIDriverTick();
+		timeSinceLastAIUpdate = TimeSince.op_Implicit(0f);
+	}
+
+	public virtual void RunAIDriverTick()
+	{
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		if (aiInputProvider == null)
+		{
+			RemoveAIDriver();
+		}
+		else
+		{
+			aiInputProvider.OnTick(this, TimeSince.op_Implicit(timeSinceLastAIUpdate));
+		}
+	}
+
+	public override void VehicleFixedUpdate()
+	{
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("BaseVehicle.VehicleFixedUpdate"))
+		{
+			base.VehicleFixedUpdate();
+			if (clippingChecks == ClippingCheckMode.Always && AnyMounted())
+			{
+				bool flag = false;
+				if (clippingAiChecks == ClippingCheckAiMode.PlayerOnly)
+				{
+					List<BasePlayer> list = Pool.Get<List<BasePlayer>>();
+					GetMountedPlayers(list);
+					foreach (BasePlayer item in list)
+					{
+						if (!item.IsNpc)
+						{
+							flag = true;
+							break;
+						}
+					}
+					Pool.FreeUnmanaged<BasePlayer>(ref list);
+				}
+				else if (clippingAiChecks == ClippingCheckAiMode.All)
+				{
+					flag = true;
+				}
+				if (flag && Physics.CheckBox(((Component)this).transform.TransformPoint(((Bounds)(ref bounds)).center), ((Bounds)(ref bounds)).extents, ((Component)this).transform.rotation, GetClipCheckMask()))
+				{
+					CheckSeatsForClipping();
+				}
+			}
+			if ((Object)(object)rigidBody != (Object)null)
+			{
+				using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+				{
+					flagsUpdateScope.Set(Flags.Reserved7, DetermineIfStationary());
+				}
+				bool flag2 = rigidBody.IsSleeping();
+				if (prevSleeping && !flag2)
+				{
+					OnServerWake();
+				}
+				else if (!prevSleeping && flag2)
+				{
+					OnServerSleep();
+				}
+				prevSleeping = flag2;
+			}
+			if (OnlyOwnerAccessible() && safeAreaRadius != -1f && Vector3.Distance(((Component)this).transform.position, safeAreaOrigin) > safeAreaRadius)
+			{
+				ClearOwnerEntry();
+			}
+		}
+	}
+
+	protected override int GetClipCheckMask()
+	{
+		int num = (IsFlipped() ? 1218511105 : 1210122497);
+		if (!Physics.treecollision)
+		{
+			num &= -1073741825;
+		}
+		if (checkVehicleClipping)
+		{
+			num |= 0x2000;
+		}
+		return num;
+	}
+
+	protected virtual bool DetermineIfStationary()
+	{
+		if (rigidBody.IsSleeping())
+		{
+			return !AnyMounted();
+		}
+		return false;
+	}
+
+	public override Vector3 GetLocalVelocityServer()
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)rigidBody == (Object)null)
+		{
+			return Vector3.zero;
+		}
+		return rigidBody.linearVelocity;
+	}
+
+	public override Quaternion GetAngularVelocityServer()
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)rigidBody == (Object)null)
+		{
+			return Quaternion.identity;
+		}
+		return Quaternion.Euler(rigidBody.angularVelocity * 57.29578f);
+	}
+
+	public virtual int StartingFuelUnits()
+	{
+		IFuelSystem fuelSystem = GetFuelSystem();
+		if (fuelSystem != null)
+		{
+			return Mathf.FloorToInt((float)fuelSystem.GetFuelCapacity() * 0.2f);
+		}
+		return 0;
+	}
+
+	public virtual bool IsSeatVisible(BaseMountable mountable, Vector3 eyePos, int mask = 1218511105)
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		if (!clippingAndVisChecks)
+		{
+			return true;
+		}
+		if ((Object)(object)mountable == (Object)null)
+		{
+			return false;
+		}
+		Vector3 p = ((Component)mountable).transform.position + ((Component)this).transform.up * 0.15f;
+		return GamePhysics.LineOfSight(eyePos, p, mask);
+	}
+
+	protected override bool IsSeatClipping(BaseMountable mountable, Vector3 startPos, float radius, int mask, Vector3 seatPos, Vector3 direction)
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		if (!checkVehicleClipping)
+		{
+			return base.IsSeatClipping(mountable, startPos, radius, mask, seatPos, direction);
+		}
+		List<Collider> list = Pool.Get<List<Collider>>();
+		if (clippingChecksLocation == ClippingCheckLocation.HeadOnly)
+		{
+			GamePhysics.OverlapSphere(startPos, radius, list, mask, (QueryTriggerInteraction)1);
+		}
+		else
+		{
+			Vector3 point = seatPos + direction * (radius + 0.05f);
+			GamePhysics.OverlapCapsule(startPos, point, radius, list, mask, (QueryTriggerInteraction)1);
+		}
+		foreach (Collider item in list)
+		{
+			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item);
+			if (!((Object)(object)baseEntity == (Object)null) && !baseEntity.isClient && (Object)(object)baseEntity != (Object)(object)this && !EqualNetID((BaseNetworkable)baseEntity) && (Object)(object)mountable != (Object)(object)this && !mountable.EqualNetID((BaseNetworkable)baseEntity))
+			{
+				Pool.FreeUnmanaged<Collider>(ref list);
+				return true;
+			}
+		}
+		Pool.FreeUnmanaged<Collider>(ref list);
+		return false;
+	}
+
+	public virtual void CheckSeatsForClipping()
+	{
+		foreach (MountPointInfo mountPoint in mountPoints)
+		{
+			BaseMountable mountable = mountPoint.mountable;
+			if (!((Object)(object)mountable == (Object)null) && mountable.AnyMounted() && (clippingAiChecks != ClippingCheckAiMode.PlayerOnly || !(mountable.GetMounted() is HumanNPC)) && IsSeatClipping(mountable))
+			{
+				SeatClippedWorld(mountable);
+			}
+		}
+	}
+
+	public virtual void SeatClippedWorld(BaseMountable mountable)
+	{
+		mountable.DismountPlayer(mountable.GetMounted());
+	}
+
+	public override void MounteeTookDamage(BasePlayer mountee, HitInfo info)
+	{
+	}
+
+	public override void DismountAllPlayers()
+	{
+		this.OnDismountAll?.Invoke();
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable != (Object)null)
+			{
+				allMountPoint.mountable.DismountAllPlayers();
+			}
+		}
+	}
+
+	public override void ServerInit()
+	{
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		base.ServerInit();
+		clearRecentDriverAction = ClearRecentDriver;
+		prevSleeping = false;
+		if ((Object)(object)rigidBody != (Object)null)
+		{
+			savedCollisionDetectionMode = rigidBody.collisionDetectionMode;
+		}
+		OBB val = WorldSpaceBounds();
+		lastNavmeshBuildBounds = ((OBB)(ref val)).ToBounds();
+		lastPosition = ((Component)this).transform.position;
+		lastNavmeshMoveTime = Time.time;
+		navmeshRebuildPending = false;
+		if (!AI.useUnityNavmesh)
+		{
+			RustNavigation.Instance.RebuildTilesInBounds(lastNavmeshBuildBounds);
+		}
+	}
+
+	protected override void TransformChanged()
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("BaseVehicle.TransformChanged"))
+		{
+			base.TransformChanged();
+			if (!AI.useUnityNavmesh && Vector3.Distance(lastPosition, ((Component)this).transform.position) > 1f)
+			{
+				lastPosition = ((Component)this).transform.position;
+				lastNavmeshMoveTime = Time.time;
+				if (!navmeshRebuildPending)
+				{
+					navmeshRebuildPending = true;
+					InvokeRepeating(CheckNavmeshSettled, 1f, 0.25f);
+				}
+			}
+		}
+	}
+
+	private void CheckNavmeshSettled()
+	{
+		using (TimeWarning.New("RustNavigation.CheckNavmeshSettled"))
+		{
+			if (!(Time.time - lastNavmeshMoveTime < 1f))
+			{
+				CancelInvoke(CheckNavmeshSettled);
+				navmeshRebuildPending = false;
+				RebuildTile();
+			}
+		}
+	}
+
+	private void RebuildTile()
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("BaseVehicle.RebuildTile"))
+		{
+			RustNavigation.Instance.RebuildTilesInBounds(lastNavmeshBuildBounds);
+			OBB val = WorldSpaceBounds();
+			lastNavmeshBuildBounds = ((OBB)(ref val)).ToBounds();
+			RustNavigation.Instance.RebuildTilesInBounds(lastNavmeshBuildBounds);
+		}
+	}
+
+	public virtual void SpawnSubEntities()
+	{
+		CheckAndSpawnMountPoints();
+	}
+
+	public virtual bool AdminFixUp(int tier)
+	{
+		if (IsDead())
+		{
+			return false;
+		}
+		GetFuelSystem()?.FillFuel();
+		SetHealth(MaxHealth());
+		SendNetworkUpdate();
+		return true;
+	}
+
+	private void OnPhysicsNeighbourChanged()
+	{
+		if ((Object)(object)rigidBody != (Object)null)
+		{
+			rigidBody.WakeUp();
+		}
+	}
+
+	private void CheckAndSpawnMountPoints()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		if (pendingLoad?.mountPoints != null)
+		{
+			foreach (MountPoint mountPoint in pendingLoad.mountPoints)
+			{
+				EntityRef<BaseMountable> entityRef = new EntityRef<BaseMountable>(mountPoint.mountableId);
+				if (!entityRef.IsValid(serverside: true))
+				{
+					Debug.LogError((object)$"Loaded a mountpoint which doesn't exist: {mountPoint.index}", (Object)(object)this);
+					continue;
+				}
+				if (mountPoint.index < 0 || mountPoint.index >= mountPoints.Count)
+				{
+					Debug.LogError((object)$"Loaded a mountpoint which has no info: {mountPoint.index}", (Object)(object)this);
+					entityRef.Get(serverside: true).Kill();
+					continue;
+				}
+				MountPointInfo mountPointInfo = mountPoints[mountPoint.index];
+				if ((Object)(object)mountPointInfo.mountable != (Object)null)
+				{
+					Debug.LogError((object)$"Loading a mountpoint after one was already set: {mountPoint.index}", (Object)(object)this);
+					mountPointInfo.mountable.Kill();
+				}
+				mountPointInfo.mountable = entityRef.Get(serverside: true);
+				if (!mountPointInfo.mountable.enableSaving)
+				{
+					mountPointInfo.mountable.EnableSaving(wants: true);
+				}
+			}
+		}
+		BaseVehicle obj = pendingLoad;
+		if (obj != null)
+		{
+			obj.Dispose();
+		}
+		pendingLoad = null;
+		for (int i = 0; i < mountPoints.Count; i++)
+		{
+			SpawnMountPoint(mountPoints[i], model);
+		}
+		UpdateMountFlags();
+	}
+
+	public override void Spawn()
+	{
+		base.Spawn();
+		if (base.isServer && !Application.isLoadingSave)
+		{
+			SpawnSubEntities();
+		}
+	}
+
+	public override void Hurt(HitInfo info)
+	{
+		DoExplosionForce(info);
+		base.Hurt(info);
+	}
+
+	public void DoExplosionForce(HitInfo info)
+	{
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		if (!IsDead() && !IsTransferProtected() && !((Object)(object)rigidBody == (Object)null) && !rigidBody.isKinematic)
+		{
+			float num = info.damageTypes.Get(DamageType.Explosion) + info.damageTypes.Get(DamageType.AntiVehicle) * 0.5f;
+			if (num > 3f)
+			{
+				float num2 = Mathf.Min(num * explosionForceMultiplier, explosionForceMax);
+				rigidBody.AddExplosionForce(num2, info.HitPositionWorld, 1f, 2.5f);
+			}
+		}
+	}
+
+	public int NumMounted()
+	{
+		if (!HasMountPoints())
+		{
+			if (!AnyMounted())
+			{
+				return 0;
+			}
+			return 1;
+		}
+		int num = 0;
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable != (Object)null && (Object)(object)allMountPoint.mountable.GetMounted() != (Object)null)
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
+	public virtual int MaxMounted()
+	{
+		if (!HasMountPoints())
+		{
+			return 1;
+		}
+		int num = 0;
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable != (Object)null)
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
+	public bool HasDriverSlow()
+	{
+		if (aiInputProvider != null)
+		{
+			return true;
+		}
+		if (HasMountPoints())
+		{
+			if (!AnyMounted())
+			{
+				return false;
+			}
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.isDriver && allMountPoint.mountable.AnyMounted())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		return base.AnyMounted();
+	}
+
+	public bool HasDriver()
+	{
+		return HasFlag(Flags.Reserved17);
+	}
+
+	public bool IsDriver(BasePlayer player)
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.isDriver)
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if ((Object)(object)mounted != (Object)null && (Object)(object)mounted == (Object)(object)player)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		else
+		{
+			BasePlayer mounted2 = GetMounted();
+			if ((Object)(object)mounted2 != (Object)null)
+			{
+				return (Object)(object)mounted2 == (Object)(object)player;
+			}
+		}
+		return false;
+	}
+
+	public bool HasPassenger()
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && !allMountPoint.isDriver && allMountPoint.mountable.AnyMounted())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		return base.AnyMounted();
+	}
+
+	public bool IsPassenger(BasePlayer player)
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && !allMountPoint.isDriver)
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if ((Object)(object)mounted != (Object)null && (Object)(object)mounted == (Object)(object)player)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		else
+		{
+			BasePlayer mounted2 = GetMounted();
+			if ((Object)(object)mounted2 != (Object)null)
+			{
+				return (Object)(object)mounted2 == (Object)(object)player;
+			}
+		}
+		return false;
+	}
+
+	public BasePlayer GetDriver()
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.isDriver)
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if ((Object)(object)mounted != (Object)null)
+					{
+						return mounted;
+					}
+				}
+			}
+		}
+		else
+		{
+			BasePlayer mounted2 = GetMounted();
+			if ((Object)(object)mounted2 != (Object)null)
+			{
+				return mounted2;
+			}
+		}
+		return null;
+	}
+
+	public BasePlayer GetPassenger()
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && !allMountPoint.isDriver)
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if ((Object)(object)mounted != (Object)null)
+					{
+						return mounted;
+					}
+				}
+			}
+		}
+		else
+		{
+			BasePlayer mounted2 = GetMounted();
+			if ((Object)(object)mounted2 != (Object)null)
+			{
+				return mounted2;
+			}
+		}
+		return null;
+	}
+
+	public void GetDrivers(List<BasePlayer> drivers)
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.isDriver)
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if ((Object)(object)mounted != (Object)null)
+					{
+						drivers.Add(mounted);
+					}
+				}
+			}
+			return;
+		}
+		BasePlayer mounted2 = GetMounted();
+		if ((Object)(object)mounted2 != (Object)null)
+		{
+			drivers.Add(mounted2);
+		}
+	}
+
+	[PoolAnalyzerNonCaching]
+	public void GetMountedPlayers(List<BasePlayer> players)
+	{
+		if (HasMountPoints())
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null)
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if ((Object)(object)mounted != (Object)null)
+					{
+						players.Add(mounted);
+					}
+				}
+			}
+			return;
+		}
+		BasePlayer mounted2 = GetMounted();
+		if ((Object)(object)mounted2 != (Object)null)
+		{
+			players.Add(mounted2);
+		}
+	}
+
+	public virtual BasePlayer GetPlayerDamageInitiator()
+	{
+		if (HasDriver())
+		{
+			return GetDriver();
+		}
+		if (recentDrivers.Count <= 0)
+		{
+			return null;
+		}
+		return recentDrivers.Peek();
+	}
+
+	public int GetPlayerSeat(BasePlayer player)
+	{
+		if (!HasMountPoints() && (Object)(object)GetMounted() == (Object)(object)player)
+		{
+			return 0;
+		}
+		int num = 0;
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable != (Object)null && (Object)(object)allMountPoint.mountable.GetMounted() == (Object)(object)player)
+			{
+				return num;
+			}
+			num++;
+		}
+		return -1;
+	}
+
+	public MountPointInfo GetPlayerSeatInfo(BasePlayer player)
+	{
+		if (!HasMountPoints())
+		{
+			return null;
+		}
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable != (Object)null && (Object)(object)allMountPoint.mountable.GetMounted() == (Object)(object)player)
+			{
+				return allMountPoint;
+			}
+		}
+		return null;
+	}
+
+	public bool IsVehicleMountPoint(BaseMountable bm)
+	{
+		if (!HasMountPoints() || (Object)(object)bm == (Object)null)
+		{
+			return false;
+		}
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable == (Object)(object)bm)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public virtual bool IsPlayerSeatSwapValid(BasePlayer player, int fromIndex, int toIndex, bool forcingRestrainedPlayer)
+	{
+		return !player.IsRestrained || forcingRestrainedPlayer;
+	}
+
+	public void SwapSeats(BasePlayer player, int targetSeat = -1, bool forcingRestrainedPlayer = false)
+	{
+		if (!HasMountPoints() || !CanSwapSeats)
+		{
+			return;
+		}
+		int currentSeatIndex = GetPlayerSeat(player);
+		if (currentSeatIndex == -1)
+		{
+			return;
+		}
+		BaseMountable mountable = GetMountPoint(currentSeatIndex).mountable;
+		BaseMountable baseMountable = null;
+		if (targetSeat == -1)
+		{
+			int num = NumSwappableSeats();
+			for (int i = 1; i <= num; i++)
+			{
+				int num2 = (currentSeatIndex + i) % num;
+				MountPointInfo mountPoint = GetMountPoint(num2);
+				if (IsValidSwap(mountPoint, num2))
+				{
+					baseMountable = mountPoint.mountable;
+					break;
+				}
+			}
+		}
+		else
+		{
+			targetSeat = Mathf.Clamp(targetSeat, 0, NumSwappableSeats());
+			MountPointInfo mountPoint2 = GetMountPoint(targetSeat);
+			if (IsValidSwap(mountPoint2, targetSeat))
+			{
+				baseMountable = mountPoint2.mountable;
+			}
+		}
+		if ((Object)(object)baseMountable != (Object)null && (Object)(object)baseMountable != (Object)(object)mountable)
+		{
+			mountable.DismountPlayer(player, lite: true);
+			baseMountable.MountPlayer(player);
+			player.MarkSwapSeat();
+		}
+		bool IsValidSwap(MountPointInfo point, int toIndex)
+		{
+			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+			if ((Object)(object)point?.mountable != (Object)null && !point.mountable.AnyMounted() && point.mountable.CanSwapToThis(player) && !(point.isDriver && forcingRestrainedPlayer) && !IsSeatClipping(point.mountable) && IsSeatVisible(point.mountable, player.eyes.position))
+			{
+				return IsPlayerSeatSwapValid(player, currentSeatIndex, toIndex, forcingRestrainedPlayer);
+			}
+			return false;
+		}
+	}
+
+	public virtual int NumSwappableSeats()
+	{
+		return MaxMounted();
+	}
+
+	public bool HasDriverMountPoints()
+	{
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if (allMountPoint.isDriver)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public bool OnlyOwnerAccessible()
+	{
+		return HasFlag(Flags.Locked);
+	}
+
+	public bool IsDespawnEligable()
+	{
+		if (spawnTime != -1f)
+		{
+			return spawnTime + 300f < Time.realtimeSinceStartup;
+		}
+		return true;
+	}
+
+	public void SetupOwner(BasePlayer owner, Vector3 newSafeAreaOrigin, float newSafeAreaRadius)
+	{
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)owner != (Object)null)
+		{
+			creatorEntity = owner;
+			base.OwnerID = owner.userID;
+			bool b = true;
+			BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(base.isServer);
+			if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.safeZone)
+			{
+				b = false;
+			}
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			{
+				flagsUpdateScope.Set(Flags.Locked, b);
+			}
+			safeAreaRadius = newSafeAreaRadius;
+			safeAreaOrigin = newSafeAreaOrigin;
+			spawnTime = Time.realtimeSinceStartup;
+		}
+	}
+
+	public void ClearOwnerEntry()
+	{
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		creatorEntity = null;
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+		{
+			flagsUpdateScope.Set(Flags.Locked, b: false);
+		}
+		safeAreaRadius = -1f;
+		safeAreaOrigin = Vector3.zero;
+	}
+
+	private void DisableTransferProtectionIfEmpty()
+	{
+		if (!HasDriver())
+		{
+			DisableTransferProtection();
+		}
+	}
+
+	public virtual IFuelSystem GetFuelSystem()
+	{
+		return null;
+	}
+
+	public bool IsSafe()
+	{
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		if (OnlyOwnerAccessible())
+		{
+			return Vector3.Distance(safeAreaOrigin, ((Component)this).transform.position) <= safeAreaRadius;
+		}
+		return false;
+	}
+
+	public override void ScaleDamageForPlayer(BasePlayer player, HitInfo info)
+	{
+		if (IsSafe())
+		{
+			info.damageTypes.ScaleAll(0f);
+		}
+		base.ScaleDamageForPlayer(player, info);
+	}
+
+	public BaseMountable GetIdealMountPoint(Vector3 eyePos, Vector3 pos, BasePlayer playerFor = null)
+	{
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)playerFor == (Object)null)
+		{
+			return null;
+		}
+		if (!HasMountPoints())
+		{
+			return this;
+		}
+		BasePlayer basePlayer = creatorEntity as BasePlayer;
+		bool flag = (Object)(object)basePlayer != (Object)null;
+		bool flag2 = flag && basePlayer.Team != null;
+		bool flag3 = flag && (Object)(object)playerFor == (Object)(object)basePlayer;
+		if (!flag3 && flag && OnlyOwnerAccessible() && (Object)(object)playerFor != (Object)null && (playerFor.Team == null || !playerFor.Team.members.Contains(basePlayer.userID)))
+		{
+			return null;
+		}
+		BaseMountable result = null;
+		float num = float.PositiveInfinity;
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if (allMountPoint.mountable.AnyMounted() || (allMountPoint.isDriver && playerFor.IsRestrained))
+			{
+				continue;
+			}
+			float num2 = Vector3.Distance(allMountPoint.mountable.mountAnchor.position, pos);
+			if (num2 > num)
+			{
+				continue;
+			}
+			if (IsSeatClipping(allMountPoint.mountable))
+			{
+				if (Application.isEditor)
+				{
+					Debug.Log((object)$"Skipping seat {allMountPoint.mountable} - it's clipping");
+				}
+			}
+			else if (!IsSeatVisible(allMountPoint.mountable, eyePos))
+			{
+				if (Application.isEditor)
+				{
+					Debug.Log((object)$"Skipping seat {allMountPoint.mountable} - it's not visible");
+				}
+			}
+			else if (!(OnlyOwnerAccessible() && flag3) || flag2 || allMountPoint.isDriver)
+			{
+				result = allMountPoint.mountable;
+				num = num2;
+			}
+		}
+		return result;
+	}
+
+	public virtual bool MountEligable(BasePlayer player)
+	{
+		if (OnlyOwnerAccessible() && (Object)(object)creatorEntity != (Object)null && (Object)(object)player != (Object)(object)creatorEntity)
+		{
+			BasePlayer basePlayer = creatorEntity as BasePlayer;
+			if ((Object)(object)basePlayer != (Object)null && (basePlayer.Team == null || (basePlayer.Team != null && !basePlayer.Team.members.Contains(player.userID))))
+			{
+				return false;
+			}
+		}
+		BaseVehicle baseVehicle = VehicleParent();
+		if ((Object)(object)baseVehicle != (Object)null)
+		{
+			return baseVehicle.MountEligable(player);
+		}
+		return true;
+	}
+
+	public int GetIndexFromSeat(BaseMountable seat)
+	{
+		int num = 0;
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if ((Object)(object)allMountPoint.mountable == (Object)(object)seat)
+			{
+				return num;
+			}
+			num++;
+		}
+		return -1;
+	}
+
+	public virtual void PlayerMounted(BasePlayer player, BaseMountable seat)
+	{
+	}
+
+	public virtual void PrePlayerDismount(BasePlayer player, BaseMountable seat)
+	{
+	}
+
+	public virtual void PlayerDismounted(BasePlayer player, BaseMountable seat)
+	{
+		recentDrivers.Enqueue(player);
+		if (!IsInvoking(clearRecentDriverAction))
+		{
+			Invoke(clearRecentDriverAction, 3f);
+		}
+	}
+
+	public virtual GameObjectRef GetCollisionFX()
+	{
+		return null;
+	}
+
+	public void TryShowCollisionFX(Collision collision)
+	{
+		TryShowCollisionFX(collision, GetCollisionFX());
+	}
+
+	public void TryShowCollisionFX(Vector3 contactPoint)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		TryShowCollisionFX(contactPoint, GetCollisionFX());
+	}
+
+	public void TryShowCollisionFX(Collision collision, GameObjectRef effectGO)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		ContactPoint contact = collision.GetContact(0);
+		TryShowCollisionFX(((ContactPoint)(ref contact)).point, effectGO);
+	}
+
+	public void TryShowCollisionFX(Vector3 contactPoint, GameObjectRef effectGO)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		if (!(Time.time < nextCollisionFXTime))
+		{
+			nextCollisionFXTime = Time.time + 0.25f;
+			if (effectGO != null && effectGO.isValid)
+			{
+				contactPoint += (((Component)this).transform.position - contactPoint) * 0.25f;
+				Effect.server.Run(effectGO.resourcePath, contactPoint, ((Component)this).transform.up);
+			}
+		}
+	}
+
+	public void SetToKinematic()
+	{
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)rigidBody == (Object)null) && !rigidBody.isKinematic)
+		{
+			savedCollisionDetectionMode = rigidBody.collisionDetectionMode;
+			rigidBody.collisionDetectionMode = (CollisionDetectionMode)0;
+			rigidBody.isKinematic = true;
+		}
+	}
+
+	public void SetToNonKinematic()
+	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)rigidBody == (Object)null) && rigidBody.isKinematic)
+		{
+			rigidBody.isKinematic = false;
+			rigidBody.collisionDetectionMode = savedCollisionDetectionMode;
+		}
+	}
+
+	public override void UpdateMountFlags()
+	{
+		int num = NumMounted();
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+		{
+			flagsUpdateScope.Set(Flags.InUse, num > 0);
+			flagsUpdateScope.Set(Flags.Reserved11, num == MaxMounted());
+			flagsUpdateScope.Set(Flags.Reserved17, HasDriverSlow());
+		}
+		BaseVehicle baseVehicle = VehicleParent();
+		if ((Object)(object)baseVehicle != (Object)null)
+		{
+			baseVehicle.UpdateMountFlags();
+		}
+	}
+
+	public void ClearRecentDriver()
+	{
+		if (recentDrivers.Count > 0)
+		{
+			recentDrivers.Dequeue();
+		}
+		if (recentDrivers.Count > 0)
+		{
+			Invoke(clearRecentDriverAction, 3f);
+		}
+	}
+
+	public override void AttemptMount(BasePlayer player, bool doMountChecks = true)
+	{
+		if ((Object)(object)GetMounted() != (Object)null || !MountEligable(player))
+		{
+			return;
+		}
+		BaseMountable idealMountPointFor = GetIdealMountPointFor(player);
+		if (!((Object)(object)idealMountPointFor == (Object)null))
+		{
+			if ((Object)(object)idealMountPointFor == (Object)(object)this)
+			{
+				base.AttemptMount(player, doMountChecks);
+			}
+			else
+			{
+				idealMountPointFor.AttemptMount(player, doMountChecks);
+			}
+			if ((Object)(object)player.GetMountedVehicle() == (Object)(object)this)
+			{
+				PlayerMounted(player, idealMountPointFor);
+			}
+		}
+	}
+
+	public BaseMountable GetIdealMountPointFor(BasePlayer player)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		return GetIdealMountPoint(player.eyes.position, player.eyes.position + player.eyes.HeadForward() * 1f, player);
+	}
+
+	public override bool GetDismountPosition(BasePlayer player, out Vector3 res, bool silent = false)
+	{
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("BaseVehicle.GetDismountPosition"))
+		{
+			BaseVehicle baseVehicle = VehicleParent();
+			if ((Object)(object)baseVehicle != (Object)null)
+			{
+				return baseVehicle.GetDismountPosition(player, out res, silent);
+			}
+			List<Transform> list = Pool.Get<List<Transform>>();
+			list.AddRange(dismountPositions);
+			if (dismountStyle == DismountStyle.Closest)
+			{
+				Vector3 comparePos = player.TriggerPoint();
+				list.Sort((Transform a, Transform b) => Vector3.SqrMagnitude(a.position - comparePos).CompareTo(Vector3.SqrMagnitude(b.position - comparePos)));
+			}
+			foreach (Transform item in list)
+			{
+				if (ValidDismountPosition(player, ((Component)item).transform.position) && (dismountStyle == DismountStyle.Ordered || dismountStyle == DismountStyle.Closest))
+				{
+					res = ((Component)item).transform.position;
+					Pool.FreeUnmanaged<Transform>(ref list);
+					return true;
+				}
+			}
+			Debug.LogWarning((object)("Failed to find dismount position for player :" + player.displayName + " / " + player.userID.Get() + " on obj : " + ((Object)((Component)this).gameObject).name));
+			res = ((Component)player).transform.position;
+			Pool.FreeUnmanaged<Transform>(ref list);
+			return false;
+		}
+	}
+
+	public BaseMountable SpawnMountPoint(MountPointInfo mountToSpawn, Model model)
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)mountToSpawn.mountable != (Object)null)
+		{
+			return mountToSpawn.mountable;
+		}
+		Vector3 val = Quaternion.Euler(mountToSpawn.rot) * Vector3.forward;
+		Vector3 pos = mountToSpawn.pos;
+		Vector3 up = Vector3.up;
+		if (mountToSpawn.bone != "")
+		{
+			pos = ((Component)model.FindBone(mountToSpawn.bone)).transform.position + ((Component)this).transform.TransformDirection(mountToSpawn.pos);
+			val = ((Component)this).transform.TransformDirection(val);
+			up = ((Component)this).transform.up;
+		}
+		BaseEntity baseEntity = GameManager.server.CreateEntity(mountToSpawn.prefab.resourcePath, pos, Quaternion.LookRotation(val, up));
+		BaseMountable baseMountable = baseEntity as BaseMountable;
+		if ((Object)(object)baseMountable != (Object)null)
+		{
+			if (enableSaving != baseMountable.enableSaving)
+			{
+				baseMountable.EnableSaving(enableSaving);
+			}
+			if (mountToSpawn.bone != "")
+			{
+				baseMountable.SetParent(this, mountToSpawn.bone, worldPositionStays: true, sendImmediate: true);
+			}
+			else
+			{
+				baseMountable.SetParent(this);
+			}
+			baseMountable.Spawn();
+			mountToSpawn.mountable = baseMountable;
+		}
+		else
+		{
+			Debug.LogError((object)"MountPointInfo prefab is not a BaseMountable. Cannot spawn mount point.");
+			if ((Object)(object)baseEntity != (Object)null)
+			{
+				baseEntity.Kill();
+			}
+		}
+		return baseMountable;
+	}
+
+	[RPC_Server.MaxDistance(5f)]
+	[RPC_Server]
+	public void RPC_WantsPush(RPCMessage msg)
+	{
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer player = msg.player;
+		if (!player.isMounted && !RecentlyPushed && CanPushNow(player) && !((Object)(object)rigidBody == (Object)null) && (!OnlyOwnerAccessible() || !((Object)(object)player != (Object)(object)creatorEntity)) && Interface.CallHook("OnVehiclePush", this, msg.player) == null)
+		{
+			player.metabolism.calories.Subtract(3f);
+			player.metabolism.SendChanges();
+			if (rigidBody.IsSleeping())
+			{
+				rigidBody.WakeUp();
+			}
+			DoPushAction(player);
+			timeSinceLastPush = TimeSince.op_Implicit(0f);
+		}
+	}
+
+	public virtual void DoPushAction(BasePlayer player)
+	{
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)rigidBody == (Object)null)
+		{
+			return;
+		}
+		if (IsFlipped())
+		{
+			float num = rigidBody.mass * 9f;
+			Vector3 val = Vector3.forward * num;
+			if (Vector3.Dot(((Component)this).transform.InverseTransformVector(((Component)this).transform.position - ((Component)player).transform.position), Vector3.right) > 0f)
+			{
+				val *= -1f;
+			}
+			if (((Component)this).transform.up.y < 0f)
+			{
+				val *= -1f;
+			}
+			rigidBody.AddRelativeTorque(val, (ForceMode)1);
+		}
+		else
+		{
+			Vector3 val2 = Vector3.ProjectOnPlane(((Component)this).transform.position - player.eyes.position, ((Component)this).transform.up);
+			Vector3 normalized = ((Vector3)(ref val2)).normalized;
+			float pushActionForce = GetPushActionForce();
+			rigidBody.AddForce(normalized * pushActionForce, (ForceMode)1);
+		}
+	}
+
+	protected virtual float GetPushActionForce()
+	{
+		return rigidBody.mass * 5f;
+	}
+
+	protected virtual void OnServerWake()
+	{
+	}
+
+	protected virtual void OnServerSleep()
+	{
+	}
+
+	public virtual bool ShouldDisableTransferProtectionOnLoad(BasePlayer player)
+	{
+		return true;
+	}
+
+	public override void DisableTransferProtection()
+	{
+		base.DisableTransferProtection();
+		foreach (MountPointInfo allMountPoint in allMountPoints)
+		{
+			if (!((Object)(object)allMountPoint.mountable == (Object)null) && allMountPoint.mountable.IsTransferProtected())
+			{
+				allMountPoint.mountable.DisableTransferProtection();
+			}
+		}
+	}
+
+	public virtual void OnMountedPlayerWeightChanged(BasePlayer player)
+	{
+	}
+
+	public void DisableMountedSyncForAllSeats()
+	{
+		foreach (MountPointInfo mountPoint in mountPoints)
+		{
+			BaseMountable mountable = mountPoint.mountable;
+			if (!((Object)(object)mountable == (Object)null))
+			{
+				mountable.DisableMountedPlayerSync();
+			}
+		}
+	}
+
+	public void EnableMountedSyncForAllSeats()
+	{
+		foreach (MountPointInfo mountPoint in mountPoints)
+		{
+			BaseMountable mountable = mountPoint.mountable;
+			if (!((Object)(object)mountable == (Object)null))
+			{
+				mountable.EnableMountedPlayerSync();
+			}
+		}
+	}
+
+	[PoolAnalyzerNonCaching]
+	public static void GetPassengersForVehicle(BaseEntity entity, List<BasePlayer> passengers)
+	{
+		if (entity is BaseBoat baseBoat)
+		{
+			baseBoat.GetPlayersOnBoat(passengers);
+			return;
+		}
+		if (entity is BaseVehicle baseVehicle)
+		{
+			baseVehicle.GetMountedPlayers(passengers);
+		}
+		foreach (BaseEntity child in entity.children)
+		{
+			if (child is BasePlayer basePlayer && basePlayer.IsNonNpcPlayer() && !passengers.Contains(basePlayer))
+			{
+				passengers.Add(basePlayer);
+			}
+		}
+	}
+
+	public bool IsStationary()
+	{
+		return HasFlag(Flags.Reserved7);
+	}
+
+	public bool IsMoving()
+	{
+		return !HasFlag(Flags.Reserved7);
+	}
+
+	public virtual bool IsAuthedForBuilding(BasePlayer player)
+	{
+		VehiclePrivilege childPrivilege = GetChildPrivilege();
+		if ((Object)(object)childPrivilege != (Object)null)
+		{
+			return childPrivilege.IsAuthed(player);
+		}
+		return false;
+	}
+
+	public virtual VehiclePrivilege GetChildPrivilege()
+	{
+		foreach (BaseEntity child in children)
+		{
+			VehiclePrivilege vehiclePrivilege = child as VehiclePrivilege;
+			if (!((Object)(object)vehiclePrivilege == (Object)null))
+			{
+				return vehiclePrivilege;
+			}
+		}
+		return null;
+	}
+
+	public override bool AnyMounted()
+	{
+		return HasFlag(Flags.InUse);
+	}
+
+	public override bool PlayerIsMounted(BasePlayer player)
+	{
+		if (player.IsValid())
+		{
+			return (Object)(object)player.GetMountedVehicle() == (Object)(object)this;
+		}
+		return false;
+	}
+
+	public virtual bool CanPushNow(BasePlayer pusher)
+	{
+		return !IsOn();
+	}
+
+	public bool HasMountPoints()
+	{
+		if (mountPoints.Count > 0)
+		{
+			return true;
+		}
+		using (Enumerator enumerator = allMountPoints.GetEnumerator())
+		{
+			if (enumerator.MoveNext())
+			{
+				_ = enumerator.Current;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public override bool CanBeLooted(BasePlayer player)
+	{
+		if (IsAlive() && !base.IsDestroyed)
+		{
+			return (Object)(object)player != (Object)null;
+		}
+		return false;
+	}
+
+	public bool IsFlipping()
+	{
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		if (IsFlipped())
+		{
+			return false;
+		}
+		bool flag = false;
+		if ((Object)(object)rigidBody != (Object)null)
+		{
+			Vector3 angularVelocity = rigidBody.angularVelocity;
+			flag = angularVelocity.x > 0.5f || angularVelocity.z > 0.5f;
+		}
+		float num = Vector3.Dot(Vector3.up, ((Component)this).transform.up);
+		return flag || num <= 0.4f;
+	}
+
+	public bool IsFlipped()
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		return Vector3.Dot(Vector3.up, ((Component)this).transform.up) <= 0.175f;
+	}
+
+	public virtual bool IsVehicleRoot()
+	{
+		return true;
+	}
+
+	public override bool DirectlyMountable()
+	{
+		return IsVehicleRoot();
+	}
+
+	public override BaseVehicle VehicleParent()
+	{
+		return null;
+	}
+
+	protected override void OnChildAdded(BaseEntity child)
+	{
+		base.OnChildAdded(child);
+		if (!IsDead() && !base.IsDestroyed && child is BaseVehicle baseVehicle && !baseVehicle.IsVehicleRoot() && !childVehicles.Contains(baseVehicle))
+		{
+			childVehicles.Add(baseVehicle);
+		}
+	}
+
+	protected override void OnChildRemoved(BaseEntity child)
+	{
+		base.OnChildRemoved(child);
+		if (child is BaseVehicle baseVehicle && !baseVehicle.IsVehicleRoot())
+		{
+			childVehicles.Remove(baseVehicle);
+		}
+	}
+
+	public MountPointInfo GetMountPoint(int index)
+	{
+		if (index < 0)
+		{
+			return null;
+		}
+		if (index < mountPoints.Count)
+		{
+			return mountPoints[index];
+		}
+		index -= mountPoints.Count;
+		int num = 0;
+		foreach (BaseVehicle childVehicle in childVehicles)
+		{
+			if ((Object)(object)childVehicle == (Object)null)
+			{
+				continue;
+			}
+			foreach (MountPointInfo allMountPoint in childVehicle.allMountPoints)
+			{
+				if (num == index)
+				{
+					return allMountPoint;
+				}
+				num++;
+			}
+		}
+		return null;
+	}
+
+	public override float GetSpeed()
+	{
+		if (IsStationary())
+		{
+			return 0f;
+		}
+		return base.GetSpeed();
+	}
+
+	public override float PenetrationResistance(HitInfo info)
+	{
+		if (info != null && (Object)(object)info.ProjectilePrefab != (Object)null && info.ProjectilePrefab.penetratesVehicles)
+		{
+			return 0.5f;
+		}
+		return base.PenetrationResistance(info);
+	}
+}

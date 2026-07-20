@@ -1,0 +1,123 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Rust.World" />
+    <Reference Include="Facepunch.UnityEngine">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule" />
+    <Reference Include="Rust.Localization" />
+    <Reference Include="Rust.UI" />
+    <Reference Include="Rust.Data" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Nexus" />
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="Rust.Global" />
+    <Reference Include="UnityEngine.AnimationModule" />
+    <Reference Include="Facepunch.Console">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule" />
+    <Reference Include="Facepunch.Network">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI" />
+    <Reference Include="UnityEngine.UIModule" />
+    <Reference Include="UnityEngine.VehiclesModule" />
+    <Reference Include="Unity.TextMeshPro" />
+    <Reference Include="Assembly-CSharp-firstpass" />
+    <Reference Include="UnityEngine.AIModule" />
+    <Reference Include="Rust.Clans" />
+    <Reference Include="UniTask" />
+    <Reference Include="Unity.Collections" />
+    <Reference Include="Unity.Mathematics" />
+    <Reference Include="UnityEngine.AudioModule" />
+    <Reference Include="Unity.AI.Navigation" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="CurvedTextMeshPro" />
+    <Reference Include="Rust.Platform.Common" />
+    <Reference Include="Facepunch.Skeleton" />
+    <Reference Include="Facepunch.BurstCloth" />
+    <Reference Include="EZhex1991.EZSoftBone" />
+    <Reference Include="Facepunch.Flexbox" />
+    <Reference Include="Wardddev.FlexibleColorPicker" />
+    <Reference Include="UnityEngine.VideoModule" />
+    <Reference Include="Rust.Workshop" />
+    <Reference Include="Facepunch.Raknet" />
+    <Reference Include="Unity.Burst" />
+    <Reference Include="NewAssembly" />
+    <Reference Include="Facepunch.Input" />
+    <Reference Include="Facepunch.UnwrapBaker.Settings" />
+    <Reference Include="UnityEngine.IMGUIModule" />
+    <Reference Include="Rust.FileSystem" />
+    <Reference Include="Ionic.Zip.Reduced" />
+    <Reference Include="Cronos" />
+    <Reference Include="UnityEngine.ClothModule" />
+    <Reference Include="Facepunch.Sqlite">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule" />
+    <Reference Include="UnityEngine.TerrainModule" />
+    <Reference Include="UnityEngine.UnityWebRequestModule" />
+    <Reference Include="Rust.RenderPipeline" />
+    <Reference Include="Unity.RenderPipelines.Core.Runtime" />
+    <Reference Include="UnityEngine.WindModule" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="UnityEngine.DirectorModule" />
+    <Reference Include="Unity.Timeline" />
+    <Reference Include="Unity.InputSystem" />
+    <Reference Include="UnityEngine.TextRenderingModule" />
+    <Reference Include="RTLTMPro" />
+    <Reference Include="LeTai.TrueShadow" />
+    <Reference Include="Fleck" />
+    <Reference Include="Facepunch.Rcon">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Rcon.dll</HintPath>
+    </Reference>
+    <Reference Include="ZString" />
+    <Reference Include="Azure.Storage.Blobs" />
+    <Reference Include="Azure.Identity" />
+    <Reference Include="Azure.Core" />
+    <Reference Include="Facepunch.Ping" />
+    <Reference Include="Rust.Harmony" />
+    <Reference Include="UnityEngine.Physics2DModule" />
+    <Reference Include="Facepunch.Steamworks.Win64" />
+    <Reference Include="UnityEngine.UIElementsModule" />
+    <Reference Include="UIEffect" />
+    <Reference Include="LZ4" />
+    <Reference Include="Rust.Clans.Local">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Rust.Clans.Local.dll</HintPath>
+    </Reference>
+    <Reference Include="Rust.Platform" />
+    <Reference Include="Rust.Demo" />
+    <Reference Include="UnityEngine.ImageConversionModule" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
+    <Reference Include="TimeZoneConverter" />
+    <Reference Include="Facepunch.SteamNetworking" />
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule" />
+    <Reference Include="UnityEngine.JSONSerializeModule" />
+    <Reference Include="UnityEngine.InputLegacyModule" />
+    <Reference Include="UnityEngine.TilemapModule" />
+    <Reference Include="BoomlagoonJSON" />
+    <Reference Include="Oxide.Core">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Assembly-CSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

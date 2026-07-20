@@ -1,0 +1,36 @@
+using UnityEngine;
+using UnityEngine.Rendering;
+
+[ExecuteInEditMode]
+[RequireComponent(typeof(CommandBufferManager))]
+[RequireComponent(typeof(DeferredIndirectLightingPass))]
+public class SpatialEnvironmentVolumePass : MonoBehaviour
+{
+	private const CameraEvent VOLUME_RENDERING_CAMERA_EVENT = (CameraEvent)6;
+
+	private const int VOLUME_RENDERING_ORDER_ID = 1000;
+
+	private static readonly int envVolumeBufferId = Shader.PropertyToID("_EnvVolumeBuffer");
+
+	private static readonly int numberOfVolumesId = Shader.PropertyToID("_NumberOfEnvironmentVolumes");
+
+	[SerializeField]
+	private Mesh cubeMesh;
+
+	[SerializeField]
+	private Mesh sphereMesh;
+
+	[SerializeField]
+	private Mesh capsuleMesh;
+
+	[SerializeField]
+	private Shader shader;
+
+	[SerializeField]
+	private EnvironmentVolumePropertiesCollection environmentVolumeProperties;
+
+	[SerializeField]
+	private Shader copyToDepthBufferShader;
+
+	public bool IsInitialized { get; private set; }
+}

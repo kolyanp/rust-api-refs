@@ -1,0 +1,53 @@
+using UnityEngine;
+
+public class BaseVehicleMountPoint : BaseMountable
+{
+	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
+	[Header("BaseVehicleMountPoint")]
+	public bool RequiresVehicleFixedUpdateOnSeat;
+
+	public override bool DirectlyMountable()
+	{
+		return false;
+	}
+
+	public override BaseVehicle VehicleParent()
+	{
+		if (ignoreVehicleParent)
+		{
+			return null;
+		}
+		BaseVehicle baseVehicle = GetParentEntity() as BaseVehicle;
+		while ((Object)(object)baseVehicle != (Object)null && !baseVehicle.IsVehicleRoot())
+		{
+			BaseVehicle baseVehicle2 = baseVehicle.GetParentEntity() as BaseVehicle;
+			if ((Object)(object)baseVehicle2 == (Object)null)
+			{
+				return baseVehicle;
+			}
+			baseVehicle = baseVehicle2;
+		}
+		return baseVehicle;
+	}
+
+	public override float WaterFactorForPlayer(BasePlayer player, out WaterLevel.WaterInfo info)
+	{
+		BaseVehicle baseVehicle = VehicleParent();
+		if ((Object)(object)baseVehicle == (Object)null)
+		{
+			info = default(WaterLevel.WaterInfo);
+			return 0f;
+		}
+		return baseVehicle.WaterFactorForPlayer(player, out info);
+	}
+
+	public override float AirFactor()
+	{
+		BaseVehicle baseVehicle = VehicleParent();
+		if ((Object)(object)baseVehicle == (Object)null)
+		{
+			return 0f;
+		}
+		return baseVehicle.AirFactor();
+	}
+}

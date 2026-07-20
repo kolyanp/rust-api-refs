@@ -1,0 +1,341 @@
+using System;
+using ConVar;
+using Facepunch;
+using Network;
+using ProtoBuf;
+using Rust.UI;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+public class HuntingTrophy : StorageContainer
+{
+	[Serializable]
+	public struct TrophyRoot
+	{
+		public GameObjectRef SourceEntity;
+
+		public GameObject Root;
+
+		public uint GetSourcePrefabId()
+		{
+			BaseEntity entity = SourceEntity.GetEntity();
+			if ((Object)(object)entity != (Object)null)
+			{
+				return entity.prefabID;
+			}
+			return 0u;
+		}
+
+		public bool Matches(HeadEntity headEnt)
+		{
+			BaseEntity entity = SourceEntity.GetEntity();
+			bool flag = (Object)(object)entity != (Object)null && headEnt.CurrentTrophyData != null && entity.prefabID == headEnt.CurrentTrophyData.entitySource;
+			if ((Object)(object)entity != (Object)null && entity is BasePlayer && headEnt.CurrentTrophyData.clothing.Count > 0)
+			{
+				flag = true;
+			}
+			if (!flag)
+			{
+				GameObject headSource = headEnt.GetHeadSource();
+				BasePlayer basePlayer = default(BasePlayer);
+				if ((Object)(object)headSource != (Object)null && headSource.TryGetComponent<BasePlayer>(ref basePlayer) && ((Component)entity).TryGetComponent<BasePlayer>(ref basePlayer))
+				{
+					flag = true;
+				}
+			}
+			return flag;
+		}
+
+		public bool Matches(HeadData data)
+		{
+			if (data == null)
+			{
+				return false;
+			}
+			BaseEntity entity = SourceEntity.GetEntity();
+			if (entity is BasePlayer && data.clothing.Count > 0)
+			{
+				return true;
+			}
+			bool flag = (Object)(object)entity != (Object)null && entity.prefabID == data.entitySource;
+			if (!flag)
+			{
+				GameObject val = null;
+				val = GameManager.server.FindPrefab(data.entitySource);
+				BasePlayer basePlayer = default(BasePlayer);
+				if ((Object)(object)val != (Object)null && val.TryGetComponent<BasePlayer>(ref basePlayer) && ((Component)entity).TryGetComponent<BasePlayer>(ref basePlayer))
+				{
+					flag = true;
+				}
+			}
+			return flag;
+		}
+	}
+
+	public HeadData CurrentTrophyData;
+
+	public PlayerModel Player;
+
+	public GameObject MaleRope;
+
+	public GameObject FemaleRope;
+
+	public Renderer[] HorseRenderers;
+
+	public Renderer[] HorseHairRenderers;
+
+	public const uint HORSE_PREFAB_ID = 497279334u;
+
+	public GameObject NameRoot;
+
+	public RustText NameText;
+
+	public TrophyRoot[] Trophies;
+
+	public HeadData TrophyData => CurrentTrophyData;
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		using (TimeWarning.New("HuntingTrophy.OnRpcMessage"))
+		{
+			if (rpc == 1170506026 && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - ServerRequestClear"));
+				}
+				using (TimeWarning.New("ServerRequestClear"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(1170506026u, "ServerRequestClear", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg2 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							ServerRequestClear(msg2);
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in ServerRequestClear");
+					}
+				}
+				return true;
+			}
+			if (rpc == 3878554182u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - ServerRequestSubmit"));
+				}
+				using (TimeWarning.New("ServerRequestSubmit"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(3878554182u, "ServerRequestSubmit", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							ServerRequestSubmit();
+						}
+					}
+					catch (Exception ex2)
+					{
+						Debug.LogException(ex2);
+						player.Kick("RPC Error in ServerRequestSubmit");
+					}
+				}
+				return true;
+			}
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public override int GetIdealSlot(BasePlayer player, ItemContainer container, Item item)
+	{
+		return 0;
+	}
+
+	public override bool ItemFilter(Item item, int targetSlot)
+	{
+		if ((Object)(object)ItemModAssociatedEntity<HeadEntity>.GetAssociatedEntity(item) == (Object)null)
+		{
+			return false;
+		}
+		return base.ItemFilter(item, targetSlot);
+	}
+
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	private void ServerRequestSubmit()
+	{
+		Item slot = base.inventory.GetSlot(0);
+		if (slot == null)
+		{
+			return;
+		}
+		HeadEntity associatedEntity = ItemModAssociatedEntity<HeadEntity>.GetAssociatedEntity(slot);
+		if ((Object)(object)associatedEntity != (Object)null && !CanSubmitHead(associatedEntity))
+		{
+			return;
+		}
+		if ((Object)(object)associatedEntity != (Object)null)
+		{
+			if (CurrentTrophyData == null)
+			{
+				CurrentTrophyData = Pool.Get<HeadData>();
+				associatedEntity.CurrentTrophyData.CopyTo(CurrentTrophyData);
+				CurrentTrophyData.count = 1u;
+			}
+			else
+			{
+				HeadData currentTrophyData = CurrentTrophyData;
+				currentTrophyData.count++;
+			}
+		}
+		for (int i = 1; i <= base.inventory.capacity; i++)
+		{
+			if (base.inventory.GetSlot(i) == null)
+			{
+				slot.MoveToContainer(base.inventory, i);
+				break;
+			}
+		}
+		SendNetworkUpdate();
+	}
+
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	private void ServerRequestClear(RPCMessage msg)
+	{
+		if (CurrentTrophyData != null)
+		{
+			CurrentTrophyData.Dispose();
+			CurrentTrophyData = null;
+			Item[] array = base.inventory.itemList.ToArray();
+			foreach (Item item in array)
+			{
+				msg.player.GiveItem(item);
+			}
+			SendNetworkUpdate();
+		}
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (CurrentTrophyData != null)
+		{
+			info.msg.headData = Pool.Get<HeadData>();
+			CurrentTrophyData.CopyTo(info.msg.headData);
+		}
+	}
+
+	public bool CanSubmitHead(HeadEntity headEnt)
+	{
+		bool flag = false;
+		if ((Object)(object)headEnt == (Object)null || headEnt.CurrentTrophyData == null)
+		{
+			return false;
+		}
+		bool flag2 = CurrentTrophyData != null;
+		if (flag2 && headEnt.CurrentTrophyData.entitySource == CurrentTrophyData.entitySource && headEnt.CurrentTrophyData.playerId == CurrentTrophyData.playerId && headEnt.CurrentTrophyData.horseBreed == CurrentTrophyData.horseBreed)
+		{
+			flag = true;
+		}
+		if (!flag && flag2)
+		{
+			GameObject headSource = headEnt.GetHeadSource();
+			BasePlayer basePlayer = default(BasePlayer);
+			if ((Object)(object)headSource != (Object)null && headSource.TryGetComponent<BasePlayer>(ref basePlayer) && (Object)(object)GetCurrentTrophyDataSource() == (Object)(object)headSource)
+			{
+				flag = true;
+			}
+		}
+		if (!flag2)
+		{
+			TrophyRoot[] trophies = Trophies;
+			foreach (TrophyRoot trophyRoot in trophies)
+			{
+				if (trophyRoot.Matches(headEnt))
+				{
+					flag = true;
+					break;
+				}
+			}
+		}
+		return flag;
+		GameObject GetCurrentTrophyDataSource()
+		{
+			return GameManager.server.FindPrefab(CurrentTrophyData.entitySource);
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.msg.headData != null)
+		{
+			if (CurrentTrophyData == null)
+			{
+				CurrentTrophyData = Pool.Get<HeadData>();
+			}
+			info.msg.headData.CopyTo(CurrentTrophyData);
+		}
+		else if (CurrentTrophyData != null)
+		{
+			CurrentTrophyData.Dispose();
+			CurrentTrophyData = null;
+		}
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
+		if (CurrentTrophyData != null)
+		{
+			CurrentTrophyData.Dispose();
+			CurrentTrophyData = null;
+		}
+		TrophyRoot[] trophies = Trophies;
+		for (int i = 0; i < trophies.Length; i++)
+		{
+			TrophyRoot trophyRoot = trophies[i];
+			if ((Object)(object)trophyRoot.Root != (Object)null)
+			{
+				trophyRoot.Root.SetActive(false);
+			}
+		}
+		if ((Object)(object)NameRoot != (Object)null)
+		{
+			NameRoot.SetActive(false);
+		}
+		if ((Object)(object)MaleRope != (Object)null)
+		{
+			MaleRope.SetActive(false);
+		}
+		if ((Object)(object)FemaleRope != (Object)null)
+		{
+			FemaleRope.SetActive(false);
+		}
+	}
+}

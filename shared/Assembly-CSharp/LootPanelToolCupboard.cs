@@ -1,0 +1,24 @@
+using System.Collections.Generic;
+using Rust.UI;
+using UnityEngine;
+
+public class LootPanelToolCupboard : LootPanel
+{
+	public List<VirtualItemIcon> costIcons;
+
+	public RustText protectedText;
+
+	public GameObject baseNotProtectedObj;
+
+	public GameObject baseProtectedObj;
+
+	public Phrase protectedPrefix;
+
+	public Tooltip costToolTip;
+
+	public Phrase blocksPhrase;
+
+	public Phrase blocksAndDoorsPhrase;
+
+	public GameObject toolsRow;
+}

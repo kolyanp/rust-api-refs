@@ -1,0 +1,369 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ConVar;
+using Facepunch;
+using Network;
+using Oxide.Core;
+using ProtoBuf;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, IContainerSounds, ILootableEntity, IInventoryProvider
+{
+	public string lootPanelName = "generic";
+
+	public int maxItemCount = 36;
+
+	[NonSerialized]
+	public ulong playerSteamID;
+
+	[NonSerialized]
+	public string _playerName;
+
+	public bool ItemBasedDespawn;
+
+	public bool onlyOwnerLoot;
+
+	public bool buryLeftoverItems;
+
+	public SoundDefinition openSound;
+
+	public SoundDefinition closeSound;
+
+	public const Flags HasItems = Flags.Reserved1;
+
+	public const Flags HasBeenOpened = Flags.Reserved2;
+
+	public ItemContainer inventory;
+
+	public Phrase LootPanelTitle => Phrase.op_Implicit(playerName);
+
+	public string playerName
+	{
+		get
+		{
+			if (playerSteamID == 0L && _playerName == null)
+			{
+				return "";
+			}
+			return NameHelper.Get(playerSteamID, _playerName, base.isClient);
+		}
+		set
+		{
+			_playerName = value;
+		}
+	}
+
+	public ulong LastLootedBy { get; set; }
+
+	public BasePlayer LastLootedByPlayer { get; set; }
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		using (TimeWarning.New("DroppedItemContainer.OnRpcMessage"))
+		{
+			if (rpc == 331989034 && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RPC_OpenLoot"));
+				}
+				using (TimeWarning.New("RPC_OpenLoot"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(331989034u, "RPC_OpenLoot", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage rpc2 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RPC_OpenLoot(rpc2);
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in RPC_OpenLoot");
+					}
+				}
+				return true;
+			}
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public override bool OnStartBeingLooted(BasePlayer baseEntity)
+	{
+		if (playerSteamID != 0L && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && !baseEntity.InSafeCombatZone())
+		{
+			baseEntity.ShowToast(GameTip.Styles.Error, PlayerCorpse.CantLootSafeZoneError, false);
+			return false;
+		}
+		if (onlyOwnerLoot && (ulong)baseEntity.userID != playerSteamID)
+		{
+			return false;
+		}
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+		{
+			flagsUpdateScope.Set(Flags.Reserved2, b: true);
+		}
+		EvaluateBagConditions();
+		return base.OnStartBeingLooted(baseEntity);
+	}
+
+	public override void ServerInit()
+	{
+		ResetRemovalTime();
+		base.ServerInit();
+	}
+
+	public void RemoveMe()
+	{
+		if (IsOpen())
+		{
+			ResetRemovalTime();
+			return;
+		}
+		try
+		{
+			BuryLeftoverItems();
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+		}
+		Kill();
+	}
+
+	private void BuryLeftoverItems()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("DroppedItemContainer.BuryLeftoverItems"))
+		{
+			if (!buryLeftoverItems || inventory == null)
+			{
+				return;
+			}
+			Vector3 position = ((Component)this).transform.position;
+			foreach (Item item in inventory.itemList)
+			{
+				if (item.IsValid())
+				{
+					BuriedItems.Instance.Register(item, position);
+				}
+			}
+		}
+	}
+
+	private void EvaluateBagConditions()
+	{
+		Rigidbody component = ((Component)this).GetComponent<Rigidbody>();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		bool b = inventory != null && inventory.itemList.Count > 0 && inventory.itemList.Count > 3 && (Object)(object)component != (Object)null && component.IsSleeping();
+		flagsUpdateScope.Set(Flags.Reserved1, b);
+	}
+
+	public void ResetRemovalTime(float dur)
+	{
+		using (TimeWarning.New("ResetRemovalTime"))
+		{
+			Invoke(RemoveMe, dur);
+		}
+	}
+
+	public void ResetRemovalTime()
+	{
+		ResetRemovalTime(CalculateRemovalTime());
+	}
+
+	public float CalculateRemovalTime()
+	{
+		if (!ItemBasedDespawn)
+		{
+			return ConVar.Server.itemdespawn * 16f * ConVar.Server.itemdespawn_container_scale;
+		}
+		float num = ConVar.Server.itemdespawn_quick;
+		if (inventory != null)
+		{
+			foreach (Item item in inventory.itemList)
+			{
+				num = Mathf.Max(num, item.GetDespawnDuration());
+			}
+		}
+		return num;
+	}
+
+	internal override void DoServerDestroy()
+	{
+		base.DoServerDestroy();
+		if (inventory != null)
+		{
+			Pool.Free<ItemContainer>(ref inventory);
+		}
+	}
+
+	private ItemContainer CreateContainer()
+	{
+		ItemContainer itemContainer = Pool.Get<ItemContainer>();
+		itemContainer.ServerInitialize(null, maxItemCount);
+		itemContainer.GiveUID();
+		itemContainer.entityOwner = this;
+		itemContainer.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+		return itemContainer;
+	}
+
+	public void TakeFrom(ItemContainer[] source, float destroyPercent)
+	{
+		Assert.IsTrue(inventory == null, "Initializing Twice");
+		inventory = CreateContainer();
+		destroyPercent = Mathf.Clamp01(destroyPercent);
+		float movePercent = 1f - destroyPercent;
+		TakeFractionOfItems(source, inventory, movePercent);
+		inventory.capacity = inventory.itemList.Count;
+		ResetRemovalTime();
+	}
+
+	public static void TakeFractionOfItems(ItemContainer[] source, ItemContainer output, float movePercent)
+	{
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		output.containerVolume = source.Max((ItemContainer x) => x.containerVolume);
+		List<Item> list = Pool.Get<List<Item>>();
+		ItemContainer[] array = source;
+		foreach (ItemContainer obj in array)
+		{
+			obj.RemoveFractionOfContainer(list, movePercent);
+			obj.MergeAllStacks();
+		}
+		foreach (Item item in list)
+		{
+			if (item.MoveToContainer(output))
+			{
+				continue;
+			}
+			bool flag = false;
+			array = source;
+			foreach (ItemContainer newcontainer in array)
+			{
+				if (item.MoveToContainer(newcontainer))
+				{
+					flag = true;
+					break;
+				}
+			}
+			if (!flag)
+			{
+				item.DropAndTossUpwards(output.dropPosition);
+			}
+		}
+		Pool.Free<Item>(ref list, false);
+	}
+
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	private void RPC_OpenLoot(RPCMessage rpc)
+	{
+		if (inventory != null)
+		{
+			BasePlayer player = rpc.player;
+			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(this))
+			{
+				SetFlagLocal(Flags.Open, b: true);
+				player.inventory.loot.AddContainer(inventory);
+				player.inventory.loot.SendImmediate();
+				player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), lootPanelName);
+				SendNetworkUpdate();
+			}
+		}
+	}
+
+	public void PlayerStoppedLooting(BasePlayer player)
+	{
+		Interface.CallHook("OnLootEntityEnd", player, this);
+		if (inventory == null || inventory.itemList == null || inventory.itemList.Count == 0)
+		{
+			Kill();
+		}
+		else
+		{
+			ResetRemovalTime();
+			SetFlagLocal(Flags.Open, b: false);
+			SendNetworkUpdate();
+		}
+		EvaluateBagConditions();
+	}
+
+	public override void PreServerLoad()
+	{
+		base.PreServerLoad();
+		Debug.Assert(inventory == null, "Double init of inventory!");
+		inventory = Pool.Get<ItemContainer>();
+		inventory.entityOwner = this;
+		inventory.ServerInitialize(null, 0);
+		inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		info.msg.lootableCorpse = Pool.Get<LootableCorpse>();
+		info.msg.lootableCorpse.playerName = playerName;
+		info.msg.lootableCorpse.playerID = playerSteamID;
+		if (info.forDisk)
+		{
+			if (inventory != null)
+			{
+				info.msg.storageBox = Pool.Get<StorageBox>();
+				info.msg.storageBox.contents = inventory.Save();
+			}
+			else
+			{
+				Debug.LogWarning((object)("Dropped item container without inventory: " + ((object)this).ToString()));
+			}
+		}
+	}
+
+	public void GetAllInventories(List<ItemContainer> list)
+	{
+		list.Add(inventory);
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.msg.lootableCorpse != null)
+		{
+			playerName = info.msg.lootableCorpse.playerName;
+			playerSteamID = info.msg.lootableCorpse.playerID;
+		}
+		if (info.msg.storageBox != null)
+		{
+			if (inventory != null)
+			{
+				inventory.Load(info.msg.storageBox.contents);
+			}
+			else
+			{
+				Debug.LogWarning((object)("Dropped item container without inventory: " + ((object)this).ToString()));
+			}
+		}
+	}
+
+	public override bool ShouldInheritNetworkGroup()
+	{
+		return false;
+	}
+}

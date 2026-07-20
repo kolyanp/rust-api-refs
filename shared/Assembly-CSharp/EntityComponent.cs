@@ -1,0 +1,38 @@
+using System;
+using UnityEngine;
+
+public class EntityComponent<T> : EntityComponentBase where T : BaseEntity
+{
+	[NonSerialized]
+	public T _baseEntity;
+
+	public T baseEntity
+	{
+		get
+		{
+			if ((Object)(object)_baseEntity == (Object)null)
+			{
+				UpdateBaseEntity();
+			}
+			return _baseEntity;
+		}
+	}
+
+	protected void UpdateBaseEntity()
+	{
+		if (Object.op_Implicit((Object)(object)this) && Object.op_Implicit((Object)(object)((Component)this).gameObject))
+		{
+			_baseEntity = GameObjectEx.ToBaseEntity(((Component)this).gameObject) as T;
+		}
+	}
+
+	public override BaseEntity GetBaseEntity()
+	{
+		return baseEntity;
+	}
+
+	public T GetCastedEntity()
+	{
+		return baseEntity;
+	}
+}

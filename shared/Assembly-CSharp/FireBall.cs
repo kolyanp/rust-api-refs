@@ -1,0 +1,296 @@
+using System;
+using System.Collections.Generic;
+using Facepunch;
+using Oxide.Core;
+using Rust;
+using UnityEngine;
+
+public class FireBall : BaseEntity, ISplashable
+{
+	private const Flags StationaryFlag = Flags.Reserved1;
+
+	public float lifeTimeMin = 20f;
+
+	public float lifeTimeMax = 40f;
+
+	public ParticleSystem[] movementSystems;
+
+	public ParticleSystem[] restingSystems;
+
+	[NonSerialized]
+	public float generation;
+
+	public GameObjectRef spreadSubEntity;
+
+	public float tickRate = 0.5f;
+
+	public float damagePerSecond = 2f;
+
+	public float radius = 0.5f;
+
+	public int waterToExtinguish = 200;
+
+	public bool canMerge;
+
+	public LayerMask AttackLayers = LayerMask.op_Implicit(1220225809);
+
+	public bool ignoreNPC;
+
+	private Vector3 lastPos = Vector3.zero;
+
+	private float deathTime;
+
+	private int wetness;
+
+	private float spawnTime;
+
+	private Vector3 delayedVelocity;
+
+	private bool IsStationary => HasFlag(Flags.Reserved1);
+
+	public void SetDelayedVelocity(Vector3 delayed)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		if (!(delayedVelocity != Vector3.zero))
+		{
+			delayedVelocity = delayed;
+			Invoke(ApplyDelayedVelocity, 0.1f);
+		}
+	}
+
+	private void ApplyDelayedVelocity()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		SetVelocity(delayedVelocity);
+		delayedVelocity = Vector3.zero;
+	}
+
+	public override void ServerInit()
+	{
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		base.ServerInit();
+		InvokeRepeating(Think, Random.Range(0f, 1f), tickRate);
+		float num = Random.Range(lifeTimeMin, lifeTimeMax);
+		float num2 = num * Random.Range(0.9f, 1.1f);
+		Invoke(Extinguish, num2);
+		Invoke(TryToSpread, num * Random.Range(0.3f, 0.5f));
+		deathTime = Time.realtimeSinceStartup + num2;
+		spawnTime = Time.realtimeSinceStartup;
+		((Component)this).transform.rotation = Quaternion.identity;
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.OnFire, b: true);
+	}
+
+	public float GetDeathTime()
+	{
+		return deathTime;
+	}
+
+	public void AddLife(float amountToAdd)
+	{
+		float time = Mathf.Clamp(GetDeathTime() + amountToAdd, 0f, MaxLifeTime());
+		Invoke(Extinguish, time);
+		deathTime = time;
+	}
+
+	public float MaxLifeTime()
+	{
+		return lifeTimeMax * 2.5f;
+	}
+
+	public float TimeLeft()
+	{
+		float num = deathTime - Time.realtimeSinceStartup;
+		if (num < 0f)
+		{
+			num = 0f;
+		}
+		return num;
+	}
+
+	public void TryToSpread()
+	{
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		float num = 0.9f - generation * 0.1f;
+		if (Random.Range(0f, 1f) < num && spreadSubEntity.isValid)
+		{
+			BaseEntity baseEntity = GameManager.server.CreateEntity(spreadSubEntity.resourcePath);
+			if (Object.op_Implicit((Object)(object)baseEntity))
+			{
+				((Component)baseEntity).transform.position = ((Component)this).transform.position + Vector3.up * 0.25f;
+				baseEntity.Spawn();
+				Vector3 modifiedAimConeDirection = AimConeUtil.GetModifiedAimConeDirection(45f, Vector3.up);
+				baseEntity.creatorEntity = (((Object)(object)creatorEntity == (Object)null) ? baseEntity : creatorEntity);
+				Interface.CallHook("OnFireBallSpread", this, baseEntity);
+				baseEntity.SetVelocity(modifiedAimConeDirection * Random.Range(5f, 8f));
+				((Component)baseEntity).SendMessage("SetGeneration", (object)(generation + 1f));
+			}
+		}
+	}
+
+	public void SetGeneration(int gen)
+	{
+		generation = gen;
+	}
+
+	public void Think()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		if (base.isServer)
+		{
+			Vector3 val = (((Component)this).transform.localPosition - lastPos) / Time.deltaTime;
+			UpdateIsStationary(((Vector3)(ref val)).magnitude < 0.05f);
+			lastPos = ((Component)this).transform.localPosition;
+			if (IsStationary)
+			{
+				DoRadialDamage();
+			}
+			if (WaterFactor() > 0.5f)
+			{
+				Extinguish();
+			}
+			if (wetness > waterToExtinguish)
+			{
+				Extinguish();
+			}
+		}
+	}
+
+	public void DoRadialDamage()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		List<BaseCombatEntity> list = Pool.Get<List<BaseCombatEntity>>();
+		Vector3 position = ((Component)this).transform.position + new Vector3(0f, radius * 0.75f, 0f);
+		Vis.Entities(position, radius, list, LayerMask.op_Implicit(AttackLayers), (QueryTriggerInteraction)1);
+		HitInfo hitInfo = new HitInfo();
+		hitInfo.DoHitEffects = true;
+		hitInfo.DidHit = true;
+		hitInfo.HitBone = 0u;
+		hitInfo.Initiator = (((Object)(object)creatorEntity == (Object)null) ? GameObjectEx.ToBaseEntity(((Component)this).gameObject) : creatorEntity);
+		hitInfo.PointStart = ((Component)this).transform.position;
+		foreach (BaseCombatEntity item in list)
+		{
+			if (!((Object)(object)item == (Object)null) && item.isServer && item.IsAlive() && (!ignoreNPC || !item.IsNpc) && item.IsVisible(position))
+			{
+				if (item is BasePlayer)
+				{
+					Effect.server.Run("assets/bundled/prefabs/fx/impacts/additive/fire.prefab", item, 0u, new Vector3(0f, 1f, 0f), Vector3.up);
+				}
+				hitInfo.PointEnd = ((Component)item).transform.position;
+				hitInfo.HitPositionWorld = ((Component)item).transform.position;
+				hitInfo.damageTypes.Set(DamageType.Heat, damagePerSecond * tickRate);
+				Interface.CallHook("OnFireBallDamage", this, item, hitInfo);
+				item.OnAttacked(hitInfo);
+			}
+		}
+		Pool.FreeUnmanaged<BaseCombatEntity>(ref list);
+	}
+
+	public bool CanMerge()
+	{
+		if (canMerge)
+		{
+			return TimeLeft() < MaxLifeTime() * 0.8f;
+		}
+		return false;
+	}
+
+	public float TimeAlive()
+	{
+		return Time.realtimeSinceStartup - spawnTime;
+	}
+
+	public void UpdateIsStationary(bool shouldBeStationary)
+	{
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		if (shouldBeStationary != IsStationary && shouldBeStationary && CanMerge())
+		{
+			List<Collider> list = Pool.Get<List<Collider>>();
+			Vis.Colliders<Collider>(((Component)this).transform.position, 0.5f, list, 512, (QueryTriggerInteraction)2);
+			foreach (Collider item in list)
+			{
+				BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((Component)item).gameObject);
+				if (Object.op_Implicit((Object)(object)baseEntity))
+				{
+					FireBall fireBall = baseEntity.ToServer<FireBall>();
+					if (Object.op_Implicit((Object)(object)fireBall) && fireBall.CanMerge() && (Object)(object)fireBall != (Object)(object)this)
+					{
+						fireBall.Invoke(Extinguish, 1f);
+						fireBall.canMerge = false;
+						AddLife(fireBall.TimeLeft() * 0.25f);
+					}
+				}
+			}
+			Pool.FreeUnmanaged<Collider>(ref list);
+		}
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved1, shouldBeStationary);
+	}
+
+	public void Extinguish()
+	{
+		CancelInvoke(Extinguish);
+		if (!base.IsDestroyed)
+		{
+			Kill();
+		}
+	}
+
+	public bool WantsSplash(ItemDefinition splashType, int amount)
+	{
+		return !base.IsDestroyed;
+	}
+
+	public int DoSplash(ItemDefinition splashType, int amount)
+	{
+		wetness += amount;
+		return amount;
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+	}
+
+	public override bool ShouldInheritNetworkGroup()
+	{
+		return false;
+	}
+}

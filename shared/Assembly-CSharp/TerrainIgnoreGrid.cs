@@ -1,0 +1,75 @@
+using System;
+using Unity.Collections;
+using Unity.Jobs;
+using UnityEngine;
+
+public class TerrainIgnoreGrid : ICoarseQueryGridProvider, IDisposable
+{
+	private CoarseQueryGrid _queryGrid;
+
+	private const int CellSize = 8;
+
+	public TerrainIgnoreGrid()
+	{
+		_queryGrid = new CoarseQueryGrid(8, (int)(World.Size + 1000), -5f);
+	}
+
+	public CoarseQueryGrid GetQueryGrid()
+	{
+		return _queryGrid;
+	}
+
+	public void AddTrigger(TerrainCollisionTrigger trigger)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		_queryGrid.AddStatic(trigger.volume.trigger.bounds);
+	}
+
+	public void RemoveTrigger(TerrainCollisionTrigger trigger)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		_queryGrid.RemoveStatic(trigger.volume.trigger.bounds);
+	}
+
+	public bool Check(Vector3 pos, float radius)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("TerrainIgnoreGrid.Check(pos,rad)"))
+		{
+			return _queryGrid.CheckJob(pos, radius);
+		}
+	}
+
+	public JobHandle Check(ReadOnly<Vector3> starts, ReadOnly<float> radii, NativeList<int> results)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		return _queryGrid.CheckJob(starts, radii, results);
+	}
+
+	public JobHandle CheckIndirect(ReadOnly<Vector3> pos, ReadOnly<float> radii, ReadOnly<int> indices, NativeList<int> results)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		return _queryGrid.CheckJobIndirect(pos, radii, indices, results);
+	}
+
+	public bool Check(Vector3 pos)
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("TerraingIgnoreGrid.Check(pos)"))
+		{
+			return _queryGrid.CheckJob(pos, 0f);
+		}
+	}
+
+	public void Dispose()
+	{
+		_queryGrid.Dispose();
+	}
+}

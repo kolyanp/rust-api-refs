@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Carbon.Common">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Carbon.SDK">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp" />
+    <Reference Include="Microsoft.CodeAnalysis" />
+    <Reference Include="Mono.Cecil" />
+    <Reference Include="System.Collections.Immutable" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="0Harmony" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Carbon.Test">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="Rust.Global" />
+    <Reference Include="Facepunch.UnityEngine" />
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="Carbon.Startup">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Startup.dll</HintPath>
+    </Reference>
+    <Reference Include="Carbon.Profiler">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Profiler.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression.FileSystem">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.IO.Compression.FileSystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

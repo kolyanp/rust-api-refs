@@ -1,0 +1,73 @@
+using ConVar;
+using Oxide.Core;
+using Rust;
+using UnityEngine;
+
+public class SupplyDrop : LootContainer
+{
+	public const Flags FlagNightLight = Flags.Reserved1;
+
+	private const Flags ShowParachute = Flags.Reserved2;
+
+	public GameObject ParachuteRoot;
+
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		if (!Application.isLoadingSave)
+		{
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			flagsUpdateScope.Set(Flags.Reserved2, b: true);
+		}
+		isLootable = false;
+		Invoke(MakeLootable, 300f);
+		InvokeRepeating(CheckNightLight, 0f, 30f);
+	}
+
+	public void RemoveParachute()
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved2, b: false);
+	}
+
+	public void MakeLootable()
+	{
+		isLootable = true;
+	}
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		bool flag = ((1 << ((Component)collision.collider).gameObject.layer) & 0x40A10111) > 0;
+		bool num = ((1 << ((Component)collision.collider).gameObject.layer) & 0x8000000) > 0;
+		BaseEntity entity = CollisionEx.GetEntity(collision);
+		if (num && entity is Tugboat)
+		{
+			flag = true;
+		}
+		if (num && (entity is BoatBuildingBlock || PlayerBoat.IsChildOfFinishedPlayerBoat(entity)))
+		{
+			flag = true;
+		}
+		if (flag)
+		{
+			RemoveParachute();
+			MakeLootable();
+		}
+		Interface.CallHook("OnSupplyDropLanded", this);
+	}
+
+	public void CheckNightLight()
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved1, Env.time > 20f || Env.time < 7f);
+	}
+
+	public override void OnFlagsChanged(Flags old, Flags next)
+	{
+		base.OnFlagsChanged(old, next);
+		if ((Object)(object)ParachuteRoot != (Object)null)
+		{
+			ParachuteRoot.SetActive((next & Flags.Reserved2) == Flags.Reserved2);
+		}
+	}
+}

@@ -1,0 +1,42 @@
+using System;
+using UnityEngine;
+
+namespace Rust.Ai.Gen2;
+
+[Serializable]
+public class State_FleeFire : State_Flee
+{
+	private int numExecutions;
+
+	private int maxExecutionsBeforeMinDist = 2;
+
+	private float minDistance = 8f;
+
+	private float maxDistance = 20f;
+
+	private double timeOfLastExecution;
+
+	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
+	{
+		if (Time.timeAsDouble - timeOfLastExecution > 30.0)
+		{
+			numExecutions = 0;
+		}
+		timeOfLastExecution = Time.timeAsDouble;
+		distance = 7f;
+		desiredDistance = Mathx.RemapValClamped((float)numExecutions, 0f, (float)maxExecutionsBeforeMinDist, maxDistance, minDistance);
+		numExecutions++;
+		return base.OnStateEnter(payload);
+	}
+
+	public override EFSMStateStatus OnStateUpdate(float deltaTime)
+	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		if (base.Senses.FindTargetPosition(out var targetPosition) && Time.timeAsDouble - timeOfLastExecution > 1.0 && Vector3.Distance(((Component)Owner).transform.position, targetPosition) > desiredDistance)
+		{
+			return EFSMStateStatus.Success;
+		}
+		return base.OnStateUpdate(deltaTime);
+	}
+}

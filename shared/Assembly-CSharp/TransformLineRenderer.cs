@@ -1,0 +1,28 @@
+using Unity.Collections;
+using UnityEngine;
+using UnityEngine.Jobs;
+
+public class TransformLineRenderer : MonoBehaviour, IClientComponent
+{
+	internal struct LineRendererUpdateJob : IJobParallelForTransform
+	{
+		[WriteOnly]
+		[NativeMatchesParallelForLength]
+		public NativeArray<Vector3> ResultWorldPositions;
+
+		public void Execute(int index, [ReadOnly] TransformAccess transform)
+		{
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			ResultWorldPositions[index] = ((TransformAccess)(ref transform)).position;
+		}
+	}
+
+	public Transform[] TransformSequence;
+
+	public LineRenderer TargetRenderer;
+
+	public bool IsEnabled = true;
+
+	[Tooltip("Will keep the line renderer enabled when IsEnabled is false, allowing you to freeze the update while keeping the visuals.")]
+	public bool KeepLastUpdate;
+}

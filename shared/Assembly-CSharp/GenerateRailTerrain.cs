@@ -1,0 +1,123 @@
+using System.Linq;
+using UnityEngine;
+
+public class GenerateRailTerrain : ProceduralComponent
+{
+	public const int SmoothenLoops = 8;
+
+	public const int SmoothenIterations = 8;
+
+	public const int SmoothenY = 64;
+
+	public const int SmoothenXZ = 32;
+
+	public const int TransitionSteps = 8;
+
+	private float AdjustTerrainFade(float xn, float zn)
+	{
+		int topology = TerrainMeta.TopologyMap.GetTopology(xn, zn);
+		if ((topology & 0x4000) != 0)
+		{
+			return 0f;
+		}
+		if ((topology & 0x8000) != 0)
+		{
+			return 0.5f;
+		}
+		return 1f;
+	}
+
+	private float SmoothenFilter(PathList path, int index)
+	{
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		float num = (path.Start ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 8f, (float)index)) : 1f);
+		int topology = TerrainMeta.TopologyMap.GetTopology(path.Path.Points[index]);
+		if ((topology & 0x4000) != 0)
+		{
+			return 0.1f * num;
+		}
+		if ((topology & 0x8000) != 0)
+		{
+			return 0.3f * num;
+		}
+		return num;
+	}
+
+	public override void Process(uint seed)
+	{
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0227: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0267: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
+		TerrainTopologyMap topologyMap = TerrainMeta.TopologyMap;
+		for (int i = 0; i < 8; i++)
+		{
+			foreach (PathList rail in TerrainMeta.Path.Rails.AsEnumerable().Reverse())
+			{
+				PathInterpolator path = rail.Path;
+				Vector3[] points = path.Points;
+				for (int j = 0; j < points.Length; j++)
+				{
+					Vector3 val = points[j];
+					float num = heightMap.GetHeight(val);
+					if ((topologyMap.GetTopology(val) & 0xC000) != 0)
+					{
+						num = Mathf.Max(num, WaterLevel.RaycastWaterColliders(val) + 2f);
+					}
+					if (rail.Start)
+					{
+						val.y = Mathf.SmoothStep(val.y, num, SmoothenFilter(rail, j));
+					}
+					else
+					{
+						val.y = num;
+					}
+					points[j] = val;
+				}
+				path.Smoothen(8, Vector3.up, (int index) => SmoothenFilter(rail, index));
+				path.RecalculateTangents();
+			}
+			foreach (PathList item in TerrainMeta.Path.Rails.AsEnumerable().Reverse())
+			{
+				heightMap.Push();
+				float intensity = 1f;
+				float fademin = 0.125f;
+				float fademax = Mathf.InverseLerp(8f, 0f, (float)i);
+				item.AdjustTerrainHeight((float xn, float zn) => intensity, (float xn, float zn) => Mathf.Lerp(fademin, fademax, AdjustTerrainFade(xn, zn)));
+				heightMap.Pop();
+			}
+		}
+		foreach (PathList rail2 in TerrainMeta.Path.Rails)
+		{
+			PathInterpolator path2 = rail2.Path;
+			Vector3[] points2 = path2.Points;
+			for (int num2 = 0; num2 < points2.Length; num2++)
+			{
+				Vector3 val2 = points2[num2];
+				float height = heightMap.GetHeight(val2);
+				if (rail2.Start)
+				{
+					val2.y = Mathf.SmoothStep(val2.y, height, SmoothenFilter(rail2, num2));
+				}
+				else
+				{
+					val2.y = height;
+				}
+				points2[num2] = val2;
+			}
+			path2.RecalculateTangents();
+		}
+	}
+}

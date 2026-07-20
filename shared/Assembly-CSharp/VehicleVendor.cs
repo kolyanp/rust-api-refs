@@ -1,0 +1,71 @@
+using Facepunch;
+using ProtoBuf;
+using UnityEngine;
+
+public class VehicleVendor : NPCTalking
+{
+	public EntityRef spawnerRef;
+
+	public VehicleSpawner vehicleSpawner;
+
+	public VehicleSpawner GetVehicleSpawner()
+	{
+		if (!spawnerRef.IsValid(base.isServer))
+		{
+			return null;
+		}
+		return ((Component)spawnerRef.Get(base.isServer)).GetComponent<VehicleSpawner>();
+	}
+
+	public override void UpdateFlags()
+	{
+		base.UpdateFlags();
+		VehicleSpawner vehicleSpawner = GetVehicleSpawner();
+		bool b = (Object)(object)vehicleSpawner != (Object)null && vehicleSpawner.IsPadOccupied();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved1, b);
+	}
+
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		if (spawnerRef.IsValid(serverside: true) && (Object)(object)vehicleSpawner == (Object)null)
+		{
+			vehicleSpawner = GetVehicleSpawner();
+		}
+		else if ((Object)(object)vehicleSpawner != (Object)null && !spawnerRef.IsValid(serverside: true))
+		{
+			spawnerRef.Set(vehicleSpawner);
+		}
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		base.Save(info);
+		info.msg.vehicleVendor = Pool.Get<VehicleVendor>();
+		info.msg.vehicleVendor.spawnerRef = spawnerRef.uid;
+	}
+
+	public override ConversationData GetConversationFor(BasePlayer player)
+	{
+		return conversations[0];
+	}
+
+	public override void OnDied(HitInfo info)
+	{
+		base.OnDied(info);
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		base.Load(info);
+		if (info.msg.vehicleVendor != null)
+		{
+			spawnerRef.id_cached = info.msg.vehicleVendor.spawnerRef;
+		}
+	}
+}

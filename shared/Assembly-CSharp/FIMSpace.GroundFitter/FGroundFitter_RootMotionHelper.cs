@@ -1,0 +1,26 @@
+using UnityEngine;
+
+namespace FIMSpace.GroundFitter;
+
+public class FGroundFitter_RootMotionHelper : MonoBehaviour
+{
+	public FGroundFitter_Movement MovementController;
+
+	public FGroundFitter_Base_RootMotion OptionalFitter;
+
+	private void OnAnimatorMove()
+	{
+		if (Object.op_Implicit((Object)(object)MovementController))
+		{
+			MovementController.OnAnimatorMove();
+		}
+		else if (Object.op_Implicit((Object)(object)OptionalFitter))
+		{
+			OptionalFitter.OnAnimatorMove();
+		}
+		else
+		{
+			Object.Destroy((Object)(object)this);
+		}
+	}
+}

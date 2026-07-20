@@ -1,0 +1,78 @@
+using System;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace CompanionServer.Handlers;
+
+public abstract class BaseClanHandler<T> : BasePlayerHandler<T> where T : class
+{
+	protected IClanBackend ClanBackend { get; private set; }
+
+	protected async ValueTask<IClan> GetClan()
+	{
+		if (ClanBackend == null)
+		{
+			return null;
+		}
+		ClanValueResult<IClan> val = ((!((Object)(object)base.Player != (Object)null) || base.Player.clanId == 0L) ? (await ClanBackend.GetByMember(base.UserId)) : (await ClanBackend.Get(base.Player.clanId)));
+		ClanValueResult<IClan> val2 = val;
+		if ((int)val2.Result != 3 && (int)val2.Result != 4)
+		{
+			IClan value = val2.Value;
+			base.Client.Subscribe(new ClanTarget(value.ClanId));
+			return value;
+		}
+		return null;
+	}
+
+	public override void EnterPool()
+	{
+		base.EnterPool();
+		ClanBackend = null;
+	}
+
+	public override ValidationResult Validate()
+	{
+		ValidationResult num = base.Validate();
+		if (num == ValidationResult.Success && (Object)(object)ClanManager.ServerInstance != (Object)null)
+		{
+			ClanBackend = ClanManager.ServerInstance.Backend;
+		}
+		return num;
+	}
+
+	protected void SendError(ClanResult result)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		base.SendError(GetErrorString(result));
+	}
+
+	private static string GetErrorString(ClanResult result)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Expected I4, but got Unknown
+		return (int)result switch
+		{
+			1 => throw new ArgumentException("ClanResult.Success is not an error"), 
+			2 => "clan_timeout", 
+			3 => "clan_no_clan", 
+			4 => "clan_not_found", 
+			5 => "clan_no_permission", 
+			6 => "clan_invalid_text_empty", 
+			7 => "clan_invalid_text_too_short", 
+			8 => "clan_invalid_text_too_long", 
+			9 => "clan_invalid_text_invalid_characters", 
+			10 => "clan_invalid_text", 
+			11 => "clan_invalid_logo", 
+			12 => "clan_invalid_color", 
+			13 => "clan_duplicate_name", 
+			14 => "clan_role_not_empty", 
+			15 => "clan_cannot_swap_leader", 
+			16 => "clan_cannot_delete_leader", 
+			17 => "clan_cannot_kick_leader", 
+			18 => "clan_cannot_demote_leader", 
+			19 => "clan_already_in_clan", 
+			_ => "clan_fail", 
+		};
+	}
+}

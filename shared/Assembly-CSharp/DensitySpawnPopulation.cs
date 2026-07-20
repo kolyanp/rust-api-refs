@@ -1,0 +1,305 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ConVar;
+using Facepunch;
+using Rust.Ai.Gen2;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+[CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
+public class DensitySpawnPopulation : SpawnPopulationBase
+{
+	[Tooltip("Usually per square km")]
+	[SerializeField]
+	[FormerlySerializedAs("TargetDensity")]
+	[Header("Spawn Info")]
+	public float _targetDensity = 1f;
+
+	public int ClusterSizeMin = 1;
+
+	public int ClusterSizeMax = 1;
+
+	public int ClusterDithering;
+
+	public int SpawnAttemptsInitial = 20;
+
+	public int SpawnAttemptsRepeating = 10;
+
+	public bool ScaleWithLargeMaps = true;
+
+	public bool ScaleWithSpawnFilter = true;
+
+	public bool AlignToNormal;
+
+	public SpawnFilter Filter = new SpawnFilter();
+
+	public float FilterCutoff;
+
+	public float FilterRadius;
+
+	public bool FilterOutTutorialIslands;
+
+	public MonumentType[] FilterOutMonuments;
+
+	public float NpcRadiusCheckDistance;
+
+	private int sumToSpawn;
+
+	public virtual float TargetDensity => _targetDensity;
+
+	public override void SubFill(ISpawnHandler spawnHandler, SpawnDistribution distribution, int numToFill, bool initialSpawn)
+	{
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0261: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
+		float num = Mathf.Max((float)ClusterSizeMax, distribution.GetGridCellArea() * GetMaximumSpawnDensity());
+		UpdateWeights(distribution, GetTargetCount(distribution));
+		int num2 = (initialSpawn ? (numToFill * SpawnAttemptsInitial) : (numToFill * SpawnAttemptsRepeating));
+		while (numToFill >= ClusterSizeMax && num2 > 0 && sumToSpawn > 0)
+		{
+			ByteQuadtree.Element node = distribution.SampleNode();
+			int num3 = Random.Range(ClusterSizeMin, ClusterSizeMax + 1);
+			num3 = Mathx.Min(num2, numToFill, num3, sumToSpawn);
+			for (int i = 0; i < num3; i++)
+			{
+				Vector3 spawnPos;
+				Quaternion spawnRot;
+				bool flag = distribution.Sample(out spawnPos, out spawnRot, node, AlignToNormal, ClusterDithering, 0f, Filter, FilterCutoff);
+				if (flag && FilterOutTutorialIslands && ((Bounds)(ref TutorialIsland.WorldBoundsMinusTutorialIslands)).size != Vector3.zero)
+				{
+					flag = ((Bounds)(ref TutorialIsland.WorldBoundsMinusTutorialIslands)).Contains(spawnPos);
+				}
+				if (flag && FilterRadius > 0f)
+				{
+					flag = Filter.GetFactor(spawnPos + Vector3.forward * FilterRadius) > 0f && Filter.GetFactor(spawnPos - Vector3.forward * FilterRadius) > 0f && Filter.GetFactor(spawnPos + Vector3.right * FilterRadius) > 0f && Filter.GetFactor(spawnPos - Vector3.right * FilterRadius) > 0f;
+				}
+				if (flag && NpcRadiusCheckDistance > 0f)
+				{
+					PooledList<BaseNPC2> val = Pool.Get<PooledList<BaseNPC2>>();
+					try
+					{
+						BaseEntity.Query.Server.GetBrainsInSphere(spawnPos, NpcRadiusCheckDistance, (List<BaseNPC2>)(object)val);
+						flag = ((List<BaseNPC2>)(object)val).Count == 0;
+					}
+					finally
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
+				if (flag && FilterOutMonuments != null && FilterOutMonuments.Length != 0)
+				{
+					flag = (Object)(object)TerrainMeta.Path.FindMonumentWithBoundsOverlap(spawnPos, FilterOutMonuments) == (Object)null;
+				}
+				if (flag)
+				{
+					if (TryTakeRandomPrefab(out var result))
+					{
+						Status status = Status.Success;
+						if (!GetSpawnPosOverride(result, ref spawnPos, ref spawnRot))
+						{
+							status = Status.InvalidSpawnPosOverride;
+						}
+						if (status == Status.Success && (float)distribution.GetCount(spawnPos) >= num)
+						{
+							status = Status.DensityOverflow;
+						}
+						if (status == Status.Success)
+						{
+							status = spawnHandler.TrySpawn(this, result, spawnPos, spawnRot, out var _);
+						}
+						if (status == Status.Success)
+						{
+							numToFill--;
+						}
+						else
+						{
+							ReturnPrefab(result);
+						}
+						spawnHandler.ReportAttempt(status, spawnPos);
+					}
+					else
+					{
+						spawnHandler.ReportAttempt(Status.PrefabPickFailed, spawnPos);
+					}
+				}
+				else
+				{
+					spawnHandler.ReportAttempt(Status.InvalidSample, spawnPos);
+				}
+				num2--;
+			}
+		}
+	}
+
+	public override int EstimateMaxAttempts(int toSpawn)
+	{
+		return toSpawn * SpawnAttemptsRepeating;
+	}
+
+	public void UpdateWeights(SpawnDistribution distribution, int targetCount)
+	{
+		float num = 0f;
+		for (int i = 0; i < Prefabs.Length; i++)
+		{
+			Prefab<Spawnable> prefab = Prefabs[i];
+			float prefabWeight = GetPrefabWeight(prefab);
+			num += prefabWeight;
+		}
+		int num2 = Mathf.CeilToInt((float)targetCount / num);
+		sumToSpawn = 0;
+		for (int j = 0; j < Prefabs.Length; j++)
+		{
+			Prefab<Spawnable> prefab2 = Prefabs[j];
+			float num3 = GetPrefabWeight(prefab2);
+			if (prefab2.Weight != null && prefab2.Weight.IsActiveInEra())
+			{
+				num3 *= prefab2.Weight.Scale;
+			}
+			int count = distribution.GetCount(prefab2.ID);
+			int num4 = Mathf.Max(Mathf.FloorToInt(num3 * (float)num2 - (float)count), 0);
+			numToSpawn[j] = num4;
+			sumToSpawn += num4;
+		}
+	}
+
+	protected virtual float GetPrefabWeight(Prefab<Spawnable> prefab)
+	{
+		if (!Object.op_Implicit((Object)(object)prefab.Parameters))
+		{
+			return 1f;
+		}
+		return prefab.Parameters.Count;
+	}
+
+	public bool TryTakeRandomPrefab(out Prefab<Spawnable> result)
+	{
+		int num = Random.Range(0, sumToSpawn);
+		for (int i = 0; i < Prefabs.Length; i++)
+		{
+			if ((num -= numToSpawn[i]) < 0)
+			{
+				numToSpawn[i]--;
+				sumToSpawn--;
+				result = Prefabs[i];
+				return true;
+			}
+		}
+		result = null;
+		return false;
+	}
+
+	public void ReturnPrefab(Prefab<Spawnable> prefab)
+	{
+		if (prefab == null)
+		{
+			return;
+		}
+		for (int i = 0; i < Prefabs.Length; i++)
+		{
+			if (Prefabs[i] == prefab)
+			{
+				numToSpawn[i]++;
+				sumToSpawn++;
+			}
+		}
+	}
+
+	public float GetCurrentSpawnDensity()
+	{
+		if (ScaleWithServerPopulation)
+		{
+			return TargetDensity * SpawnHandler.PlayerLerp(Spawn.min_density, Spawn.max_density) * 1E-06f;
+		}
+		return TargetDensity * Spawn.max_density * 1E-06f;
+	}
+
+	public float GetMaximumSpawnDensity()
+	{
+		if (ScaleWithServerPopulation)
+		{
+			return 2f * TargetDensity * SpawnHandler.PlayerLerp(Spawn.min_density, Spawn.max_density) * 1E-06f;
+		}
+		return 2f * TargetDensity * Spawn.max_density * 1E-06f;
+	}
+
+	public virtual bool GetSpawnPosOverride(Prefab<Spawnable> prefab, ref Vector3 newPos, ref Quaternion newRot)
+	{
+		return true;
+	}
+
+	public override byte[] GetBaseMapValues(int populationRes)
+	{
+		byte[] baseValues = new byte[populationRes * populationRes];
+		SpawnFilter filter = Filter;
+		float cutoff = FilterCutoff;
+		Parallel.For(0, populationRes, delegate(int z)
+		{
+			for (int i = 0; i < populationRes; i++)
+			{
+				float normX = ((float)i + 0.5f) / (float)populationRes;
+				float normZ = ((float)z + 0.5f) / (float)populationRes;
+				float factor = filter.GetFactor(normX, normZ);
+				baseValues[z * populationRes + i] = (byte)((factor > cutoff) ? (255f * factor) : 0f);
+			}
+		});
+		return baseValues;
+	}
+
+	public override int GetTargetCount(SpawnDistribution distribution)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		float num = TerrainMeta.Size.x * TerrainMeta.Size.z;
+		float num2 = GetCurrentSpawnDensity();
+		if (!ScaleWithLargeMaps)
+		{
+			num = Mathf.Min(num, 16000000f);
+		}
+		if (ScaleWithSpawnFilter)
+		{
+			num2 *= distribution.Density;
+		}
+		float num3 = 1f;
+		if (Prefabs != null && Prefabs.Length != 0)
+		{
+			float num4 = 0f;
+			Prefab<Spawnable>[] prefabs = Prefabs;
+			foreach (Prefab<Spawnable> prefab in prefabs)
+			{
+				num4 = ((prefab == null || !(prefab.Weight != null) || !prefab.Weight.IsActiveInEra()) ? (num4 + 1f) : (num4 + prefab.Weight.Scale));
+			}
+			num3 = num4 / (float)Prefabs.Length;
+		}
+		return Mathf.RoundToInt(num * num2 * num3);
+	}
+
+	public override SpawnFilter GetSpawnFilter()
+	{
+		return Filter;
+	}
+}

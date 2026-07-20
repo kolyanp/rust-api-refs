@@ -1,0 +1,35 @@
+using Development.Attributes;
+using Facepunch;
+using UnityEngine;
+
+[ResetStaticFields]
+public static class NameHelper
+{
+	public static string FilterGenericName(string name)
+	{
+		return name;
+	}
+
+	public static string Get(ulong userId, string name, bool isClient = true, bool forceFriendly = false)
+	{
+		return name;
+	}
+
+	public static string Get(IPlayerInfo playerInfo, bool isClient = true)
+	{
+		return Get(playerInfo.UserId, playerInfo.UserName, isClient);
+	}
+
+	public static string GetPlayerNameStreamSafe(BasePlayer from, BasePlayer target)
+	{
+		if ((Object)(object)from == (Object)null || (Object)(object)target == (Object)null)
+		{
+			return string.Empty;
+		}
+		if (!from.net.connection.info.GetBool("global.streamermode"))
+		{
+			return target.displayName;
+		}
+		return RandomUsernames.Get((ulong)target.userID);
+	}
+}

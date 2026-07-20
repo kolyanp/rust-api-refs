@@ -1,0 +1,969 @@
+using System;
+using ConVar;
+using Facepunch;
+using Network;
+using Oxide.Core;
+using ProtoBuf;
+using Rust;
+using UnityEngine;
+using UnityEngine.Assertions;
+
+public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, SamSite.ISamSiteTarget
+{
+	[Serializable]
+	public class Wheel
+	{
+		public WheelCollider wheelCollider;
+
+		public Transform visualBone;
+
+		public Flags groundedFlag = Flags.Reserved1;
+
+		[NonSerialized]
+		public float wheelVel;
+
+		[NonSerialized]
+		public Vector3 wheelRot = Vector3.zero;
+
+		public bool steering;
+
+		public bool IsGrounded(PlayerHelicopter parent)
+		{
+			if (parent.isServer)
+			{
+				return wheelCollider.isGrounded;
+			}
+			return parent.HasFlag(groundedFlag);
+		}
+	}
+
+	[Header("Player Helicopter")]
+	[SerializeField]
+	public Wheel[] wheels;
+
+	[SerializeField]
+	public Transform waterSample;
+
+	public PlayerHeliSounds playerHeliSounds;
+
+	[SerializeField]
+	private Transform joystickPositionLeft;
+
+	[SerializeField]
+	private Transform joystickPositionRight;
+
+	[SerializeField]
+	private Transform passengerJoystickPositionRight;
+
+	[SerializeField]
+	private Transform leftFootPosition;
+
+	[SerializeField]
+	private Transform rightFootPosition;
+
+	[SerializeField]
+	protected Animator animator;
+
+	[SerializeField]
+	public float maxRotorSpeed = 10f;
+
+	[SerializeField]
+	public float timeUntilMaxRotorSpeed = 7f;
+
+	[SerializeField]
+	private Transform mainRotorBlurBone;
+
+	[SerializeField]
+	private Renderer mainRotorBlurMesh;
+
+	[SerializeField]
+	public float rotorBlurThreshold = 8f;
+
+	[SerializeField]
+	private Transform mainRotorBladesBone;
+
+	[SerializeField]
+	private Renderer[] mainRotorBladeMeshes;
+
+	[SerializeField]
+	private Transform rearRotorBladesBone;
+
+	[SerializeField]
+	private Renderer[] rearRotorBladeMeshes;
+
+	[SerializeField]
+	private Transform rearRotorBlurBone;
+
+	[SerializeField]
+	private Renderer rearRotorBlurMesh;
+
+	[SerializeField]
+	public float motorForceConstant = 150f;
+
+	[SerializeField]
+	public float brakeForceConstant = 500f;
+
+	[SerializeField]
+	public float maxPitchAnim = 1f;
+
+	[SerializeField]
+	private GameObject preventBuildingObject;
+
+	[SerializeField]
+	public float maxRollAnim = 1f;
+
+	[SerializeField]
+	public float maxYawAnim = 1f;
+
+	[Header("Fuel")]
+	[SerializeField]
+	public GameObjectRef fuelStoragePrefab;
+
+	[SerializeField]
+	public float fuelPerSec = 0.25f;
+
+	[SerializeField]
+	public float fuelGaugeMax = 100f;
+
+	[ServerVar(Help = "How long before a player helicopter loses all its health while outside")]
+	public static float outsidedecayminutes = 480f;
+
+	[ServerVar(Help = "How long before a player helicopter loses all its health while indoors")]
+	public static float insidedecayminutes = 2880f;
+
+	public VehicleEngineController<PlayerHelicopter> engineController;
+
+	public TimeSince timeSinceCachedFuelFraction;
+
+	public float cachedFuelFraction;
+
+	protected const Flags WHEEL_GROUNDED_LR = Flags.Reserved1;
+
+	protected const Flags WHEEL_GROUNDED_RR = Flags.Reserved2;
+
+	protected const Flags WHEEL_GROUNDED_FRONT = Flags.Reserved3;
+
+	protected const Flags RADAR_WARNING_FLAG = Flags.Reserved12;
+
+	protected const Flags RADAR_LOCK_FLAG = Flags.Reserved13;
+
+	protected const Flags ENGINE_STARTING_FLAG = Flags.Reserved4;
+
+	public bool isPushing;
+
+	private float[] recentVelocities = new float[10];
+
+	private int recentVelIndex;
+
+	private bool cacheGrounded;
+
+	public float lastEngineOnTime;
+
+	private static readonly Phrase CantRepairWithEngineOn = new Phrase("error_cannot_repair_with_engine_on", "Cannot repair while the engine is running.");
+
+	public VehicleEngineController<PlayerHelicopter>.EngineState CurEngineState
+	{
+		get
+		{
+			if (engineController == null)
+			{
+				return VehicleEngineController<PlayerHelicopter>.EngineState.Off;
+			}
+			return engineController.CurEngineState;
+		}
+	}
+
+	public bool IsStartingUp
+	{
+		get
+		{
+			if (engineController != null)
+			{
+				return engineController.IsStarting;
+			}
+			return false;
+		}
+	}
+
+	public float cachedPitch { get; set; }
+
+	public float cachedYaw { get; set; }
+
+	public float cachedRoll { get; set; }
+
+	public SamSite.SamTargetType SAMTargetType => SamSite.targetTypeVehicle;
+
+	public override bool ForceMovementHandling
+	{
+		protected get
+		{
+			if (isPushing)
+			{
+				return wheels.Length != 0;
+			}
+			return false;
+		}
+	}
+
+	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	{
+		using (TimeWarning.New("PlayerHelicopter.OnRpcMessage"))
+		{
+			if (rpc == 1851540757 && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RPC_OpenFuel"));
+				}
+				using (TimeWarning.New("RPC_OpenFuel"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(1851540757u, "RPC_OpenFuel", this, player, 6f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg2 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RPC_OpenFuel(msg2);
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.LogException(ex);
+						player.Kick("RPC Error in RPC_OpenFuel");
+					}
+				}
+				return true;
+			}
+		}
+		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public override void InitShared()
+	{
+		base.InitShared();
+		EntityFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		engineController = new VehicleEngineController<PlayerHelicopter>(this, fuelSystem, base.isServer, 5f, waterSample, Flags.Reserved4);
+	}
+
+	public float GetFuelFraction(bool force = false)
+	{
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		if (base.isServer && (TimeSince.op_Implicit(timeSinceCachedFuelFraction) > 1f || force))
+		{
+			cachedFuelFraction = Mathf.Clamp01((float)GetFuelSystem().GetFuelAmount() / fuelGaugeMax);
+			timeSinceCachedFuelFraction = TimeSince.op_Implicit(0f);
+		}
+		return cachedFuelFraction;
+	}
+
+	public override bool CanPushNow(BasePlayer pusher)
+	{
+		if (base.CanPushNow(pusher) && pusher.IsOnGround())
+		{
+			return !pusher.isMounted;
+		}
+		return false;
+	}
+
+	public override float InheritedVelocityScale()
+	{
+		return 1f;
+	}
+
+	public override bool InheritedVelocityDirection()
+	{
+		return false;
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		base.Load(info);
+		if (info.msg.miniCopter != null)
+		{
+			engineController.FuelSystem.SetInstanceID(info.msg.miniCopter.fuelStorageID);
+			cachedFuelFraction = info.msg.miniCopter.fuelFraction;
+			cachedPitch = info.msg.miniCopter.pitch * maxPitchAnim;
+			cachedRoll = info.msg.miniCopter.roll * maxRollAnim;
+			cachedYaw = info.msg.miniCopter.yaw * maxYawAnim;
+		}
+	}
+
+	public override void OnFlagsChanged(Flags old, Flags next)
+	{
+		base.OnFlagsChanged(old, next);
+		if (base.isServer)
+		{
+			if (CurEngineState == VehicleEngineController<PlayerHelicopter>.EngineState.Off)
+			{
+				lastEngineOnTime = Time.time;
+			}
+			if ((Object)(object)rigidBody != (Object)null)
+			{
+				rigidBody.isKinematic = IsTransferProtected();
+			}
+		}
+	}
+
+	protected override void OnChildAdded(BaseEntity child)
+	{
+		base.OnChildAdded(child);
+		if (base.isServer && isSpawned)
+		{
+			GetFuelSystem().CheckNewChild(child);
+		}
+	}
+
+	public override float GetServiceCeiling()
+	{
+		return HotAirBalloon.serviceCeiling;
+	}
+
+	public override float GetMinimumAltitudeTerrain()
+	{
+		return HotAirBalloon.minimumAltitudeTerrain;
+	}
+
+	public override IFuelSystem GetFuelSystem()
+	{
+		return engineController.FuelSystem;
+	}
+
+	public override int StartingFuelUnits()
+	{
+		return 100;
+	}
+
+	public bool IsValidSAMTarget(bool staticRespawn)
+	{
+		if (rigidBody.IsSleeping() || rigidBody.isKinematic)
+		{
+			return false;
+		}
+		if (staticRespawn)
+		{
+			return true;
+		}
+		return !InSafeZone();
+	}
+
+	public override void PilotInput(InputState inputState, BasePlayer player)
+	{
+		base.PilotInput(inputState, player);
+		if (!IsOn() && !IsStartingUp && inputState.IsDown(BUTTON.FORWARD) && !inputState.WasDown(BUTTON.FORWARD))
+		{
+			engineController.TryStartEngine(player);
+		}
+		currentInputState.groundControl = inputState.IsDown(BUTTON.DUCK);
+		if (currentInputState.groundControl)
+		{
+			currentInputState.roll = 0f;
+			currentInputState.throttle = (inputState.IsDown(BUTTON.FORWARD) ? 1f : 0f);
+			currentInputState.throttle -= (inputState.IsDown(BUTTON.BACKWARD) ? 1f : 0f);
+		}
+		cachedRoll = currentInputState.roll;
+		cachedYaw = currentInputState.yaw;
+		cachedPitch = currentInputState.pitch;
+	}
+
+	public bool IsGrounded()
+	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = false;
+		if (IsStationary())
+		{
+			return cacheGrounded;
+		}
+		if (wheels.Length == 0)
+		{
+			flag = Physics.Raycast(((Component)this).transform.position + Vector3.up * 0.1f, Vector3.down, 0.5f);
+		}
+		else
+		{
+			float num = 1f;
+			Wheel[] array = wheels;
+			for (int i = 0; i < array.Length; i++)
+			{
+				if (!array[i].wheelCollider.isGrounded)
+				{
+					num -= 1f / (float)wheels.Length;
+				}
+			}
+			flag = num >= 0.5f;
+		}
+		cacheGrounded = flag;
+		return flag;
+	}
+
+	public override void SetDefaultInputState()
+	{
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		currentInputState.Reset();
+		cachedRoll = 0f;
+		cachedYaw = 0f;
+		cachedPitch = 0f;
+		if (IsGrounded())
+		{
+			return;
+		}
+		if (HasDriver())
+		{
+			float num = Vector3.Dot(Vector3.up, ((Component)this).transform.right);
+			float num2 = Vector3.Dot(Vector3.up, ((Component)this).transform.forward);
+			currentInputState.roll = ((num < 0f) ? 1f : 0f);
+			currentInputState.roll -= ((num > 0f) ? 1f : 0f);
+			if (num2 < -0f)
+			{
+				currentInputState.pitch = -1f;
+			}
+			else if (num2 > 0f)
+			{
+				currentInputState.pitch = 1f;
+			}
+		}
+		else
+		{
+			currentInputState.throttle = -1f;
+		}
+	}
+
+	public void ApplyForceAtWheels()
+	{
+		if (!((Object)(object)rigidBody == (Object)null))
+		{
+			float brakeScale;
+			float num2;
+			float num;
+			if (currentInputState.groundControl)
+			{
+				brakeScale = ((currentInputState.throttle == 0f) ? 50f : 0f);
+				num = currentInputState.throttle;
+				num2 = currentInputState.yaw;
+			}
+			else
+			{
+				brakeScale = 20f;
+				num2 = 0f;
+				num = 0f;
+			}
+			num *= (IsOn() ? 1f : 0f);
+			if (isPushing)
+			{
+				brakeScale = 0f;
+				num = 0.1f;
+				num2 = 0f;
+			}
+			Wheel[] array = wheels;
+			foreach (Wheel wheel in array)
+			{
+				ApplyWheelForce(wheel.wheelCollider, num, brakeScale, wheel.steering ? num2 : 0f);
+			}
+		}
+	}
+
+	public void ApplyForceWithoutWheels()
+	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		if (currentInputState.groundControl)
+		{
+			if (currentInputState.throttle != 0f)
+			{
+				rigidBody.AddRelativeForce(Vector3.forward * currentInputState.throttle * motorForceConstant * 15f, (ForceMode)0);
+			}
+			if (currentInputState.yaw != 0f)
+			{
+				rigidBody.AddRelativeTorque(new Vector3(0f, currentInputState.yaw * torqueScale.y, 0f), (ForceMode)0);
+			}
+			float num = rigidBody.mass * (0f - Physics.gravity.y);
+			rigidBody.AddForce(((Component)this).transform.up * num * hoverForceScale, (ForceMode)0);
+		}
+	}
+
+	public void ApplyWheelForce(WheelCollider wheel, float gasScale, float brakeScale, float turning)
+	{
+		if (wheel.isGrounded)
+		{
+			float num = gasScale * motorForceConstant;
+			float num2 = brakeScale * brakeForceConstant;
+			float num3 = 45f * turning;
+			if (!Mathf.Approximately(wheel.motorTorque, num))
+			{
+				wheel.motorTorque = num;
+			}
+			if (!Mathf.Approximately(wheel.brakeTorque, num2))
+			{
+				wheel.brakeTorque = num2;
+			}
+			if (!Mathf.Approximately(wheel.steerAngle, num3))
+			{
+				wheel.steerAngle = num3;
+			}
+			SetWheelFrictionMultiplier(wheel, 1f);
+		}
+	}
+
+	public override void MovementUpdate()
+	{
+		if (IsGrounded())
+		{
+			if (wheels.Length != 0)
+			{
+				ApplyForceAtWheels();
+			}
+			else
+			{
+				ApplyForceWithoutWheels();
+			}
+		}
+		if (!currentInputState.groundControl || !IsGrounded())
+		{
+			base.MovementUpdate();
+		}
+	}
+
+	public override void ServerInit()
+	{
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		base.ServerInit();
+		lastEngineOnTime = Time.realtimeSinceStartup;
+		rigidBody.inertiaTensor = rigidBody.inertiaTensor;
+		preventBuildingObject.SetActive(true);
+		InvokeRandomized(UpdateNetwork, 0f, 0.2f, 0.05f);
+		InvokeRandomized(DecayTick, Random.Range(30f, 60f), 60f, 6f);
+	}
+
+	public void DecayTick()
+	{
+		if (base.healthFraction != 0f && !IsOn() && !(Time.time < lastEngineOnTime + 600f))
+		{
+			float num = 1f / (IsOutside() ? outsidedecayminutes : insidedecayminutes);
+			Hurt(MaxHealth() * num, DamageType.Decay, this, useProtection: false);
+		}
+	}
+
+	public override bool IsEngineOn()
+	{
+		return IsOn();
+	}
+
+	protected override void TryStartEngine(BasePlayer player)
+	{
+		engineController.TryStartEngine(player);
+	}
+
+	public bool MeetsEngineRequirements()
+	{
+		if (base.autoHover)
+		{
+			return true;
+		}
+		if (engineController.IsOff)
+		{
+			return HasDriver();
+		}
+		if (!HasDriver())
+		{
+			return Time.time <= lastPlayerInputTime + 1f;
+		}
+		return true;
+	}
+
+	public void OnEngineStartFailed()
+	{
+	}
+
+	public override void VehicleFixedUpdate()
+	{
+		if (IsTransferProtected())
+		{
+			return;
+		}
+		using (TimeWarning.New("PlayerHelicopter.VehicleFixedUpdate"))
+		{
+			if (!IsStationary())
+			{
+				TryWakeWheels();
+			}
+			else
+			{
+				SleepWheels();
+			}
+			base.VehicleFixedUpdate();
+			engineController.CheckEngineState();
+			engineController.TickFuel(fuelPerSec);
+		}
+	}
+
+	public void UpdateNetwork()
+	{
+		Flags flags = base.flags;
+		Wheel[] array = wheels;
+		foreach (Wheel wheel in array)
+		{
+			SetFlagLocal(wheel.groundedFlag, wheel.wheelCollider.isGrounded);
+		}
+		if (HasDriver())
+		{
+			SendNetworkUpdate();
+		}
+		else if (flags != base.flags)
+		{
+			SendNetworkUpdate_Flags();
+		}
+	}
+
+	public override void OnEntityMessage(BaseEntity from, string msg)
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		if (msg == "RadarLock")
+		{
+			flagsUpdateScope.Set(Flags.Reserved13, b: true);
+			Invoke(ClearRadarLock, 1f);
+		}
+		else if (msg == "RadarWarning")
+		{
+			flagsUpdateScope.Set(Flags.Reserved12, b: true);
+			Invoke(ClearRadarWarning, 1f);
+		}
+		else
+		{
+			base.OnEntityMessage(from, msg);
+		}
+	}
+
+	public void ClearRadarLock()
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved13, b: false);
+	}
+
+	public void ClearRadarWarning()
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved12, b: false);
+	}
+
+	public void UpdateCOM()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		rigidBody.centerOfMass = com.localPosition;
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		base.Save(info);
+		info.msg.miniCopter = Pool.Get<Minicopter>();
+		info.msg.miniCopter.fuelStorageID = engineController.FuelSystem.GetInstanceID();
+		info.msg.miniCopter.fuelFraction = GetFuelFraction(force: true);
+		info.msg.miniCopter.pitch = currentInputState.pitch;
+		info.msg.miniCopter.roll = currentInputState.roll;
+		info.msg.miniCopter.yaw = currentInputState.yaw;
+	}
+
+	public override void OnDied(HitInfo info)
+	{
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		foreach (MountPointInfo mountPoint in mountPoints)
+		{
+			if ((Object)(object)mountPoint.mountable != (Object)null)
+			{
+				BasePlayer mounted = mountPoint.mountable.GetMounted();
+				if (Object.op_Implicit((Object)(object)mounted))
+				{
+					HitInfo hitInfo = new HitInfo(info.Initiator, this, DamageType.Explosion, 1000f, ((Component)this).transform.position);
+					hitInfo.Weapon = info.Weapon;
+					hitInfo.WeaponPrefab = info.WeaponPrefab;
+					mounted.Hurt(hitInfo);
+				}
+			}
+		}
+		base.OnDied(info);
+	}
+
+	public override void DoPushAction(BasePlayer player)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = Vector3Ex.Direction2D(((Component)player).transform.position, ((Component)this).transform.position);
+		Vector3 val2 = player.eyes.BodyForward();
+		val2.y = 0.25f;
+		Vector3 val3 = ((Component)this).transform.position + val * 2f;
+		float num = rigidBody.mass * 2f;
+		rigidBody.AddForceAtPosition(val2 * num, val3, (ForceMode)1);
+		rigidBody.AddForce(Vector3.up * 3f, (ForceMode)1);
+		isPushing = true;
+		Invoke(DisablePushing, 0.5f);
+	}
+
+	public void DisablePushing()
+	{
+		isPushing = false;
+	}
+
+	public override bool IsValidHomingTarget()
+	{
+		object obj = Interface.CallHook("CanBeHomingTargeted", this);
+		if (obj is bool)
+		{
+			return (bool)obj;
+		}
+		return IsOn();
+	}
+
+	[RPC_Server]
+	[RPC_Server.IsVisible(6f)]
+	public void RPC_OpenFuel(RPCMessage msg)
+	{
+		BasePlayer player = msg.player;
+		if (!((Object)(object)player == (Object)null))
+		{
+			BasePlayer driver = GetDriver();
+			if ((!((Object)(object)driver != (Object)null) || !((Object)(object)driver != (Object)(object)player)) && (!IsSafe() || !((Object)(object)player != (Object)(object)creatorEntity)))
+			{
+				engineController.FuelSystem.LootFuel(player);
+			}
+		}
+	}
+
+	public override bool ShouldDisableTransferProtectionOnLoad(BasePlayer player)
+	{
+		if (!IsDriver(player))
+		{
+			return !HasDriver();
+		}
+		return true;
+	}
+
+	public override void DisableTransferProtection()
+	{
+		SwapDriverIfInactive();
+		if ((Object)(object)GetDriver() != (Object)null && IsOn())
+		{
+			SetDefaultInputState();
+			lastPlayerInputTime = Time.time;
+		}
+		base.DisableTransferProtection();
+	}
+
+	private void SwapDriverIfInactive()
+	{
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer driver = GetDriver();
+		if ((Object)(object)driver == (Object)null || IsPlayerActive(driver))
+		{
+			return;
+		}
+		MountPointInfo mountPoint = GetMountPoint(GetPlayerSeat(driver));
+		if (mountPoint == null)
+		{
+			Debug.LogError((object)"Helicopter driver is inactive but the driver seat was not found");
+			return;
+		}
+		BasePlayer basePlayer = FindActivePassenger();
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			Debug.LogError((object)"Helicopter driver is inactive and there is no passenger we can swap in");
+			return;
+		}
+		MountPointInfo mountPoint2 = GetMountPoint(GetPlayerSeat(basePlayer));
+		BaseEntity entity = basePlayer.GetParentEntity();
+		Vector3 position = ((Component)basePlayer).transform.position;
+		Quaternion rotation = ((Component)basePlayer).transform.rotation;
+		driver.EnsureDismounted();
+		basePlayer.EnsureDismounted();
+		mountPoint.mountable.MountPlayer(basePlayer);
+		if (mountPoint2 == null)
+		{
+			driver.SetParent(entity);
+			driver.MovePosition(position);
+			((Component)driver).transform.rotation = rotation;
+			driver.ServerRotation = rotation;
+		}
+		else
+		{
+			mountPoint2.mountable.MountPlayer(driver);
+		}
+		driver.SendNetworkUpdateImmediate();
+		basePlayer.SendNetworkUpdateImmediate();
+		BasePlayer FindActivePassenger()
+		{
+			foreach (MountPointInfo allMountPoint in base.allMountPoints)
+			{
+				if (!allMountPoint.isDriver && !((Object)(object)allMountPoint.mountable == (Object)null))
+				{
+					BasePlayer mounted = allMountPoint.mountable.GetMounted();
+					if (!((Object)(object)mounted == (Object)null) && IsPlayerActive(mounted))
+					{
+						return mounted;
+					}
+				}
+			}
+			foreach (BaseEntity child in children)
+			{
+				if (!((Object)(object)child == (Object)null) && child is BasePlayer basePlayer2 && IsPlayerActive(basePlayer2))
+				{
+					return basePlayer2;
+				}
+			}
+			return null;
+		}
+		static bool IsPlayerActive(BasePlayer player)
+		{
+			if (player.IsConnected && !player.IsSleeping())
+			{
+				return !player.IsLoadingAfterTransfer();
+			}
+			return false;
+		}
+	}
+
+	protected override void ApplyHandbrake()
+	{
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		if (!IsGrounded() || rigidBody.IsSleeping())
+		{
+			return;
+		}
+		Wheel[] array = wheels;
+		foreach (Wheel wheel in array)
+		{
+			wheel.wheelCollider.motorTorque = 0f;
+			wheel.wheelCollider.brakeTorque = 10000f;
+			SetWheelFrictionMultiplier(wheel.wheelCollider, 3f);
+		}
+		float[] array2 = recentVelocities;
+		int num = recentVelIndex;
+		Vector3 linearVelocity = rigidBody.linearVelocity;
+		array2[num] = ((Vector3)(ref linearVelocity)).sqrMagnitude;
+		recentVelIndex = ++recentVelIndex % recentVelocities.Length;
+		bool flag = true;
+		float[] array3 = recentVelocities;
+		for (int i = 0; i < array3.Length; i++)
+		{
+			if (array3[i] >= 0.05f)
+			{
+				flag = false;
+				break;
+			}
+		}
+		if (flag && Time.time > lastEngineOnTime + 5f)
+		{
+			rigidBody.Sleep();
+			Invoke(SleepWheels, 0.1f, 0f);
+		}
+	}
+
+	private void TryWakeWheels()
+	{
+		Wheel[] array = wheels;
+		foreach (Wheel wheel in array)
+		{
+			if (!((Collider)wheel.wheelCollider).enabled)
+			{
+				((Collider)wheel.wheelCollider).enabled = true;
+			}
+		}
+	}
+
+	private void SleepWheels()
+	{
+		if (vehicle.disable_wheels_when_sleeping)
+		{
+			Wheel[] array = wheels;
+			for (int i = 0; i < array.Length; i++)
+			{
+				((Collider)array[i].wheelCollider).enabled = false;
+			}
+		}
+	}
+
+	private void SetWheelFrictionMultiplier(WheelCollider wheel, float multiplier)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		WheelFrictionCurve val = wheel.forwardFriction;
+		((WheelFrictionCurve)(ref val)).stiffness = multiplier;
+		wheel.forwardFriction = val;
+		val = wheel.sidewaysFriction;
+		((WheelFrictionCurve)(ref val)).stiffness = multiplier;
+		wheel.sidewaysFriction = val;
+	}
+
+	public override void DoRepair(BasePlayer player)
+	{
+		if (IsEngineOn())
+		{
+			OnRepairFailed(player, CantRepairWithEngineOn);
+		}
+		else
+		{
+			base.DoRepair(player);
+		}
+	}
+
+	void IEngineControllerUser.Invoke(Action action, float time)
+	{
+		Invoke(action, time);
+	}
+
+	void IEngineControllerUser.CancelInvoke(Action action)
+	{
+		CancelInvoke(action);
+	}
+}

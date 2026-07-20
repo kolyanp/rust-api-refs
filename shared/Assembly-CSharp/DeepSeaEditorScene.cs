@@ -1,0 +1,23 @@
+using UnityEngine;
+
+[ExecuteAlways]
+public class DeepSeaEditorScene : SingletonComponent<DeepSeaEditorScene>, IEditorComponent
+{
+	[SerializeField]
+	[Tooltip("When emulating deepsea with source terrain, need to use main textures since deepsea shore textures/data don't exist yet")]
+	private bool terrainIgnoreDeepseaFlag;
+
+	private SpawnGroup[] spawnGroups;
+
+	public static bool TerrainIgnoreDeepseaFlag
+	{
+		get
+		{
+			if ((Object)(object)SingletonComponent<DeepSeaEditorScene>.Instance != (Object)null)
+			{
+				return SingletonComponent<DeepSeaEditorScene>.Instance.terrainIgnoreDeepseaFlag;
+			}
+			return false;
+		}
+	}
+}

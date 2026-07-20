@@ -1,0 +1,63 @@
+using ConVar;
+using UnityEngine;
+
+public class NPCDoorTriggerBox : MonoBehaviour
+{
+	private Door door;
+
+	private static int playerServerLayer = -1;
+
+	public static SparseGrid<NPCDoorTriggerBox> AllDoors = new SparseGrid<NPCDoorTriggerBox>();
+
+	public void Setup(Door d)
+	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		door = d;
+		((Component)this).transform.SetParent(((Component)door).transform, false);
+		((Component)this).gameObject.layer = 18;
+		BoxCollider obj = ((Component)this).gameObject.AddComponent<BoxCollider>();
+		((Collider)obj).isTrigger = true;
+		obj.center = Vector3.zero;
+		obj.size = Vector3.one * AI.npc_door_trigger_size;
+		AllDoors.Add(((Component)this).transform.position, this);
+	}
+
+	private void OnDestroy()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		AllDoors.Remove(((Component)this).transform.position, this);
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		if ((Object)(object)door == (Object)null || door.isClient || door.IsLocked() || (!door.isSecurityDoor && door.IsOpen()) || (door.isSecurityDoor && !door.IsOpen()))
+		{
+			return;
+		}
+		if (playerServerLayer < 0)
+		{
+			playerServerLayer = LayerMask.NameToLayer("Player (Server)");
+		}
+		if ((((Component)other).gameObject.layer & playerServerLayer) > 0)
+		{
+			BasePlayer component = ((Component)other).gameObject.GetComponent<BasePlayer>();
+			if ((Object)(object)component != (Object)null && component.IsNpc && !door.isSecurityDoor)
+			{
+				door.SetOpen(open: true);
+			}
+		}
+	}
+
+	public void TryOpenDoorFor(BaseEntity entity)
+	{
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)door == (Object)null) && !door.isClient && !door.IsLocked() && !door.IsOpen() && !door.isSecurityDoor && !(Vector3.Distance(((Component)entity).transform.position, ((Component)this).transform.position) > AI.npc_door_trigger_size * 2f))
+		{
+			door.SetOpen(open: true);
+		}
+	}
+}
