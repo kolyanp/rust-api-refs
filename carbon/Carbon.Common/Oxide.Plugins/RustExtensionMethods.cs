@@ -1,0 +1,10 @@
+namespace Oxide.Plugins;
+
+public static class RustExtensionMethods
+{
+	public static bool IsSteamId(this EncryptedValue<ulong> userID)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		return EncryptedValue<ulong>.op_Implicit(userID).IsSteamId();
+	}
+}

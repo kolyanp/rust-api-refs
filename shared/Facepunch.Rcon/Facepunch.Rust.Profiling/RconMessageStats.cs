@@ -1,0 +1,14 @@
+namespace Facepunch.Rust.Profiling;
+
+public struct RconMessageStats
+{
+	public string IP;
+
+	public int Port;
+
+	public int ConnectionId;
+
+	public string Message;
+
+	public int MessageLength;
+}

@@ -1,0 +1,12 @@
+using System;
+using Oxide.Core.Logging;
+using Oxide.Logging;
+
+namespace Oxide;
+
+public static class ExtensionMethods
+{
+	public static void WriteDebug(this Logger logger, LogType level, LogEvent? @event, string source, string message, Exception exception = null)
+	{
+	}
+}

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Hooks.Base</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="Carbon.SDK" />
+    <Reference Include="Facepunch.Console" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="0Harmony" />
+    <Reference Include="Carbon.Common" />
+    <Reference Include="Carbon" />
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Facepunch.Network" />
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="Rust.Global" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Steamworks.Win64" />
+  </ItemGroup>
+</Project>

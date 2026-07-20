@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Oxide.MySql</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="ILLink.Substitutions.xml" />
+    <None Remove="ILRepack.List" />
+    <EmbeddedResource Include="ILLink.Substitutions.xml" LogicalName="ILLink.Substitutions.xml" />
+    <EmbeddedResource Include="ILRepack.List" LogicalName="ILRepack.List" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Oxide.Core">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/System.Transactions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

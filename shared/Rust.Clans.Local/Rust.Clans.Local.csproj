@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Rust.Clans.Local</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Facepunch.Sqlite">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Rust.Clans" />
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="Facepunch.UnityEngine">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.System" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Oxide.Core">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

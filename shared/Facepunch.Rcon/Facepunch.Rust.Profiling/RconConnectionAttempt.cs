@@ -1,0 +1,14 @@
+namespace Facepunch.Rust.Profiling;
+
+public struct RconConnectionAttempt
+{
+	public string IP;
+
+	public int Port;
+
+	public int ConnectionId;
+
+	public bool Success;
+
+	public string PasswordAttempt;
+}

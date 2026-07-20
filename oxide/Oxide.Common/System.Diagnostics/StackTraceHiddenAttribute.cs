@@ -1,0 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
+
+namespace System.Diagnostics;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Constructor | AttributeTargets.Method, Inherited = false)]
+[ExcludeFromCodeCoverage]
+[Conditional("MULTI_TARGETING_SUPPORT_ATTRIBUTES")]
+public sealed class StackTraceHiddenAttribute : Attribute
+{
+}

@@ -1,0 +1,6 @@
+namespace Oxide.Game.Rust.Cui;
+
+public class CuiRectTransformComponent : CuiRectTransform, ICuiComponent
+{
+	public string Type => "RectTransform";
+}

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Hooks.Community</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Carbon.Common" />
+    <Reference Include="Carbon.SDK" />
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="Carbon" />
+    <Reference Include="Facepunch.Network" />
+    <Reference Include="Facepunch.Console" />
+    <Reference Include="0Harmony" />
+    <Reference Include="UnityEngine.CoreModule" />
+  </ItemGroup>
+</Project>

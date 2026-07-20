@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Modules</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Carbon.Common" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Carbon.SDK" />
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="Rust.Data" />
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="Facepunch.Console" />
+    <Reference Include="Cronos" />
+    <Reference Include="Facepunch.Network" />
+    <Reference Include="0Harmony" />
+    <Reference Include="Facepunch.UnityEngine" />
+    <Reference Include="UnityEngine.PhysicsModule" />
+    <Reference Include="Rust.Localization" />
+    <Reference Include="UnityEngine.TextRenderingModule" />
+    <Reference Include="Assembly-CSharp-firstpass" />
+  </ItemGroup>
+</Project>

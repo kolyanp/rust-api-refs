@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+
+namespace Network;
+
+public struct SendInfo
+{
+	public SendMethod method;
+
+	public sbyte channel;
+
+	public Priority priority;
+
+	public List<Connection> connections;
+
+	public Connection connection;
+
+	public SendInfo(List<Connection> connections)
+	{
+		this = default(SendInfo);
+		channel = 0;
+		method = SendMethod.Reliable;
+		priority = Priority.Normal;
+		this.connections = connections;
+	}
+
+	public SendInfo(Connection connection)
+	{
+		this = default(SendInfo);
+		channel = 0;
+		method = SendMethod.Reliable;
+		priority = Priority.Normal;
+		this.connection = connection;
+	}
+}

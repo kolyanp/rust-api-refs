@@ -1,0 +1,7 @@
+namespace System.Diagnostics.CodeAnalysis;
+
+[AttributeUsage(AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
+[ExcludeFromCodeCoverage]
+public sealed class SetsRequiredMembersAttribute : Attribute
+{
+}

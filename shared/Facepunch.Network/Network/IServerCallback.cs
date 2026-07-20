@@ -1,0 +1,8 @@
+namespace Network;
+
+public interface IServerCallback
+{
+	void OnNetworkMessage(Message message);
+
+	void OnDisconnected(string reason, Connection connection);
+}

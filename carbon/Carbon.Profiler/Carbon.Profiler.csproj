@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Profiler</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Rust.Harmony" />
+    <Reference Include="Facepunch.UnityEngine" />
+    <Reference Include="Facepunch.Console" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="Rust.Global" />
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="0Harmony" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Facepunch.Steamworks.Win64" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.System" />
+  </ItemGroup>
+</Project>

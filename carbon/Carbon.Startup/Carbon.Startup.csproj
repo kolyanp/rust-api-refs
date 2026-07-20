@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Startup</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="Mono.Cecil" />
+    <Reference Include="0Harmony" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net.Core" />
+    <Reference Include="Mono.Cecil.Rocks" />
+    <Reference Include="Carbon.SDK">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Facepunch.Rcon</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Fleck" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="Facepunch.Console">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Oxide.Core">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

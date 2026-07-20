@@ -1,0 +1,10 @@
+namespace Oxide.Core.Libraries;
+
+public enum RequestMethod
+{
+	DELETE,
+	GET,
+	PATCH,
+	POST,
+	PUT
+}

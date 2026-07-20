@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Common</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="Facepunch.UnityEngine" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="Carbon.SDK">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Facepunch.Console" />
+    <Reference Include="Facepunch.Network" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="UnityEngine.UI" />
+    <Reference Include="UnityEngine.TextRenderingModule" />
+    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="MySqlConnector" />
+    <Reference Include="protobuf-net.Core" />
+    <Reference Include="Microsoft.CodeAnalysis.CSharp" />
+    <Reference Include="Microsoft.CodeAnalysis" />
+    <Reference Include="Rust.Data" />
+    <Reference Include="Fleck" />
+    <Reference Include="Carbon.Profiler">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Profiler.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil" />
+    <Reference Include="System.Collections.Immutable" />
+    <Reference Include="Facepunch.Sqlite" />
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="Rust.Localization" />
+    <Reference Include="UnityEngine.PhysicsModule" />
+    <Reference Include="QRCoder" />
+    <Reference Include="0Harmony" />
+    <Reference Include="Rust.Harmony" />
+    <Reference Include="Carbon.Test">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Test.dll</HintPath>
+    </Reference>
+    <Reference Include="Rust.Platform.Common" />
+    <Reference Include="Facepunch.Rcon" />
+    <Reference Include="Assembly-CSharp-firstpass" />
+    <Reference Include="ICSharpCode.Decompiler" />
+    <Reference Include="System.Reflection.Metadata" />
+    <Reference Include="BouncyCastle.Crypto" />
+    <Reference Include="ZString" />
+    <Reference Include="Rust.Global" />
+    <Reference Include="protobuf-net" />
+    <Reference Include="Ben.Demystifier" />
+    <Reference Include="Rust.World" />
+    <Reference Include="Facepunch.Steamworks.Win64" />
+  </ItemGroup>
+</Project>

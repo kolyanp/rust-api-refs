@@ -1,0 +1,35 @@
+using System;
+using Newtonsoft.Json.Shims;
+
+namespace Newtonsoft.Json.Serialization;
+
+[Preserve]
+internal struct ResolverContractKey(Type resolverType, Type contractType)
+{
+	private readonly Type _resolverType = resolverType;
+
+	private readonly Type _contractType = contractType;
+
+	public override int GetHashCode()
+	{
+		return _resolverType.GetHashCode() ^ _contractType.GetHashCode();
+	}
+
+	public override bool Equals(object obj)
+	{
+		if (!(obj is ResolverContractKey))
+		{
+			return false;
+		}
+		return Equals((ResolverContractKey)obj);
+	}
+
+	public bool Equals(ResolverContractKey other)
+	{
+		if ((object)_resolverType == other._resolverType)
+		{
+			return (object)_contractType == other._contractType;
+		}
+		return false;
+	}
+}

@@ -1,0 +1,13 @@
+using System;
+
+namespace Oxide.CSharp.Patching.Validation;
+
+[Flags]
+public enum VersionCompareMethod
+{
+	Equality = 0,
+	GreaterThan = 1,
+	LessThan = 2,
+	GreaterThanOrEqualTo = 5,
+	LessThanOrEqualTo = 0xA
+}

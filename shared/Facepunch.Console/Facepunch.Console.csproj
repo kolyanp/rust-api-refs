@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Facepunch.Console</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net40</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Facepunch.UnityEngine">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Facepunch.System" />
+    <Reference Include="Facepunch.Network">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="Facepunch.Input" />
+    <Reference Include="Oxide.Core">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

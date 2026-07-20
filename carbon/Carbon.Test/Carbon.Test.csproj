@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Carbon.Test</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Carbon.SDK">
+      <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.SDK.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.UnityEngine" />
+    <Reference Include="Assembly-CSharp" />
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="Facepunch.System" />
+  </ItemGroup>
+</Project>

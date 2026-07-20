@@ -1,0 +1,12 @@
+using System;
+
+namespace Mono.Posix;
+
+[Flags]
+[Obsolete("Use Mono.Unix.Native.WaitOptions")]
+[CLSCompliant(false)]
+public enum WaitOptions
+{
+	WNOHANG = 0,
+	WUNTRACED = 1
+}

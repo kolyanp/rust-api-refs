@@ -1,0 +1,24 @@
+using Oxide.Core;
+
+namespace Oxide.CSharp.Patching.Validation;
+
+public class HasConfigNamesAttribute : HasNameAttribute
+{
+	public HasConfigNamesAttribute()
+		: base(string.Empty)
+	{
+	}
+
+	protected override bool IsValid(object item)
+	{
+		foreach (string ignoredPublicizerReference in Interface.Oxide.Config.Compiler.IgnoredPublicizerReferences)
+		{
+			base.ValidationRule = ignoredPublicizerReference;
+			if (base.IsValid(item))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+}

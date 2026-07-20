@@ -1,0 +1,25 @@
+using System;
+using Fleck;
+
+namespace Facepunch.Rcon;
+
+public class RconConnection
+{
+	public RconClientStats Stats;
+
+	public int ConnectionId => Stats.ConnectionId;
+
+	public IWebSocketConnection Socket { get; }
+
+	public RconConnection(IWebSocketConnection connection, int connectionId)
+	{
+		Socket = connection;
+		Stats = new RconClientStats
+		{
+			ConnectionId = connectionId,
+			IP = connection.ConnectionInfo.ClientIpAddress.ToString(),
+			Port = connection.ConnectionInfo.ClientPort,
+			ConnectedAt = DateTime.UtcNow
+		};
+	}
+}

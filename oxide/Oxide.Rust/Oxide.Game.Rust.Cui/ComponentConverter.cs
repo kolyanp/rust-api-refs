@@ -1,0 +1,88 @@
+using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace Oxide.Game.Rust.Cui;
+
+public class ComponentConverter : JsonConverter
+{
+	public override bool CanWrite => false;
+
+	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	{
+		throw new NotImplementedException();
+	}
+
+	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+	{
+		JObject jObject = JObject.Load(reader);
+		Type typeFromHandle;
+		switch (jObject["type"].ToString())
+		{
+		case "UnityEngine.UI.Text":
+			typeFromHandle = typeof(CuiTextComponent);
+			break;
+		case "UnityEngine.UI.Image":
+			typeFromHandle = typeof(CuiImageComponent);
+			break;
+		case "UnityEngine.UI.RawImage":
+			typeFromHandle = typeof(CuiRawImageComponent);
+			break;
+		case "UnityEngine.UI.Button":
+			typeFromHandle = typeof(CuiButtonComponent);
+			break;
+		case "UnityEngine.UI.Outline":
+			typeFromHandle = typeof(CuiOutlineComponent);
+			break;
+		case "UnityEngine.UI.InputField":
+			typeFromHandle = typeof(CuiInputFieldComponent);
+			break;
+		case "Countdown":
+			typeFromHandle = typeof(CuiCountdownComponent);
+			break;
+		case "UnityEngine.UI.HorizontalLayoutGroup":
+			typeFromHandle = typeof(CuiHorizontalLayoutGroupComponent);
+			break;
+		case "UnityEngine.UI.VerticalLayoutGroup":
+			typeFromHandle = typeof(CuiVerticalLayoutGroupComponent);
+			break;
+		case "UnityEngine.UI.GridLayoutGroup":
+			typeFromHandle = typeof(CuiGridLayoutGroupComponent);
+			break;
+		case "UnityEngine.UI.ContentSizeFitter":
+			typeFromHandle = typeof(CuiContentSizeFitterComponent);
+			break;
+		case "UnityEngine.UI.LayoutElement":
+			typeFromHandle = typeof(CuiLayoutElementComponent);
+			break;
+		case "Draggable":
+			typeFromHandle = typeof(CuiDraggableComponent);
+			break;
+		case "Slot":
+			typeFromHandle = typeof(CuiSlotComponent);
+			break;
+		case "NeedsCursor":
+			typeFromHandle = typeof(CuiNeedsCursorComponent);
+			break;
+		case "NeedsKeyboard":
+			typeFromHandle = typeof(CuiNeedsKeyboardComponent);
+			break;
+		case "RectTransform":
+			typeFromHandle = typeof(CuiRectTransformComponent);
+			break;
+		case "UnityEngine.UI.ScrollView":
+			typeFromHandle = typeof(CuiScrollViewComponent);
+			break;
+		default:
+			return null;
+		}
+		object obj = Activator.CreateInstance(typeFromHandle);
+		serializer.Populate(jObject.CreateReader(), obj);
+		return obj;
+	}
+
+	public override bool CanConvert(Type objectType)
+	{
+		return objectType == typeof(ICuiComponent);
+	}
+}

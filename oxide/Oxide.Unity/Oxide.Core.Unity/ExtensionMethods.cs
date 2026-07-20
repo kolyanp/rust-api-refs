@@ -1,0 +1,38 @@
+using System;
+using System.Linq;
+using Oxide.Core.Logging;
+using UnityEngine;
+
+namespace Oxide.Core.Unity;
+
+public static class ExtensionMethods
+{
+	public static Vector3 ToVector3(this string vector3)
+	{
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		float[] array = vector3.Split(new char[1] { ',' }).Select(Convert.ToSingle).ToArray();
+		if (array.Length != 3)
+		{
+			return Vector3.zero;
+		}
+		return new Vector3(array[0], array[1], array[2]);
+	}
+
+	public static LogType ToLogType(this LogType logType)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Expected I4, but got Unknown
+		switch ((int)logType)
+		{
+		case 0:
+		case 1:
+		case 4:
+			return LogType.Error;
+		case 2:
+			return LogType.Warning;
+		default:
+			return LogType.Info;
+		}
+	}
+}

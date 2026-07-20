@@ -1,0 +1,10 @@
+namespace Oxide.CSharp.Patching.Validation;
+
+public enum StringValidationType
+{
+	Equals = 0,
+	Contains = 1,
+	StartsWith = 2,
+	EndsWith = 4,
+	RegularExpression = 8
+}

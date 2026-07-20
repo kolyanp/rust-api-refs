@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Oxide.Rust</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>15.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Oxide.CSharp">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Oxide.Core">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.System" />
+    <Reference Include="System.Core">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Facepunch.Console">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule" />
+    <Reference Include="Facepunch.Network">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="Rust.Platform.Common" />
+    <Reference Include="Oxide.References">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.References.dll</HintPath>
+    </Reference>
+    <Reference Include="Oxide.Common">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule" />
+    <Reference Include="UnityEngine.UI" />
+    <Reference Include="Rust.Global" />
+    <Reference Include="Rust.Data" />
+    <Reference Include="Facepunch.Steamworks.Win64" />
+    <Reference Include="Facepunch.UnityEngine">
+      <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass" />
+    <Reference Include="Facepunch.Unity" />
+    <Reference Include="BoomlagoonJSON" />
+  </ItemGroup>
+</Project>

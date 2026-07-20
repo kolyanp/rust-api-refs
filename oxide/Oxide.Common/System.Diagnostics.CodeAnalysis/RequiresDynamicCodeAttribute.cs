@@ -1,0 +1,16 @@
+namespace System.Diagnostics.CodeAnalysis;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Constructor | AttributeTargets.Method, Inherited = false)]
+[ExcludeFromCodeCoverage]
+[Conditional("MULTI_TARGETING_SUPPORT_ATTRIBUTES")]
+public sealed class RequiresDynamicCodeAttribute : Attribute
+{
+	public string Message { get; }
+
+	public string? Url { get; set; }
+
+	public RequiresDynamicCodeAttribute(string message)
+	{
+		Message = message;
+	}
+}
