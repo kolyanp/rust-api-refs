@@ -1,62 +1,70 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Decompiles Carbon.Windows.Release.zip.
+#
+# Carbon zip structure:
+#   carbon/managed/*.dll        — Carbon core DLLs (10)  → carbon/
+#   carbon/managed/hooks/*.dll  — Carbon hooks (3)       → carbon/hooks/
+#   carbon/managed/modules/*.dll— Carbon modules (1)     → carbon/modules/
+#   carbon/managed/lib/*.dll    — Carbon deps (58)       → SKIP (Mono.Cecil, System.*, etc.)
+#
+# NOTE: Carbon does NOT ship game DLLs (Assembly-CSharp, Facepunch.*, Rust.*).
+#       Those come from the Oxide sync (shared/ folder).
+set -uo pipefail
+
 ZIP="$1"
 WORK="/tmp/carbon-extract"
 ILSPY="$HOME/.dotnet/tools/ilspycmd"
 
-echo "=== Carbon: extracting $ZIP ==="
+echo "=== Carbon: extracting ==="
 rm -rf "$WORK" && mkdir -p "$WORK"
 unzip -q "$ZIP" -d "$WORK"
 
-# Знаходимо папку з DLL Carbon
-MANAGED=$(find "$WORK" -name "Carbon.dll" 2>/dev/null | head -1 | xargs dirname 2>/dev/null || true)
-if [ -z "$MANAGED" ]; then
-  # Спробуємо знайти за Assembly-CSharp
-  MANAGED=$(find "$WORK" -name "Assembly-CSharp.dll" 2>/dev/null | head -1 | xargs dirname 2>/dev/null || true)
-fi
-if [ -z "$MANAGED" ]; then
-  echo "ERROR: no managed DLLs found. Archive structure:"
-  unzip -l "$ZIP" | grep "\.dll" | head -20
+MANAGED="$WORK/carbon/managed"
+if [ ! -d "$MANAGED" ]; then
+  echo "ERROR: carbon/managed/ not found in archive"
+  unzip -l "$ZIP" | head -20
   exit 1
 fi
 echo "Managed: $MANAGED"
-echo "Total DLLs: $(find "$MANAGED" -maxdepth 1 -name '*.dll' | wc -l)"
 
 decompile() {
   local DLL="$1" OUT="$2"
-  [ -f "$DLL" ] || return
+  [ -f "$DLL" ] || return 0
   local HASH_FILE="$OUT/.dll_hash"
-  local CURR_HASH; CURR_HASH=$(sha256sum "$DLL" | cut -d' ' -f1)
+  local CURR_HASH
+  CURR_HASH=$(sha256sum "$DLL" | cut -d' ' -f1)
   if [ -f "$HASH_FILE" ] && [ "$(cat "$HASH_FILE")" = "$CURR_HASH" ]; then
-    echo "  skip (unchanged): $(basename $DLL)"; return
+    echo "  skip (unchanged): $(basename "$DLL")"; return 0
   fi
-  echo "  decompile: $(basename $DLL)"
+  echo "  decompile: $(basename "$DLL") → $OUT"
   rm -rf "$OUT" && mkdir -p "$OUT"
   "$ILSPY" "$DLL" -p -o "$OUT" --no-dead-code 2>/dev/null \
-    || "$ILSPY" "$DLL" -p -o "$OUT" 2>&1 | tail -3
+    || "$ILSPY" "$DLL" -p -o "$OUT" 2>&1 | tail -3 || true
   echo "$CURR_HASH" > "$HASH_FILE"
 }
 
-# ── Деомпілювати ВСЮ папку Managed ─────────────────────────────────────────
-SKIP_PATTERN="^(UnityEngine\.|Unity\.|Mono\.|netstandard|mscorlib|System\.|I18N|Microsoft\.|Azure\.|BouncyCastle|Ionic\.|LZ4|websocket-sharp|Discord\.)"
-
-find "$MANAGED" -maxdepth 1 -name "*.dll" | sort | while read DLL; do
+# ── carbon/managed/*.dll → carbon/ ──────────────────────────────────────────
+echo "=== Carbon core DLLs ==="
+while IFS= read -r DLL; do
   NAME=$(basename "$DLL" .dll)
-  if echo "$NAME" | grep -qE "$SKIP_PATTERN"; then
-    echo "  skip (framework): $NAME.dll"
-    continue
-  fi
-  # Визначаємо вихідну папку за префіксом
-  if   echo "$NAME" | grep -qE "^Carbon\."; then
-    OUT="carbon/$NAME"
-  elif echo "$NAME" | grep -qE "^(Assembly-CSharp|Facepunch\.|Rust\.)"; then
-    OUT="shared/$NAME"
-  elif echo "$NAME" | grep -qE "^Oxide\."; then
-    OUT="oxide/$NAME"
-  else
-    OUT="shared/$NAME"
-  fi
-  decompile "$DLL" "$OUT"
-done
+  decompile "$DLL" "carbon/$NAME"
+done < <(find "$MANAGED" -maxdepth 1 -name "*.dll" | sort)
+
+# ── carbon/managed/hooks/*.dll → carbon/hooks/ ──────────────────────────────
+echo "=== Carbon hooks ==="
+while IFS= read -r DLL; do
+  NAME=$(basename "$DLL" .dll)
+  decompile "$DLL" "carbon/hooks/$NAME"
+done < <(find "$MANAGED/hooks" -maxdepth 1 -name "*.dll" 2>/dev/null | sort)
+
+# ── carbon/managed/modules/*.dll → carbon/modules/ ──────────────────────────
+echo "=== Carbon modules ==="
+while IFS= read -r DLL; do
+  NAME=$(basename "$DLL" .dll)
+  decompile "$DLL" "carbon/modules/$NAME"
+done < <(find "$MANAGED/modules" -maxdepth 1 -name "*.dll" 2>/dev/null | sort)
+
+# ── carbon/managed/lib/ — SKIP (Carbon's own deps, not game API) ────────────
+echo "  skip carbon/managed/lib/ (Carbon internal dependencies — not game API)"
 
 echo "=== Carbon: done ==="
