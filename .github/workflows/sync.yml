@@ -2,7 +2,15 @@ name: Sync Rust API References
 
 on:
   schedule:
-    - cron: '0 8 * * *'
+    # Every 2 hours.
+    # Rationale:
+    #   - Facepunch ships game updates ~17:00-18:00 UTC (20-21 Kyiv/UTC+3);
+    #     this schedule catches them within ≤2 h regardless of server timezone.
+    #   - Oxide releases unpredictably, several times a month; 2-hour polling
+    #     keeps the lag small without burning GitHub Actions minutes.
+    #   - Fast-probe step (below) exits in ~30 s when nothing changed, so
+    #     the expensive .NET / ILSpy install only runs on actual releases.
+    - cron: '0 */2 * * *'
   workflow_dispatch:
 
 permissions:
@@ -17,61 +25,119 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ── Fast probe ────────────────────────────────────────────────────────
+      # Checks only API/metadata — no DLL downloads yet.
+      # Exits early (changed=false) when neither Oxide tag nor Carbon asset
+      # timestamp have moved, saving ~10-15 min of .NET + ILSpy setup.
+      - name: Probe for new releases
+        id: probe
+        run: |
+          # Oxide: compare latest release tag
+          OXIDE_TAG=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/OxideMod/Oxide.Rust/releases/latest \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
+
+          OXIDE_PREV=$(grep '^oxide_version:' .hashes 2>/dev/null | cut -d: -f2- || echo "")
+
+          # Carbon: compare Windows release asset updated_at timestamp
+          CARBON_UPDATED=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/CarbonCommunity/Carbon/releases/tags/production_build" \
+            | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          assets = [a for a in d.get('assets', []) if 'Carbon.Windows.Release.zip' in a['name']]
+          print(assets[0]['updated_at'] if assets else '')
+          ")
+
+          CARBON_PREV=$(grep '^carbon_updated:' .hashes 2>/dev/null | cut -d: -f2- || echo "")
+
+          echo "oxide_tag=$OXIDE_TAG"           >> $GITHUB_OUTPUT
+          echo "oxide_prev=$OXIDE_PREV"         >> $GITHUB_OUTPUT
+          echo "carbon_updated=$CARBON_UPDATED" >> $GITHUB_OUTPUT
+          echo "carbon_prev=$CARBON_PREV"       >> $GITHUB_OUTPUT
+
+          OXIDE_NEW=false
+          CARBON_NEW=false
+          [ "$OXIDE_TAG" != "$OXIDE_PREV" ]      && OXIDE_NEW=true
+          [ "$CARBON_UPDATED" != "$CARBON_PREV" ] && CARBON_NEW=true
+
+          echo "oxide_new=$OXIDE_NEW"   >> $GITHUB_OUTPUT
+          echo "carbon_new=$CARBON_NEW" >> $GITHUB_OUTPUT
+
+          if [ "$OXIDE_NEW" = "false" ] && [ "$CARBON_NEW" = "false" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "=== No changes — skipping decompile (Oxide $OXIDE_TAG, Carbon $CARBON_UPDATED) ==="
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "=== Changes detected ==="
+            [ "$OXIDE_NEW"  = "true" ] && echo "  Oxide:  $OXIDE_PREV → $OXIDE_TAG"
+            [ "$CARBON_NEW" = "true" ] && echo "  Carbon: $CARBON_PREV → $CARBON_UPDATED"
+          fi
+
+      # ── Everything below only runs when something actually changed ─────────
+
       - name: Setup .NET
+        if: steps.probe.outputs.changed == 'true'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
       - name: Install ILSpy CLI
+        if: steps.probe.outputs.changed == 'true'
         run: dotnet tool install -g ilspycmd
 
-      - name: Load previous hashes
+      - name: Load previous SHA256 hashes
+        if: steps.probe.outputs.changed == 'true'
         id: prev
         run: |
-          if [ -f .hashes ]; then
-            echo "oxide_hash=$(grep '^oxide:' .hashes | cut -d: -f2)" >> $GITHUB_OUTPUT
-            echo "carbon_hash=$(grep '^carbon:' .hashes | cut -d: -f2)" >> $GITHUB_OUTPUT
+          echo "oxide_hash=$(grep  '^oxide:'  .hashes 2>/dev/null | cut -d: -f2 || echo '')" >> $GITHUB_OUTPUT
+          echo "carbon_hash=$(grep '^carbon:' .hashes 2>/dev/null | cut -d: -f2 || echo '')" >> $GITHUB_OUTPUT
+
+      - name: Download & decompile Oxide
+        if: steps.probe.outputs.changed == 'true' && steps.probe.outputs.oxide_new == 'true'
+        run: |
+          URL="https://github.com/OxideMod/Oxide.Rust/releases/download/${{ steps.probe.outputs.oxide_tag }}/Oxide.Rust.zip"
+          curl -fL "$URL" -o /tmp/Oxide.Rust.zip
+          NEW_HASH=$(sha256sum /tmp/Oxide.Rust.zip | cut -d' ' -f1)
+          echo "oxide_hash=$NEW_HASH" >> $GITHUB_ENV
+          if [ "$NEW_HASH" = "${{ steps.prev.outputs.oxide_hash }}" ]; then
+            echo "Oxide SHA256 unchanged — skipping decompile."
           else
-            echo "oxide_hash=" >> $GITHUB_OUTPUT
-            echo "carbon_hash=" >> $GITHUB_OUTPUT
+            bash scripts/sync-oxide.sh /tmp/Oxide.Rust.zip
           fi
 
-      - name: Get latest Oxide release tag
-        id: oxide_meta
-        run: |
-          TAG=$(curl -sf https://api.github.com/repos/OxideMod/Oxide.Rust/releases/latest \
-               | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "url=https://github.com/OxideMod/Oxide.Rust/releases/download/${TAG}/Oxide.Rust.zip" >> $GITHUB_OUTPUT
-
-      - name: Download Oxide.Rust.zip
-        run: |
-          curl -fL "${{ steps.oxide_meta.outputs.url }}" -o /tmp/Oxide.Rust.zip
-          echo "oxide_hash=$(sha256sum /tmp/Oxide.Rust.zip | cut -d' ' -f1)" >> $GITHUB_ENV
-
-      - name: Decompile Oxide (if changed)
-        if: env.oxide_hash != steps.prev.outputs.oxide_hash
-        run: bash scripts/sync-oxide.sh /tmp/Oxide.Rust.zip
-
-      - name: Download Carbon.Windows.Release.zip
+      - name: Download & decompile Carbon
+        if: steps.probe.outputs.changed == 'true' && steps.probe.outputs.carbon_new == 'true'
         run: |
           curl -fL "https://github.com/CarbonCommunity/Carbon/releases/download/production_build/Carbon.Windows.Release.zip" \
                -o /tmp/Carbon.Windows.Release.zip
-          echo "carbon_hash=$(sha256sum /tmp/Carbon.Windows.Release.zip | cut -d' ' -f1)" >> $GITHUB_ENV
+          NEW_HASH=$(sha256sum /tmp/Carbon.Windows.Release.zip | cut -d' ' -f1)
+          echo "carbon_hash=$NEW_HASH" >> $GITHUB_ENV
+          if [ "$NEW_HASH" = "${{ steps.prev.outputs.carbon_hash }}" ]; then
+            echo "Carbon SHA256 unchanged — skipping decompile."
+          else
+            bash scripts/sync-carbon.sh /tmp/Carbon.Windows.Release.zip
+          fi
 
-      - name: Decompile Carbon (if changed)
-        if: env.carbon_hash != steps.prev.outputs.carbon_hash
-        run: bash scripts/sync-carbon.sh /tmp/Carbon.Windows.Release.zip
-
-      - name: Update hashes
+      - name: Update .hashes
+        if: steps.probe.outputs.changed == 'true'
         run: |
-          echo "oxide:${{ env.oxide_hash }}" > .hashes
-          echo "carbon:${{ env.carbon_hash }}" >> .hashes
-          echo "oxide_version:${{ steps.oxide_meta.outputs.tag }}" >> .hashes
-          echo "updated:$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> .hashes
+          # Carry forward unchanged hashes if only one side updated
+          OXIDE_HASH="${oxide_hash:-${{ steps.prev.outputs.oxide_hash }}}"
+          CARBON_HASH="${carbon_hash:-${{ steps.prev.outputs.carbon_hash }}}"
 
-      - name: Check API compat (open Issue if breaking changes)
-        if: env.oxide_hash != steps.prev.outputs.oxide_hash || env.carbon_hash != steps.prev.outputs.carbon_hash
+          cat > .hashes <<EOF
+          oxide:${OXIDE_HASH}
+          carbon:${CARBON_HASH}
+          oxide_version:${{ steps.probe.outputs.oxide_tag }}
+          carbon_updated:${{ steps.probe.outputs.carbon_updated }}
+          updated:$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          EOF
+
+      - name: Check API compat (open Issue on breaking changes)
+        if: steps.probe.outputs.changed == 'true'
         run: |
           if bash scripts/check-compat.sh; then
             echo "compat=ok" >> $GITHUB_ENV
@@ -84,37 +150,44 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          OXIDE_VER="${{ steps.oxide_meta.outputs.tag }}"
+          OXIDE_VER="${{ steps.probe.outputs.oxide_tag }}"
+          COMPAT_OUTPUT=$(bash scripts/check-compat.sh 2>&1 || true)
           BODY="## ⚠️ Breaking API changes detected
 
-          Oxide version: **${OXIDE_VER}** (Carbon: production_build)
+          | | |
+          |---|---|
+          | Oxide | **${OXIDE_VER}** |
+          | Carbon | production_build (updated ${{ steps.probe.outputs.carbon_updated }}) |
 
-          One or more game/Oxide/Carbon symbols used by RustForge are missing from the decompiled refs after today's sync.
+          One or more game/Oxide/Carbon symbols used by RustForge are missing from the decompiled refs after this sync.
 
-          **Action required:** review the diff in this repo and update \`plugin/RustForgeCore.cs\` in the main project accordingly.
+          **Action required:** review the diff in this repo and update \`plugin/RustForgeCore.cs\` in the main project accordingly, then release a new version.
 
           <details><summary>Compat check output</summary>
 
           \`\`\`
-          $(bash scripts/check-compat.sh 2>&1 || true)
+          ${COMPAT_OUTPUT}
           \`\`\`
 
           </details>"
           gh issue create \
-            --title "⚠️ Breaking API change after Oxide ${OXIDE_VER}" \
+            --title "⚠️ Breaking API change — Oxide ${OXIDE_VER}" \
             --body "$BODY" \
             --label "breaking-change" \
             --repo "${{ github.repository }}" || true
 
       - name: Commit if changed
+        if: steps.probe.outputs.changed == 'true'
         run: |
           git config user.name  "rust-api-bot"
           git config user.email "bot@rustforge.cloud"
           git add -A
           if git diff --staged --quiet; then
-            echo "Nothing new — skipping commit."
+            echo "Nothing new to commit (hashes matched — decompile skipped)."
           else
-            git commit -m "sync: Oxide ${{ steps.oxide_meta.outputs.tag }} / Carbon $(date +%Y-%m-%d)"
+            MSG="sync: Oxide ${{ steps.probe.outputs.oxide_tag }}"
+            [ "${{ steps.probe.outputs.carbon_new }}" = "true" ] && MSG="$MSG / Carbon $(date +%Y-%m-%d)"
+            git commit -m "$MSG"
             git pull --rebase origin main
             git push
           fi
