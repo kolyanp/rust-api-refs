@@ -207,8 +207,8 @@ public class MortarEntityOld : StorageContainer
 		return IsMortarAmmo(item);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void FireGun(RPCMessage rpc)
 	{
 		if (!CanFireGun())
@@ -272,16 +272,16 @@ public class MortarEntityOld : StorageContainer
 		Debug.Log((object)$"Launching mortar with velocity of {Math.Round(((Vector3)(ref overrideVel)).magnitude, 1)}m/s with drag of {component.drag} and gravity of {component.gravityModifier}");
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SwitchAdjustmentAngle(RPCMessage rpc)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(IsIncreasingAngleFlag, !HasFlag(IsIncreasingAngleFlag));
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AdjustAngle(RPCMessage rpc)
 	{
 		bool flag = rpc.read.Bool();

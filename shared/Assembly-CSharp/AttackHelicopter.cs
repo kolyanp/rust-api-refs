@@ -101,8 +101,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	public float flareLaunchVel = 10f;
 
-	[Header("Heli Pilot Lights")]
 	[SerializeField]
+	[Header("Heli Pilot Lights")]
 	private Renderer rocketLightOff;
 
 	[SerializeField]
@@ -512,8 +512,8 @@ public class AttackHelicopter : PlayerHelicopter
 			}
 			else if (inputState.WasJustPressed(BUTTON.FIRE_PRIMARY))
 			{
-				turret.GetAmmoAmounts(out var _, out var available);
-				WeaponFireFailed(available, player);
+				turret.UpdateAmmoAmounts();
+				WeaponFireFailed(turret.InventoryAmmo, player);
 			}
 			AttackHelicopterRockets rockets = GetRockets();
 			if (rockets.InputTick(gunnerInputState, player))
@@ -694,12 +694,13 @@ public class AttackHelicopter : PlayerHelicopter
 				break;
 			}
 			turret.inventory.AddItem(itemToCreate, 1, 0uL);
-			turret.GetAmmoAmounts(out var _, out var available);
+			turret.UpdateAmmoAmounts();
+			int inventoryAmmo = turret.InventoryAmmo;
 			int num = itemDefinition.stackable * (turret.inventory.capacity - 1);
 			turret.forceAcceptAmmo = true;
-			if (available < num)
+			if (inventoryAmmo < num)
 			{
-				int num2 = num - available;
+				int num2 = num - inventoryAmmo;
 				while (num2 > 0)
 				{
 					int num3 = Mathf.Min(num2, itemDefinition.stackable);
@@ -778,8 +779,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -798,8 +799,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -811,8 +812,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_CloseGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -824,8 +825,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetRocketAmmoType(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))
@@ -835,8 +836,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TriggerRocketReload(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))

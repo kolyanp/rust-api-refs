@@ -211,7 +211,7 @@ public class DudTimedExplosive : TimedExplosive, IIgniteable, ISplashable
 	{
 		base.Save(info);
 		info.msg.dudExplosive = Pool.Get<DudExplosive>();
-		info.msg.dudExplosive.fuseTimeLeft = explodeTime - Time.realtimeSinceStartup;
+		info.msg.dudExplosive.fuseTimeLeft = explodeTime - info.cachedTime.RealTimeSinceStartup;
 	}
 
 	public void Ignite(Vector3 fromPos)

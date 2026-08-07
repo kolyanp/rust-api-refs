@@ -478,6 +478,7 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
 		if (prefab == null)
 		{
 			return false;
@@ -514,7 +515,41 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 		{
 			return false;
 		}
+		if (!prefab.Component.CanSpawnInSafeZone && IsInSafeZone(pos))
+		{
+			return false;
+		}
 		return true;
+	}
+
+	private static bool IsInSafeZone(Vector3 pos)
+	{
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		foreach (TriggerSafeZone allSafeZone in TriggerSafeZone.allSafeZones)
+		{
+			Collider val = allSafeZone?.triggerCollider;
+			if ((Object)(object)val == (Object)null)
+			{
+				continue;
+			}
+			Bounds bounds = val.bounds;
+			if (((Bounds)(ref bounds)).Contains(pos))
+			{
+				Vector3 val2 = val.ClosestPoint(pos) - pos;
+				if (((Vector3)(ref val2)).sqrMagnitude <= 0.0001f)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	void SpawnPopulationBase.ISpawnHandler.ReportAttempt(SpawnPopulationBase.Status status, Vector3 pos)
@@ -898,22 +933,109 @@ public class SpawnHandler : SingletonComponent<SpawnHandler>, SpawnPopulationBas
 			array[num2 + 2] = (byte)(val2.b * 255f);
 		}
 		ExportToPNG(array, (int)World.Size, (TextureFormat)3, ((Object)spawnPopulationBase).name + "-samples.png");
-		static void ExportToPNG(byte[] data, int size, TextureFormat format, string filename)
+	}
+
+	public int GenerateOreNodeMap(out int inSafeZone)
+	{
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		int size = (int)World.Size;
+		byte[] array = new byte[size * size * 3];
+		inSafeZone = 0;
+		int num = 0;
+		foreach (OreResourceEntity item in BaseNetworkable.serverEntities.OfType<OreResourceEntity>())
 		{
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001d: Expected O, but got Unknown
-			Texture2D val3 = new Texture2D(size, size, format, false);
-			val3.SetPixelData<byte>(data, 0, 0);
-			val3.Apply();
-			byte[] bytes = ImageConversion.EncodeToPNG(val3);
-			if (!Directory.Exists(Server.rootFolder + "/debug"))
+			Vector3 position = ((Component)item).transform.position;
+			bool flag = IsInSafeZone(position);
+			Color val = (flag ? Color.red : Color.green);
+			Vector2i val2 = (Vector2i)(Vector3Ex.XZ2D(position) + new Vector2((float)(size / 2), (float)(size / 2)));
+			long num2 = (val2.y * size + val2.x) * 3;
+			array[num2] = (byte)(val.r * 255f);
+			array[num2 + 1] = (byte)(val.g * 255f);
+			array[num2 + 2] = (byte)(val.b * 255f);
+			num++;
+			if (flag)
 			{
-				Directory.CreateDirectory(Server.rootFolder + "/debug");
+				inSafeZone++;
 			}
-			File.WriteAllBytes(Server.rootFolder + "/debug/" + filename, bytes);
+		}
+		foreach (TriggerSafeZone allSafeZone in TriggerSafeZone.allSafeZones)
+		{
+			Collider val3 = allSafeZone?.triggerCollider;
+			if (!((Object)(object)val3 == (Object)null))
+			{
+				Bounds bounds = val3.bounds;
+				PlotCircle(array, size, ((Bounds)(ref bounds)).center, ((Bounds)(ref bounds)).extents.x, Color.blue);
+			}
+		}
+		ExportToPNG(array, size, (TextureFormat)3, "ore-nodes.png");
+		return num;
+	}
+
+	private static void ExportToPNG(byte[] data, int size, TextureFormat format, string filename)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Expected O, but got Unknown
+		Texture2D val = new Texture2D(size, size, format, false);
+		val.SetPixelData<byte>(data, 0, 0);
+		val.Apply();
+		byte[] bytes = ImageConversion.EncodeToPNG(val);
+		if (!Directory.Exists(Server.rootFolder + "/debug"))
+		{
+			Directory.CreateDirectory(Server.rootFolder + "/debug");
+		}
+		File.WriteAllBytes(Server.rootFolder + "/debug/" + filename, bytes);
+	}
+
+	private static void PlotCircle(byte[] pixels, int size, Vector3 worldCenter, float worldRadius, Color color)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		Vector2i val = (Vector2i)(Vector3Ex.XZ2D(worldCenter) + new Vector2((float)(size / 2), (float)(size / 2)));
+		int num = Mathf.RoundToInt(worldRadius);
+		int num2 = Mathf.Max(64, num * 4);
+		for (int i = 0; i < num2; i++)
+		{
+			float num3 = (float)i / (float)num2 * MathF.PI * 2f;
+			int num4 = val.x + Mathf.RoundToInt(Mathf.Cos(num3) * (float)num);
+			int num5 = val.y + Mathf.RoundToInt(Mathf.Sin(num3) * (float)num);
+			if (num4 >= 0 && num4 < size && num5 >= 0 && num5 < size)
+			{
+				long num6 = ((long)num5 * (long)size + num4) * 3;
+				pixels[num6] = (byte)(color.r * 255f);
+				pixels[num6 + 1] = (byte)(color.g * 255f);
+				pixels[num6 + 2] = (byte)(color.b * 255f);
+			}
 		}
 	}
 }

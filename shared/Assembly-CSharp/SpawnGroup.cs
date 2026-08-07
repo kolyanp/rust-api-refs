@@ -361,45 +361,14 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		pos = Vector3.zero;
 		rot = Quaternion.identity;
 		bool flag = DoesRequireNavmeshToSpawn(prefabRef.Get());
-		Matrix4x4 val = Matrix4x4.identity;
-		Matrix4x4 val2 = Matrix4x4.identity;
-		if (flag)
-		{
-			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((Component)this).transform);
-			if ((Object)(object)baseEntity != (Object)null)
-			{
-				val = baseEntity.NavMeshToWorldSpace;
-				val2 = baseEntity.WorldToNavMeshSpace;
-			}
-		}
+		BaseEntity entity = GameObjectEx.ToBaseEntity(((Component)this).transform);
 		int num = Random.Range(0, spawnPoints.Length);
 		for (int i = 0; i < spawnPoints.Length; i++)
 		{
@@ -411,12 +380,9 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 				{
 					return baseSpawnPoint;
 				}
-				pos = ((Matrix4x4)(ref val2)).MultiplyPoint(pos);
-				if (RustNavMesh.SamplePosition(pos, out var hitNS, 2f, -1))
+				if (RustNavMeshHelpers.SamplePositionWS(entity, pos, out var hitWS, 2f, -1))
 				{
-					pos = ((Matrix4x4)(ref val)).MultiplyPoint(((NavMeshHit)(ref hitNS)).position);
-					Vector3 val3 = ((Matrix4x4)(ref val)).MultiplyVector(((NavMeshHit)(ref hitNS)).normal);
-					rot = Quaternion.LookRotation(rot * Vector3.forward, val3);
+					pos = ((NavMeshHit)(ref hitWS)).position;
 					return baseSpawnPoint;
 				}
 				if (AI.logIssues)
@@ -458,5 +424,10 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		Gizmos.color = new Color(1f, 1f, 0f, 1f);
 		Gizmos.DrawSphere(((Component)this).transform.position, 0.25f);
+	}
+
+	public void SetIsSpawningActive(bool isActive)
+	{
+		isSpawnerActive = isActive;
 	}
 }

@@ -59,8 +59,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private float recoilPitchDuration;
 
-	[SerializeField]
 	[Header("Mortar Handle")]
+	[SerializeField]
 	private Transform handleBone;
 
 	[SerializeField]

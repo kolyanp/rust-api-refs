@@ -296,7 +296,7 @@ public class ConversationData : ScriptableObject
 				break;
 			}
 			case ConditionType.IsNPCInDeepSea:
-				flag = (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null && DeepSeaManager.IsInsideDeepSea((BaseNetworkable)provider.Entity());
+				flag = (Object)(object)PointEntity<DeepSeaManager>.ServerInstance != (Object)null && DeepSeaManager.IsInsideDeepSea((BaseNetworkable)provider.GetEntity());
 				break;
 			case ConditionType.CanUpgradeApartment:
 				if (provider is ApartmentVendor apartmentVendor7)

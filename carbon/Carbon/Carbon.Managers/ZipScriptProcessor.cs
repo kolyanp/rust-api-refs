@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Carbon.Base;
-using Carbon.Components;
 using Carbon.Contracts;
 using Carbon.Core;
 using Carbon.Extensions;
@@ -87,26 +86,6 @@ public class ZipScriptProcessor : BaseProcessor, IZipScriptProcessor, IScriptPro
 
 	public class ZipScriptParser : Parser, IBaseProcessor.IParser
 	{
-		internal const string FOOT = "FindObjectsOfType";
-
-		public override void Process(string file, string input, out string output)
-		{
-			using (TimeMeasure.New("ScriptParser.Process"))
-			{
-				try
-				{
-					if (input.Contains("FindObjectsOfType"))
-					{
-						Logger.Warn(" Warning! '" + Path.GetFileNameWithoutExtension(file) + "' uses UnityEngine.GameObject.FindObjectsOfType. That may cause significant performance drops, and/or server stalls. Report to the developer or use at your own discretion!");
-					}
-					output = input.Replace("PluginTimers", "Timers");
-				}
-				catch
-				{
-					output = input;
-				}
-			}
-		}
 	}
 
 	public override string Name => "ZipScript Processor";

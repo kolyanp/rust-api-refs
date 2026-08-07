@@ -178,8 +178,8 @@ public class FreeableLootContainer : LootContainer
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_FreeCrate(RPCMessage msg)
 	{
 		if (IsTiedDown() && !(Mathf.Abs(startUntieTime + 6f - Time.realtimeSinceStartup) > ConVar.AntiHack.rpc_timer_forgiveness))

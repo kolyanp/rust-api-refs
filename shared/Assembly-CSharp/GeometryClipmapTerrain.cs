@@ -25,8 +25,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	public Material terrainMaterial;
 
-	[SerializeField]
 	[Range(1f, 8f)]
+	[SerializeField]
 	public int minVertLOD = 4;
 
 	[SerializeField]
@@ -44,6 +44,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 
 	public ReflectionProbeUsage reflectionProbeUsage;
 
+	public bool isDepthPrepassEnabled = true;
+
 	public Mesh terrainCellMaster;
 
 	public bool debugValidate;
@@ -52,12 +54,12 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 
 	public float cellSize;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int colliderVertexReduction;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int vertexDensity;
 
 	[SerializeField]
@@ -79,6 +81,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	public bool testColliderOneObject;
 
 	public TerrainData terrainData;
+
+	private const string OUTPUT_DEPTH_PREPASS_KEYWORD = "OUTPUT_DEPTH_PREPASS";
 
 	[SerializeField]
 	private int[] lodCellExtents = new int[6];

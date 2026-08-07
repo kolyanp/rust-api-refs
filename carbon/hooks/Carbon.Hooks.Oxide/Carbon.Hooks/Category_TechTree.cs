@@ -13,7 +13,7 @@ public class Category_TechTree
 	public class TechTree_Workbench
 	{
 		[Patch("OnTechTreeNodeUnlock", "OnTechTreeNodeUnlock", "Workbench", "RPC_TechTreeUnlock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("8362d14352a84d629101a7a34f476665")]
+		[Identifier("683841ab224c4942ad0a01d784e397ca")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Workbench", false)]
 		[Parameter("local5", "TechTreeData+NodeInstance", false)]
@@ -21,7 +21,7 @@ public class Category_TechTree
 		[Return(typeof(void))]
 		[Category("TechTree")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class TechTree_Workbench_8362d14352a84d629101a7a34f476665 : Patch
+		public class TechTree_Workbench_683841ab224c4942ad0a01d784e397ca : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -57,7 +57,7 @@ public class Category_TechTree
 		}
 
 		[Patch("OnTechTreeNodeUnlocked", "OnTechTreeNodeUnlocked", "Workbench", "RPC_TechTreeUnlock", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("9636ea622e924be0afbb716ed53ad4cf")]
+		[Identifier("12e12974180b4c6fbd0892f2d1a26042")]
 		[Dependencies(new string[] { "OnTechTreeNodeUnlock" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Workbench", false)]
@@ -66,14 +66,14 @@ public class Category_TechTree
 		[Parameter("local12", "PooledList`1[ItemDefinition]", false)]
 		[Category("TechTree")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class TechTree_Workbench_9636ea622e924be0afbb716ed53ad4cf : Patch
+		public class TechTree_Workbench_12e12974180b4c6fbd0892f2d1a26042 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 295)
+					if (x++ != 296)
 					{
 						yield return instruction;
 						continue;

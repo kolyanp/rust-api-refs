@@ -1,10 +1,12 @@
 using System;
 using System.Runtime.CompilerServices;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
 namespace CompanionServer.Cameras;
 
+[BurstCompile]
 public struct RaycastOutputCompressJob : IJob
 {
 	[ReadOnly]

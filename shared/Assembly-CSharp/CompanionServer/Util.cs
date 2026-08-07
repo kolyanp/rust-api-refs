@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -163,10 +164,17 @@ public static class Util
 	public static void BroadcastAppTeamRemoval(this BasePlayer player)
 	{
 		AppBroadcast val = Pool.Get<AppBroadcast>();
-		val.teamChanged = Pool.Get<AppTeamChanged>();
-		val.teamChanged.playerId = player.userID;
-		val.teamChanged.teamInfo = player.GetAppTeamInfo(player.userID);
-		Server.Broadcast(new PlayerTarget(player.userID), val);
+		try
+		{
+			val.teamChanged = Pool.Get<AppTeamChanged>();
+			val.teamChanged.playerId = player.userID;
+			val.teamChanged.teamInfo = player.GetAppTeamInfo(player.userID);
+			Server.Broadcast(new PlayerTarget(player.userID), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	public static void BroadcastAppTeamUpdate(this RelationshipManager.PlayerTeam team)

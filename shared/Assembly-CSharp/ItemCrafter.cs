@@ -97,7 +97,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 	{
 		foreach (ItemContainer container in containers)
 		{
-			amount -= container.Take(collect, item, amount, takeBroken);
+			amount -= container.Take(collect, item, amount, takeBroken, redirectAllowed: true);
 			if (amount <= 0)
 			{
 				break;
@@ -330,7 +330,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		int num = 0;
 		foreach (ItemContainer container in containers)
 		{
-			num += container.GetOkConditionAmount(item, onlyUsableAmounts: true);
+			num += container.GetOkConditionAmount(item, onlyUsableAmounts: true, redirectAllowed: true);
 		}
 		return num >= iAmount;
 	}
@@ -340,7 +340,7 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 		int num = 0;
 		foreach (ItemContainer container in containers)
 		{
-			num += container.GetAmount(item, onlyUsableAmounts: true);
+			num += container.GetAmount(item, onlyUsableAmounts: true, redirectAllowed: true);
 		}
 		return num >= iAmount;
 	}

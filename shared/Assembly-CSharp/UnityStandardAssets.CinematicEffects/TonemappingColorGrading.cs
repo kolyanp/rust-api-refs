@@ -4,8 +4,8 @@ using UnityEngine;
 namespace UnityStandardAssets.CinematicEffects;
 
 [ImageEffectAllowedInSceneView]
-[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ExecuteInEditMode]
+[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -63,8 +63,8 @@ public class TonemappingColorGrading : MonoBehaviour
 	{
 		public bool enabled;
 
-		[Tooltip("Midpoint Adjustment.")]
 		[Min(0f)]
+		[Tooltip("Midpoint Adjustment.")]
 		public float middleGrey;
 
 		[Tooltip("The lowest possible exposure value; adjust this value to modify the brightest areas of your level.")]
@@ -110,8 +110,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Tooltip("Adjusts the overall exposure of the scene.")]
 		[Min(0f)]
+		[Tooltip("Adjusts the overall exposure of the scene.")]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -158,8 +158,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 		public Texture texture;
 
-		[Range(0f, 1f)]
 		[Tooltip("Blending factor.")]
+		[Range(0f, 1f)]
 		public float contribution;
 
 		public static LUTSettings defaultSettings => new LUTSettings
@@ -197,13 +197,13 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Sets the white balance to a custom color temperature.")]
 		public float temperatureShift;
 
-		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		[Range(-2f, 2f)]
+		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		public float tint;
 
-		[Tooltip("Shift the hue of all colors.")]
 		[Space]
 		[Range(-0.5f, 0.5f)]
+		[Tooltip("Shift the hue of all colors.")]
 		public float hue;
 
 		[Range(0f, 2f)]
@@ -218,17 +218,17 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Brightens or darkens all colors.")]
 		public float value;
 
-		[Tooltip("Expands or shrinks the overall range of tonal values.")]
-		[Range(0f, 2f)]
 		[Space]
+		[Range(0f, 2f)]
+		[Tooltip("Expands or shrinks the overall range of tonal values.")]
 		public float contrast;
 
 		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		[Range(0.01f, 5f)]
 		public float gain;
 
-		[Range(0.01f, 5f)]
 		[Tooltip("Applies a pow function to the source.")]
+		[Range(0.01f, 5f)]
 		public float gamma;
 
 		public static BasicsSettings defaultSettings => new BasicsSettings
@@ -308,8 +308,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 		public ColorGradingPrecision precision;
 
-		[ColorWheelGroup]
 		[Space]
+		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
 		[IndentedGroup]

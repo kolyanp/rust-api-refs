@@ -102,12 +102,16 @@ public class TriggerPlayerMovePos : TriggerBase, IServerComponent
 			{
 				return false;
 			}
-			if ((Object)(object)basePlayer != (Object)null && basePlayer.IsAlive())
+			if (basePlayer.IsNpc)
+			{
+				return false;
+			}
+			if (basePlayer.IsAlive() && !basePlayer.IsSleeping())
 			{
 				return !basePlayer.isMounted;
 			}
 			return false;
 		}
-		return true;
+		return false;
 	}
 }

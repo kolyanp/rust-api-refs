@@ -10,5 +10,6 @@ public enum FieldType : byte
 	Vector,
 	Guid,
 	DateTime,
-	Bytes
+	Bytes,
+	JsonIntArray
 }

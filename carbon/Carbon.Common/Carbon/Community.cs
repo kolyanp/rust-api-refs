@@ -16,6 +16,7 @@ using Carbon.Extensions;
 using Carbon.Profiler;
 using Facepunch;
 using Newtonsoft.Json;
+using Oxide.Core.Libraries;
 using Oxide.Plugins;
 using UnityEngine;
 
@@ -368,7 +369,15 @@ public class Community
 
 	public void MarkServerInitialized(bool wants)
 	{
+		if (wants && !IsServerInitialized)
+		{
+			Oxide.Core.Libraries.Timer.FireDueStartupTimers();
+		}
 		IsServerInitialized = wants;
+		if (wants)
+		{
+			Oxide.Core.Libraries.Timer.ConvertRemainingStartupTimersToInvokes();
+		}
 	}
 
 	public void ClearCommands(bool all = false)

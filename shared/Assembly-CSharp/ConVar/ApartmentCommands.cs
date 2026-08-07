@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using UnityEngine;
 
 namespace ConVar;
@@ -21,6 +23,9 @@ public class ApartmentCommands : ConsoleSystem
 	[ReplicatedVar(Help = "How much scrap the apartment security NPC charges for a master key")]
 	public static int masterkeyprice = 1000;
 
+	[ReplicatedVar(Name = "adminapartmentbypass", Help = "Should admins be able to bypass apartment authorization checks?")]
+	public static bool adminapartmentbypass = false;
+
 	[ServerVar(Help = "How many hours of scrap upkeep does the apartments spawn with (so players don't see 'Eviction' vital right after renting an apartment")]
 	public static float apartmentfreerenthours = 4f;
 
@@ -32,6 +37,9 @@ public class ApartmentCommands : ConsoleSystem
 
 	[ServerVar(Name = "npcsecuritydooropentime", Help = "How long should the apartment security NPC keep the door open for after being paid?")]
 	public static float apartmentsecurityaccesstime = 300f;
+
+	[ServerVar(Name = "adminapartmentnoclip", Help = "Should admins be able to noclip in apartments?")]
+	public static bool adminapartmentnoclip = true;
 
 	[ServerVar(Name = "printitemtax", Help = "Print out a list of all items that apartments will tax")]
 	public static void PrintItemTax(Arg arg)
@@ -248,5 +256,56 @@ public class ApartmentCommands : ConsoleSystem
 		{
 			basePlayer.ScheduledDeath();
 		}
+	}
+
+	[ServerVar(Help = "Print list of furniture inside your room")]
+	public static void printapartmentfurniture(Arg arg)
+	{
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Expected O, but got Unknown
+		ApartmentBuilding apartmentBuilding = GetApartmentBuilding();
+		if ((Object)(object)apartmentBuilding == (Object)null)
+		{
+			arg.ReplyWith("No apartment building found");
+			return;
+		}
+		string text = arg.GetString(0);
+		BasePlayer player = ArgEx.Player(arg);
+		if (string.IsNullOrEmpty(text))
+		{
+			ApartmentRoom playerApartment = apartmentBuilding.GetPlayerApartment(player);
+			if ((Object)(object)playerApartment == (Object)null)
+			{
+				arg.ReplyWith("Either provide a room numer or own a room!");
+				return;
+			}
+			text = playerApartment.RoomNumber;
+		}
+		ApartmentRoom apartmentRoom = apartmentBuilding.FindByRoomNumber(text);
+		if ((Object)(object)apartmentRoom == (Object)null)
+		{
+			arg.ReplyWith("No room found with number '" + text + "'");
+			return;
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine("Room: " + text);
+		TextTable val = new TextTable();
+		val.AddColumns(new string[3] { "Prefab", "ID", "Storage" });
+		foreach (BaseEntity item in apartmentRoom.Furniture.OrderBy((BaseEntity x) => x.ShortPrefabName))
+		{
+			string text2 = "";
+			if (item is IItemContainerEntity itemContainerEntity)
+			{
+				text2 = $" {itemContainerEntity.inventory.itemList.Count}/{itemContainerEntity.inventory.capacity}";
+			}
+			val.AddRow(new string[3]
+			{
+				item.ShortPrefabName,
+				((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+				text2
+			});
+		}
+		stringBuilder.AppendLine(((object)val).ToString());
+		arg.ReplyWith(stringBuilder.ToString());
 	}
 }

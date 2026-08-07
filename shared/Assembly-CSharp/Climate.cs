@@ -25,8 +25,8 @@ public class Climate : SingletonComponent<Climate>
 		[Horizontal(4, -1)]
 		public Float4 FogAmbientIntensity = Float4.One();
 
-		[Range(0f, 1f)]
 		[Horizontal(4, -1)]
+		[Range(0f, 1f)]
 		public Float4 FogAmbientSaturation = Float4.One();
 
 		[Horizontal(4, -1)]
@@ -608,8 +608,8 @@ public class Climate : SingletonComponent<Climate>
 
 	private void StartRainGraceCheck()
 	{
-		((MonoBehaviour)this).CancelInvoke("CheckRainGracePeriod");
-		((MonoBehaviour)this).InvokeRepeating("CheckRainGracePeriod", 10f, 10f);
+		SingletonComponent<InvokeHandler>.Instance.CancelInvoke(CheckRainGracePeriod);
+		SingletonComponent<InvokeHandler>.Instance.InvokeRepeating(CheckRainGracePeriod, 10f, 10f);
 	}
 
 	private void CheckRainGracePeriod()
@@ -626,7 +626,7 @@ public class Climate : SingletonComponent<Climate>
 
 	private void EndRainGracePeriod()
 	{
-		((MonoBehaviour)this).CancelInvoke("CheckRainGracePeriod");
+		SingletonComponent<InvokeHandler>.Instance.CancelInvoke(CheckRainGracePeriod);
 		RainGraceActiveCommand?.Set(val: false);
 	}
 

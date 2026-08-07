@@ -176,15 +176,15 @@ public class Category_Fixes
 
 	public class Fixes_Recycler
 	{
-		[Patch("IRecyclerThinkSpeed", "IRecyclerThinkSpeed", typeof(Recycler), "GetRecycleThinkDuration", new Type[] { })]
+		[Patch("IRecyclerThinkSpeed", "IRecyclerThinkSpeed", "Recycler", "GetRecyclerStats", new string[] { "System.Single&", "System.Single&" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		public class IRecyclerThinkSpeed : Patch
 		{
-			private static void Postfix(Recycler __instance, ref float __result)
+			private static void Postfix(Recycler __instance, ref float efficiency, ref float duration)
 			{
 				if (Community.Runtime.Core.IRecyclerThinkSpeed(__instance) is float num)
 				{
-					__result *= num;
+					duration *= num;
 				}
 			}
 		}
@@ -198,26 +198,17 @@ public class Category_Fixes
 				MethodInfo runtime = AccessTools.PropertyGetter(typeof(Community), "Runtime");
 				MethodInfo core = AccessTools.PropertyGetter(typeof(Community), "Core");
 				MethodInfo multiplier = AccessTools.PropertyGetter(typeof(CorePlugin), "RuntimeResearchDurationMultiplier");
-				int x = 0;
+				FieldInfo durationField = AccessTools.Field(typeof(ResearchTable), "researchDuration");
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					switch (x)
-					{
-					case 30:
-						yield return new CodeInstruction(OpCodes.Call, (object)runtime);
-						yield return new CodeInstruction(OpCodes.Callvirt, (object)core);
-						yield return new CodeInstruction(OpCodes.Callvirt, (object)multiplier);
-						yield return new CodeInstruction(OpCodes.Mul, (object)null);
-						break;
-					case 38:
-						yield return new CodeInstruction(OpCodes.Call, (object)runtime);
-						yield return new CodeInstruction(OpCodes.Callvirt, (object)core);
-						yield return new CodeInstruction(OpCodes.Callvirt, (object)multiplier);
-						yield return new CodeInstruction(OpCodes.Mul, (object)null);
-						break;
-					}
 					yield return instruction;
-					x++;
+					if (CodeInstructionExtensions.LoadsField(instruction, durationField, false))
+					{
+						yield return new CodeInstruction(OpCodes.Call, (object)runtime);
+						yield return new CodeInstruction(OpCodes.Callvirt, (object)core);
+						yield return new CodeInstruction(OpCodes.Callvirt, (object)multiplier);
+						yield return new CodeInstruction(OpCodes.Mul, (object)null);
+					}
 				}
 			}
 		}

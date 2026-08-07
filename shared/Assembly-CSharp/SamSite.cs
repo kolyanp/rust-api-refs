@@ -137,6 +137,8 @@ public class SamSite : ContainerIOEntity
 
 	private int input1Amount;
 
+	public override bool ValidateMeleeColliderAntihack => false;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("SamSite.OnRpcMessage"))
@@ -710,8 +712,8 @@ public class SamSite : ContainerIOEntity
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ToggleDefenderMode(RPCMessage msg)
 	{
 		if (staticRespawn)

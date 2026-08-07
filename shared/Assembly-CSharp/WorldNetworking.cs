@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Facepunch;
 using Network;
@@ -11,31 +10,11 @@ public class WorldNetworking
 
 	private const int pathsPerPacket = 10;
 
-	public static void OnMessageReceived(Message message)
+	public static void OnServerMessageReceived(Message message)
 	{
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Expected I4, but got Unknown
-		_ = World.Serialization;
-		WorldMessage val = message.read.Proto<WorldMessage>((WorldMessage)null);
-		try
+		if (message.read.Int32() == 1)
 		{
-			MessageType status = val.status;
-			switch (status - 1)
-			{
-			case 0:
-				SendWorldData(message.connection);
-				break;
-			case 1:
-			case 2:
-				break;
-			}
-		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
+			SendWorldData(message.connection);
 		}
 	}
 

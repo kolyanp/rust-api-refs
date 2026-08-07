@@ -37,8 +37,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		}
 	}
 
-	[Header("Player Helicopter")]
 	[SerializeField]
+	[Header("Player Helicopter")]
 	public Wheel[] wheels;
 
 	[SerializeField]
@@ -115,8 +115,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	[SerializeField]
 	public float maxYawAnim = 1f;
 
-	[Header("Fuel")]
 	[SerializeField]
+	[Header("Fuel")]
 	public GameObjectRef fuelStoragePrefab;
 
 	[SerializeField]
@@ -253,21 +253,26 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	public override void InitShared()
 	{
 		base.InitShared();
-		EntityFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		IFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
 		engineController = new VehicleEngineController<PlayerHelicopter>(this, fuelSystem, base.isServer, 5f, waterSample, Flags.Reserved4);
 	}
 
 	public float GetFuelFraction(bool force = false)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		if (base.isServer && (TimeSince.op_Implicit(timeSinceCachedFuelFraction) > 1f || force))
 		{
-			cachedFuelFraction = Mathf.Clamp01((float)GetFuelSystem().GetFuelAmount() / fuelGaugeMax);
+			cachedFuelFraction = CalculateFuelFraction();
 			timeSinceCachedFuelFraction = TimeSince.op_Implicit(0f);
 		}
 		return cachedFuelFraction;
+	}
+
+	public float CalculateFuelFraction()
+	{
+		return Mathf.Clamp01((float)GetFuelSystem().GetFuelAmount() / fuelGaugeMax);
 	}
 
 	public override bool CanPushNow(BasePlayer pusher)
@@ -685,7 +690,7 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		base.Save(info);
 		info.msg.miniCopter = Pool.Get<Minicopter>();
 		info.msg.miniCopter.fuelStorageID = engineController.FuelSystem.GetInstanceID();
-		info.msg.miniCopter.fuelFraction = GetFuelFraction(force: true);
+		info.msg.miniCopter.fuelFraction = CalculateFuelFraction();
 		info.msg.miniCopter.pitch = currentInputState.pitch;
 		info.msg.miniCopter.roll = currentInputState.roll;
 		info.msg.miniCopter.yaw = currentInputState.yaw;

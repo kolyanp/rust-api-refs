@@ -79,17 +79,25 @@ public abstract class AppIOEntity : IOEntity
 
 	protected void BroadcastValueChange()
 	{
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		if (this.IsValid())
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		if (!this.IsValid())
 		{
-			EntityTarget target = GetTarget();
-			AppBroadcast val = Pool.Get<AppBroadcast>();
+			return;
+		}
+		EntityTarget target = GetTarget();
+		AppBroadcast val = Pool.Get<AppBroadcast>();
+		try
+		{
 			val.entityChanged = Pool.Get<AppEntityChanged>();
 			val.entityChanged.entityId = net.ID;
 			val.entityChanged.payload = Pool.Get<AppEntityPayload>();
 			FillEntityPayload(val.entityChanged.payload);
 			CompanionServer.Server.Broadcast(target, val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -114,9 +122,9 @@ public abstract class AppIOEntity : IOEntity
 		return new EntityTarget(net.ID);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public async void PairWithApp(RPCMessage msg)
 	{
 		try

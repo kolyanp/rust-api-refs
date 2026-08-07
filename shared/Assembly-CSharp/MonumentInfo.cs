@@ -65,7 +65,7 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 	{
 	}
 
-	public bool CheckPlacement(Vector3 pos, Quaternion rot, Vector3 scale)
+	public bool CheckPlacement(Vector3 pos, Quaternion rot, Vector3 scale, int minCorners = 3, bool allowAdjacentTier = false)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
@@ -83,7 +83,7 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = default(OBB);
 		((OBB)(ref val))._002Ector(pos, scale, rot, Bounds);
 		Vector3 point = ((OBB)(ref val)).GetPoint(-1f, 0f, -1f);
@@ -94,7 +94,7 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		int topology2 = TerrainMeta.TopologyMap.GetTopology(point2);
 		int topology3 = TerrainMeta.TopologyMap.GetTopology(point3);
 		int topology4 = TerrainMeta.TopologyMap.GetTopology(point4);
-		int num = TierToMask(Tier);
+		int num = (allowAdjacentTier ? TierToMaskWithNeighbours(Tier) : TierToMask(Tier));
 		int num2 = 0;
 		if ((num & topology) != 0)
 		{
@@ -112,7 +112,7 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		{
 			num2++;
 		}
-		if (num2 < 3)
+		if (num2 < minCorners)
 		{
 			return false;
 		}
@@ -220,6 +220,12 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		return ((Component)this).GetComponent<MonumentNavMesh>();
 	}
 
+	public static int TierToMaskWithNeighbours(MonumentTier tier)
+	{
+		int num = (int)(tier & (MonumentTier)7);
+		return TierToMask((MonumentTier)((num | (num << 1) | (num >> 1)) & 7));
+	}
+
 	public static int TierToMask(MonumentTier tier)
 	{
 		int num = 0;
@@ -277,6 +283,24 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 		if (displayPhrase.IsValid())
 		{
 			return displayPhrase.english.ToLower().Contains("oil rig");
+		}
+		return false;
+	}
+
+	public bool IsWaterTreatmentPlant()
+	{
+		if (displayPhrase.IsValid())
+		{
+			return displayPhrase.token.ToLower().Contains("water_treatment_plant");
+		}
+		return false;
+	}
+
+	public bool IsPowerPlant()
+	{
+		if (displayPhrase.IsValid())
+		{
+			return displayPhrase.token.ToLower().Contains("power_plant");
 		}
 		return false;
 	}

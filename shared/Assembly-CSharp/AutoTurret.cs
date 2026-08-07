@@ -1008,6 +1008,14 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
+	public Matrix4x4 GetEyesMatrix()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		return GetCenterMuzzle() * toRCEyesFromPitch;
+	}
+
 	public void UserInput(InputState inputState, CameraViewerId viewerID)
 	{
 		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
@@ -1199,8 +1207,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		SetID(msg.player, oldID, newID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_AdminUpdateIdentifier(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && (msg.player.IsAdmin || msg.player.IsDeveloper))
@@ -1222,8 +1230,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1477,8 +1485,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		AddSelfAuthorize(rpc.player);

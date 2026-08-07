@@ -1,3 +1,4 @@
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -5,6 +6,7 @@ using UnityEngine;
 
 namespace CompanionServer.Cameras;
 
+[BurstCompile]
 public struct RaycastRaySetupJob : IJobParallelFor
 {
 	public float2 res;
@@ -30,8 +32,8 @@ public struct RaycastRaySetupJob : IJobParallelFor
 	[ReadOnly]
 	public NativeArray<int2> samplePositions;
 
-	[NativeMatchesParallelForLength]
 	[WriteOnly]
+	[NativeMatchesParallelForLength]
 	public NativeArray<RaycastCommand> raycastCommands;
 
 	public void Execute(int index)
@@ -58,7 +60,8 @@ public struct RaycastRaySetupJob : IJobParallelFor
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		int num;
 		for (num = sampleOffset + index; num >= samplePositions.Length; num -= samplePositions.Length)
 		{
@@ -68,6 +71,6 @@ public struct RaycastRaySetupJob : IJobParallelFor
 		((float3)(ref val2))._002Ector(val.x * worldHeight * aspectRatio, val.y * worldHeight, 1f);
 		float3 val3 = math.mul(cameraRot, val2);
 		float3 val4 = cameraPos + val3 * nearPlane;
-		raycastCommands[index] = new RaycastCommand(float3.op_Implicit(val4), float3.op_Implicit(val3), farPlane, layerMask, 1);
+		raycastCommands[index] = new RaycastCommand(float3.op_Implicit(val4), float3.op_Implicit(math.normalize(val3)), farPlane, layerMask, 1);
 	}
 }

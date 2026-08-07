@@ -88,6 +88,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	public Vector3? overrideDirectionWS;
 
+	private ulong currentPolyRef;
+
 	[Header("Doors")]
 	public bool canOpenDoors;
 
@@ -148,7 +150,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 			}
 			if ((Object)(object)independantNavmesh != (Object)null && independantNavmesh.Navmesh != null)
 			{
-				return independantNavmesh.Navmesh.IsValid();
+				return independantNavmesh.Navmesh.IsBuilt();
 			}
 			return false;
 		}
@@ -242,6 +244,10 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		set
 		{
 			_acceleration.Value = value;
+			if (letUnityMoveAgentIfPossible)
+			{
+				deceleration.Value = value;
+			}
 			if (AI.useUnityNavmesh && TryGetAgent(out var agent))
 			{
 				agent.acceleration = value;
@@ -408,21 +414,6 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 				return agent.nextPosition;
 			}
 			return _nextPositionNS;
-		}
-		set
-		{
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-			_nextPositionNS = value;
-			if (AI.useUnityNavmesh && TryGetAgent(out var agent))
-			{
-				agent.nextPosition = value;
-			}
-			if (!AI.useUnityNavmesh)
-			{
-				TrySyncWorldPosWithNavPos();
-			}
 		}
 	}
 
@@ -741,59 +732,61 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		((Behaviour)agent).enabled = false;
 	}
 
-	private bool SamplePositionInternal(Vector3 positionNS, out NavMeshHit hitNS, float maxDistance)
+	private bool SamplePositionInternal(Vector3 positionNS, out NavMeshHit hitNS, float maxDistance, out ulong nearestPolyRef)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavMeshAgent.SamplePositionInternal"))
 		{
 			hitNS = default(NavMeshHit);
+			nearestPolyRef = 0uL;
 			if (AI.useUnityNavmesh)
 			{
 				if (!TryGetAgent(out var agent))
 				{
 					return false;
 				}
-				return RustNavMesh.SamplePosition(positionNS, out hitNS, maxDistance, agent.areaMask);
+				return RustNavMeshHelpers.SamplePosition(positionNS, out hitNS, maxDistance, agent.areaMask);
 			}
 			if (HasValidIndependantNavmesh)
 			{
-				return independantNavmesh.Navmesh.SamplePosition(positionNS, out hitNS, maxDistance * Vector3.one);
+				return independantNavmesh.Navmesh.SamplePositionPoly(positionNS, out hitNS, maxDistance * Vector3.one, out nearestPolyRef);
 			}
-			if (!RustNavigation.Instance.IsDefaultNavmeshBuilt())
+			if (RustNavigation.Instance.IsDefaultNavmeshBuilt())
 			{
-				if (AI.logIssues)
-				{
-					BaseEntity obj = base.baseEntity;
-					RustNavigation.LogError(string.Format("Default navmesh is not built, cannot sample position for {0} at position {1}", ((obj != null) ? ((Object)obj).name : null) ?? "unknown entity", positionNS));
-				}
-				return false;
+				return RustNavigation.Instance.DefaultNavmesh.SamplePositionPoly(positionNS, out hitNS, maxDistance * Vector3.one, out nearestPolyRef);
 			}
-			return RustNavigation.Instance.DefaultNavmesh.SamplePosition(positionNS, out hitNS, maxDistance * Vector3.one);
+			return false;
 		}
 	}
 
 	public bool SamplePosition(Vector3 positionNS, out NavMeshHit hitNS, float maxDistance, bool debugDraw = true)
 	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		ulong nearestPolyRef;
+		return SamplePositionPoly(positionNS, out hitNS, maxDistance, out nearestPolyRef, debugDraw);
+	}
+
+	public bool SamplePositionPoly(Vector3 positionNS, out NavMeshHit hitNS, float maxDistance, out ulong nearestPolyRef, bool debugDraw = true)
+	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavMeshAgent.SamplePosition"))
 		{
-			bool num = SamplePositionInternal(positionNS, out hitNS, maxDistance);
+			bool num = SamplePositionInternal(positionNS, out hitNS, maxDistance, out nearestPolyRef);
 			float num2 = 1f;
-			if (num && maxDistance > num2 && Mathf.Abs(((NavMeshHit)(ref hitNS)).position.y - positionNS.y) > num2 && SampleGroundPositionWithPhysics(positionNS, out var hitInfoNS, 3.5f) && SamplePositionInternal(((RaycastHit)(ref hitInfoNS)).point, out var hitNS2, num2))
+			if (num && maxDistance > num2 && Mathf.Abs(((NavMeshHit)(ref hitNS)).position.y - positionNS.y) > num2 && SampleGroundPositionWithPhysics(positionNS, out var hitInfoNS, 3.5f) && SamplePositionInternal(((RaycastHit)(ref hitInfoNS)).point, out var hitNS2, num2, out nearestPolyRef))
 			{
 				hitNS = hitNS2;
 			}
@@ -825,7 +818,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 				{
 					return false;
 				}
-				return RustNavMesh.Raycast(startNS, endNS, out hitNS, agent.areaMask);
+				return RustNavMeshHelpers.Raycast(startNS, endNS, out hitNS, agent.areaMask);
 			}
 			if (HasValidIndependantNavmesh)
 			{
@@ -865,7 +858,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 				{
 					return false;
 				}
-				flag = RustNavMesh.CalculatePath(startNS, endNS, agent.areaMask, pathNS);
+				flag = RustNavMeshHelpers.CalculatePath(startNS, endNS, agent.areaMask, pathNS);
 			}
 			else if (HasValidIndependantNavmesh)
 			{
@@ -960,10 +953,13 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		enabledComponents.TryAdd(this);
 		isScientist = BaseNetworkableEx.Is<ScientistNPC2>((Object)(object)base.baseEntity, out ScientistNPC2 _);
 		((Component)this).TryGetComponent<SenseComponent>(ref senses);
@@ -981,7 +977,12 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 				_nextPositionNS = independantNavmesh.TransformPointFromWorldSpaceToNavSpace(((Component)this).transform.position);
 			}
 		}
+		if (SamplePositionPoly(_nextPositionNS, out var hitNS, 10f, out currentPolyRef))
+		{
+			_nextPositionNS = ((NavMeshHit)(ref hitNS)).position;
+		}
 		previousPositionNS = _nextPositionNS;
+		TrySyncWorldPosWithNavPos();
 	}
 
 	private void OnDisable()
@@ -1268,39 +1269,35 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	public void Move(Vector3 deltaNS)
 	{
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavMeshAgent.Move"))
 		{
 			if (AI.useUnityNavmesh && letUnityMoveAgentIfPossible)
@@ -1315,7 +1312,6 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 			{
 				deltaNS = AdjustMovementForSteering(deltaNS);
 			}
-			Vector3 movedPos = _nextPositionNS;
 			if (AI.useUnityNavmesh)
 			{
 				if (!TryGetAgent(out var agent2) || !TryEnableAgent(agent2))
@@ -1323,17 +1319,23 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 					return;
 				}
 				agent2.Move(deltaNS);
-				movedPos = agent2.nextPosition;
+				_nextPositionNS = agent2.nextPosition;
 			}
-			else if (HasValidIndependantNavmesh)
+			else
 			{
-				independantNavmesh.Navmesh.Move(movedPos, movedPos + deltaNS, out movedPos);
+				if (currentPolyRef == 0L)
+				{
+					RustNavigation.LogError("RustNavMeshAgent.Move called with no currentPolyRef. This should never happen.");
+				}
+				if (HasValidIndependantNavmesh)
+				{
+					independantNavmesh.Navmesh.Move(currentPolyRef, _nextPositionNS, _nextPositionNS + deltaNS, out currentPolyRef, out _nextPositionNS);
+				}
+				else if (RustNavigation.Instance.IsDefaultNavmeshBuilt())
+				{
+					RustNavigation.Instance.DefaultNavmesh.Move(currentPolyRef, _nextPositionNS, _nextPositionNS + deltaNS, out currentPolyRef, out _nextPositionNS);
+				}
 			}
-			else if (RustNavigation.Instance.IsDefaultNavmeshBuilt())
-			{
-				RustNavigation.Instance.DefaultNavmesh.Move(movedPos, movedPos + deltaNS, out movedPos);
-			}
-			_nextPositionNS = movedPos;
 			TrySyncWorldPosWithNavPos();
 			Vector3 val = Vector3Ex.XZ3D(deltaNS);
 			if (_updateRotation && !IsPaused && !overrideDirectionWS.HasValue && ((Vector3)(ref val)).magnitude > 0.001f)
@@ -1406,8 +1408,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	public bool Warp(Vector3 newPositionNS)
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavMeshAgent.Warp"))
 		{
@@ -1423,10 +1425,11 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 				}
 				return agent.Warp(newPositionNS);
 			}
-			if (!SamplePosition(newPositionNS, out var hitNS, 1f))
+			if (!SamplePositionPoly(newPositionNS, out var hitNS, 1f, out var nearestPolyRef))
 			{
 				return false;
 			}
+			currentPolyRef = nearestPolyRef;
 			_nextPositionNS = ((NavMeshHit)(ref hitNS)).position;
 			TrySyncWorldPosWithNavPos();
 			return true;
@@ -1450,7 +1453,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	public bool IsPositionOnNavmesh(Vector3 positionNS, out NavMeshHit hitNS)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		return SamplePosition(positionNS, out hitNS, 0.5f);
+		return SamplePosition(positionNS, out hitNS, 2f);
 	}
 
 	public void ResetPath()
@@ -1465,8 +1468,11 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 			curWaypointIndex = null;
 			autoBraking = true;
 			_desiredSpeed = 0f;
-			_acceleration.Reset();
-			deceleration.Reset();
+			if (!letUnityMoveAgentIfPossible)
+			{
+				_acceleration.Reset();
+				deceleration.Reset();
+			}
 			currentDeviation = 0f;
 		}
 	}

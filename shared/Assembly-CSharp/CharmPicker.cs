@@ -12,4 +12,8 @@ public class CharmPicker : MonoBehaviour, IClientComponent
 	public ScrollRect scroller;
 
 	public SearchFilterInput searchFilter;
+
+	public SoundDefinition CharmEquipSound;
+
+	public SoundDefinition CharmUnequipSound;
 }

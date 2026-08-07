@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -128,13 +129,24 @@ public class ElevatorLift : BaseCombatEntity
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.elevatorLift = Pool.Get<ElevatorLift>();
 		if ((Object)(object)owner != (Object)null)
 		{
 			info.msg.elevatorLift.owner = ownerElevator.uid;
-			info.msg.elevatorLift.topElevatorHeight = ((Component)owner).transform.position.y;
+			if (BaseNetworkable.UseParallelSaves)
+			{
+				float y = Facepunch.Extend.TransformEx.Unsafe.GetPosMT(owner.TransformHandle).y;
+				info.msg.elevatorLift.topElevatorHeight = y;
+			}
+			else
+			{
+				info.msg.elevatorLift.topElevatorHeight = ((Component)owner).transform.position.y;
+			}
 		}
 	}
 

@@ -182,10 +182,10 @@ public class MixingTable : StorageContainer
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void SV_FillInventoryForRecipe(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null)
@@ -301,8 +301,8 @@ public class MixingTable : StorageContainer
 		ItemManager.DoRemoves();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void SVSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnMixingTableToggle", this, msg.player) != null)
@@ -509,7 +509,8 @@ public class MixingTable : StorageContainer
 		}
 		else
 		{
-			info.msg.mixingTable.remainingMixTime = RemainingMixTime - Mathf.Max(Time.realtimeSinceStartup - lastTickTimestamp, 0f);
+			float realTimeSinceStartup = info.cachedTime.RealTimeSinceStartup;
+			info.msg.mixingTable.remainingMixTime = RemainingMixTime - Mathf.Max(realTimeSinceStartup - lastTickTimestamp, 0f);
 			info.msg.mixingTable.currentRecipe = (((Object)(object)currentRecipe != (Object)null && (Object)(object)currentRecipe.ProducedItem != (Object)null) ? currentRecipe.ProducedItem.itemid : (-1));
 		}
 		info.msg.mixingTable.totalMixTime = TotalMixTime;

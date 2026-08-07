@@ -474,7 +474,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 			GameManifest.Invalidate(item2);
 			PrefabAttribute.server.Invalidate(StringPool.Get(item2));
 		}
-		Resources.UnloadUnusedAssets();
+		ConVar.GC.unload();
 		cleaningTimer.End();
 		UI_LoadingScreen.Update("DONE");
 		yield return CoroutineEx.waitForEndOfFrame;

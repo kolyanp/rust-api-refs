@@ -1,6 +1,6 @@
 public interface IConversationProvider
 {
-	bool ProviderBusy();
+	BaseEntity GetEntity();
 
-	BaseEntity Entity();
+	bool ProviderBusy();
 }

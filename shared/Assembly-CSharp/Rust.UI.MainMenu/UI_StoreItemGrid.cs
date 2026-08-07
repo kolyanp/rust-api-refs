@@ -84,8 +84,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private FlexGridsElement grid;
 
-	[SerializeField]
 	[Tooltip("The source of the items, for analytics")]
+	[SerializeField]
 	private StoreSource source;
 
 	[Space]

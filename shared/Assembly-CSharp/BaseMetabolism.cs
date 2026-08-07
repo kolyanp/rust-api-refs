@@ -39,18 +39,20 @@ public abstract class BaseMetabolism<T> : EntityComponent<T> where T : BaseComba
 		this.owner = owner;
 	}
 
-	public virtual void ServerUpdate(BaseCombatEntity ownerEntity, float delta)
+	public virtual bool ServerUpdate(BaseCombatEntity ownerEntity, float delta)
 	{
 		timeSinceLastMetabolism += delta;
-		if (!(timeSinceLastMetabolism <= ConVar.Server.metabolismtick))
+		if (timeSinceLastMetabolism <= ConVar.Server.metabolismtick)
 		{
-			if (Object.op_Implicit((Object)(object)owner) && !owner.IsDead())
-			{
-				RunMetabolism(ownerEntity, timeSinceLastMetabolism);
-				DoMetabolismDamage(ownerEntity, timeSinceLastMetabolism);
-			}
-			timeSinceLastMetabolism = 0f;
+			return false;
 		}
+		if (Object.op_Implicit((Object)(object)owner) && !owner.IsDead())
+		{
+			RunMetabolism(ownerEntity, timeSinceLastMetabolism);
+			DoMetabolismDamage(ownerEntity, timeSinceLastMetabolism);
+		}
+		timeSinceLastMetabolism = 0f;
+		return true;
 	}
 
 	protected virtual void DoMetabolismDamage(BaseCombatEntity ownerEntity, float delta)

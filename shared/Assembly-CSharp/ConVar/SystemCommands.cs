@@ -11,17 +11,24 @@ public static class SystemCommands
 {
 	public static bool appliedManualCpuAffinity;
 
-	[ClientVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	[ServerVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
+	[ClientVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	public static void cpu_affinity(ConsoleSystem.Arg arg)
 	{
-		ulong num = 0uL;
 		if (!arg.HasArgs())
 		{
 			arg.ReplyWith("Format is 'cpu_affinity {core,core1-core2,etc}'");
-			return;
 		}
-		string[] array = arg.GetString(0).Split(',');
+		else
+		{
+			arg.ReplyWith(CpuAffinityCommand(arg.GetString(0)));
+		}
+	}
+
+	public static string CpuAffinityCommand(string command)
+	{
+		ulong num = 0uL;
+		string[] array = command.Split(',');
 		HashSet<int> hashSet = new HashSet<int>();
 		string[] array2 = array;
 		foreach (string text in array2)
@@ -30,32 +37,24 @@ public static class SystemCommands
 			{
 				hashSet.Add(result);
 			}
-			else
+			else if (text.Contains('-'))
 			{
-				if (!text.Contains('-'))
-				{
-					continue;
-				}
 				string[] array3 = text.Split('-');
 				if (array3.Length != 2)
 				{
-					arg.ReplyWith("Failed to parse section " + text + ", format should be '0-15'");
-					continue;
+					return "Failed to parse section " + text + ", format should be '0-15'";
 				}
 				if (!int.TryParse(array3[0], out var result2) || !int.TryParse(array3[1], out var result3))
 				{
-					arg.ReplyWith("Core range in section " + text + " are not valid numbers, format should be '0-15'");
-					continue;
+					return "Core range in section " + text + " are not valid numbers, format should be '0-15'";
 				}
 				if (result2 > result3)
 				{
-					arg.ReplyWith("Core range in section " + text + " are not ordered from least to greatest, format should be '0-15'");
-					continue;
+					return "Core range in section " + text + " are not ordered from least to greatest, format should be '0-15'";
 				}
 				if (result3 - result2 > 64)
 				{
-					arg.ReplyWith("Core range in section " + text + " are too big of a range, must be <64");
-					return;
+					return "Core range in section " + text + " are too big of a range, must be <64";
 				}
 				for (int j = result2; j <= result3; j++)
 				{
@@ -65,8 +64,7 @@ public static class SystemCommands
 		}
 		if (hashSet.Any((int x) => x < 0 || x > 63))
 		{
-			arg.ReplyWith("Cores provided out of range! Must be in between 0 and 63");
-			return;
+			return "Cores provided out of range! Must be in between 0 and 63";
 		}
 		for (int num2 = 0; num2 < 64; num2++)
 		{
@@ -77,13 +75,14 @@ public static class SystemCommands
 		}
 		if (num == 0L)
 		{
-			arg.ReplyWith("No cores provided (bitmask empty)! Format is 'cpu_affinity {core,core1-core2,etc}'");
+			return "No cores provided (bitmask empty)! Format is 'cpu_affinity {core,core1-core2,etc}'";
 		}
-		else if (SetCpuAffinity(num))
+		if (SetCpuAffinity(num))
 		{
 			appliedManualCpuAffinity = true;
-			arg.ReplyWith("Successfully changed CPU affinity");
+			return "Successfully changed CPU affinity";
 		}
+		return "";
 	}
 
 	public static bool SetCpuAffinity(ulong affinityMask)

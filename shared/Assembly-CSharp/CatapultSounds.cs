@@ -35,8 +35,8 @@ public class CatapultSounds : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[SerializeField]
 	[Header("Movement")]
+	[SerializeField]
 	private SoundDefinition movementLoopDef;
 
 	[SerializeField]

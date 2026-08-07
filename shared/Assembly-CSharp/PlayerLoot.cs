@@ -36,6 +36,11 @@ public class PlayerLoot : EntityComponent<BasePlayer>
 		return containers.Count > 0;
 	}
 
+	public bool IsLooting(ItemContainer container)
+	{
+		return containers.Contains(container);
+	}
+
 	public float GetRadsInPlayerLoot()
 	{
 		float num = 0f;

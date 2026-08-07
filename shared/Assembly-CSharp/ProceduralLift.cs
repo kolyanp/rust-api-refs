@@ -79,10 +79,11 @@ public class ProceduralLift : BaseEntity
 
 	public override void Spawn()
 	{
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		base.Spawn();
-		if (!Application.isLoadingSave)
+		bool flag = false;
+		if (!Application.isLoadingSave && !flag)
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(triggerPrefab.resourcePath, Vector3.zero, Quaternion.identity);
 			baseEntity.Spawn();

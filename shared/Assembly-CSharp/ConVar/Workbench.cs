@@ -7,11 +7,11 @@ public class Workbench : ConsoleSystem
 	[ServerVar]
 	public static bool skipclearancechecks = false;
 
-	[ServerVar]
 	[Help("Whether the range upgrade scales the comfort trigger radius")]
+	[ServerVar]
 	public static bool scalecomfortradius = true;
 
-	[ServerVar]
 	[Help("Multiplier applied to the comfort trigger radius after range upgrade scaling")]
+	[ServerVar]
 	public static float comfortradiusscale = 0.95f;
 }

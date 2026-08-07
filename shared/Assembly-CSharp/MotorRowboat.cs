@@ -115,7 +115,7 @@ public class MotorRowboat : BaseBoat
 	[ServerVar(Help = "How long until decay begins after the boat was last used")]
 	public static float decaystartdelayminutes = 45f;
 
-	public EntityFuelSystem fuelSystem;
+	public IFuelSystem fuelSystem;
 
 	public Transform[] stationaryDismounts;
 

@@ -6,12 +6,6 @@ namespace ConVar;
 [Factory("graphicssettings")]
 public class GraphicsSettings : ConsoleSystem
 {
-	private const float MinShadowDistance = 100f;
-
-	private const float MaxShadowDistance2Split = 600f;
-
-	private const float MaxShadowDistance4Split = 1000f;
-
 	private static int _shadowQualityPreset = 3;
 
 	private static ShadowQualityPresetsConfig _shadowQualityPresetsConfig;

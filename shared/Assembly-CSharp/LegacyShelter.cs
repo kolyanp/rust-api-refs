@@ -189,9 +189,9 @@ public class LegacyShelter : DecayEntity
 		}
 	}
 
-	public override void DecayTick()
+	public override void DecayTick(bool force = false)
 	{
-		base.DecayTick();
+		base.DecayTick(force);
 		float num = Time.time - lastShelterDecayTick;
 		lastShelterDecayTick = Time.time;
 		float num2 = num * ConVar.Decay.scale;

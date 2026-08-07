@@ -1,4 +1,5 @@
 using Facepunch;
+using Facepunch.Extend;
 using ProtoBuf;
 using UnityEngine;
 
@@ -12,22 +13,57 @@ public class HarborCraneStatic : HarborCrane
 
 	public Transform HangingLadder;
 
+	private TransformHandle craneGrabHandle;
+
+	private TransformHandle armRootHandle;
+
 	public override void PostMapEntitySpawn()
 	{
 		base.PostMapEntitySpawn();
 		SetArmPos(StartingAngle, StartingHeight, StartingDepth);
 	}
 
+	public override void ServerInit()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		base.ServerInit();
+		craneGrabHandle = ((Component)CraneGrab).transformHandle;
+		armRootHandle = ((Component)ArmRoot).transformHandle;
+	}
+
 	public override void Save(SaveInfo info)
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.harborCrane = Pool.Get<HarborCrane>();
-		info.msg.harborCrane.depth = CraneGrab.localPosition.x;
-		info.msg.harborCrane.height = CraneGrab.localPosition.y;
-		info.msg.harborCrane.yaw = ArmRoot.localEulerAngles.z;
+		Vector3 val;
+		Quaternion val2;
+		if (BaseNetworkable.UseParallelSaves)
+		{
+			val = Facepunch.Extend.TransformEx.Unsafe.GetLocalPosMT(in craneGrabHandle);
+			val2 = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in armRootHandle);
+		}
+		else
+		{
+			val = CraneGrab.localPosition;
+			val2 = ArmRoot.localRotation;
+		}
+		info.msg.harborCrane.depth = val.x;
+		info.msg.harborCrane.height = val.y;
+		info.msg.harborCrane.yaw = ((Quaternion)(ref val2)).eulerAngles.z;
 	}
 
 	private void SetArmPos(float angle, float height, float depth)

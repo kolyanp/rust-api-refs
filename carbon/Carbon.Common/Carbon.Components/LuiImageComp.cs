@@ -20,6 +20,8 @@ public class LuiImageComp : LuiCompBase
 
 	public ulong skinid;
 
+	public float ppuMultiplier = -1f;
+
 	public LuiImageComp()
 	{
 		type = LuiCompType.Image;

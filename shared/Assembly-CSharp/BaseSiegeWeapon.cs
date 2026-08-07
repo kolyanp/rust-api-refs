@@ -34,8 +34,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 
 	private float playerMovementThreshold = 0.01f;
 
-	[Header("Siege Weapon")]
 	[SerializeField]
+	[Header("Siege Weapon")]
 	protected Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -46,8 +46,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 	[Header("Towing")]
 	public Transform towAnchor;
 
-	[Header("Pulling")]
 	[SerializeField]
+	[Header("Pulling")]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	public const Flags Flag_IsPulled = Flags.Reserved12;
@@ -293,8 +293,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 		base.OnDied(info);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_StartPulling(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

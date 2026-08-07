@@ -267,4 +267,6 @@ internal static class ShaderIDs
 	internal static readonly int PosScaleOffset = Shader.PropertyToID("_PosScaleOffset");
 
 	internal static readonly int AntiAliasing = Shader.PropertyToID("_AntiAliasing");
+
+	internal static readonly int GlobalMipBias = Shader.PropertyToID("_GlobalMipBias");
 }

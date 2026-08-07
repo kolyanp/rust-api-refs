@@ -67,8 +67,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[SerializeField]
 	private GameObjectRef fuelStoragePrefab;
 
-	[SerializeField]
 	[Header("Submarine Engine & Fuel")]
+	[SerializeField]
 	public float engineKW = 200f;
 
 	[SerializeField]
@@ -93,19 +93,19 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[FormerlySerializedAs("internalAccessFuelTank")]
 	private bool internalAccessStorage;
 
-	[Header("Submarine Weaponry")]
 	[SerializeField]
+	[Header("Submarine Weaponry")]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
 	public Transform torpedoFiringPoint;
 
-	[FormerlySerializedAs("maxFireRate")]
 	[SerializeField]
+	[FormerlySerializedAs("maxFireRate")]
 	public float reloadTime = 1.5f;
 
-	[Header("Submarine Audio & FX")]
 	[SerializeField]
+	[Header("Submarine Audio & FX")]
 	protected SubmarineAudio submarineAudio;
 
 	[SerializeField]
@@ -263,18 +263,9 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	{
 		get
 		{
-			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 			if (base.isServer)
 			{
-				if (TimeSince.op_Implicit(timeSinceLastUsed) >= timeUntilAutoSurface)
-				{
-					return 0.15f;
-				}
-				if (!engineController.IsOn)
-				{
-					return Mathf.Max(0f, _upDown);
-				}
-				return _upDown;
+				return GetUpDownInput(Time.time);
 			}
 			return _upDown;
 		}
@@ -798,16 +789,16 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.submarine = Pool.Get<Submarine>();
 		info.msg.submarine.throttle = ThrottleInput;
-		info.msg.submarine.upDown = UpDownInput;
+		info.msg.submarine.upDown = GetUpDownInput(info.cachedTime.Time);
 		info.msg.submarine.rudder = RudderInput;
 		info.msg.submarine.fuelStorageID = GetFuelSystem().GetInstanceID();
 		info.msg.submarine.fuelAmount = GetFuelAmount();
@@ -904,8 +895,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenTorpedoStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -947,11 +938,24 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
+	public float GetUpDownInput(float ts)
+	{
+		if (((TimeSince)(ref timeSinceLastUsed)).PassedSince(ts) >= timeUntilAutoSurface)
+		{
+			return 0.15f;
+		}
+		if (!engineController.IsOn)
+		{
+			return Mathf.Max(0f, _upDown);
+		}
+		return _upDown;
+	}
+
 	public override void InitShared()
 	{
 		base.InitShared();
 		waterLayerMask = LayerMask.GetMask(new string[1] { "Water" });
-		EntityFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		IFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
 		engineController = new VehicleEngineController<BaseSubmarine>(this, fuelSystem, base.isServer, engineStartupTime);
 	}
 

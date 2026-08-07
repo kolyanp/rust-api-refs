@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -81,8 +82,6 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	public float client_steering_right;
 
 	public Vector3 client_velocity = Vector3.zero;
-
-	private WheelIsGroundedFlags client_wheel_flags;
 
 	public TimeSince timeSinceLastUpdate;
 
@@ -205,6 +204,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private float currentMaxSpeed;
 
+	private Vector3 currLinearVelocity;
+
 	private Rigidbody myRigidbody;
 
 	private List<RaycastHit> obstacleHits;
@@ -236,8 +237,6 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	private RaycastHit hit;
 
 	private TravellingVendorState internalState;
-
-	private WheelIsGroundedFlags wheelFlags;
 
 	private SimpleSplineTranslator splineTranslator;
 
@@ -955,16 +954,31 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		UpdateWheelFlags();
 		info.msg.travellingVendor = Pool.Get<TravellingVendor>();
-		info.msg.travellingVendor.steeringAngle = wheelFL.wheelCollider.steerAngle;
-		info.msg.travellingVendor.velocity = (IsFollowingSpline() ? (((Component)this).transform.forward * splineTranslator.Speed) : myRigidbody.linearVelocity);
-		info.msg.travellingVendor.wheelFlags = (int)wheelFlags;
+		info.msg.travellingVendor.steeringAngle = steeringAngle;
+		if (IsFollowingSpline())
+		{
+			Vector3 val = ((!BaseNetworkable.UseParallelSaves) ? ((Component)this).transform.forward : (Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(base.TransformHandle) * Vector3.forward));
+			info.msg.travellingVendor.velocity = val * splineTranslator.Speed;
+		}
+		else
+		{
+			info.msg.travellingVendor.velocity = currLinearVelocity;
+		}
 	}
 
 	public override void ServerInit()
@@ -1040,6 +1054,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private void FixedUpdate()
 	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.isClient && DoAI && HasPath())
 		{
 			ProcessLifetime();
@@ -1051,6 +1067,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 			}
 			ProcessState();
 			FetchTargets();
+			currLinearVelocity = myRigidbody.linearVelocity;
 			SendNetworkUpdate();
 		}
 	}
@@ -1649,42 +1666,6 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		myRigidbody.AddForce(-((Component)this).transform.up * downforceCoefficient);
-	}
-
-	private void UpdateWheelFlags()
-	{
-		if (wheelFL.wheelCollider.isGrounded)
-		{
-			wheelFlags |= WheelIsGroundedFlags.FrontLeft;
-		}
-		else
-		{
-			wheelFlags &= ~WheelIsGroundedFlags.FrontLeft;
-		}
-		if (wheelFR.wheelCollider.isGrounded)
-		{
-			wheelFlags |= WheelIsGroundedFlags.FrontRight;
-		}
-		else
-		{
-			wheelFlags &= ~WheelIsGroundedFlags.FrontRight;
-		}
-		if (wheelRL.wheelCollider.isGrounded)
-		{
-			wheelFlags |= WheelIsGroundedFlags.RearLeft;
-		}
-		else
-		{
-			wheelFlags &= ~WheelIsGroundedFlags.RearLeft;
-		}
-		if (wheelRR.wheelCollider.isGrounded)
-		{
-			wheelFlags |= WheelIsGroundedFlags.RearRight;
-		}
-		else
-		{
-			wheelFlags &= ~WheelIsGroundedFlags.RearRight;
-		}
 	}
 
 	private void BuildingCheck()

@@ -1,3 +1,4 @@
+using Facepunch.MarchingCubes;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,4 +12,7 @@ public class UI_ServerAdminUGCEntrySculpture : UI_ServerAdminUGCEntry
 
 	[SerializeField]
 	private RawImage targetRawImage;
+
+	[SerializeField]
+	private SDFSet SDFSet;
 }

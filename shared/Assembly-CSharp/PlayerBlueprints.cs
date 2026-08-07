@@ -122,17 +122,9 @@ public class PlayerBlueprints : EntityComponent<BasePlayer>
 							break;
 						}
 					}
-					if (!flag && targetItem.skins2 != null)
+					if (!flag && steamInventory.HasWorkshopSkin(targetItem))
 					{
-						IPlayerItemDefinition[] skins2 = targetItem.skins2;
-						foreach (IPlayerItemDefinition val in skins2)
-						{
-							if (steamInventory.HasItem(val.DefinitionId))
-							{
-								flag = true;
-								break;
-							}
-						}
+						flag = true;
 					}
 					if (!flag)
 					{

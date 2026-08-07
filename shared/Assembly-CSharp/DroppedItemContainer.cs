@@ -35,6 +35,11 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 
 	public const Flags HasBeenOpened = Flags.Reserved2;
 
+	private int _realCapacity;
+
+	[NonSerialized]
+	private bool firstLooted;
+
 	public ItemContainer inventory;
 
 	public Phrase LootPanelTitle => Phrase.op_Implicit(playerName);
@@ -54,6 +59,8 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 			_playerName = value;
 		}
 	}
+
+	public int RealCapacity => Mathf.Max(_realCapacity, inventory.capacity);
 
 	public ulong LastLootedBy { get; set; }
 
@@ -106,14 +113,26 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 
 	public override bool OnStartBeingLooted(BasePlayer baseEntity)
 	{
-		if (playerSteamID != 0L && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && !baseEntity.InSafeCombatZone())
+		bool flag = Player.adminsafezonelooting && baseEntity.IsAdmin;
+		if (playerSteamID != 0L && !flag && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && (!baseEntity.InSafeCombatZone() || !InSafeCombatZone()))
 		{
 			baseEntity.ShowToast(GameTip.Styles.Error, PlayerCorpse.CantLootSafeZoneError, false);
 			return false;
 		}
-		if (onlyOwnerLoot && (ulong)baseEntity.userID != playerSteamID)
+		if (!flag && onlyOwnerLoot && (ulong)baseEntity.userID != playerSteamID)
 		{
 			return false;
+		}
+		if (!firstLooted)
+		{
+			if (playerSteamID != 0L && playerSteamID <= 10000000)
+			{
+				foreach (Item item in inventory.itemList)
+				{
+					item.SetItemOwnership(baseEntity, ItemOwnershipPhrases.LootedPhrase);
+				}
+			}
+			firstLooted = true;
 		}
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
@@ -223,6 +242,7 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		itemContainer.GiveUID();
 		itemContainer.entityOwner = this;
 		itemContainer.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+		itemContainer.SetFlag(ItemContainer.Flag.DroppedItemContainer, b: true);
 		return itemContainer;
 	}
 
@@ -233,6 +253,7 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		destroyPercent = Mathf.Clamp01(destroyPercent);
 		float movePercent = 1f - destroyPercent;
 		TakeFractionOfItems(source, inventory, movePercent);
+		_realCapacity = inventory.capacity;
 		inventory.capacity = inventory.itemList.Count;
 		ResetRemovalTime();
 	}
@@ -272,21 +293,26 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		Pool.Free<Item>(ref list, false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (inventory != null)
 		{
 			BasePlayer player = rpc.player;
-			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(this))
-			{
-				SetFlagLocal(Flags.Open, b: true);
-				player.inventory.loot.AddContainer(inventory);
-				player.inventory.loot.SendImmediate();
-				player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), lootPanelName);
-				SendNetworkUpdate();
-			}
+			PlayerOpenLoot(player);
+		}
+	}
+
+	public void PlayerOpenLoot(BasePlayer player)
+	{
+		if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(this))
+		{
+			SetFlagLocal(Flags.Open, b: true);
+			player.inventory.loot.AddContainer(inventory);
+			player.inventory.loot.SendImmediate();
+			player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), lootPanelName);
+			SendNetworkUpdate();
 		}
 	}
 
@@ -314,6 +340,7 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		inventory.entityOwner = this;
 		inventory.ServerInitialize(null, 0);
 		inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+		inventory.SetFlag(ItemContainer.Flag.DroppedItemContainer, b: true);
 	}
 
 	public override void Save(SaveInfo info)

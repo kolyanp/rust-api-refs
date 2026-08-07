@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using API.Commands;
 using Carbon.Base;
 using Carbon.Contracts;
+using Oxide.Core.Libraries;
 
 namespace Carbon.Managers;
 
@@ -52,6 +53,7 @@ public class CarbonProcessor : BaseProcessor, ICarbonProcessor, IDisposable
 
 	public void Update()
 	{
+		Timer.UpdateStartupTimers();
 		if (CurrentFrameQueue.Count <= 0)
 		{
 			return;

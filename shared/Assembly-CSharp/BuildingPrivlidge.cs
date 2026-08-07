@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -46,6 +47,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public float nextProtectedCalcTime;
 
+	private int _threadSafeCounter = -1;
+
 	public static UpkeepBracket[] upkeepBrackets = new UpkeepBracket[4]
 	{
 		new UpkeepBracket(ConVar.Decay.bracket_0_blockcount, ConVar.Decay.bracket_0_costfraction),
@@ -63,6 +66,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	};
 
 	public List<ItemAmount> upkeepBuffer = new List<ItemAmount>();
+
+	public const float Radius = 16f;
 
 	public GameObject assignDialog;
 
@@ -353,6 +358,19 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		return 0f;
 	}
 
+	public float GetEntityUpkeepMultiplier(DecayEntity entity, float buildingFraction, float doorFraction)
+	{
+		if (entity.Upkeep != null && entity.Upkeep.highWall)
+		{
+			return ConVar.Decay.high_wall_upkeep;
+		}
+		if (!(entity is Door))
+		{
+			return buildingFraction;
+		}
+		return doorFraction;
+	}
+
 	public void CalculateUpkeepCostAmounts(List<ItemAmount> itemAmounts)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
@@ -362,16 +380,16 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		{
 			return;
 		}
-		float num = CalculateUpkeepCostFraction(doors: false);
-		float num2 = CalculateUpkeepCostFraction(doors: true);
+		float buildingFraction = CalculateUpkeepCostFraction(doors: false);
+		float doorFraction = CalculateUpkeepCostFraction(doors: true);
 		Enumerator<DecayEntity> enumerator = building.decayEntities.GetEnumerator();
 		try
 		{
 			while (enumerator.MoveNext())
 			{
 				DecayEntity current = enumerator.Current;
-				float multiplier = ((current is Door) ? num2 : num);
-				current.CalculateUpkeepCostAmounts(itemAmounts, multiplier);
+				float entityUpkeepMultiplier = GetEntityUpkeepMultiplier(current, buildingFraction, doorFraction);
+				current.CalculateUpkeepCostAmounts(itemAmounts, entityUpkeepMultiplier);
 			}
 		}
 		finally
@@ -389,49 +407,72 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 				return cachedProtectedMinutes;
 			}
 			nextProtectedCalcTime = Time.realtimeSinceStartup + 60f;
-			List<ItemAmount> list = Pool.Get<List<ItemAmount>>();
-			CalculateUpkeepCostAmounts(list);
-			float num = CalculateUpkeepPeriodMinutes();
-			float num2 = -1f;
-			if (base.inventory != null)
-			{
-				PooledList<Item> val = Pool.Get<PooledList<Item>>();
-				try
-				{
-					foreach (ItemAmount item in list)
-					{
-						((List<Item>)(object)val).Clear();
-						base.inventory.FindItemsByItemID((List<Item>)(object)val, item.itemid);
-						int num3 = ((IEnumerable<Item>)val).Sum((Item x) => x.amount);
-						if (num3 > 0 && item.amount > 0f)
-						{
-							float num4 = (float)num3 / item.amount * num;
-							if (num2 == -1f || num4 < num2)
-							{
-								num2 = num4;
-							}
-						}
-						else
-						{
-							num2 = 0f;
-						}
-					}
-					if (num2 == -1f)
-					{
-						num2 = 0f;
-					}
-				}
-				finally
-				{
-					((IDisposable)val)?.Dispose();
-				}
-			}
-			Pool.FreeUnmanaged<ItemAmount>(ref list);
-			cachedProtectedMinutes = num2;
+			cachedProtectedMinutes = CalculateProtectedMinutes();
 			Interface.CallHook("OnCupboardProtectionCalculated", this, cachedProtectedMinutes);
 			return cachedProtectedMinutes;
 		}
 		return 0f;
+	}
+
+	private float GetOrUpdateProtectedMinutes(in ThreadSafeTime time)
+	{
+		if (BaseNetworkable.UseParallelSaves)
+		{
+			if (time.RealTimeSinceStartup >= nextProtectedCalcTime)
+			{
+				int threadSafeCounter = _threadSafeCounter;
+				if (threadSafeCounter != time.FrameCount && Interlocked.CompareExchange(ref _threadSafeCounter, time.FrameCount, threadSafeCounter) == threadSafeCounter)
+				{
+					cachedProtectedMinutes = CalculateProtectedMinutes();
+					nextProtectedCalcTime = time.RealTimeSinceStartup + 60f;
+				}
+			}
+			return cachedProtectedMinutes;
+		}
+		return GetProtectedMinutes();
+	}
+
+	private float CalculateProtectedMinutes()
+	{
+		List<ItemAmount> list = Pool.Get<List<ItemAmount>>();
+		CalculateUpkeepCostAmounts(list);
+		float num = CalculateUpkeepPeriodMinutes();
+		float num2 = -1f;
+		if (base.inventory != null)
+		{
+			PooledList<Item> val = Pool.Get<PooledList<Item>>();
+			try
+			{
+				foreach (ItemAmount item in list)
+				{
+					((List<Item>)(object)val).Clear();
+					base.inventory.FindItemsByItemID((List<Item>)(object)val, item.itemid);
+					int num3 = ((IEnumerable<Item>)val).Sum((Item x) => x.amount);
+					if (num3 > 0 && item.amount > 0f)
+					{
+						float num4 = (float)num3 / item.amount * num;
+						if (num2 == -1f || num4 < num2)
+						{
+							num2 = num4;
+						}
+					}
+					else
+					{
+						num2 = 0f;
+					}
+				}
+				if (num2 == -1f)
+				{
+					num2 = 0f;
+				}
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+		Pool.FreeUnmanaged<ItemAmount>(ref list);
+		return num2;
 	}
 
 	public override void OnDied(HitInfo info)
@@ -487,7 +528,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	public override void DecayTick()
+	public override void DecayTick(bool force = false)
 	{
 		BuildingBlock nearbyBuildingBlock = GetNearbyBuildingBlock();
 		if ((Object)(object)nearbyBuildingBlock != (Object)null)
@@ -513,7 +554,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 		if (EnsurePrimary())
 		{
-			base.DecayTick();
+			base.DecayTick(force);
 		}
 	}
 
@@ -687,17 +728,17 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public float PurchaseUpkeepTime(DecayEntity entity, float deltaTime)
 	{
-		float num = CalculateUpkeepCostFraction(doors: false);
-		float num2 = CalculateUpkeepCostFraction(doors: true);
-		float num3 = CalculateUpkeepPeriodMinutes() * 60f;
-		float multiplier = ((entity is Door) ? num2 : num) * deltaTime / num3;
+		float buildingFraction = CalculateUpkeepCostFraction(doors: false);
+		float doorFraction = CalculateUpkeepCostFraction(doors: true);
+		float num = CalculateUpkeepPeriodMinutes() * 60f;
+		float multiplier = GetEntityUpkeepMultiplier(entity, buildingFraction, doorFraction) * deltaTime / num;
 		List<ItemAmount> itemAmounts = Pool.Get<List<ItemAmount>>();
 		entity.CalculateUpkeepCostAmounts(itemAmounts, multiplier);
-		bool num4 = CanAffordUpkeepPayment(itemAmounts);
+		bool num2 = CanAffordUpkeepPayment(itemAmounts);
 		QueueUpkeepPayment(itemAmounts);
 		Pool.FreeUnmanaged<ItemAmount>(ref itemAmounts);
 		ApplyUpkeepPayment();
-		if (!num4)
+		if (!num2)
 		{
 			return 0f;
 		}
@@ -911,16 +952,16 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		if (!info.forDisk)
 		{
 			float num = CalculateUpkeepPeriodMinutes();
-			float protectedMinutes = GetProtectedMinutes();
+			float orUpdateProtectedMinutes = GetOrUpdateProtectedMinutes(in info.cachedTime);
 			if ((double)ConVar.Decay.scale > 0.01)
 			{
 				info.msg.buildingPrivilege.upkeepPeriodMinutes = num / ConVar.Decay.scale;
-				info.msg.buildingPrivilege.protectedMinutes = protectedMinutes / ConVar.Decay.scale;
+				info.msg.buildingPrivilege.protectedMinutes = orUpdateProtectedMinutes / ConVar.Decay.scale;
 			}
 			else
 			{
 				info.msg.buildingPrivilege.upkeepPeriodMinutes = num;
-				info.msg.buildingPrivilege.protectedMinutes = protectedMinutes;
+				info.msg.buildingPrivilege.protectedMinutes = orUpdateProtectedMinutes;
 			}
 			info.msg.buildingPrivilege.costFraction = CalculateUpkeepCostFraction(doors: false);
 			info.msg.buildingPrivilege.doorCostFraction = CalculateUpkeepCostFraction(doors: true);
@@ -1079,8 +1120,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ClearList(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)

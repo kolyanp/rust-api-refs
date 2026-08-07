@@ -347,7 +347,7 @@ public class HeldEntity : BaseEntity
 		bool flag = false;
 		if (!genericVisible && Object.op_Implicit((Object)(object)GetOwnerPlayer()))
 		{
-			bool flag2 = (Object)(object)GetOwnerPlayer().GetHeldEntity() == (Object)(object)this || IsShield;
+			bool flag2 = (Object)(object)GetOwnerPlayer().GetHeldEntity() == (Object)(object)this || (IsShield && IsDeployed());
 			flag = ((!ConVar.Server.showHolsteredItems && !flag2) ? UpdateVisiblity_Invis() : (flag2 ? UpdateVisibility_Hand() : ((!holsterVisible) ? UpdateVisiblity_Invis() : UpdateVisiblity_Holster())));
 		}
 		else if (genericVisible)
@@ -466,7 +466,7 @@ public class HeldEntity : BaseEntity
 			{
 				bHeld = false;
 			}
-			if ((Object)(object)heldEntity != (Object)null && bHeld)
+			if ((Object)(object)heldEntity != (Object)null && bHeld && !ownerPlayer.WantsShieldOnBack())
 			{
 				using (FlagsUpdateScope flagsUpdateScope2 = heldEntity.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 				{

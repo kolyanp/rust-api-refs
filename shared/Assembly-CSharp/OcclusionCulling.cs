@@ -289,15 +289,6 @@ public class OcclusionCulling : MonoBehaviour
 		}
 	}
 
-	public enum DebugFilter
-	{
-		Off,
-		Dynamic,
-		Static,
-		Grid,
-		All
-	}
-
 	[Flags]
 	public enum DebugMask
 	{
@@ -879,8 +870,6 @@ public class OcclusionCulling : MonoBehaviour
 
 	private static bool _safeMode = false;
 
-	private static DebugFilter _debugShow = DebugFilter.Off;
-
 	public bool HiZReady
 	{
 		get
@@ -925,43 +914,19 @@ public class OcclusionCulling : MonoBehaviour
 		}
 	}
 
-	public static DebugFilter DebugShow
-	{
-		get
-		{
-			return _debugShow;
-		}
-		set
-		{
-			_debugShow = value;
-		}
-	}
-
 	public static bool DebugFilterIsDynamic(int filter)
 	{
-		if (filter != 1)
-		{
-			return filter == 4;
-		}
-		return true;
+		return (filter & 1) != 0;
 	}
 
 	public static bool DebugFilterIsStatic(int filter)
 	{
-		if (filter != 2)
-		{
-			return filter == 4;
-		}
-		return true;
+		return (filter & 2) != 0;
 	}
 
 	public static bool DebugFilterIsGrid(int filter)
 	{
-		if (filter != 3)
-		{
-			return filter == 4;
-		}
-		return true;
+		return (filter & 4) != 0;
 	}
 
 	private void DebugInitialize()
@@ -1866,6 +1831,19 @@ public class OcclusionCulling : MonoBehaviour
 		return result;
 	}
 
+	public static int GetSlotById(int id)
+	{
+		if (id >= 0 && id < 2097152)
+		{
+			if (id >= 1048576)
+			{
+				return id - 1048576;
+			}
+			return id;
+		}
+		return -1;
+	}
+
 	public static OccludeeState GetStateById(int id)
 	{
 		if (id >= 0 && id < 2097152)
@@ -1957,6 +1935,27 @@ public class OcclusionCulling : MonoBehaviour
 		{
 			dynamicStates.array[num].sphereBounds = new Vector4(center.x, center.y, center.z, radius);
 			dynamicChanged.Add(num);
+		}
+	}
+
+	public static void GetDynamicOccludeeSphere(int id, out Vector3 center, out float radius)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		center = Vector3.zero;
+		radius = 0f;
+		int num = id - 1048576;
+		if (num >= 0 && num < 1048576)
+		{
+			Vector4 sphereBounds = dynamicStates.array[num].sphereBounds;
+			center = Vector4.op_Implicit(sphereBounds);
+			radius = sphereBounds.w;
 		}
 	}
 
@@ -2077,26 +2076,27 @@ public class OcclusionCulling : MonoBehaviour
 	private void PrepareAndDispatch()
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 val = default(Vector2);
 		((Vector2)(ref val))._002Ector((float)hiZWidth, (float)hiZHeight);
 		ExtractFrustum(viewProjMatrix, ref frustumPlanes);
 		bool flag = true;
+		int num = 0;
 		if (usePixelShaderFallback)
 		{
 			fallbackMat.SetTexture("_HiZMap", (Texture)(object)hiZTexture);
@@ -2107,6 +2107,7 @@ public class OcclusionCulling : MonoBehaviour
 			fallbackMat.SetVector("_CameraWorldPos", Vector4.op_Implicit(((Component)this).transform.position));
 			fallbackMat.SetVector("_ViewportSize", Vector4.op_Implicit(val));
 			fallbackMat.SetFloat("_FrustumCull", flag ? 0f : 1f);
+			fallbackMat.SetInteger("_ExtraLODSteps", num);
 			for (int i = 0; i < 6; i++)
 			{
 				fallbackMat.SetVector(frustumPropNames[i], frustumPlanes[i]);
@@ -2122,6 +2123,7 @@ public class OcclusionCulling : MonoBehaviour
 			computeShader.SetVector("_CameraWorldPos", Vector4.op_Implicit(((Component)this).transform.position));
 			computeShader.SetVector("_ViewportSize", Vector4.op_Implicit(val));
 			computeShader.SetFloat("_FrustumCull", flag ? 0f : 1f);
+			fallbackMat.SetInteger("_ExtraLODSteps", num);
 			for (int j = 0; j < 6; j++)
 			{
 				computeShader.SetVector(frustumPropNames[j], frustumPlanes[j]);
@@ -2185,27 +2187,43 @@ public class OcclusionCulling : MonoBehaviour
 
 	private void ProcessCallbacks(SimpleList<OccludeeState> occludees, SimpleList<OccludeeState.State> states, SimpleList<int> changed)
 	{
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Expected O, but got Unknown
-		for (int i = 0; i < changed.Count; i++)
+		try
 		{
-			int num = changed[i];
-			OccludeeState occludeeState = occludees[num];
-			if (occludeeState != null)
+			int num = Math.Min(changed.Count, changed.array.Length);
+			for (int i = 0; i < num; i++)
 			{
-				bool flag = states.array[num].isVisible == 0;
-				OnVisibilityChanged onVisibilityChanged = occludeeState.onVisibilityChanged;
-				if (onVisibilityChanged != null && (Object)onVisibilityChanged.Target != (Object)null)
+				int num2 = changed.array[i];
+				if (num2 < 0 || num2 >= occludees.count || num2 >= states.count)
 				{
-					onVisibilityChanged(flag);
+					continue;
 				}
-				if (occludeeState.slot >= 0)
+				OccludeeState occludeeState = occludees.array[num2];
+				if (occludeeState == null)
 				{
-					states.array[occludeeState.slot].isVisible = (byte)(flag ? 1 : 0);
+					continue;
+				}
+				bool flag = states.array[num2].isVisible == 0;
+				OnVisibilityChanged onVisibilityChanged = occludeeState.onVisibilityChanged;
+				if (onVisibilityChanged != null)
+				{
+					object? target = onVisibilityChanged.Target;
+					Object val = (Object)((target is Object) ? target : null);
+					if (val == null || val != (Object)null)
+					{
+						onVisibilityChanged(flag);
+					}
+				}
+				int slot = occludeeState.slot;
+				if (slot >= 0 && slot < states.count)
+				{
+					states.array[slot].isVisible = (byte)(flag ? 1 : 0);
 				}
 			}
 		}
-		changed.Clear();
+		finally
+		{
+			changed.Clear();
+		}
 	}
 
 	public void RetrieveAndApplyVisibility()
@@ -2237,8 +2255,8 @@ public class OcclusionCulling : MonoBehaviour
 				gridSet.resultData[k].r = 1;
 			}
 		}
-		staticVisibilityChanged.EnsureCapacity(staticOccludees.Count);
-		dynamicVisibilityChanged.EnsureCapacity(dynamicOccludees.Count);
+		staticVisibilityChanged.EnsureCapacity(staticVisibilityChanged.Count + staticOccludees.Count);
+		dynamicVisibilityChanged.EnsureCapacity(dynamicVisibilityChanged.Count + dynamicOccludees.Count);
 		float time = Time.time;
 		uint frameCount = (uint)Time.frameCount;
 		if (!Passthrough)

@@ -93,10 +93,10 @@ public class Spawn : ConsoleSystem
 			return;
 		}
 		int num = Mathf.Clamp(args.GetInt(0, 100), 1, 10000);
-		List<LootContainer> list = new List<LootContainer>();
+		List<ILootContainer> list = new List<ILootContainer>();
 		global::Vis.Entities(((Component)player).transform.position, 5f, list, -1, (QueryTriggerInteraction)1);
-		LootContainer lootContainer = list.OrderBy((LootContainer x) => Vector3.Distance(((Component)player).transform.position, ((Component)x).transform.position)).FirstOrDefault();
-		if ((Object)(object)lootContainer == (Object)null)
+		ILootContainer lootContainer = list.OrderBy((ILootContainer x) => Vector3.Distance(((Component)player).transform.position, ((Component)x.GetEntity()).transform.position)).FirstOrDefault();
+		if (lootContainer == null)
 		{
 			args.ReplyWith("No loot container found");
 			return;
@@ -104,10 +104,11 @@ public class Spawn : ConsoleSystem
 		Dictionary<string, int> dictionary = new Dictionary<string, int>();
 		for (int num2 = 0; num2 < num; num2++)
 		{
-			lootContainer.inventory.Clear();
+			ItemContainer inventory = lootContainer.GetInventory();
+			inventory.Clear();
 			ItemManager.DoRemoves();
 			lootContainer.PopulateLoot();
-			foreach (Item item in lootContainer.inventory.itemList)
+			foreach (Item item in inventory.itemList)
 			{
 				if (item != null)
 				{
@@ -118,12 +119,93 @@ public class Spawn : ConsoleSystem
 		}
 		int totalWidth = dictionary.Max((KeyValuePair<string, int> x) => x.Key.Length);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"Simulated loot from {num} {lootContainer.ShortPrefabName}:");
+		stringBuilder.AppendLine($"Simulated loot from {num} {lootContainer.GetEntity().ShortPrefabName}:");
 		foreach (KeyValuePair<string, int> item2 in dictionary.OrderByDescending((KeyValuePair<string, int> x) => x.Value))
 		{
 			stringBuilder.AppendLine($"{item2.Key.PadRight(totalWidth)} : {item2.Value}");
 		}
 		args.ReplyWith(stringBuilder.ToString());
+	}
+
+	[ServerVar(Help = "Respawns loot in the loot container currently being looked at")]
+	public static void respawnloot_lookingat(Arg arg)
+	{
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if (!((Object)(object)basePlayer == (Object)null))
+		{
+			BaseNetworkable baseNetworkable = GamePhysics.TraceRealmEntity(GamePhysics.Realm.Server, basePlayer.eyes.HeadRay(), 0f, 3f, 1218652417, (QueryTriggerInteraction)0);
+			if (!(baseNetworkable is ILootContainer lootContainer) || !baseNetworkable.isServer)
+			{
+				arg.ReplyWith("Not looking at a loot container");
+				return;
+			}
+			lootContainer.SpawnLoot();
+			arg.ReplyWith("Respawned loot for " + lootContainer.GetEntity().ShortPrefabName);
+		}
+	}
+
+	[ServerVar(Help = "Respawns loot in all loot containers within the given radius")]
+	public static void respawnloot_radius(Arg arg)
+	{
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			return;
+		}
+		float num = arg.GetFloat(0, 20f);
+		if (num <= 0f)
+		{
+			arg.ReplyWith("Radius must be greater than zero");
+			return;
+		}
+		int num2 = 0;
+		PooledList<BaseEntity> val = Pool.Get<PooledList<BaseEntity>>();
+		try
+		{
+			global::Vis.Entities(((Component)basePlayer).transform.position, num, (List<BaseEntity>)(object)val, -1, (QueryTriggerInteraction)2);
+			int i = 0;
+			for (int count = ((List<BaseEntity>)(object)val).Count; i < count; i++)
+			{
+				BaseEntity baseEntity = ((List<BaseEntity>)(object)val)[i];
+				if (baseEntity.isServer && baseEntity is ILootContainer lootContainer)
+				{
+					lootContainer.SpawnLoot();
+					num2++;
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+		arg.ReplyWith($"Respawned loot for {num2} loot containers in radius {num:0.##}m.");
+	}
+
+	[ServerVar(Help = "Respawns loot in all loot containers currently on the server")]
+	public static void respawnloot_all(Arg arg)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		int num = 0;
+		Enumerator<BaseNetworkable> enumerator = BaseNetworkable.serverEntities.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current is ILootContainer lootContainer)
+				{
+					lootContainer.SpawnLoot();
+					num++;
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+		arg.ReplyWith($"Respawned loot for {num} loot containers");
 	}
 
 	[ServerVar(Help = "Fills all spawn groups to their maximum count without waiting for the normal tick interval")]
@@ -175,6 +257,17 @@ public class Spawn : ConsoleSystem
 		int simCount = args.GetInt(1, 100);
 		SingletonComponent<SpawnHandler>.Instance.GenerateDebugMaps(name, simCount, out var spawned, out var attempts);
 		args.ReplyWith($"Would spawn {spawned} prefabs, ran {attempts} attempts");
+	}
+
+	[ServerVar(Help = "Renders a PNG of every spawned ore nodes location to <rootFolder>/debug/ore-nodes.png (blue rings = safezones)")]
+	public static void ore_map(Arg args)
+	{
+		if (!((Object)(object)SingletonComponent<SpawnHandler>.Instance == (Object)null))
+		{
+			int inSafeZone;
+			int num = SingletonComponent<SpawnHandler>.Instance.GenerateOreNodeMap(out inSafeZone);
+			args.ReplyWith($"Wrote {Server.rootFolder}/debug/ore-nodes.png - {num} ore nodes, {inSafeZone} inside safezones");
+		}
 	}
 
 	[ServerVar(Help = "(Generated) Prints a table of current spawn scalar values including player fraction, excess, population rate, density, and group rate; pass --json for machine-readable output")]

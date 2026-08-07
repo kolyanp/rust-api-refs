@@ -26,7 +26,7 @@ public class ModularCarGarage : ContainerIOEntity
 		HasLock
 	}
 
-	private enum VehicleLiftState
+	protected enum VehicleLiftState
 	{
 		Down,
 		Up
@@ -38,6 +38,7 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public MagnetSnap magnetSnap;
 
+	[Header("ModularCarGarage")]
 	[SerializeField]
 	public Transform vehicleLift;
 
@@ -100,7 +101,7 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public ItemAmount lockResourceCost;
 
-	public VehicleLiftState vehicleLiftState;
+	protected VehicleLiftState vehicleLiftState;
 
 	private Sound liftLoopSound;
 
@@ -138,6 +139,8 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
+	protected Transform GetVehicleLiftPos => vehicleLiftPos;
+
 	public bool PlatformIsOccupied { get; set; }
 
 	public bool HasEditableOccupant { get; set; }
@@ -146,11 +149,11 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public OccupantLock OccupantLockState { get; set; }
 
-	public bool LiftIsUp => vehicleLiftState == VehicleLiftState.Up;
+	protected virtual bool LiftIsUp => vehicleLiftState == VehicleLiftState.Up;
 
-	public bool LiftIsMoving => vehicleLiftAnim.isPlaying;
+	protected virtual bool LiftIsMoving => vehicleLiftAnim.isPlaying;
 
-	public bool LiftIsDown => vehicleLiftState == VehicleLiftState.Down;
+	protected virtual bool LiftIsDown => vehicleLiftState == VehicleLiftState.Down;
 
 	public bool IsDestroyingChassis => HasFlag(Flags.Reserved6);
 
@@ -609,6 +612,43 @@ public class ModularCarGarage : ContainerIOEntity
 				}
 				return true;
 			}
+			if (rpc == 613695921 && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Server_RequestFuelExtract"));
+				}
+				using (TimeWarning.New("Server_RequestFuelExtract"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(613695921u, "Server_RequestFuelExtract", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg13 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							Server_RequestFuelExtract(msg13);
+						}
+					}
+					catch (Exception ex12)
+					{
+						Debug.LogException(ex12);
+						player.Kick("RPC Error in Server_RequestFuelExtract");
+					}
+				}
+				return true;
+			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
 	}
@@ -868,9 +908,9 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public unsafe void RPC_RepairItem(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -906,8 +946,8 @@ public class ModularCarGarage : ContainerIOEntity
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenEditing(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -917,9 +957,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_DiedWithKeypadOpen(RPCMessage msg)
 	{
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
@@ -992,21 +1032,21 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartKeycodeEntry(RPCMessage msg)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Reserved7, b: true);
 	}
 
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestAddLock(RPCMessage msg)
 	{
-		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		if (!HasOccupant || carOccupant.CarLock.HasALock)
 		{
 			return;
@@ -1028,9 +1068,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_RequestRemoveLock(RPCMessage msg)
 	{
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
@@ -1042,9 +1082,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestNewCode(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
@@ -1064,10 +1104,10 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartDestroyingChassis(RPCMessage msg)
 	{
 		if (carOccupant.HasAnyModules)
@@ -1079,10 +1119,10 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: true);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StopDestroyingChassis(RPCMessage msg)
 	{
 		StopChassisDestroy();
@@ -1097,6 +1137,38 @@ public class ModularCarGarage : ContainerIOEntity
 		carOccupant.Kill(DestroyMode.Gib);
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
+	}
+
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	private void Server_RequestFuelExtract(RPCMessage msg)
+	{
+		if (!lootingPlayers.Contains(msg.player))
+		{
+			return;
+		}
+		foreach (BaseVehicleModule attachedModuleEntity in carOccupant.AttachedModuleEntities)
+		{
+			if (!(attachedModuleEntity is VehicleModuleStorage vehicleModuleStorage) || !(vehicleModuleStorage.GetStorageUnitInstance() is LiquidContainerCrude liquidContainerCrude))
+			{
+				continue;
+			}
+			Item slot = liquidContainerCrude.inventory.GetSlot(0);
+			if (slot != null)
+			{
+				if (slot.amount > slot.info.stackable)
+				{
+					Item item = slot.SplitItem(slot.info.stackable);
+					msg.player.GiveItem(item);
+				}
+				else
+				{
+					slot.LockUnlock(bNewState: false);
+					slot.RemoveFromContainer();
+					msg.player.GiveItem(slot);
+				}
+			}
+		}
 	}
 
 	public override void PreProcess(IPrefabProcessor process, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
@@ -1169,49 +1241,59 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public void MoveLift(VehicleLiftState desiredLiftState, float startDelay = 0f, bool forced = false)
 	{
-		if (vehicleLiftState != desiredLiftState || forced)
+		if (vehicleLiftState == desiredLiftState && !forced)
 		{
-			_ = vehicleLiftState;
-			vehicleLiftState = desiredLiftState;
-			if (base.isServer)
-			{
-				UpdateOccupantMode();
-				WakeNearbyRigidbodies();
-			}
-			if (!((Component)this).gameObject.activeSelf)
+			return;
+		}
+		_ = vehicleLiftState;
+		vehicleLiftState = desiredLiftState;
+		if (base.isServer)
+		{
+			UpdateOccupantMode();
+			WakeNearbyRigidbodies();
+		}
+		if (!((Component)this).gameObject.activeSelf)
+		{
+			if ((Object)(object)vehicleLiftAnim != (Object)null)
 			{
 				vehicleLiftAnim[animName].time = ((desiredLiftState == VehicleLiftState.Up) ? 1f : 0f);
 				vehicleLiftAnim.Play();
 			}
-			else if (desiredLiftState == VehicleLiftState.Up)
-			{
-				Invoke(MoveLiftUp, startDelay);
-			}
-			else
-			{
-				Invoke(MoveLiftDown, startDelay);
-			}
+		}
+		else if (desiredLiftState == VehicleLiftState.Up)
+		{
+			Invoke(MoveLiftUp, startDelay);
+		}
+		else
+		{
+			Invoke(MoveLiftDown, startDelay);
 		}
 	}
 
 	public void MoveLiftUp()
 	{
-		AnimationState obj = vehicleLiftAnim[animName];
-		obj.speed = obj.length / liftMoveTime;
-		vehicleLiftAnim.Play();
+		if (!((Object)(object)vehicleLiftAnim == (Object)null))
+		{
+			AnimationState obj = vehicleLiftAnim[animName];
+			obj.speed = obj.length / liftMoveTime;
+			vehicleLiftAnim.Play();
+		}
 	}
 
 	public void MoveLiftDown()
 	{
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		AnimationState val = vehicleLiftAnim[animName];
-		val.speed = val.length / liftMoveTime;
-		if (!vehicleLiftAnim.isPlaying && Vector3.Distance(((Component)vehicleLift).transform.position, downPos) > 0.01f)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)vehicleLiftAnim == (Object)null))
 		{
-			val.time = 1f;
+			AnimationState val = vehicleLiftAnim[animName];
+			val.speed = val.length / liftMoveTime;
+			if (!vehicleLiftAnim.isPlaying && Vector3.Distance(((Component)vehicleLift).transform.position, downPos) > 0.01f)
+			{
+				val.time = 1f;
+			}
+			val.speed *= -1f;
+			vehicleLiftAnim.Play();
 		}
-		val.speed *= -1f;
-		vehicleLiftAnim.Play();
 	}
 }

@@ -1195,7 +1195,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			{
 				if (list == null)
 				{
-					list = item.BuildCost();
+					list = item.BuildCost().Items;
 				}
 				num++;
 			}
@@ -1203,7 +1203,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 			{
 				if (list2 == null)
 				{
-					list2 = item.BuildCost();
+					list2 = item.BuildCost().Items;
 				}
 				num2++;
 			}
@@ -2139,7 +2139,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 
 	public float GetDamageMultiplier(BaseEntity ent)
 	{
-		return Mathf.Abs(GetSpeed()) * 4f;
+		return Mathf.Max(1f, Mathf.Abs(GetSpeed()) * 4f);
 	}
 
 	public void OnHurtTriggerOccupant(BaseEntity hurtEntity, DamageType damageType, float damageTotal)
@@ -2891,8 +2891,8 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		}
 	}
 
-	public override List<ItemAmount> BuildCost()
+	public override EntityBuildCost BuildCost()
 	{
-		return DynamicBuildCost;
+		return new EntityBuildCost(DynamicBuildCost);
 	}
 }

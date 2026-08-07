@@ -24,12 +24,15 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 
 	protected override void OnVolumeTriggerUpdate()
 	{
-		WaterSystem.Collision.VisibilityGrid.AddTrigger(this);
+		if (Object.op_Implicit((Object)(object)WaterSystem.Instance))
+		{
+			WaterSystem.Collision.VisibilityGrid.AddTrigger(this);
+		}
 	}
 
 	private void OnDisable()
 	{
-		if (!Application.isQuitting)
+		if (!Application.isQuitting && Object.op_Implicit((Object)(object)WaterSystem.Instance))
 		{
 			WaterSystem.Collision.VisibilityGrid.RemoveTrigger(this);
 		}

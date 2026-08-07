@@ -171,12 +171,13 @@ public class OrientableLight : SimpleLight
 	{
 		base.OnDeployed(parent, deployedBy, fromItem);
 		ResetRotation();
+		TryScheduleServerTick();
 		ClientRPC(RpcTarget.Player("CLIENT_OnDeployed", deployedBy));
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public void SERVER_SetDir(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -234,8 +235,23 @@ public class OrientableLight : SimpleLight
 				normWorld = default(Vector3);
 				Effect.server.Run(resourcePath, position, normWorld);
 			}
+			TryScheduleServerTick();
 			SendNetworkUpdate();
 		}
+	}
+
+	private void TryScheduleServerTick()
+	{
+		if (lastPitchAmount != pitchAmount || lastYawAmount != yawAmount)
+		{
+			InvokeRepeating(ServerTick, 0f, 0f);
+			Invoke(delegate
+			{
+				CancelInvoke(ServerTick);
+			}, 5f);
+		}
+		lastPitchAmount = pitchAmount;
+		lastYawAmount = yawAmount;
 	}
 
 	public override void Save(SaveInfo info)
@@ -248,20 +264,6 @@ public class OrientableLight : SimpleLight
 		info.msg.rcEntity.aim.x = pitchAmount;
 		info.msg.rcEntity.aim.y = yawAmount;
 		info.msg.rcEntity.aim.z = 0f;
-		if (!base.isServer)
-		{
-			return;
-		}
-		if (lastPitchAmount != pitchAmount || lastYawAmount != yawAmount)
-		{
-			InvokeRepeating(ServerTick, 0f, 0f);
-			Invoke(delegate
-			{
-				CancelInvoke(ServerTick);
-			}, 5f);
-		}
-		lastPitchAmount = pitchAmount;
-		lastYawAmount = yawAmount;
 	}
 
 	public override void Load(LoadInfo info)

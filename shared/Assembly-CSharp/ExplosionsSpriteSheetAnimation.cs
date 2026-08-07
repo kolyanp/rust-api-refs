@@ -92,7 +92,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 		{
 			if (StartDelay > 0.0001f)
 			{
-				((MonoBehaviour)this).Invoke("PlayDelay", StartDelay);
+				SingletonComponent<InvokeHandler>.Instance.Invoke(PlayDelay, StartDelay);
 			}
 			else
 			{
@@ -122,7 +122,7 @@ internal class ExplosionsSpriteSheetAnimation : MonoBehaviour
 		isCorutineStarted = false;
 		isVisible = false;
 		((MonoBehaviour)this).StopAllCoroutines();
-		((MonoBehaviour)this).CancelInvoke("PlayDelay");
+		SingletonComponent<InvokeHandler>.Instance.CancelInvoke(PlayDelay);
 	}
 
 	private IEnumerator UpdateCorutine()

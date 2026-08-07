@@ -98,17 +98,19 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		isDirty = true;
 	}
 
-	public override void ServerUpdate(BaseCombatEntity ownerEntity, float delta)
+	public override bool ServerUpdate(BaseCombatEntity ownerEntity, float delta)
 	{
-		base.ServerUpdate(ownerEntity, delta);
+		bool num = base.ServerUpdate(ownerEntity, delta);
 		Interface.CallHook("OnPlayerMetabolize", this, ownerEntity, delta);
-		using (TimeWarning.New("PlayerMetabolism.ServerUpdate"))
+		bool flag = num;
+		if ((flag || isDirty || _needsFullSnapshot) && owner.IsConnected)
 		{
-			if (owner.IsConnected)
+			using (TimeWarning.New("PlayerMetabolism.ServerUpdate"))
 			{
 				SendChanges();
 			}
 		}
+		return flag;
 	}
 
 	private ushort GetChangedMask()

@@ -4320,7 +4320,6 @@ public class CorePlugin : CarbonPlugin
 	{
 		if (!Community.IsServerInitialized)
 		{
-			Community.IsServerInitialized = true;
 			Analytics.on_server_initialized();
 		}
 		Community.Runtime.MarkServerInitialized(wants: true);

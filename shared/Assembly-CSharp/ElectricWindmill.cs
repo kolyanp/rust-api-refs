@@ -150,7 +150,7 @@ public class ElectricWindmill : IOEntity
 			{
 				info.msg.ioEntity = Pool.Get<IOEntity>();
 			}
-			info.msg.ioEntity.genericFloat1 = Time.time;
+			info.msg.ioEntity.genericFloat1 = info.cachedTime.Time;
 			info.msg.ioEntity.genericFloat2 = serverWindSpeed;
 		}
 	}

@@ -7,4 +7,6 @@ public class ObjectRotation : MonoBehaviour
 	public bool ignoreNeedsKeyboard = true;
 
 	public Transform panTransform;
+
+	public bool DuckToLockToYaw;
 }

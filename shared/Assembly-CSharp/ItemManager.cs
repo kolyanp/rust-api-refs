@@ -10,9 +10,19 @@ using UnityEngine;
 
 public class ItemManager
 {
-	public static class Items
+	public class ItemLookup
 	{
-		public static readonly ItemDefinition Scrap = FindItemDefinition("scrap");
+		public ItemDefinition Scrap = FindItemDefinition("scrap");
+
+		public ItemDefinition Hoodie = FindItemDefinition("hoodie");
+
+		public ItemDefinition Pants = FindItemDefinition("pants");
+
+		public ItemDefinition HazmatSuit = FindItemDefinition("hazmatsuit");
+
+		public ItemDefinition Rock = FindItemDefinition("rock");
+
+		public ItemDefinition MasterKey = FindItemDefinition("apartment.master_key");
 	}
 
 	private struct ItemRemove
@@ -37,11 +47,15 @@ public class ItemManager
 
 	public static ItemDefinition blueprintBaseDef;
 
-	public static Dictionary<ItemDefinition, List<ItemDefinition>> redirectPerItem = new Dictionary<ItemDefinition, List<ItemDefinition>>();
+	public static Dictionary<ItemDefinition, ItemBlueprint> itemToBlueprint;
 
-	public static Dictionary<ItemDefinition, List<ItemBlueprint>> ingredientToBlueprints = new Dictionary<ItemDefinition, List<ItemBlueprint>>();
+	public static Dictionary<ItemDefinition, List<ItemDefinition>> redirectPerItem;
+
+	public static Dictionary<ItemDefinition, List<ItemBlueprint>> ingredientToBlueprints;
 
 	private static List<ItemRemove> ItemRemoves = new List<ItemRemove>();
+
+	public static ItemLookup Items { get; private set; }
 
 	public static void InvalidateWorkshopSkinCache()
 	{
@@ -61,6 +75,9 @@ public class ItemManager
 		{
 			return;
 		}
+		itemToBlueprint = new Dictionary<ItemDefinition, ItemBlueprint>();
+		redirectPerItem = new Dictionary<ItemDefinition, List<ItemDefinition>>();
+		ingredientToBlueprints = new Dictionary<ItemDefinition, List<ItemBlueprint>>();
 		Stopwatch stopwatch = new Stopwatch();
 		stopwatch.Start();
 		GameObject[] array = FileSystem.LoadAllFromBundle<GameObject>("items.preload.bundle", "l:ItemDefinition");
@@ -99,6 +116,11 @@ public class ItemManager
 			{
 				dictionary.Add(item.itemid, item);
 				dictionary2.Add(item.shortname, item);
+				ItemBlueprint component = ((Component)item).GetComponent<ItemBlueprint>();
+				if ((Object)(object)component != (Object)null)
+				{
+					itemToBlueprint.Add(item, component);
+				}
 			}
 		}
 		stopwatch.Stop();
@@ -139,6 +161,7 @@ public class ItemManager
 			}
 		}
 		CalculateApartmentItemTaxes();
+		Items = new ItemLookup();
 	}
 
 	private static void CalculateApartmentItemTaxes()
@@ -364,7 +387,8 @@ public class ItemManager
 
 	public static ItemBlueprint FindBlueprint(ItemDefinition item)
 	{
-		return ((Component)item).GetComponent<ItemBlueprint>();
+		Initialize();
+		return itemToBlueprint.GetValueOrDefault(item, null);
 	}
 
 	public static List<ItemDefinition> GetItemDefinitions()

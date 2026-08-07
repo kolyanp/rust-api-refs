@@ -16,7 +16,8 @@ public class ItemPickup : DroppedItem
 	public override void Spawn()
 	{
 		base.Spawn();
-		if (!Application.isLoadingSave)
+		bool flag = false;
+		if (!(Application.isLoadingSave || flag))
 		{
 			Item item = ItemManager.Create(itemDef, amount, skinOverride, isServerSide: true, 0uL);
 			InitializeItem(item);

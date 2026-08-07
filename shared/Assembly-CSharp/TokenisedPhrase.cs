@@ -48,6 +48,9 @@ public class TokenisedPhrase : Phrase
 		str = str.Replace("[+ping]", string.Format("[{0}]", Input.GetButtonWithBind("+ping", true)).ToUpper());
 		str = str.Replace("[clan.toggleclan]", string.Format("[{0}]", Input.GetButtonWithBind("clan.toggleclan", true)).ToUpper());
 		str = str.Replace("[+jump]", string.Format("[{0}]", Input.GetButtonWithBind("+jump", true)).ToUpper());
+		str = str.Replace("[+snapping]", string.Format("[{0}]", TranslateMouseButton(Input.GetButtonWithBind("+snapping", true)).ToUpper()));
+		str = str.Replace("[+wireslackup]", string.Format("[{0}]", TranslateMouseButton(Input.GetButtonWithBind("+wireslackup", true)).ToUpper()));
+		str = str.Replace("[+wireslackdown]", string.Format("[{0}]", TranslateMouseButton(Input.GetButtonWithBind("+wireslackdown", true)).ToUpper()));
 		str = str.Replace("[movement]", ("[" + TranslateMouseButton(Input.GetButtonWithBind("+forward", true)) + TranslateMouseButton(Input.GetButtonWithBind("+left", true)) + TranslateMouseButton(Input.GetButtonWithBind("+backward", true)) + TranslateMouseButton(Input.GetButtonWithBind("+right", true)) + "]").ToUpper());
 		str = str.Replace("[+help]", string.Format("[{0}]", Input.GetButtonWithBind("+opentutorialhelp", true)).ToUpper());
 		str = str.Replace("[chat.open]", string.Format("[{0}]", Input.GetButtonWithBind("chat.open", true)).ToUpper());

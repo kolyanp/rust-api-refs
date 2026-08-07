@@ -208,7 +208,7 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private CoverImage skinViewerImage;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private PageContent pageContent;
 }

@@ -92,9 +92,15 @@ public class PieMenu : UIBehaviour
 
 	public GameObject scaleTarget;
 
-	public GameObject arrowLeft;
+	public CanvasGroup arrowLeft;
 
-	public GameObject arrowRight;
+	public CanvasGroup arrowRight;
+
+	public RustText arrowLeftText;
+
+	public RustText arrowRightText;
+
+	public UIEscapeCapture escapeCapture;
 
 	public float sliceGaps = 10f;
 

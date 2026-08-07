@@ -12,12 +12,12 @@ public class Category_Queue
 	public class Queue_ConnectionQueue
 	{
 		[Patch("OnConnectionDequeue", "OnConnectionDequeue", "ConnectionQueue", "RemoveConnection", new string[] { "Network.Connection" })]
-		[Identifier("e435a40b4b3142b390d4b165773794db")]
+		[Identifier("e573eefdc32e467883dffc6420184e73")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Queue")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Queue_ConnectionQueue_e435a40b4b3142b390d4b165773794db : Patch
+		public class Queue_ConnectionQueue_e573eefdc32e467883dffc6420184e73 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -47,12 +47,12 @@ public class Category_Queue
 		}
 
 		[Patch("OnConnectionQueue", "OnConnectionQueue", "ConnectionQueue", "Join", new string[] { "Network.Connection" })]
-		[Identifier("1a904d0cef0b498fabc8382e517dca82")]
+		[Identifier("5e1cf838738e4c488011767c10d3d489")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Queue")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Queue_ConnectionQueue_1a904d0cef0b498fabc8382e517dca82 : Patch
+		public class Queue_ConnectionQueue_5e1cf838738e4c488011767c10d3d489 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -82,12 +82,12 @@ public class Category_Queue
 		}
 
 		[Patch("OnQueueUpdate", "OnQueueUpdate", "ConnectionQueue", "SendQueueUpdate", new string[] { "Network.Connection", "System.Int32" })]
-		[Identifier("caaf5c1a82ed475e8b95be2bda21c197")]
+		[Identifier("884c64be805940e1814d867d55096000")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Queue")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Queue_ConnectionQueue_caaf5c1a82ed475e8b95be2bda21c197 : Patch
+		public class Queue_ConnectionQueue_884c64be805940e1814d867d55096000 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -120,12 +120,12 @@ public class Category_Queue
 		}
 
 		[Patch("OnQueueCycle", "OnQueueCycle", "ConnectionQueue", "Cycle", new string[] { "System.Int32" })]
-		[Identifier("4d47ee3a99a94a9c8c700bcea1f47632")]
+		[Identifier("c20e0d0123f4490cbcbe6979065cd0d8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Queue")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Queue_ConnectionQueue_4d47ee3a99a94a9c8c700bcea1f47632 : Patch
+		public class Queue_ConnectionQueue_c20e0d0123f4490cbcbe6979065cd0d8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -13,7 +13,7 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 
 	public bool canMove;
 
-	public bool buildOnEnable = true;
+	public bool buildOnEnable;
 
 	private static SparseGridWithBounds<IndependantNavmesh> navmeshLookup = new SparseGridWithBounds<IndependantNavmesh>();
 
@@ -64,6 +64,15 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 			Matrix4x4 worldToNavMatrix = WorldToNavMatrix;
 			return ((Matrix4x4)(ref worldToNavMatrix)).inverse;
 		}
+	}
+
+	public bool IsBuilt()
+	{
+		if (Navmesh != null)
+		{
+			return Navmesh.IsBuilt();
+		}
+		return false;
 	}
 
 	private void OnEnable()
@@ -245,14 +254,18 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds)
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh() || Navmesh == null || !Navmesh.IsValid())
 		{
 			return false;

@@ -10,10 +10,10 @@ public class Nexus : ConsoleSystem
 {
 	public static readonly Phrase RedirectPhrase = new Phrase("loading.redirect", "Switching servers");
 
-	private const string DefaultEndpoint = "https://api.facepunch.com/api/nexus/";
+	private const string DefaultEndpoint = "https://gw.facepunch.com/nexus/";
 
-	[ReplicatedVar(Help = "URL endpoint to use for the Nexus API", Default = "https://api.facepunch.com/api/nexus/")]
-	public static string endpoint = "https://api.facepunch.com/api/nexus/";
+	[ReplicatedVar(Help = "URL endpoint to use for the Nexus API", Default = "https://gw.facepunch.com/nexus/")]
+	public static string endpoint = "https://gw.facepunch.com/nexus/";
 
 	[ServerVar(Clientside = true, Help = "(Generated) When enabled, logs all Nexus zone transfer and communication events to the server console; useful for debugging cross-server player transfers")]
 	public static bool logging = true;

@@ -7,6 +7,8 @@ public class AtmosphereRendererFeature : RustRendererFeature
 {
 	public Texture DitheringTexture;
 
+	public Shader scatteringShader;
+
 	public override void Create()
 	{
 	}

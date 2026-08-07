@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.PostProcessing;
 
 public class WaterOverlay : MonoBehaviour, IClientComponent
@@ -118,6 +119,8 @@ public class WaterOverlay : MonoBehaviour, IClientComponent
 	}
 
 	public PostProcessVolume postProcessVolume;
+
+	public Volume postProcessVolume_RRP;
 
 	public PostProcessVolume blurPostProcessVolume;
 

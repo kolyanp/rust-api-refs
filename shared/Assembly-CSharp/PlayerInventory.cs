@@ -18,7 +18,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		Main,
 		Belt,
 		Wear,
-		BackpackContents
+		BackpackContents,
+		SecondHotbar
 	}
 
 	public readonly struct CanMoveFromResponse
@@ -47,6 +48,11 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 	public interface ICanMoveFrom
 	{
 		CanMoveFromResponse CanMoveFrom(BasePlayer player, Item item);
+	}
+
+	public interface ICanSwapFrom
+	{
+		CanMoveFromResponse CanSwapFrom(BasePlayer player, Item displacedItem, Item incomingItem);
 	}
 
 	public enum NetworkInventoryMode
@@ -456,6 +462,10 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 			}
 		}
 		Pool.FreeUnmanaged<HeldEntity>(ref list);
+		if ((Object)(object)base.baseEntity.GetHeldEntity() != (Object)null)
+		{
+			base.baseEntity.GetHeldEntity().UpdateShieldState(bHeld: true);
+		}
 	}
 
 	public void AddBackpackContentsToList(List<Item> items)
@@ -492,8 +502,17 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		return CanMoveFromResponse.Success();
 	}
 
-	[BaseEntity.RPC_Server.FromOwner]
+	private CanMoveFromResponse CanSwapItemsFrom(BaseEntity entity, Item displacedItem, Item incomingItem)
+	{
+		if (entity is ICanSwapFrom canSwapFrom)
+		{
+			return canSwapFrom.CanSwapFrom(base.baseEntity, displacedItem, incomingItem);
+		}
+		return CanMoveFromResponse.Success();
+	}
+
 	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.FromOwner]
 	private void ItemCmd(BaseEntity.RPCMessage msg)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
@@ -583,8 +602,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 	}
 
-	[BaseEntity.RPC_Server.FromOwner]
 	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.FromOwner]
 	[BaseEntity.RPC_Server.CallsPerSecond(2uL)]
 	private void UpdateAccessoryOnItem(BaseEntity.RPCMessage msg)
 	{
@@ -661,18 +680,18 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019b: Invalid comparison between Unknown and I4
-		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bc: Invalid comparison between Unknown and I4
+		//IL_02b3: Unknown result type (might be due to invalid IL or missing references)
 		if (base.baseEntity.IsTransferring())
 		{
 			return;
@@ -690,7 +709,7 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 		else
 		{
-			if (Interface.CallHook("CanMoveItem", item, this, val, num, num2, val2) != null)
+			if (Interface.CallHook("CanMoveItem", item, this, val, num, num2, val2) != null || item.IsLocked() || (item.parent != null && item.parent.IsLocked()))
 			{
 				return;
 			}
@@ -786,15 +805,28 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 			{
 				num2 = Mathf.Clamp(num2, 1, itemContainer.maxStackSize);
 			}
-			bool allowSwap = !itemContainer.PlayerItemInputBlocked() && item.parent != null && !item.parent.PlayerItemInputBlocked();
+			bool flag = (!itemContainer.PlayerItemInputBlocked() && item.parent != null && !item.parent.PlayerItemInputBlocked()) || (itemContainer.HasFlag(ItemContainer.Flag.Clothing) && item.parent != null && item.parent.HasFlag(ItemContainer.Flag.DroppedItemContainer) && item.info.category == ItemCategory.Attire);
+			if (flag && num >= 0)
+			{
+				Item slot = itemContainer.GetSlot(num);
+				if (slot != null && slot != item && !slot.CanStack(item))
+				{
+					CanMoveFromResponse canMoveFromResponse2 = CanSwapItemsFrom(slot.GetEntityOwner(), slot, item);
+					if (!canMoveFromResponse2.allowed)
+					{
+						msg.player.ShowToast(GameTip.Styles.Error, canMoveFromResponse2.reasonForFailure ?? PlayerInventoryErrors.CannotMoveItem, canMoveFromResponse2.reasonForFailure != null);
+						return;
+					}
+				}
+			}
 			using (TimeWarning.New("Split"))
 			{
 				if (item.amount > num2)
 				{
 					int split_Amount = num2;
 					Item item2 = item.SplitItem(split_Amount);
-					Item slot = itemContainer.GetSlot(num);
-					if (slot != null && !item.CanStack(slot) && item.parent != null && !item2.MoveToContainer(item.parent, -1, allowStack: false, ignoreStackLimit: false, base.baseEntity, allowSwap: false))
+					Item slot2 = itemContainer.GetSlot(num);
+					if (slot2 != null && !item.CanStack(slot2) && item.parent != null && !item2.MoveToContainer(item.parent, -1, allowStack: false, ignoreStackLimit: false, base.baseEntity, allowSwap: false))
 					{
 						item.amount += item2.amount;
 						item2.Remove();
@@ -802,7 +834,7 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 						ServerUpdate(0f);
 						return;
 					}
-					if (!item2.MoveToContainer(itemContainer, num, allowStack: true, ignoreStackLimit: false, base.baseEntity, allowSwap))
+					if (!item2.MoveToContainer(itemContainer, num, allowStack: true, ignoreStackLimit: false, base.baseEntity, flag))
 					{
 						item.amount += item2.amount;
 						item2.Remove();
@@ -816,7 +848,7 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 					return;
 				}
 			}
-			if (item.MoveToContainer(itemContainer, num, allowStack: true, ignoreStackLimit: false, base.baseEntity, allowSwap))
+			if (item.MoveToContainer(itemContainer, num, allowStack: true, ignoreStackLimit: false, base.baseEntity, flag))
 			{
 				ItemManager.DoRemoves();
 				ServerUpdate(0f);
@@ -852,10 +884,6 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 				_updatedVisibleHolsteredItemsCallback = UpdatedVisibleHolsteredItems;
 			}
 			Invoke(_updatedVisibleHolsteredItemsCallback, 0.1f);
-			if ((Object)(object)base.baseEntity.GetHeldEntity() != (Object)null)
-			{
-				base.baseEntity.GetHeldEntity().UpdateShieldState(bHeld: true);
-			}
 			item?.contents?.onItemAddedRemoved?.Invoke(item, bAdded);
 		}
 		base.baseEntity.ProcessMissionEvent(BaseMission.MissionEventType.CLOTHINGCHANGED, 0, 0f);
@@ -1138,10 +1166,10 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 	{
 		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
 		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0294: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b1: Unknown result type (might be due to invalid IL or missing references)
 		ItemModWearable component = ((Component)item.info).GetComponent<ItemModWearable>();
 		if ((Object)(object)component == (Object)null)
 		{
@@ -1232,7 +1260,7 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 							ChangedItem = null
 						};
 					}
-					if (!dontMove && (targetSlot != clothingItem.position || targetSlot == 7) && !DirectSwap(containerMain) && !DirectSwap(containerBelt) && !clothingItem.MoveToContainer(containerMain) && !clothingItem.MoveToContainer(containerBelt))
+					if (!dontMove && (targetSlot != clothingItem.position || targetSlot == 7) && !DirectSwap(containerMain) && !DirectSwap(containerBelt) && !clothingItem.MoveToContainer(containerMain) && !clothingItem.MoveToContainer(containerBelt) && !TryForceIntoCorpse(item.parent))
 					{
 						clothingItem.Drop(base.baseEntity.GetDropPosition(), base.baseEntity.GetDropVelocity());
 					}
@@ -1247,6 +1275,26 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 						}
 						item.RemoveFromContainer();
 						return true;
+					}
+					return false;
+				}
+				bool TryForceIntoCorpse(ItemContainer container)
+				{
+					if (container == null)
+					{
+						return false;
+					}
+					if (container.PlayerItemInputBlocked() && container.HasFlag(ItemContainer.Flag.DroppedItemContainer))
+					{
+						container.SetFlag(ItemContainer.Flag.NoItemInput, b: false);
+						int num = ((container.entityOwner is DroppedItemContainer droppedItemContainer) ? droppedItemContainer.RealCapacity : container.capacity);
+						if (container.itemList.Count == container.capacity && container.capacity < num)
+						{
+							container.capacity++;
+						}
+						bool result = clothingItem.MoveToContainer(container);
+						container.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
+						return result;
 					}
 					return false;
 				}
@@ -1758,7 +1806,7 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 			val.invMain = containerMain.Save();
 		}
 		val.invBelt = containerBelt.Save();
-		val.invWear = containerWear.Save();
+		val.invWear = containerWear.Save(bForDisk, !bForDisk);
 		return val;
 	}
 
@@ -1869,13 +1917,13 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		return GetAmount(definition.itemid);
 	}
 
-	public int GetAmount(int itemid, bool includeBackpack = false)
+	public int GetAmount(int itemid, bool includeBackpack = false, bool redirectAllowed = false)
 	{
 		if (itemid == 0)
 		{
 			return 0;
 		}
-		object obj = Interface.CallHook("OnInventoryItemsCount", this, itemid, includeBackpack);
+		object obj = Interface.CallHook("OnInventoryItemsCount", this, itemid, includeBackpack, redirectAllowed);
 		if (obj is int)
 		{
 			return (int)obj;
@@ -1883,28 +1931,28 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		int num = 0;
 		if (containerMain != null)
 		{
-			num += containerMain.GetAmount(itemid, onlyUsableAmounts: true);
+			num += containerMain.GetAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 		}
 		if (containerBelt != null)
 		{
-			num += containerBelt.GetAmount(itemid, onlyUsableAmounts: true);
+			num += containerBelt.GetAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 		}
 		if (containerWear != null)
 		{
-			num += containerWear.GetAmount(itemid, onlyUsableAmounts: true);
+			num += containerWear.GetAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 		}
 		if (includeBackpack)
 		{
 			Item backpackWithInventory = GetBackpackWithInventory();
 			if (backpackWithInventory != null && backpackWithInventory.contents != null)
 			{
-				num += backpackWithInventory.contents.GetAmount(itemid, onlyUsableAmounts: true);
+				num += backpackWithInventory.contents.GetAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 			}
 		}
 		return num;
 	}
 
-	public int GetOkConditionAmount(int itemid)
+	public int GetOkConditionAmount(int itemid, bool redirectAllowed = false)
 	{
 		if (itemid == 0)
 		{
@@ -1913,15 +1961,15 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		int num = 0;
 		if (containerMain != null)
 		{
-			num += containerMain.GetOkConditionAmount(itemid, onlyUsableAmounts: true);
+			num += containerMain.GetOkConditionAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 		}
 		if (containerBelt != null)
 		{
-			num += containerBelt.GetOkConditionAmount(itemid, onlyUsableAmounts: true);
+			num += containerBelt.GetOkConditionAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 		}
 		if (containerWear != null)
 		{
-			num += containerWear.GetOkConditionAmount(itemid, onlyUsableAmounts: true);
+			num += containerWear.GetOkConditionAmount(itemid, onlyUsableAmounts: true, redirectAllowed);
 		}
 		return num;
 	}

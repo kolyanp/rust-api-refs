@@ -13,4 +13,7 @@ public class UI_DemosMenuWindow : UI_Window
 
 	[SerializeField]
 	private GameObject playButton;
+
+	[SerializeField]
+	private UI_SearchBar searchField;
 }

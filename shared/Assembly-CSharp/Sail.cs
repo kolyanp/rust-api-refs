@@ -12,8 +12,8 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Sail")]
+	[SerializeField]
 	private float maxThrust = 1000f;
 
 	public float RaiseDuration = 1.5f;
@@ -479,8 +479,8 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void LowerSail(RPCMessage msg)
 	{
 		Lower(msg.player);
@@ -526,9 +526,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		ToggleColliders();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RaiseSail(RPCMessage msg)
 	{
 		Raise(msg.player);

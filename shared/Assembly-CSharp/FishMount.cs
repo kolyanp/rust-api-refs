@@ -108,8 +108,8 @@ public class FishMount : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void UseFish(RPCMessage msg)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)

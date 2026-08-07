@@ -113,8 +113,8 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 
 	public override void OnItemAddedOrRemoved(Item item, bool added)
 	{
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		base.OnItemAddedOrRemoved(item, added);
 		CheckNucleus();
 		Flags flags = base.flags;
@@ -207,10 +207,10 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 
 	private void GenerateHoneyComb()
 	{
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
 		float num = base.inventory.GetAmount(HoneyCombDefinition.itemid, onlyUsableAmounts: false);
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{

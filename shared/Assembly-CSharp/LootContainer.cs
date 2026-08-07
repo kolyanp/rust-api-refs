@@ -1,13 +1,15 @@
 using System;
 using ConVar;
+using Facepunch;
 using Facepunch.Rust;
 using Oxide.Core;
+using ProtoBuf;
 using Rust;
 using Rust.Safety;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class LootContainer : StorageContainer
+public class LootContainer : StorageContainer, ILootContainer
 {
 	public enum spawnType
 	{
@@ -67,6 +69,16 @@ public class LootContainer : StorageContainer
 	[NonSerialized]
 	public ulong FirstLooterId;
 
+	private float timeAtLootCountdownStarted;
+
+	private float currentLootCountdownLength;
+
+	private bool isLootCountdownRunning;
+
+	private bool isRestoringFromSave;
+
+	private Action _actionSpawnLoot;
+
 	private static ItemDefinition scrapDef;
 
 	public bool shouldRefreshContents
@@ -81,16 +93,62 @@ public class LootContainer : StorageContainer
 		}
 	}
 
+	private Action actionSpawnLoot => _actionSpawnLoot ?? (_actionSpawnLoot = SpawnLoot);
+
 	public override void ResetState()
 	{
 		FirstLooterId = 0uL;
+		timeAtLootCountdownStarted = 0f;
+		currentLootCountdownLength = 0f;
+		isLootCountdownRunning = false;
+		isRestoringFromSave = false;
 		base.ResetState();
+	}
+
+	public static void FillLoot(ItemContainer inventory, LootSpawn lootDefinition, int maxDefinitionsToSpawn, LootSpawnSlot[] lootSpawnSlots)
+	{
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		if (inventory == null)
+		{
+			return;
+		}
+		if (lootSpawnSlots != null && lootSpawnSlots.Length != 0)
+		{
+			for (int i = 0; i < lootSpawnSlots.Length; i++)
+			{
+				LootSpawnSlot lootSpawnSlot = lootSpawnSlots[i];
+				if (lootSpawnSlot.eras != null && lootSpawnSlot.eras.Length != 0 && Array.IndexOf(lootSpawnSlot.eras, ConVar.Server.Era) == -1)
+				{
+					continue;
+				}
+				for (int j = 0; j < lootSpawnSlot.numberToSpawn; j++)
+				{
+					if (Random.Range(0f, 1f) <= lootSpawnSlot.probability)
+					{
+						lootSpawnSlot.definition.SpawnIntoContainer(inventory);
+					}
+				}
+			}
+		}
+		else if ((Object)(object)lootDefinition != (Object)null)
+		{
+			for (int k = 0; k < maxDefinitionsToSpawn; k++)
+			{
+				lootDefinition.SpawnIntoContainer(inventory);
+			}
+		}
+	}
+
+	public override void PreServerLoad()
+	{
+		base.PreServerLoad();
+		isRestoringFromSave = true;
 	}
 
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (initialLootSpawn)
+		if (initialLootSpawn && !isRestoringFromSave)
 		{
 			SpawnLoot();
 		}
@@ -118,6 +176,18 @@ public class LootContainer : StorageContainer
 		}
 	}
 
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (info.forDisk && isLootCountdownRunning)
+		{
+			float num = info.cachedTime.Time - timeAtLootCountdownStarted;
+			float countdownTimeRemaining = currentLootCountdownLength - num;
+			info.msg.lootContainer = Pool.Get<LootContainer>();
+			info.msg.lootContainer.countdownTimeRemaining = countdownTimeRemaining;
+		}
+	}
+
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
@@ -125,6 +195,17 @@ public class LootContainer : StorageContainer
 		{
 			base.inventory.SetFlag(ItemContainer.Flag.NoItemInput, b: true);
 		}
+	}
+
+	internal override void DoServerDestroy()
+	{
+		CancelLootRefreshCountdown();
+		base.DoServerDestroy();
+	}
+
+	public ItemContainer GetInventory()
+	{
+		return base.inventory;
 	}
 
 	public virtual void SpawnLoot()
@@ -143,11 +224,40 @@ public class LootContainer : StorageContainer
 		if (Interface.CallHook("OnLootSpawn", this) == null)
 		{
 			PopulateLoot();
+			CancelLootRefreshCountdown();
 			if (shouldRefreshContents)
 			{
-				Invoke(SpawnLoot, Random.Range(minSecondsBetweenRefresh, maxSecondsBetweenRefresh));
+				StartLootRefreshCountdown();
 			}
 		}
+	}
+
+	private void StartLootRefreshCountdown(float? countdownLength = null)
+	{
+		CancelLootRefreshCountdown();
+		timeAtLootCountdownStarted = Time.time;
+		currentLootCountdownLength = ((!countdownLength.HasValue) ? Random.Range(minSecondsBetweenRefresh, maxSecondsBetweenRefresh) : countdownLength.Value);
+		Invoke(actionSpawnLoot, currentLootCountdownLength);
+		isLootCountdownRunning = true;
+	}
+
+	private void CancelLootRefreshCountdown()
+	{
+		if (IsInvoking(actionSpawnLoot))
+		{
+			CancelInvoke(actionSpawnLoot);
+		}
+		isLootCountdownRunning = false;
+	}
+
+	public float GetLootCountdownTimeRemaining()
+	{
+		if (!isLootCountdownRunning)
+		{
+			return -1f;
+		}
+		float num = Time.time - timeAtLootCountdownStarted;
+		return Mathf.Max(0f, currentLootCountdownLength - num);
 	}
 
 	public int ScoreForRarity(Rarity rarity)
@@ -167,33 +277,7 @@ public class LootContainer : StorageContainer
 
 	public virtual void PopulateLoot()
 	{
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		if (LootSpawnSlots.Length != 0)
-		{
-			LootSpawnSlot[] lootSpawnSlots = LootSpawnSlots;
-			for (int i = 0; i < lootSpawnSlots.Length; i++)
-			{
-				LootSpawnSlot lootSpawnSlot = lootSpawnSlots[i];
-				if (lootSpawnSlot.eras != null && lootSpawnSlot.eras.Length != 0 && Array.IndexOf(lootSpawnSlot.eras, ConVar.Server.Era) == -1)
-				{
-					continue;
-				}
-				for (int j = 0; j < lootSpawnSlot.numberToSpawn; j++)
-				{
-					if (Random.Range(0f, 1f) <= lootSpawnSlot.probability)
-					{
-						lootSpawnSlot.definition.SpawnIntoContainer(base.inventory);
-					}
-				}
-			}
-		}
-		else if ((Object)(object)lootDefinition != (Object)null)
-		{
-			for (int k = 0; k < maxDefinitionsToSpawn; k++)
-			{
-				lootDefinition.SpawnIntoContainer(base.inventory);
-			}
-		}
+		FillLoot(base.inventory, lootDefinition, maxDefinitionsToSpawn, LootSpawnSlots);
 		if (SpawnType == spawnType.ROADSIDE || SpawnType == spawnType.TOWN)
 		{
 			foreach (Item item in base.inventory.itemList)
@@ -206,6 +290,7 @@ public class LootContainer : StorageContainer
 		}
 		GenerateScrap();
 		HasBeenLooted = false;
+		FirstLooterId = 0uL;
 	}
 
 	public void GenerateScrap()
@@ -347,6 +432,22 @@ public class LootContainer : StorageContainer
 		if (info != null && (Object)(object)info.InitiatorPlayer != (Object)null && !string.IsNullOrEmpty(deathStat))
 		{
 			info.InitiatorPlayer.stats.Add(deathStat, 1, Stats.Life);
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (info.fromDisk && shouldRefreshContents)
+		{
+			if (info.msg.lootContainer != null)
+			{
+				StartLootRefreshCountdown(info.msg.lootContainer.countdownTimeRemaining);
+			}
+			else if (initialLootSpawn)
+			{
+				StartLootRefreshCountdown();
+			}
 		}
 	}
 

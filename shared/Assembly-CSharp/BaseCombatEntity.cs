@@ -88,6 +88,13 @@ public class BaseCombatEntity : BaseEntity
 		public GameObjectRef repairFailedEffect;
 	}
 
+	public struct EntityBuildCost(List<ItemAmount> items, int craftedAmount = 1)
+	{
+		public List<ItemAmount> Items = items;
+
+		public int CraftAmount = craftedAmount;
+	}
+
 	public enum ActionVolume
 	{
 		Quiet,
@@ -129,8 +136,8 @@ public class BaseCombatEntity : BaseEntity
 		Horror
 	}
 
-	[InspectorName("Spawn Corpse")]
 	[Header("Deployable Corpse")]
+	[InspectorName("Spawn Corpse")]
 	public bool spawnDeployableCorpseOnDeath;
 
 	[InspectorName("Corpse Prefab")]
@@ -488,8 +495,8 @@ public class BaseCombatEntity : BaseEntity
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_PickupStart(RPCMessage rpc)
 	{
 		pickupErrorToFormat = (format: null, arg0: null);
@@ -529,18 +536,18 @@ public class BaseCombatEntity : BaseEntity
 		Kill();
 	}
 
-	public virtual List<ItemAmount> BuildCost()
+	public virtual EntityBuildCost BuildCost()
 	{
 		if ((Object)(object)repair.itemTarget == (Object)null)
 		{
-			return null;
+			return default(EntityBuildCost);
 		}
 		ItemBlueprint itemBlueprint = ItemManager.FindBlueprint(repair.itemTarget);
 		if ((Object)(object)itemBlueprint == (Object)null)
 		{
-			return null;
+			return default(EntityBuildCost);
 		}
-		return itemBlueprint.GetIngredients();
+		return new EntityBuildCost(itemBlueprint.GetIngredients(), itemBlueprint.amountToCreate);
 	}
 
 	public virtual bool ShouldRepairViaParent()
@@ -560,21 +567,21 @@ public class BaseCombatEntity : BaseEntity
 
 	public List<ItemAmount> RepairCost(float healthMissingFraction)
 	{
-		List<ItemAmount> list = BuildCost();
-		if (list == null)
+		EntityBuildCost entityBuildCost = BuildCost();
+		if (entityBuildCost.Items == null)
 		{
 			return null;
 		}
-		List<ItemAmount> list2 = new List<ItemAmount>();
-		foreach (ItemAmount item in list)
+		List<ItemAmount> list = new List<ItemAmount>();
+		foreach (ItemAmount item in entityBuildCost.Items)
 		{
 			if (!((Object)(object)repair.ignoreForRepair != (Object)null) || item.itemDef.itemid != repair.ignoreForRepair.itemid)
 			{
-				list2.Add(new ItemAmount(item.itemDef, Mathf.Max(Mathf.RoundToInt(item.amount * RepairCostFraction() * healthMissingFraction), 1)));
+				list.Add(new ItemAmount(item.itemDef, Mathf.Max(Mathf.RoundToInt(item.amount * RepairCostFraction() * healthMissingFraction), 1)));
 			}
 		}
-		RepairBench.StripComponentRepairCost(list2, RepairCostFraction() * healthMissingFraction);
-		return list2;
+		RepairBench.StripComponentRepairCost(list, RepairCostFraction() * healthMissingFraction);
+		return list;
 	}
 
 	public virtual void OnRepair()

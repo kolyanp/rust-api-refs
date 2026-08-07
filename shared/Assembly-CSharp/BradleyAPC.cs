@@ -1014,7 +1014,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		RaycastHit val = default(RaycastHit);
 		while (!flag)
 		{
-			if (Physics.Raycast(ScientistSpawnPoints[num2 % ScientistSpawnPoints.Count].transform.position + Vector3.up * 1f, Vector3.down, ref val, 2f, num3) && RustNavMesh.SamplePosition(((RaycastHit)(ref val)).point + Vector3.up * 0.3f, out var _, 6f, walkableAreaMask))
+			if (Physics.Raycast(ScientistSpawnPoints[num2 % ScientistSpawnPoints.Count].transform.position + Vector3.up * 1f, Vector3.down, ref val, 2f, num3) && RustNavMeshHelpers.SamplePosition(((RaycastHit)(ref val)).point + Vector3.up * 0.3f, out var _, 6f, walkableAreaMask))
 			{
 				spawnPositions.Add(((RaycastHit)(ref val)).point + Vector3.up * 0.1f);
 				num2++;

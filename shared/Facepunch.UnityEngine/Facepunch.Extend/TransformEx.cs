@@ -1,12 +1,66 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Jobs;
 
 namespace Facepunch.Extend;
 
 public static class TransformEx
 {
+	public static class Unsafe
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private unsafe static TransformAccess* ExtractTransformAccess(TransformHandle handle)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			if (((TransformHandle)(ref handle)).Equals(TransformHandle.None))
+			{
+				throw new ArgumentNullException("handle", "A None/default handle has been passed in, it can't be used for transform access!");
+			}
+			IntPtr* ptr = (IntPtr*)UnsafeUtility.AddressOf<TransformHandle>(ref handle);
+			return (TransformAccess*)(void*)(*ptr);
+		}
+
+		public unsafe static Vector3 GetLocalPosMT(in TransformHandle handle)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return ((TransformAccess)ExtractTransformAccess(handle)).localPosition;
+		}
+
+		public unsafe static Quaternion GetLocalRotMT(in TransformHandle handle)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return ((TransformAccess)ExtractTransformAccess(handle)).localRotation;
+		}
+
+		public unsafe static Vector3 GetLocalScaleMT(in TransformHandle handle)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return ((TransformAccess)ExtractTransformAccess(handle)).localScale;
+		}
+
+		public unsafe static Vector3 GetPosMT(in TransformHandle handle)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return ((TransformAccess)ExtractTransformAccess(handle)).position;
+		}
+
+		public unsafe static Quaternion GetRotMT(in TransformHandle handle)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return ((TransformAccess)ExtractTransformAccess(handle)).rotation;
+		}
+	}
+
 	private static PointerEventData _pointerEvent;
 
 	public static Transform FindChildRecursive(this Transform transform, string name)

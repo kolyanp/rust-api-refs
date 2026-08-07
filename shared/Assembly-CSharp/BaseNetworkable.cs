@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using ConVar;
 using Development.Attributes;
 using Facepunch;
@@ -23,6 +25,31 @@ using UnityEngine.Assertions;
 
 public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, IEntity, NetworkHandler
 {
+	public struct ThreadSafeTime
+	{
+		public DateTime Now;
+
+		public int FrameCount;
+
+		public float Time;
+
+		public float FixedTime;
+
+		public float RealTimeSinceStartup;
+
+		public static ThreadSafeTime TakeSnapshot()
+		{
+			return new ThreadSafeTime
+			{
+				Now = DateTime.Now,
+				FrameCount = Time.frameCount,
+				Time = Time.time,
+				FixedTime = Time.fixedTime,
+				RealTimeSinceStartup = Time.realtimeSinceStartup
+			};
+		}
+	}
+
 	public struct SaveInfo
 	{
 		public Entity msg;
@@ -32,6 +59,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		public bool forTransfer;
 
 		public Connection forConnection;
+
+		public ThreadSafeTime cachedTime;
 
 		internal bool SendingTo(Connection ownerConnection)
 		{
@@ -246,7 +275,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public MemoryStream _NetworkCache;
 
-	public static Queue<MemoryStream> EntityMemoryStreamPool = new Queue<MemoryStream>();
+	public static ConcurrentQueue<MemoryStream> EntityMemoryStreamPool = new ConcurrentQueue<MemoryStream>();
 
 	private MemoryStream _SaveCache;
 
@@ -256,8 +285,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
-	[Header("BaseNetworkable")]
 	[ReadOnly]
+	[Header("BaseNetworkable")]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -281,6 +310,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 	private string _prefabName;
 
 	private string _prefabNameWithoutExtension;
+
+	private TransformHandle _transformHandle;
 
 	public static EntityRealm serverEntities = new EntityRealmServer();
 
@@ -377,6 +408,10 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			return _prefabNameWithoutExtension;
 		}
 	}
+
+	public TransformHandle TransformHandle => _transformHandle;
+
+	public static bool UseParallelSaves => ConVar.Server.UsePlayerUpdateJobs >= 4;
 
 	public bool isServer => true;
 
@@ -507,6 +542,11 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 	public virtual float GetNetworkTime()
 	{
 		return Time.time;
+	}
+
+	public virtual float GetNetworkTime(in ThreadSafeTime time)
+	{
+		return time.Time;
 	}
 
 	public virtual void Spawn()
@@ -712,7 +752,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			SaveInfo saveInfo = new SaveInfo
 			{
 				forConnection = connection,
-				forDisk = false
+				forDisk = false,
+				cachedTime = ThreadSafeTime.TakeSnapshot()
 			};
 			netWrite.PacketID(Message.Type.Entities);
 			netWrite.UInt32(val);
@@ -721,17 +762,34 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		}
 	}
 
-	public void SendAsSnapshot(Connection connection, NetWrite write, bool ordered = true)
+	public void SendAsSnapshot(Connection connection, in ThreadSafeTime time, bool ordered = true)
 	{
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		NetWrite netWrite = Net.sv.StartWrite();
+		uint val = (ordered ? (++connection.validate.entityUpdates) : uint.MaxValue);
+		SaveInfo saveInfo = new SaveInfo
+		{
+			forConnection = connection,
+			forDisk = false,
+			cachedTime = time
+		};
+		netWrite.PacketID(Message.Type.Entities);
+		netWrite.UInt32(val);
+		ToStreamForNetwork(netWrite, saveInfo);
+		netWrite.Send(new SendInfo(connection));
+	}
+
+	public void SendAsSnapshot(Connection connection, NetWrite write, in ThreadSafeTime time, bool ordered = true)
+	{
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		uint val = (ordered ? (++connection.validate.entityUpdates) : uint.MaxValue);
 		if (Interface.CallHook("OnEntitySnapshot", this, connection) == null)
 		{
 			SaveInfo saveInfo = new SaveInfo
 			{
 				forConnection = connection,
-				forDisk = false
+				forDisk = false,
+				cachedTime = time
 			};
 			write.PacketID(Message.Type.Entities);
 			write.UInt32(val);
@@ -922,9 +980,30 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		}
 		if (_NetworkCache == null)
 		{
-			_NetworkCache = ((EntityMemoryStreamPool.Count > 0) ? (_NetworkCache = EntityMemoryStreamPool.Dequeue()) : new MemoryStream(8));
-			ToStream(_NetworkCache, saveInfo);
-			ConVar.Server.netcachesize += (int)_NetworkCache.Length;
+			if (!EntityMemoryStreamPool.TryDequeue(out var result))
+			{
+				result = new MemoryStream(8);
+			}
+			try
+			{
+				ToStream(result, saveInfo);
+			}
+			catch
+			{
+				result.SetLength(0L);
+				EntityMemoryStreamPool.Enqueue(result);
+				throw;
+			}
+			if (Interlocked.CompareExchange(ref _NetworkCache, result, null) == null)
+			{
+				_NetworkCache = result;
+				ConVar.Server.netcachesize += (int)result.Length;
+			}
+			else
+			{
+				result.SetLength(0L);
+				EntityMemoryStreamPool.Enqueue(result);
+			}
 		}
 		_NetworkCache.WriteTo(stream);
 	}
@@ -957,17 +1036,14 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 	{
 		if (_SaveCache == null)
 		{
-			if (EntityMemoryStreamPool.Count > 0)
-			{
-				_SaveCache = EntityMemoryStreamPool.Dequeue();
-			}
-			else
+			if (!EntityMemoryStreamPool.TryDequeue(out _SaveCache))
 			{
 				_SaveCache = new MemoryStream(8);
 			}
 			SaveInfo saveInfo = new SaveInfo
 			{
-				forDisk = true
+				forDisk = true,
+				cachedTime = ThreadSafeTime.TakeSnapshot()
 			};
 			ToStream(_SaveCache, saveInfo);
 			ConVar.Server.savecachesize += (int)_SaveCache.Length;
@@ -1340,14 +1416,24 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public virtual Vector3 GetNetworkPosition()
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((Component)this).transform.localPosition;
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		if (UseParallelSaves)
+		{
+			return Facepunch.Extend.TransformEx.Unsafe.GetLocalPosMT(in _transformHandle);
+		}
+		return ((TransformHandle)(ref _transformHandle)).localPosition;
 	}
 
 	public virtual Quaternion GetNetworkRotation()
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		return ((Component)this).transform.localRotation;
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		if (UseParallelSaves)
+		{
+			return Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in _transformHandle);
+		}
+		return ((TransformHandle)(ref _transformHandle)).localRotation;
 	}
 
 	public string InvokeString()
@@ -1557,7 +1643,10 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private void SpawnShared()
 	{
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		IsDestroyed = false;
+		_transformHandle = ((Component)this).gameObject.transformHandle;
 		using (TimeWarning.New("Registry.Entity.Register"))
 		{
 			Entity.Register(((Component)this).gameObject, (IEntity)(object)this);
@@ -1581,7 +1670,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		}
 		if (!info.forDisk)
 		{
-			info.msg.createdThisFrame = creationFrame == Time.frameCount;
+			info.msg.createdThisFrame = creationFrame == info.cachedTime.FrameCount;
 		}
 	}
 

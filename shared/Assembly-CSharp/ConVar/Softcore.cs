@@ -27,8 +27,11 @@ public class Softcore : ConsoleSystem
 
 	private static float _fresh_tc_seconds = 3600f;
 
-	[ServerVar(Saved = true, Help = "(Generated) Outside the window, also block a non-explosive damage type against non-twig building blocks (e.g. shotgunning down a stone wall). Melee is never affected")]
+	[ServerVar(Saved = true, Help = "(Generated) Outside the window, also block a non-explosive damage type against non-twig building blocks (e.g. shotgunning down a stone wall). Melee is only affected by softcore.raidwindow_block_melee_doors")]
 	public static bool raidwindow_block_extra_enabled = true;
+
+	[ServerVar(Saved = true, Help = "(Generated) Outside the window, block melee damage to doors so they can't be beaten down while the window is closed")]
+	public static bool raidwindow_block_melee_doors = true;
 
 	[ServerVar(Saved = true, Help = "(Generated) Rust.DamageType value blocked against non-twig building blocks when softcore.raidwindow_block_extra_enabled is true (default 8 = Bullet, which covers guns and shotguns)")]
 	public static int raidwindow_block_extra_type = 8;

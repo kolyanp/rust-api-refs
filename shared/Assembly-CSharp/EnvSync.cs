@@ -50,7 +50,7 @@ public class EnvSync : PointEntity
 		{
 			info.msg.environment.dateTime = TOD_Sky.Instance.Cycle.DateTime.ToBinary();
 		}
-		info.msg.environment.engineTime = Time.realtimeSinceStartup;
+		info.msg.environment.engineTime = info.cachedTime.RealTimeSinceStartup;
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
 		{
 			info.msg.environment.rainGraceStartTicks = SingletonComponent<Climate>.Instance.RainGraceStartTicks;

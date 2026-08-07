@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ConVar;
@@ -9,7 +10,13 @@ using UnityEngine.Assertions;
 
 public class SteamInventory : EntityComponent<BasePlayer>
 {
+	private static int workshopSkinCacheVersion;
+
 	public IPlayerItem[] Items;
+
+	private HashSet<string> workshopSkinShortNames;
+
+	private int workshopSkinVersion = -1;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -56,6 +63,11 @@ public class SteamInventory : EntityComponent<BasePlayer>
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	public static void InvalidateWorkshopSkinCaches()
+	{
+		workshopSkinCacheVersion++;
+	}
+
 	public bool HasItem(int itemid)
 	{
 		if (!base.baseEntity.DefaultSkinAccess)
@@ -75,6 +87,52 @@ public class SteamInventory : EntityComponent<BasePlayer>
 			}
 		}
 		return false;
+	}
+
+	public bool HasWorkshopSkin(ItemDefinition itemDefinition)
+	{
+		if (!base.baseEntity.DefaultSkinAccess)
+		{
+			return base.baseEntity.AllSkinsUnlocked;
+		}
+		if (Items == null)
+		{
+			return false;
+		}
+		if (workshopSkinShortNames == null || workshopSkinVersion != workshopSkinCacheVersion)
+		{
+			if (!PlatformService.Instance.IsValid || PlatformService.Instance.ItemDefinitions == null)
+			{
+				return false;
+			}
+			workshopSkinShortNames = new HashSet<string>();
+			IPlayerItem[] items = Items;
+			foreach (IPlayerItem val in items)
+			{
+				IPlayerItemDefinition itemDefinition2 = PlatformService.Instance.GetItemDefinition(val.DefinitionId);
+				if (itemDefinition2 != null && itemDefinition2.WorkshopId != 0L)
+				{
+					string itemShortName = itemDefinition2.ItemShortName;
+					if (!string.IsNullOrEmpty(itemShortName))
+					{
+						workshopSkinShortNames.Add(itemShortName);
+					}
+				}
+			}
+			workshopSkinVersion = workshopSkinCacheVersion;
+		}
+		if (!workshopSkinShortNames.Contains(itemDefinition.shortname))
+		{
+			return workshopSkinShortNames.Contains(((Object)itemDefinition).name);
+		}
+		return true;
+	}
+
+	private void SetItems(IPlayerItem[] items)
+	{
+		Items = items;
+		workshopSkinShortNames = null;
+		workshopSkinVersion = -1;
 	}
 
 	[BaseEntity.RPC_Server.FromOwner]
@@ -102,7 +160,7 @@ public class SteamInventory : EntityComponent<BasePlayer>
 		}
 		else if (Object.op_Implicit((Object)(object)((Component)this).gameObject))
 		{
-			Items = val.Items.ToArray();
+			SetItems(val.Items.ToArray());
 			Interface.CallHook("OnSteamInventoryUpdated", this);
 			((IDisposable)val).Dispose();
 		}

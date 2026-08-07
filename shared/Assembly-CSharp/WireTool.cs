@@ -61,9 +61,13 @@ public class WireTool : HeldEntity
 
 	public PendingPlug pendingPlug;
 
-	private const float MIN_SLACK = 0f;
+	public const float MIN_SLACK = 0f;
 
-	private const float MAX_SLACK = 2f;
+	public const float MAX_SLACK = 2f;
+
+	private const float wireValidationDist = 5f;
+
+	private const float wireValidationDistSqr = 25f;
 
 	private const float IndustrialThickness = 0.01f;
 
@@ -357,31 +361,48 @@ public class WireTool : HeldEntity
 		return 200f;
 	}
 
+	private static float CombineMinSlack(float a, float b)
+	{
+		float num = ((!(a > 0f) || !(b > 0f)) ? Mathf.Max(a, b) : Mathf.Min(a, b));
+		return Mathf.Clamp(num, 0f, 2f);
+	}
+
+	private static float CombineMaxSlack(float a, float b)
+	{
+		float num = ((!(a < 2f) || !(b < 2f)) ? Mathf.Min(a, b) : Mathf.Max(a, b));
+		return Mathf.Clamp(num, 0f, 2f);
+	}
+
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_WireStarted(RPCMessage msg)
 	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
-		if (!CanPlayerUseWires(player))
-		{
-			return;
-		}
 		NetworkableId uid = msg.read.EntityID();
 		int num = msg.read.Int32();
 		bool flag = msg.read.Bit();
 		IOEntity iOEntity = BaseNetworkable.serverEntities.Find(uid) as IOEntity;
-		if (!((Object)(object)iOEntity == (Object)null) && !(Vector3.Distance(((Component)player).transform.position, ((Component)iOEntity).transform.position) > 5f))
+		if ((Object)(object)iOEntity == (Object)null || !CanPlayerUseWires(player, cached: false, 1f, iOEntity))
 		{
-			IOEntity.IOSlot[] array = (flag ? iOEntity.inputs : iOEntity.outputs);
-			if (num >= 0 && num < array.Length && array[num].type == wireType && CanModifyEntity(player, iOEntity))
+			return;
+		}
+		IOEntity.IOSlot[] array = (flag ? iOEntity.inputs : iOEntity.outputs);
+		if (num >= 0 && num < array.Length)
+		{
+			Vector3 val = ((Component)iOEntity).transform.TransformPoint(array[num].handlePosition);
+			if (!(Vector3.SqrMagnitude(((Component)player).transform.position - val) > 25f) && array[num].type == wireType && CanModifyEntity(player, iOEntity))
 			{
 				validatedWireEntity = uid;
 				validatedWireSlot = num;
@@ -390,73 +411,92 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
-	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(WireConnectionMessage) })]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = rpc.player;
-		if (!CanPlayerUseWires(player))
-		{
-			return;
-		}
 		WireConnectionMessage val = rpc.read.Proto<WireConnectionMessage>((WireConnectionMessage)null);
-		List<Vector3> linePoints = val.linePoints;
-		int inputIndex = val.inputIndex;
-		int outputIndex = val.outputIndex;
-		IOEntity iOEntity = new EntityRef<IOEntity>(val.inputID).Get(serverside: true);
-		IOEntity iOEntity2 = new EntityRef<IOEntity>(val.outputID).Get(serverside: true);
-		if ((Object)(object)iOEntity == (Object)null || (Object)(object)iOEntity2 == (Object)null || !SharesRootParent(iOEntity, iOEntity2) || !ValidateLine(linePoints, iOEntity, iOEntity2, player, outputIndex) || inputIndex >= iOEntity.inputs.Length || outputIndex >= iOEntity2.outputs.Length || (Object)(object)iOEntity.inputs[inputIndex].connectedTo.Get() != (Object)null || (Object)(object)iOEntity2.outputs[outputIndex].connectedTo.Get() != (Object)null || (iOEntity.inputs[inputIndex].rootConnectionsOnly && !iOEntity2.IsRootEntity()) || !CanModifyEntity(player, iOEntity) || !CanModifyEntity(player, iOEntity2))
+		try
 		{
-			return;
-		}
-		NetworkableId val2 = (validatedWireIsInput ? val.inputID : val.outputID);
-		int num = (validatedWireIsInput ? inputIndex : outputIndex);
-		if (val2 != validatedWireEntity || num != validatedWireSlot)
-		{
-			return;
-		}
-		validatedWireEntity = default(NetworkableId);
-		validatedWireSlot = -1;
-		List<float> slackLevels = val.slackLevels;
-		if (slackLevels.Count != linePoints.Count)
-		{
-			return;
-		}
-		for (int i = 0; i < slackLevels.Count; i++)
-		{
-			if (slackLevels[i] < 0f || slackLevels[i] > 2f)
+			List<Vector3> linePoints = val.linePoints;
+			int inputIndex = val.inputIndex;
+			int outputIndex = val.outputIndex;
+			IOEntity iOEntity = new EntityRef<IOEntity>(val.inputID).Get(serverside: true);
+			IOEntity iOEntity2 = new EntityRef<IOEntity>(val.outputID).Get(serverside: true);
+			if ((Object)(object)iOEntity == (Object)null || (Object)(object)iOEntity2 == (Object)null || !CanPlayerUseWires(player, cached: false, 1f, iOEntity.CanSkipWireToolBuildAuthorisation() ? iOEntity : iOEntity2) || !SharesRootParent(iOEntity, iOEntity2) || !ValidateLine(linePoints, iOEntity, iOEntity2, player, outputIndex) || inputIndex >= iOEntity.inputs.Length || outputIndex >= iOEntity2.outputs.Length || (Object)(object)iOEntity.inputs[inputIndex].connectedTo.Get() != (Object)null || (Object)(object)iOEntity2.outputs[outputIndex].connectedTo.Get() != (Object)null || (iOEntity.inputs[inputIndex].rootConnectionsOnly && !iOEntity2.IsRootEntity()) || !CanModifyEntity(player, iOEntity) || !CanModifyEntity(player, iOEntity2))
 			{
 				return;
 			}
-		}
-		IOEntity.LineAnchor[] array = new IOEntity.LineAnchor[val.lineAnchors.Count];
-		if (!ValidateLineAnchors(iOEntity, val.lineAnchors, array, linePoints, player))
-		{
-			return;
-		}
-		WireColour wireColour = IntToColour(val.wireColor);
-		if (Interface.CallHook("OnWireConnect", player, iOEntity, inputIndex, iOEntity2, outputIndex, val.linePoints, slackLevels) == null)
-		{
-			if (wireColour == WireColour.Invisible && !player.IsInCreativeMode)
+			NetworkableId val2 = (validatedWireIsInput ? val.inputID : val.outputID);
+			int num = (validatedWireIsInput ? inputIndex : outputIndex);
+			if (val2 != validatedWireEntity || num != validatedWireSlot)
 			{
-				wireColour = DefaultColor;
+				return;
 			}
-			iOEntity2.ConnectTo(iOEntity, outputIndex, inputIndex, linePoints, slackLevels, array, wireColour);
-			if (wireType == IOEntity.IOType.Industrial)
+			validatedWireEntity = default(NetworkableId);
+			validatedWireSlot = -1;
+			List<float> slackLevels = val.slackLevels;
+			if (slackLevels.Count != linePoints.Count)
 			{
-				iOEntity.NotifyIndustrialNetworkChanged();
-				iOEntity2.NotifyIndustrialNetworkChanged();
+				return;
 			}
+			for (int i = 0; i < slackLevels.Count; i++)
+			{
+				if (slackLevels[i] < 0f || slackLevels[i] > 2f)
+				{
+					return;
+				}
+			}
+			float num2 = CombineMinSlack(Mathf.Clamp(iOEntity.GetMinWireSlack(isInput: true, inputIndex), 0f, 2f), Mathf.Clamp(iOEntity2.GetMinWireSlack(isInput: false, outputIndex), 0f, 2f));
+			float num3 = CombineMaxSlack(Mathf.Clamp(iOEntity.GetMaxWireSlack(isInput: true, inputIndex), 0f, 2f), Mathf.Clamp(iOEntity2.GetMaxWireSlack(isInput: false, outputIndex), 0f, 2f));
+			num3 = Mathf.Max(num3, num2);
+			if (num2 > 0f || num3 < 2f)
+			{
+				if (slackLevels.Count < 2)
+				{
+					return;
+				}
+				int index = (validatedWireIsInput ? (slackLevels.Count - 2) : 0);
+				float num4 = slackLevels[index];
+				if (num4 < num2 - 0.001f || num4 > num3 + 0.001f)
+				{
+					return;
+				}
+			}
+			IOEntity.LineAnchor[] array = new IOEntity.LineAnchor[val.lineAnchors.Count];
+			if (!ValidateLineAnchors(iOEntity, val.lineAnchors, array, linePoints, player))
+			{
+				return;
+			}
+			WireColour wireColour = IntToColour(val.wireColor);
+			if (Interface.CallHook("OnWireConnect", player, iOEntity, inputIndex, iOEntity2, outputIndex, val.linePoints, slackLevels) == null)
+			{
+				if (wireColour == WireColour.Invisible && !player.IsInCreativeMode)
+				{
+					wireColour = DefaultColor;
+				}
+				iOEntity2.ConnectTo(iOEntity, outputIndex, inputIndex, linePoints, slackLevels, array, wireColour);
+				if (wireType == IOEntity.IOType.Industrial)
+				{
+					iOEntity.NotifyIndustrialNetworkChanged();
+					iOEntity2.NotifyIndustrialNetworkChanged();
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -526,85 +566,110 @@ public class WireTool : HeldEntity
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0487: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0494: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_053f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0545: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
-		if (!CanPlayerUseWires(player))
-		{
-			return;
-		}
 		NetworkableId uid = msg.read.EntityID();
 		int num = msg.read.Int32();
 		bool flag = msg.read.Bit();
 		bool flag2 = msg.read.Bit();
 		bool flag3 = msg.read.Bit();
 		IOEntity iOEntity = BaseNetworkable.serverEntities.Find(uid) as IOEntity;
-		if ((Object)(object)iOEntity == (Object)null || Vector3.Distance(((Component)player).transform.position, ((Component)iOEntity).transform.position) > 5f || !GamePhysics.LineOfSight(player.eyes.center, player.eyes.position, 1218519041) || (!iOEntity.IsVisible(player.eyes.HeadRay(), 1218519041, 5f) && !iOEntity.IsVisible(player.eyes.position, 5f)))
+		if ((Object)(object)iOEntity == (Object)null || !CanPlayerUseWires(player, cached: false, 1f, iOEntity))
 		{
 			return;
 		}
-		WireReconnectMessage val = Pool.Get<WireReconnectMessage>();
+		IOEntity.IOSlot[] array = (flag ? iOEntity.inputs : iOEntity.outputs);
+		if (num >= 0 && num < array.Length)
+		{
+			Vector3 val = ((Component)iOEntity).transform.TransformPoint(array[num].handlePosition);
+			if (Vector3.SqrMagnitude(((Component)player).transform.position - val) > 25f)
+			{
+				return;
+			}
+		}
+		else if (Vector3.SqrMagnitude(((Component)player).transform.position - ((Component)iOEntity).transform.position) > 25f)
+		{
+			return;
+		}
+		if (!GamePhysics.LineOfSight(player.eyes.center, player.eyes.position, 1218519041) || (!iOEntity.IsVisible(player.eyes.HeadRay(), 1218519041, 5f) && !iOEntity.IsVisible(player.eyes.position, 5f)))
+		{
+			return;
+		}
+		WireReconnectMessage val2 = Pool.Get<WireReconnectMessage>();
 		if (flag2)
 		{
-			IOEntity.IOSlot iOSlot = (flag ? iOEntity.inputs : iOEntity.outputs)[num];
+			if (num < 0 || num >= array.Length)
+			{
+				val2.Dispose();
+				return;
+			}
+			IOEntity.IOSlot iOSlot = array[num];
 			IOEntity iOEntity2 = iOSlot.connectedTo.Get();
 			if ((Object)(object)iOEntity2 == (Object)null)
 			{
-				val.Dispose();
+				val2.Dispose();
 				return;
 			}
 			IOEntity.IOSlot iOSlot2 = (flag ? iOEntity2.outputs : iOEntity2.inputs)[iOSlot.connectedToSlot];
-			val.isInput = !flag;
-			val.slotIndex = iOSlot.connectedToSlot;
-			val.otherEntityId = iOEntity2.net.ID;
-			val.wireColor = (int)iOSlot.wireColour;
-			val.linePoints = Pool.Get<List<Vector3>>();
-			val.slackLevels = Pool.Get<List<float>>();
-			val.lineAnchors = Pool.Get<List<WireLineAnchorInfo>>();
-			val.clearedEntityId = iOEntity.net.ID;
+			val2.isInput = !flag;
+			val2.slotIndex = iOSlot.connectedToSlot;
+			val2.otherEntityId = iOEntity2.net.ID;
+			val2.wireColor = (int)iOSlot.wireColour;
+			val2.linePoints = Pool.Get<List<Vector3>>();
+			val2.slackLevels = Pool.Get<List<float>>();
+			val2.lineAnchors = Pool.Get<List<WireLineAnchorInfo>>();
+			val2.clearedEntityId = iOEntity.net.ID;
 			IOEntity iOEntity3 = iOEntity;
-			Vector3[] array = iOSlot.linePoints;
-			if (array == null || array.Length == 0)
+			Vector3[] array2 = iOSlot.linePoints;
+			if (array2 == null || array2.Length == 0)
 			{
 				iOEntity3 = iOEntity2;
-				array = iOSlot2.linePoints;
+				array2 = iOSlot2.linePoints;
 			}
-			if (array == null)
+			if (array2 == null)
 			{
-				array = Array.Empty<Vector3>();
+				array2 = Array.Empty<Vector3>();
 			}
 			bool flag4 = (Object)(object)iOEntity3 != (Object)(object)iOEntity;
 			if ((Object)(object)iOEntity == (Object)(object)iOEntity3 && flag)
 			{
 				flag4 = true;
 			}
-			val.linePoints.AddRange(array);
+			val2.linePoints.AddRange(array2);
 			float[] slackLevels = iOSlot.slackLevels;
 			if (slackLevels == null || slackLevels.Length == 0)
 			{
 				slackLevels = iOSlot2.slackLevels;
 			}
-			float[] array2 = slackLevels;
-			foreach (float item in array2)
+			float[] array3 = slackLevels;
+			foreach (float item in array3)
 			{
-				val.slackLevels.Add(item);
+				val2.slackLevels.Add(item);
 			}
 			IOEntity.LineAnchor[] lineAnchors = iOSlot.lineAnchors;
 			if (lineAnchors == null || lineAnchors.Length == 0)
@@ -613,52 +678,52 @@ public class WireTool : HeldEntity
 			}
 			if (lineAnchors != null)
 			{
-				IOEntity.LineAnchor[] array3 = lineAnchors;
-				for (int i = 0; i < array3.Length; i++)
+				IOEntity.LineAnchor[] array4 = lineAnchors;
+				for (int i = 0; i < array4.Length; i++)
 				{
-					IOEntity.LineAnchor lineAnchor = array3[i];
+					IOEntity.LineAnchor lineAnchor = array4[i];
 					EntityRef<Door> entityRef = lineAnchor.entityRef;
 					if (entityRef.Get(serverside: true).IsValid())
 					{
-						val.lineAnchors.Add(lineAnchor.ToInfo());
+						val2.lineAnchors.Add(lineAnchor.ToInfo());
 					}
 				}
 			}
-			val.slackLevels.RemoveAt(val.slackLevels.Count - 1);
+			val2.slackLevels.RemoveAt(val2.slackLevels.Count - 1);
 			if (flag4)
 			{
-				val.linePoints.Reverse();
-				val.slackLevels.Reverse();
-				int num2 = val.linePoints.Count - 1;
-				foreach (WireLineAnchorInfo lineAnchor2 in val.lineAnchors)
+				val2.linePoints.Reverse();
+				val2.slackLevels.Reverse();
+				int num2 = val2.linePoints.Count - 1;
+				foreach (WireLineAnchorInfo lineAnchor2 in val2.lineAnchors)
 				{
 					lineAnchor2.index = num2 - lineAnchor2.index;
 				}
 			}
-			if (val.lineAnchors.Count >= 0)
+			if (val2.lineAnchors.Count >= 0)
 			{
 				List<WireLineAnchorInfo> list = Pool.Get<List<WireLineAnchorInfo>>();
-				foreach (WireLineAnchorInfo lineAnchor3 in val.lineAnchors)
+				foreach (WireLineAnchorInfo lineAnchor3 in val2.lineAnchors)
 				{
-					if (lineAnchor3.index == 0L || lineAnchor3.index == val.linePoints.Count - 1)
+					if (lineAnchor3.index == 0L || lineAnchor3.index == val2.linePoints.Count - 1)
 					{
 						list.Add(lineAnchor3);
 					}
 				}
 				foreach (WireLineAnchorInfo item2 in list)
 				{
-					val.lineAnchors.Remove(item2);
+					val2.lineAnchors.Remove(item2);
 				}
 				Pool.Free<WireLineAnchorInfo>(ref list, false);
 			}
-			if (val.linePoints.Count >= 0)
+			if (val2.linePoints.Count >= 0)
 			{
-				val.linePoints.RemoveAt(0);
-				val.linePoints.RemoveAt(val.linePoints.Count - 1);
+				val2.linePoints.RemoveAt(0);
+				val2.linePoints.RemoveAt(val2.linePoints.Count - 1);
 			}
-			if (val.slackLevels.Count >= 0)
+			if (val2.slackLevels.Count >= 0)
 			{
-				val.slackLevels.RemoveAt(val.slackLevels.Count - 1);
+				val2.slackLevels.RemoveAt(val2.slackLevels.Count - 1);
 			}
 		}
 		if (AttemptClearSlot(iOEntity, player, num, flag))
@@ -667,11 +732,11 @@ public class WireTool : HeldEntity
 			{
 				if (validatedWireEntity == default(NetworkableId))
 				{
-					validatedWireEntity = val.otherEntityId;
-					validatedWireSlot = val.slotIndex;
-					validatedWireIsInput = val.isInput;
+					validatedWireEntity = val2.otherEntityId;
+					validatedWireSlot = val2.slotIndex;
+					validatedWireIsInput = val2.isInput;
 				}
-				ClientRPC(RpcTarget.Player("RPC_OnWireDisconnected", player), val);
+				ClientRPC(RpcTarget.Player("RPC_OnWireDisconnected", player), val2);
 			}
 			else if (!flag3)
 			{
@@ -679,7 +744,7 @@ public class WireTool : HeldEntity
 				validatedWireSlot = -1;
 			}
 		}
-		val.Dispose();
+		val2.Dispose();
 	}
 
 	[RPC_Server]
@@ -694,10 +759,10 @@ public class WireTool : HeldEntity
 		validatedWireSlot = -1;
 	}
 
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.FromOwner]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -705,10 +770,11 @@ public class WireTool : HeldEntity
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer player = msg.player;
 		NetworkableId uid = msg.read.EntityID();
 		IOEntity iOEntity = BaseNetworkable.serverEntities.Find(uid) as IOEntity;
-		if ((Object)(object)iOEntity == (Object)null || Vector3.Distance(((Component)player).transform.position, ((Component)iOEntity).transform.position) > 5f || !CanModifyEntity(player, iOEntity))
+		if ((Object)(object)iOEntity == (Object)null || Vector3.SqrMagnitude(((Component)player).transform.position - ((Component)iOEntity).transform.position) > 25f || !CanModifyEntity(player, iOEntity))
 		{
 			return;
 		}
@@ -752,7 +818,7 @@ public class WireTool : HeldEntity
 		{
 			return false;
 		}
-		if ((Object)(object)ply != (Object)null && !CanModifyEntity(ply, iOEntity))
+		if ((Object)(object)ply != (Object)null && !CanClearEntity(ply, iOEntity, clearIndex, isInput))
 		{
 			return false;
 		}
@@ -985,10 +1051,10 @@ public class WireTool : HeldEntity
 		pendingPlug.index = -1;
 	}
 
-	public static bool CanPlayerUseWires(BasePlayer player, bool cached = false, float cacheDuration = 1f)
+	public static bool CanPlayerUseWires(BasePlayer player, bool cached = false, float cacheDuration = 1f, IOEntity targetIoEnt = null)
 	{
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		object obj = Interface.CallHook("CanUseWires", player, cached, cacheDuration);
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		object obj = Interface.CallHook("CanUseWires", player, cached, cacheDuration, targetIoEnt);
 		if (obj is bool)
 		{
 			return (bool)obj;
@@ -997,32 +1063,35 @@ public class WireTool : HeldEntity
 		{
 			return true;
 		}
-		WireTool wireTool = player.GetHeldEntity() as WireTool;
-		if ((Object)(object)wireTool == (Object)null)
+		if (!player.TryGetHeldEntity(out WireTool heldEntity))
 		{
 			return false;
 		}
-		if (!wireTool.CanBeUsedInWater() && player.IsSwimming())
+		if (!heldEntity.CanBeUsedInWater() && player.IsSwimming())
 		{
 			return false;
 		}
-		if (!player.CanBuild(cached, cacheDuration))
+		if (!player.CanBuild(cached, cacheDuration) && ((Object)(object)targetIoEnt == (Object)null || !targetIoEnt.CanSkipWireToolBuildAuthorisation()))
 		{
 			return false;
+		}
+		if (player.FindTrigger<TriggerMonumentIOArea>(out var _))
+		{
+			return true;
 		}
 		List<Collider> list = Pool.Get<List<Collider>>();
 		GamePhysics.OverlapSphere(player.eyes.position, 0.1f, list, 536870912, (QueryTriggerInteraction)2);
-		bool result = true;
+		bool result2 = true;
 		foreach (Collider item in list)
 		{
 			if (!((Component)item).gameObject.CompareTag("IgnoreWireCheck"))
 			{
-				result = false;
+				result2 = false;
 				break;
 			}
 		}
 		Pool.FreeUnmanaged<Collider>(ref list);
-		return result;
+		return result2;
 	}
 
 	private static bool CanModifyEntity(BasePlayer player, IOEntity ent)
@@ -1033,6 +1102,23 @@ public class WireTool : HeldEntity
 		if (ent.AllowWireConnections())
 		{
 			if (!player.CanBuild(((Component)ent).transform.position, ((Component)ent).transform.rotation, ent.bounds))
+			{
+				if (player.IsInCreativeMode)
+				{
+					return Creative.unlimitedIo;
+				}
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private static bool CanClearEntity(BasePlayer player, IOEntity ent, int slotIndex, bool isInput)
+	{
+		if (ent.AllowWireConnections())
+		{
+			if (!ent.CanBreakConnection(player, slotIndex, isInput))
 			{
 				if (player.IsInCreativeMode)
 				{

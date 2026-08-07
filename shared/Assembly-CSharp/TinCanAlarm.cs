@@ -203,6 +203,8 @@ public class TinCanAlarm : StorageContainer, IDetector
 		if (!(Vector3.Distance(player.eyes.position, val) > 3f) && !(Vector3.Distance(wireOrigin.position, val) > maxWireLength) && player.IsVisibleAndCanSee(val) && !IsGoingThroughWalls(val) && IsInValidVolume(val) && IsOnValidEntities(val) && player.CanBuild())
 		{
 			endPoint = val;
+			UpdateTrigger();
+			UpdateWireTip();
 			SendNetworkUpdate();
 			PlayerStopsArming(player);
 		}
@@ -472,6 +474,8 @@ public class TinCanAlarm : StorageContainer, IDetector
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		TriggerAlarm();
 		endPoint = Vector3.zero;
+		UpdateTrigger();
+		UpdateWireTip();
 		SendNetworkUpdate();
 	}
 
@@ -577,8 +581,6 @@ public class TinCanAlarm : StorageContainer, IDetector
 		info.msg.tinCanAlarm = Pool.Get<TinCanAlarm>();
 		info.msg.tinCanAlarm.endPoint = endPoint;
 		info.msg.tinCanAlarm.loadedAmmoItemDefId = ((loadedAmmoItem != null) ? loadedAmmoDef.itemid : 0);
-		UpdateTrigger();
-		UpdateWireTip();
 	}
 
 	public override void Load(LoadInfo info)

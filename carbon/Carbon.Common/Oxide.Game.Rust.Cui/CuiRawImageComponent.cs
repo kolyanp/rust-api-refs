@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Newtonsoft.Json;
 
 namespace Oxide.Game.Rust.Cui;
@@ -28,6 +29,10 @@ public class CuiRawImageComponent : ICuiComponent, ICuiColor, ICuiEnableable, IC
 
 	[JsonProperty("placeholderParentId")]
 	public string PlaceholderParentId { get; set; }
+
+	[JsonProperty("blocksRaycast")]
+	[DefaultValue(true)]
+	public bool BlocksRaycast { get; set; } = true;
 
 	[JsonProperty("enabled")]
 	public bool? Enabled { get; set; }

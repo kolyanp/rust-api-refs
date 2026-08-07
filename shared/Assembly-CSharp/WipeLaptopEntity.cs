@@ -109,9 +109,8 @@ public class WipeLaptopEntity : BaseEntity
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		info.msg.wipeLaptop = Pool.Get<WipeLaptop>();
-		info.msg.wipeLaptop.timeLeft = (int)TimeUntil.op_Implicit(TimeLeft);
+		info.msg.wipeLaptop.timeLeft = (int)((TimeUntil)(ref TimeLeft)).LeftFrom(info.cachedTime.Time);
 		info.msg.wipeLaptop.armTime = ArmTime;
 		info.msg.wipeLaptop.disarmTime = DisarmTime;
 		base.Save(info);

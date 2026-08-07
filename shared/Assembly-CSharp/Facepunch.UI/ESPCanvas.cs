@@ -25,6 +25,12 @@ public class ESPCanvas : SingletonComponent<ESPCanvas>
 
 	public AccessibilityColourCollection EnemyLookup;
 
+	[ClientVar(ClientAdmin = true, Help = "Admin-only: Should the nameplates size dynamically change based on distance?")]
+	public static bool NameplateAutosize;
+
+	[ClientVar(ClientAdmin = true, Help = "Admin-only: Nameplate falloff distance for autosizing (smaller values cause the text to shrink at closer distances).")]
+	public static float NameplateAutosize_Falloff = 50f;
+
 	private static int NameplateCount = 32;
 
 	[ClientVar(ClientAdmin = true, Help = "(Generated) Admin-only: overrides the maximum distance at which ESP player info elements are shown; 0 = use default distance")]

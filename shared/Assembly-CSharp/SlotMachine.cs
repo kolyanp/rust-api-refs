@@ -286,12 +286,13 @@ public class SlotMachine : BaseMountable, INotifyLOD
 
 	public override void Spawn()
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		base.Spawn();
-		if (!Application.isLoadingSave)
+		bool flag = false;
+		if (!Application.isLoadingSave && !flag)
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(StoragePrefab.resourcePath);
 			baseEntity.Spawn();
@@ -490,9 +491,9 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void Server_RequestMultiplierChange(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player != (Object)(object)GetMounted()) && !HasFlag(Flags.Reserved2))

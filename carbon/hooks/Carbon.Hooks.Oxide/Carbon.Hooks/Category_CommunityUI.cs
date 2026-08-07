@@ -13,11 +13,11 @@ public class Category_CommunityUI
 	public class CommunityUI_CommunityEntity
 	{
 		[Patch("OnCuiDraggableDrag", "OnCuiDraggableDrag", "CommunityEntity", "Hook_DragRPC", new string[] { "BasePlayer", "System.String", "UnityEngine.Vector3", "CommunityEntity/DraggablePositionSendType" })]
-		[Identifier("8424274d8bff49b984126f4171f1aa61")]
+		[Identifier("bd916f280a6b427ba27e182f6078ee89")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("CommunityUI")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class CommunityUI_CommunityEntity_8424274d8bff49b984126f4171f1aa61 : Patch
+		public class CommunityUI_CommunityEntity_bd916f280a6b427ba27e182f6078ee89 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -51,11 +51,11 @@ public class Category_CommunityUI
 		}
 
 		[Patch("OnCuiDraggableDrop", "OnCuiDraggableDrop", "CommunityEntity", "Hook_DropRPC", new string[] { "BasePlayer", "System.String", "System.String", "System.String", "System.String" })]
-		[Identifier("d50861ae82674139b08b868bf4a08002")]
+		[Identifier("48df1d1b126c4e9dba05a9d68223f7aa")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("CommunityUI")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class CommunityUI_CommunityEntity_d50861ae82674139b08b868bf4a08002 : Patch
+		public class CommunityUI_CommunityEntity_48df1d1b126c4e9dba05a9d68223f7aa : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

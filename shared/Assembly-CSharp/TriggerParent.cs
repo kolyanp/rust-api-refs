@@ -273,9 +273,9 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[NonSerialized]
 	public int StableIndex = -1;
 
+	[SerializeField]
 	[Header("General")]
 	[Tooltip("Deparent if the parented entity clips into an obstacle")]
-	[SerializeField]
 	protected bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -303,8 +303,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
 	public bool checkForObjUnderFeet;
 
-	[SerializeField]
 	[Header("You probably don't need it")]
+	[SerializeField]
 	private bool doExpensivePlayerClippingChecks;
 
 	[Tooltip("TickMode 1 only - Allow trigger to sleep if it hasn't moved on selected axis. Set to None if it should never ignore")]
@@ -683,50 +683,50 @@ public class TriggerParent : TriggerBase, IServerComponent
 		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_035f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0364: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0375: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0380: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0390: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0346: Unknown result type (might be due to invalid IL or missing references)
+		//IL_034b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0351: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0361: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0367: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0372: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0395: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0403: Unknown result type (might be due to invalid IL or missing references)
-		//IL_040d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03fd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0412: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0416: Unknown result type (might be due to invalid IL or missing references)
-		//IL_042b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0430: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0464: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0469: Unknown result type (might be due to invalid IL or missing references)
-		//IL_046f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0417: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0423: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0428: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0450: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0456: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0461: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0466: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0475: Unknown result type (might be due to invalid IL or missing references)
 		//IL_047a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_048e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0493: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0486: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e0: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("InitialShouldParentChecks"))
 		{
 			int frameCount = Time.frameCount;
@@ -786,16 +786,15 @@ public class TriggerParent : TriggerBase, IServerComponent
 							flag4 = (entityContent.HasMovedInLS(frameCount) & triggerParent.EntityMovementMask) != 0;
 							if (!flag4 && entityContent is BasePlayer basePlayer)
 							{
-								bool flag5 = basePlayer.lastViolationType == AntiHackType.NoClip && Time.realtimeSinceStartup - basePlayer.lastViolationTime < 1f;
-								flag4 = flag4 || flag5;
+								flag4 |= basePlayer.TriggeredNoclip();
 							}
 						}
 						if (!flag2 && !flag4)
 						{
 							continue;
 						}
+						bool flag5 = false;
 						bool flag6 = false;
-						bool flag7 = false;
 						BasePlayer basePlayer2 = null;
 						if (entityContent.canTriggerParent)
 						{
@@ -804,7 +803,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 								BaseEntity parentEntity = entityContent.GetParentEntity();
 								if (parentEntity.IsValid() && (Object)(object)parentEntity != (Object)(object)triggerParent.Entity)
 								{
-									goto IL_0332;
+									goto IL_0319;
 								}
 							}
 							TriggerParentExclusion triggerParentExclusion = entityContent.FindTrigger<TriggerParentExclusion>();
@@ -819,27 +818,27 @@ public class TriggerParent : TriggerBase, IServerComponent
 										{
 											if (cachedStates[basePlayer2.ActivePlayerInd].IsSwimming)
 											{
-												goto IL_0332;
+												goto IL_0319;
 											}
 										}
 										else
 										{
-											flag7 = true;
+											flag6 = true;
 										}
 									}
 									if ((!triggerParent.parentMountedPlayers && basePlayer2.isMounted) || (!triggerParent.parentSleepers && basePlayer2.IsSleeping()) || (triggerParent.parentSleepers && basePlayer2.IsServerFalling() && !basePlayer2.IsLoadingAfterTransfer() && !basePlayer2.IsReceivingSnapshot) || (flag && basePlayer2.isMounted && !triggerParent.IsParentedToUs(basePlayer2) && !baseMountable.HasValidDismountPosition(basePlayer2)))
 									{
-										goto IL_0332;
+										goto IL_0319;
 									}
 								}
-								flag6 = true;
+								flag5 = true;
 							}
 						}
-						goto IL_0332;
-						IL_0332:
-						if (flag6)
+						goto IL_0319;
+						IL_0319:
+						if (flag5)
 						{
-							if (!triggerParent.parentSwimmers && flag7)
+							if (!triggerParent.parentSwimmers && flag6)
 							{
 								Transform transform = ((Component)basePlayer2).transform;
 								areSwimmingState.Players.Add(basePlayer2);
@@ -875,7 +874,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 						}
 						entities.Add(entityContent);
 						entToTriggerLookup.AddNoResize(current);
-						shouldParentEnt.AddNoResize(flag6);
+						shouldParentEnt.AddNoResize(flag5);
 					}
 				}
 			}
@@ -1313,11 +1312,11 @@ public class TriggerParent : TriggerBase, IServerComponent
 
 	protected void Unparent(BaseEntity ent)
 	{
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
 		if (!Object.op_Implicit((Object)(object)ent) || (Object)(object)ent.GetParentEntity() != (Object)(object)Entity)
 		{
 			return;
@@ -1337,7 +1336,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		{
 			return;
 		}
-		ply.unparentTime = Time.time;
+		ply.UpdateUnparentTime();
 		ply.PauseFlyHackDetection(5f);
 		ply.PauseSpeedHackDetection(5f);
 		ply.PauseTickDistanceDetection(5f);

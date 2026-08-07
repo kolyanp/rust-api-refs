@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
+[RequireComponent(typeof(MeshFilter))]
 [ExecuteInEditMode]
 public class Impostor : MonoBehaviour, IClientComponent, IPrefabPreProcess
 {

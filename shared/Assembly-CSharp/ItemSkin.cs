@@ -1,9 +1,16 @@
+using System;
 using Rust.Workshop;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rust/Skins/ItemSkin")]
 public class ItemSkin : SteamInventoryItem
 {
+	[Serializable]
+	public class MaterialRandomSet
+	{
+		public Material[] Materials;
+	}
+
 	public Skinnable Skinnable;
 
 	public Material[] Materials;
@@ -16,12 +23,28 @@ public class ItemSkin : SteamInventoryItem
 
 	public bool UnlockedByDefault;
 
+	public MaterialRandomSet[] MaterialRandomisation;
+
 	public void ApplySkin(GameObject obj)
 	{
-		if (!((Object)(object)Skinnable == (Object)null))
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)Skinnable == (Object)null)
 		{
-			Skin.Apply(obj, Skinnable, Materials);
+			return;
 		}
+		if (MaterialRandomisation != null && MaterialRandomisation.Length != 0)
+		{
+			using (TimeWarning.New("SkinRandomisation"))
+			{
+				MaterialRandomSet random = ArrayEx.GetRandom(MaterialRandomisation, SeedEx.Seed(obj.transform.position, World.Seed));
+				if (random != null && random.Materials != null && random.Materials.Length != 0)
+				{
+					Skin.Apply(obj, Skinnable, random.Materials);
+					return;
+				}
+			}
+		}
+		Skin.Apply(obj, Skinnable, Materials);
 	}
 
 	public override bool HasUnlocked(BasePlayer player)

@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
+[ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
 [AddComponentMenu("Rendering/Visualize Texture Density")]
-[ImageEffectAllowedInSceneView]
 public class VisualizeTexelDensity : MonoBehaviour
 {
 	public Shader shader;

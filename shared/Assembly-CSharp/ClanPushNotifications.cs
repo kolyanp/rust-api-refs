@@ -27,6 +27,7 @@ public static class ClanPushNotifications
 			if (dictionary != null)
 			{
 				dictionary.Add("type", "clan");
+				dictionary.Add("clanId", clan.ClanId.ToString("G"));
 				dictionary.Add("fromId", ignorePlayer.ToString("G"));
 				await NotificationList.SendNotificationTo(steamIds, NotificationChannel.ClanAnnouncement, "[" + clan.Name + "] Announcement was updated", ConVar.Server.hostname, dictionary);
 			}

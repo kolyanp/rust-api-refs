@@ -106,6 +106,12 @@ public class TerrainTopologyMap : TerrainMap<int>
 		}
 	}
 
+	public void SetupEmpty(int newRes)
+	{
+		res = newRes;
+		InitArrays(res * res);
+	}
+
 	public void GenerateTextures()
 	{
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)

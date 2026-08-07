@@ -11,6 +11,7 @@ using HitBoxSystemJobs;
 using Instancing;
 using OceanSimulationJobs;
 using ProjectileJobs;
+using RingGeneratorJobs;
 using Rust.Water5;
 using ServerOcclusionJobs;
 using TerrainHeightMapJobs;
@@ -38,13 +39,6 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobParallelForTransformExtensions.EarlyJobInit<QueryVisJobs.ConstructCommandsJob>();
 			IJobParallelForTransformExtensions.EarlyJobInit<QueryVisJobs.CheckWaterLevelVisibilityJob>();
 			IJobParallelForTransformExtensions.EarlyJobInit<TransformLineRenderer.LineRendererUpdateJob>();
-			IJobExtensions.EarlyJobInit<global::AddAndBlurSphereJob>();
-			IJobForExtensions.EarlyJobInit<global::BoxBlur3DJob>();
-			IJobExtensions.EarlyJobInit<BoxBlurCylinderJob>();
-			IJobExtensions.EarlyJobInit<global::BoxBlurSphereJob>();
-			IJobExtensions.EarlyJobInit<CarveAndBlurCylinderJob>();
-			IJobExtensions.EarlyJobInit<global::CarveAndBlurSphereJob>();
-			IJobExtensions.EarlyJobInit<global::CleanFloatingIslandsJob>();
 			IJobParallelForExtensions.EarlyJobInit<Hopper.FillRaycastJob>();
 			IJobExtensions.EarlyJobInit<GenerateSpawnPoints>();
 			IJobExtensions.EarlyJobInit<PostCullingJob>();
@@ -62,6 +56,8 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobExtensions.EarlyJobInit<CheckAnyEnvironmentTypeInGroupJob>();
 			IJobExtensions.EarlyJobInit<ScatterToAndJob>();
 			IJobExtensions.EarlyJobInit<DiffVec3Indirect>();
+			IJobParallelForExtensions.EarlyJobInit<UtilityJobs.BakePhysicsMeshesJob>();
+			IJobExtensions.EarlyJobInit<UtilityJobs.BakePhysicsMeshJob>();
 			IJobExtensions.EarlyJobInit<RaycastSamplePositionsJob>();
 			IJobExtensions.EarlyJobInit<RaycastBufferSetupJob>();
 			IJobParallelForExtensions.EarlyJobInit<RaycastRaySetupJob>();
@@ -142,6 +138,9 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobExtensions.EarlyJobInit<CheckBoundsJob>();
 			IJobExtensions.EarlyJobInit<CheckBoundsJobIndirect>();
 			IJobExtensions.EarlyJobInit<CheckRayJob>();
+			IJobParallelForBatchExtensions.EarlyJobInit<SliceMeshJob>();
+			IJobExtensions.EarlyJobInit<ComputeBoundsJob>();
+			IJobParallelForExtensions.EarlyJobInit<SilhouetteSweepJob>();
 			IJobExtensions.EarlyJobInit<CalculatePathBetweenGridsJob>();
 			IJobParallelForBatchExtensions.EarlyJobInit<CalculatePathsBetweenGridsJob>();
 			IJobForExtensions.EarlyJobInit<CalculateSubGridSamplePointsJob>();
@@ -200,9 +199,16 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobExtensions.EarlyJobInit<Facepunch.NativeMeshSimplification.CopyBackJob>();
 			IJobExtensions.EarlyJobInit<Facepunch.NativeMeshSimplification.PopulateArraysJob>();
 			IJobExtensions.EarlyJobInit<Facepunch.NativeMeshSimplification.SimplifyMeshJob>();
-			IJobParallelForExtensions.EarlyJobInit<Facepunch.MarchingCubes.BakePhysicsMeshesJob>();
-			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.CleanupDuplicateVerticesJob>();
-			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.MarchJob>();
+			IJobExtensions.EarlyJobInit<FindMaxYLayerJob>();
+			IJobParallelForBatchExtensions.EarlyJobInit<Facepunch.MarchingCubes.DownsampleJob>();
+			IJobParallelForBatchExtensions.EarlyJobInit<Facepunch.MarchingCubes.MarchFloatGenerateTrianglesJob>();
+			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.ProcessTrianglesJob>();
+			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.WriteMeshDataJob>();
+			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.SDFChunkJobs.CleanupIslandsJob>();
+			IJobParallelForBatchExtensions.EarlyJobInit<Facepunch.MarchingCubes.SDFChunkJobs.AccumulateCensorBoundsJob>();
+			IJobParallelForExtensions.EarlyJobInit<Facepunch.MarchingCubes.SDFChunkJobs.ApplyCensorBoundsJob>();
+			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.SDFChunkJobs.ClearBoundariesJob>();
+			IJobExtensions.EarlyJobInit<Facepunch.MarchingCubes.SDFChunkJobs.CalculateDistanceFieldJob>();
 			IJobExtensions.EarlyJobInit<Rust.Water5.GetHeightBatchedJob>();
 			IJobParallelForExtensions.EarlyJobInit<Rust.Water5.GetHeightBatchedJob>();
 			IJobExtensions.EarlyJobInit<Rust.Water5.GetHeightsJobIndirect>();
@@ -224,6 +230,7 @@ internal class __JobReflectionRegistrationOutput__1221673671587648887
 			IJobExtensions.EarlyJobInit<GatherJob<int>>();
 			IJobExtensions.EarlyJobInit<FillJob<RDC>>();
 			IJobExtensions.EarlyJobInit<ScatterValueToJobDeferred<Vector3>>();
+			IJobExtensions.EarlyJobInit<ClearListJob<Shape>>();
 			IJobExtensions.EarlyJobInit<FillJob<Vector4>>();
 		}
 		catch (Exception ex)

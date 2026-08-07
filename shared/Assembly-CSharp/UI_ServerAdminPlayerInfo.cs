@@ -46,8 +46,8 @@ public class UI_ServerAdminPlayerInfo : UI_Window
 	[SerializeField]
 	private RustText teamIDText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustInput muteReasonInput;
 
 	[SerializeField]

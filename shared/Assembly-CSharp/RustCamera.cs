@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.PostProcessing;
 
 public abstract class RustCamera<T> : SingletonComponent<T> where T : RustCamera<T>
@@ -20,4 +21,7 @@ public abstract class RustCamera<T> : SingletonComponent<T> where T : RustCamera
 
 	[SerializeField]
 	private PostProcessVolume baseEffectVolume;
+
+	[SerializeField]
+	private Volume baseEffectVolumeRRP;
 }

@@ -25,9 +25,9 @@ public class ServerConsole : SingletonComponent<ServerConsole>
 		public List<string> StatusUpdate = null;
 	}
 
-	private ConsoleWindow console;
+	public ConsoleWindow console;
 
-	private ConsoleInput input;
+	public ConsoleInput input;
 
 	private CancellationTokenSource logThreadCancellation;
 

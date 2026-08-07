@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
-[ExecuteAlways]
 [DisallowMultipleComponent]
+[ExecuteAlways]
 public class UIBorder : MonoBehaviour
 {
 	private const string ChildName = "_UIBorder";
@@ -36,8 +36,8 @@ public class UIBorder : MonoBehaviour
 	[SerializeField]
 	private float bottomLeftRadius;
 
-	[SerializeField]
 	[Range(1f, 32f)]
+	[SerializeField]
 	private int segmentsPerCorner = 8;
 
 	[HideInInspector]

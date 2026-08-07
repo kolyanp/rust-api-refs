@@ -26,6 +26,8 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public Vector3 landingTarget;
 
+	public static HashSet<CH47HelicopterAIController> activeScientistCH47s = new HashSet<CH47HelicopterAIController>();
+
 	private List<BaseNPC2> parentedNpcs = new List<BaseNPC2>();
 
 	public int numCrates = 1;
@@ -162,8 +164,9 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public override void ServerInit()
 	{
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
+		activeScientistCH47s.Add(this);
 		Invoke(CheckSpawnScientists, 0.25f);
 		SetMoveTarget(((Component)this).transform.position);
 	}
@@ -759,6 +762,7 @@ public class CH47HelicopterAIController : CH47Helicopter
 	{
 		if (base.isServer)
 		{
+			activeScientistCH47s.Remove(this);
 			foreach (MountPointInfo mountPoint in mountPoints)
 			{
 				if ((Object)(object)mountPoint.mountable != (Object)null)

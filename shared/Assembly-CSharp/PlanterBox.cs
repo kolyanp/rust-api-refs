@@ -488,8 +488,8 @@ public class PlanterBox : StorageContainer, ISplashable
 		Pool.FreeUnmanaged<uint>(ref list);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_RequestSaturationUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)

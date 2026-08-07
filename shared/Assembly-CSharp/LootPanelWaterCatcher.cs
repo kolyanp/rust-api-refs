@@ -16,4 +16,8 @@ public class LootPanelWaterCatcher : LootPanel
 	public Button toButton;
 
 	public Button drinkButton;
+
+	public GameObject vehicleTransferOnly;
+
+	public GameObject carLiftInfo;
 }

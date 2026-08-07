@@ -38,7 +38,7 @@ public class CuiInputFieldComponent : ICuiComponent, ICuiColor, ICuiEnableable, 
 	public bool ReadOnly { get; set; }
 
 	[JsonProperty("placeholderId")]
-	private string PlaceholderId { get; set; }
+	public string PlaceholderId { get; set; }
 
 	[JsonProperty("password", DefaultValueHandling = DefaultValueHandling.Include)]
 	public bool IsPassword { get; set; }
@@ -52,9 +52,14 @@ public class CuiInputFieldComponent : ICuiComponent, ICuiColor, ICuiEnableable, 
 	[JsonProperty("autofocus")]
 	public bool Autofocus { get; set; }
 
+	[JsonProperty("interactable")]
+	public bool? Interactable { get; set; }
+
 	public float FadeIn { get; set; }
 
 	public string PlaceholderParentId { get; set; }
+
+	public bool? BlocksRaycast { get; set; }
 
 	public bool? Enabled { get; set; }
 }

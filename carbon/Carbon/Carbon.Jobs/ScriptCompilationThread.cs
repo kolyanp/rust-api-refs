@@ -137,6 +137,10 @@ public class ScriptCompilationThread : BaseThreadedJob
 
 	public bool IsExtension;
 
+	public bool IsCompileTestMode;
+
+	public bool IsCompileSuccess;
+
 	public List<string> Usings = new List<string>();
 
 	public Dictionary<Type, List<uint>> Hooks = new Dictionary<Type, List<uint>>();
@@ -454,8 +458,9 @@ public class ScriptCompilationThread : BaseThreadedJob
 
 	public override void Start()
 	{
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		IsCompileTestMode = Community.Runtime?.Config?.Compiler?.CompileTestMode == true;
 		PrewarmInternalHookGenerator();
 		references = _addReferences();
 		string[] requires = Requires;
@@ -706,6 +711,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 				Pool.FreeUnmanaged<string>(ref list4);
 				if (val8.Success)
 				{
+					IsCompileSuccess = true;
 					byte[] array = memoryStream.ToArray();
 					if (array != null)
 					{
@@ -714,16 +720,23 @@ public class ScriptCompilationThread : BaseThreadedJob
 							_overrideExtensionPlugin(InitialSource.ContextFilePath, array);
 						}
 						_overridePlugin(Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath), array);
-						Assembly = Assembly.Load(array);
-						try
+						if (IsCompileTestMode)
 						{
-							string fileNameWithoutExtension2 = Path.GetFileNameWithoutExtension(string.IsNullOrEmpty(InitialSource.ContextFileName) ? InitialSource.FileName : InitialSource.ContextFileName);
-							bool isProfiledAssembly = MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Plugin, Assembly, fileNameWithoutExtension2, incremental: true);
-							Assemblies.Plugins.Update(fileNameWithoutExtension2, Assembly, string.IsNullOrEmpty(InitialSource.ContextFilePath) ? InitialSource.FilePath : InitialSource.ContextFilePath, isProfiledAssembly);
+							Assembly = null;
 						}
-						catch (Exception ex2)
+						else
 						{
-							Logger.Error("Couldn't cache assembly in Carbon's global database", ex2);
+							Assembly = Assembly.Load(array);
+							try
+							{
+								string fileNameWithoutExtension2 = Path.GetFileNameWithoutExtension(string.IsNullOrEmpty(InitialSource.ContextFileName) ? InitialSource.FileName : InitialSource.ContextFileName);
+								bool isProfiledAssembly = MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Plugin, Assembly, fileNameWithoutExtension2, incremental: true);
+								Assemblies.Plugins.Update(fileNameWithoutExtension2, Assembly, string.IsNullOrEmpty(InitialSource.ContextFilePath) ? InitialSource.FilePath : InitialSource.ContextFilePath, isProfiledAssembly);
+							}
+							catch (Exception ex2)
+							{
+								Logger.Error("Couldn't cache assembly in Carbon's global database", ex2);
+							}
 						}
 					}
 				}
@@ -735,7 +748,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 			CompileTime = _stopwatch.Elapsed;
 			_stopwatch.Reset();
 			Pool.FreeUnsafe<Stopwatch>(ref _stopwatch);
-			if (Assembly == null)
+			if (IsCompileTestMode || Assembly == null)
 			{
 				return;
 			}

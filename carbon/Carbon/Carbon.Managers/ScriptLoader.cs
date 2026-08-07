@@ -399,7 +399,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 			yield break;
 		}
 		yield return null;
-		if (AsyncLoader != null && AsyncLoader.Assembly == null)
+		if (AsyncLoader != null && (AsyncLoader.IsCompileTestMode || AsyncLoader.Assembly == null))
 		{
 			if (AsyncLoader.Exceptions != null && AsyncLoader.Exceptions.Count > 0)
 			{
@@ -441,6 +441,22 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					}
 				}
 			}
+			else if (AsyncLoader.IsCompileTestMode)
+			{
+				string text2 = AsyncLoader.InitialSource?.ContextFileName ?? "<unknown>";
+				if (AsyncLoader.IsCompileSuccess)
+				{
+					if (AsyncLoader.Warnings != null)
+					{
+						_ = AsyncLoader.Warnings.Count;
+					}
+					Logger.Log($"Compilation of '{text2}' complete [{AsyncLoader.CompileTime.TotalMilliseconds:0}ms] (compile-test mode)");
+				}
+				else
+				{
+					Logger.Error("Compilation of '" + text2 + "' failed (compile-test mode)");
+				}
+			}
 			AsyncLoader.Exceptions?.Clear();
 			AsyncLoader.Warnings?.Clear();
 			AsyncLoader.Exceptions = (AsyncLoader.Warnings = null);
@@ -479,13 +495,13 @@ public class ScriptLoader : IScriptLoader, IDisposable
 				}
 				if (!IsExtension && firstPlugin && !BypassFileNameChecks)
 				{
-					string text2 = Path.GetFileNameWithoutExtension(InitialSource.FilePath).ToLower().Replace(" ", "")
+					string text3 = Path.GetFileNameWithoutExtension(InitialSource.FilePath).ToLower().Replace(" ", "")
 						.Replace(".", "")
 						.Replace("-", "");
 					if (type.Name.ToLower().Replace(" ", "").Replace(".", "")
-						.Replace("-", "") != text2)
+						.Replace("-", "") != text3)
 					{
-						Logger.Warn("Plugin '" + type.Name + "' does not match with its file-name '" + text2 + "'.");
+						Logger.Warn("Plugin '" + type.Name + "' does not match with its file-name '" + text3 + "'.");
 						break;
 					}
 				}
@@ -527,7 +543,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					Plugin.InternalApplyAllPluginReferences();
 					HookCaller.CallStaticHook(3051933177u, plugin3);
 				}
-				goto IL_0c5e;
+				goto IL_0d19;
 			}
 			catch (Exception ex2)
 			{
@@ -537,9 +553,9 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					HookCaller.CallStaticHook(1298319061u, (!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>", ex2);
 					Logger.Error("Failed to compile '" + ((!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>") + "': ", ex2);
 				}
-				goto IL_0c5e;
+				goto IL_0d19;
 			}
-			IL_0c5e:
+			IL_0d19:
 			yield return null;
 		}
 		if (firstPlugin)

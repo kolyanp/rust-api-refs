@@ -31,7 +31,7 @@ public class RustPlatformHooks : IPlatformHooks
 			{
 				ConVar.Server.queryport = Math.Max(ConVar.Server.port, RCon.Port) + 1;
 			}
-			return new ServerParameters("rust", "Rust", 2631.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
+			return new ServerParameters("rust", "Rust", 2632.ToString(), Net.sv.secure, CommandLine.HasSwitch("-sdrnet"), iPAddress, (ushort)Net.sv.port, (ushort)ConVar.Server.queryport);
 		}
 	}
 
@@ -42,6 +42,7 @@ public class RustPlatformHooks : IPlatformHooks
 
 	public void OnItemDefinitionsChanged()
 	{
+		SteamInventory.InvalidateWorkshopSkinCaches();
 		ItemManager.InvalidateWorkshopSkinCache();
 	}
 

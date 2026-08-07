@@ -6803,8 +6803,8 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 				//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 				float num = value.Scale(0f, maxValue, 0f, 1f);
 				Color32 val = Color32.Lerp(Color32.op_Implicit(calmColor), Color32.op_Implicit(intenseColor), num);
 				string parent2 = (string.IsNullOrEmpty(command) ? cui.CreatePanel(container, parent, "0.15 0.15 0.15 0.7", null, 0.01f, 0.99f).Id : cui.CreateProtectedButton(container, parent, "0.15 0.15 0.15 0.7", Cache.CUI.BlankColor, string.Empty, 0, null, 0.01f, 0.99f, 0f, 1f, 0f, 0f, 0f, 0f, command, (TextAnchor)4).Id);
@@ -8118,7 +8118,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	public void TabPanelText(CUI cui, CuiElementContainer container, string parent, string text, int size, string color, float height, float offset, TextAnchor align, CUI.Handler.FontTypes font, bool isInput)
 	{
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		if (isInput)
 		{
@@ -8360,7 +8360,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	public void TabPanelInputButton(CUI cui, CuiElementContainer container, string parent, string text, string command, float buttonPriority, Tab.OptionInput input, Tab.OptionButton button, PlayerSession session, float height, float offset, Tab.Option option = null)
 	{
-		//IL_03bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03cc: Unknown result type (might be due to invalid IL or missing references)
 		string optionColor = base.DataInstance.Colors.OptionColor;
 		string color = ((button.Type != null) ? button.Type(null) : Tab.OptionButton.Types.None) switch
 		{
@@ -8397,7 +8397,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	public void TabPanelColor(CUI cui, CuiElementContainer container, string parent, string text, string color, string command, float height, float offset)
 	{
-		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
 		float num = 0.825f;
 		CUI.Pair<string, CuiElement> pair = cui.CreatePanel(container, parent, Cache.CUI.BlankColor, null, 0f, 1f, offset, offset + height);
 		if (!string.IsNullOrEmpty(text))
@@ -8419,7 +8419,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	public void TabPanelChart(CUI cui, CuiElementContainer container, string parent, PlayerSession session, Tab.OptionChart chart, float height, float offset, float panelSpacing, string layerCommand, string layerShadowCommand, Tab tab, int columnIndex)
 	{
-		//IL_0856: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0861: Unknown result type (might be due to invalid IL or missing references)
 		PlayerSession.Page currentPage = session.GetOrCreatePage(columnIndex);
 		bool flag = !chart.Responsive && tab.Columns.All((KeyValuePair<int, Tab.OptionPool> x) => session.GetOrCreatePage(x.Key).CurrentPage == currentPage.CurrentPage);
 		float num = (float)((chart.Responsive || !flag) ? 1 : tab.Columns.Count) + panelSpacing * (float)tab.Columns.Count;

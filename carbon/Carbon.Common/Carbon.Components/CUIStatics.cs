@@ -22,77 +22,77 @@ public static class CUIStatics
 		return color;
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdatePanel(this CUI cui, string id, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, bool blur = false, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdatePanel(this CUI cui, string id, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, bool blur = false, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
-		return cui.CreatePanel(null, null, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, blur, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreatePanel(null, null, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, blur, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateText(this CUI cui, string id, string color, string text, int size, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, VerticalWrapMode verticalOverflow = (VerticalWrapMode)1, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateText(this CUI cui, string id, string color, string text, int size, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, VerticalWrapMode verticalOverflow = (VerticalWrapMode)1, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		return cui.CreateText(null, null, color, text, size, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, align, font, verticalOverflow, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateText(null, null, color, text, size, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, align, font, verticalOverflow, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement, CuiElement> UpdateButton(this CUI cui, string id, string color, string textColor, string text, int size, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement, CuiElement> UpdateButton(this CUI cui, string id, string color, string textColor, string text, int size, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool blocksRaycast = true)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		return cui.CreateButton(null, null, color, textColor, text, size, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateButton(null, null, color, textColor, text, size, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, interactable, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement, CuiElement> UpdateProtectedButton(this CUI cui, string id, string color, string textColor, string text, int size, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement, CuiElement> UpdateProtectedButton(this CUI cui, string id, string color, string textColor, string text, int size, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool blocksRaycast = true)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		return cui.CreateProtectedButton(null, null, color, textColor, text, size, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateProtectedButton(null, null, color, textColor, text, size, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, interactable, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateInputField(this CUI cui, string id, string color, string text, int size, int characterLimit, bool readOnly, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, bool autoFocus = false, bool hudMenuInput = false, LineType lineType = (LineType)0, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
-	{
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		return cui.CreateInputField(null, null, color, text, size, characterLimit, readOnly, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, autoFocus, hudMenuInput, lineType, fadeIn, fadeOut, needsCursor, needsKeyboard, id, destroyUi, update: true, activeSelf, rotation);
-	}
-
-	public static CUI.Pair<string, CuiElement> UpdateProtectedInputField(this CUI cui, string id, string color, string text, int size, int characterLimit, bool readOnly, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, bool autoFocus = false, bool hudMenuInput = false, LineType lineType = (LineType)0, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateInputField(this CUI cui, string id, string color, string text, int size, int characterLimit, bool readOnly, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, bool autoFocus = false, bool hudMenuInput = false, LineType lineType = (LineType)0, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool blocksRaycast = true)
 	{
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		return cui.CreateProtectedInputField(null, null, color, text, size, characterLimit, readOnly, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, autoFocus, hudMenuInput, lineType, fadeIn, fadeOut, needsCursor, needsKeyboard, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateInputField(null, null, color, text, size, characterLimit, readOnly, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, autoFocus, hudMenuInput, lineType, fadeIn, fadeOut, needsCursor, needsKeyboard, id, destroyUi, update: true, activeSelf, rotation, interactable, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateImage(this CUI cui, string id, uint png, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateProtectedInputField(this CUI cui, string id, string color, string text, int size, int characterLimit, bool readOnly, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, string command = null, TextAnchor align = (TextAnchor)4, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedRegular, bool autoFocus = false, bool hudMenuInput = false, LineType lineType = (LineType)0, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool blocksRaycast = true)
 	{
-		return cui.CreateImage(null, null, png, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		return cui.CreateProtectedInputField(null, null, color, text, size, characterLimit, readOnly, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, command, align, font, autoFocus, hudMenuInput, lineType, fadeIn, fadeOut, needsCursor, needsKeyboard, id, destroyUi, update: true, activeSelf, rotation, interactable, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateImage(this CUI cui, string id, string url, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateImage(this CUI cui, string id, uint png, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
-		return cui.CreateImage(null, null, url, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateImage(null, null, png, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateSimpleImage(this CUI cui, string id, string png, string sprite, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, string slice = null)
+	public static CUI.Pair<string, CuiElement> UpdateImage(this CUI cui, string id, string url, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
-		return cui.CreateSimpleImage(null, null, png, sprite, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, slice);
+		return cui.CreateImage(null, null, url, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateSprite(this CUI cui, string id, string sprite, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateSimpleImage(this CUI cui, string id, string png, string sprite, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, string slice = null, float? ppuMultiplier = null, bool blocksRaycast = true)
 	{
-		return cui.CreateSprite(null, null, sprite, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateSimpleImage(null, null, png, sprite, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, slice, ppuMultiplier, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateItemImage(this CUI cui, string id, int itemID, ulong skinID, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateSprite(this CUI cui, string id, string sprite, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
-		return cui.CreateItemImage(null, null, itemID, skinID, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateSprite(null, null, sprite, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateQRCodeImage(this CUI cui, string id, string text, string brandUrl, string brandColor, string brandBgColor, int pixels, bool transparent, bool quietZones, string color, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true)
+	public static CUI.Pair<string, CuiElement> UpdateItemImage(this CUI cui, string id, int itemID, ulong skinID, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, float? ppuMultiplier = null, bool blocksRaycast = true)
 	{
-		return cui.CreateQRCodeImage(null, null, text, brandUrl, brandColor, brandBgColor, pixels, transparent, quietZones, color, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf);
+		return cui.CreateItemImage(null, null, itemID, skinID, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, ppuMultiplier, blocksRaycast);
 	}
 
-	public static CUI.Pair<string, CuiElement> UpdateClientImage(this CUI cui, string id, string url, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> UpdateQRCodeImage(this CUI cui, string id, string text, string brandUrl, string brandColor, string brandBgColor, int pixels, bool transparent, bool quietZones, string color, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, bool blocksRaycast = true)
 	{
-		return cui.CreateClientImage(null, null, url, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation);
+		return cui.CreateQRCodeImage(null, null, text, brandUrl, brandColor, brandBgColor, pixels, transparent, quietZones, color, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, blocksRaycast);
+	}
+
+	public static CUI.Pair<string, CuiElement> UpdateClientImage(this CUI cui, string id, string url, string color, string material = null, float xMin = 0f, float xMax = 1f, float yMin = 0f, float yMax = 1f, float OxMin = 0f, float OxMax = 0f, float OyMin = 0f, float OyMax = 0f, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string destroyUi = null, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
+	{
+		return cui.CreateClientImage(null, null, url, color, material, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, outlineColor, outlineDistance, outlineUseGraphicAlpha, id, destroyUi, update: true, activeSelf, rotation, blocksRaycast);
 	}
 
 	public static CUI.Pair<string, CuiElement> UpdateCountdown(this CUI cui, string id, int startTime, int endTime, int step, string command, float fadeIn = 0f, float fadeOut = 0f, string destroyUi = null, bool activeSelf = true)
@@ -106,7 +106,22 @@ public static class CUIStatics
 		return cui.CreateScrollView(null, null, vertical, horizontal, movementType, elasticity, inertia, decelerationRate, scrollSensitivity, out contentTransformComponent, out horizontalScrollBar, out verticalScrollBar, xMin, xMax, yMin, yMax, OxMin, OxMax, OyMin, OyMax, fadeIn, fadeOut, needsCursor, needsKeyboard, id, destroyUi, update: true, activeSelf, rotation, pivotX, pivotY, scrollPosHorizontal, scrollPosVertical);
 	}
 
-	public static CUI.Pair<string, CuiElement> Panel(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, bool blur = false, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CuiCanvasGroupComponent UpdateCanvasGroup(this CUI cui, CuiElement element, float? alpha = null, bool? blocksRaycasts = null, bool? interactable = null)
+	{
+		return cui.CreateCanvasGroup(element, alpha, blocksRaycasts, interactable, update: true);
+	}
+
+	public static CuiMaskComponent UpdateMask(this CUI cui, CuiElement element, bool? showMaskGraphic = null)
+	{
+		return cui.CreateMask(element, showMaskGraphic, update: true);
+	}
+
+	public static CuiTooltipComponent UpdateTooltip(this CUI cui, CuiElement element, string text, TooltipType? tooltipType = null, string offset = null, bool useCentre = false, DelayType? delay = null, PositionMode? position = null, string destroyUi = null, bool activeSelf = true)
+	{
+		return cui.CreateTooltip(element, text, tooltipType, offset, useCentre, delay, position, update: true);
+	}
+
+	public static CUI.Pair<string, CuiElement> Panel(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, bool blur = false, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
 		if (id == null)
 		{
@@ -124,6 +139,7 @@ public static class CUIStatics
 			cuiImageComponent.Material = material;
 		}
 		cuiImageComponent.FadeIn = fadeIn;
+		cuiImageComponent.BlocksRaycast = blocksRaycast;
 		cuiElement.Components.Add(cuiImageComponent);
 		if (!update || (update && (xMin != 0f || xMax != 1f || yMin != 0f || yMax != 1f)))
 		{
@@ -158,7 +174,7 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
 	}
 
-	public static CUI.Pair<string, CuiElement> Text(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string text, int size, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, TextAnchor align, CUI.Handler.FontTypes font, VerticalWrapMode verticalOverflow, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> Text(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string text, int size, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, TextAnchor align, CUI.Handler.FontTypes font, VerticalWrapMode verticalOverflow, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
@@ -175,6 +191,7 @@ public static class CUIStatics
 		cuiTextComponent.Color = ProcessColor(color);
 		cuiTextComponent.FadeIn = fadeIn;
 		cuiTextComponent.VerticalOverflow = verticalOverflow;
+		cuiTextComponent.BlocksRaycast = blocksRaycast;
 		cuiElement.Components.Add(cuiTextComponent);
 		if (!update || (update && (xMin != 0f || xMax != 1f || yMin != 0f || yMax != 1f)))
 		{
@@ -209,9 +226,9 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
 	}
 
-	public static CUI.Pair<string, CuiElement, CuiElement> Button(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string textColor, string text, int size, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, string command, TextAnchor align, CUI.Handler.FontTypes font, bool @protected, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement, CuiElement> Button(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string textColor, string text, int size, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, string command, TextAnchor align, CUI.Handler.FontTypes font, bool @protected, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool blocksRaycast = true)
 	{
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
 		if (id == null)
 		{
 			id = cui.AppendId();
@@ -225,6 +242,8 @@ public static class CUIStatics
 		{
 			cuiButtonComponent.Material = material;
 		}
+		cuiButtonComponent.Interactable = interactable;
+		cuiButtonComponent.BlocksRaycast = blocksRaycast;
 		cuiElement.Components.Add(cuiButtonComponent);
 		if (!update || (update && (xMin != 0f || xMax != 1f || yMin != 0f || yMax != 1f)))
 		{
@@ -258,6 +277,7 @@ public static class CUIStatics
 			cuiTextComponent.Align = align;
 			cuiTextComponent.Color = ProcessColor(textColor);
 			cuiTextComponent.Font = cui.GetFont(font);
+			cuiTextComponent.BlocksRaycast = blocksRaycast;
 			cuiElement2.Components.Add(cuiTextComponent);
 			CuiRectTransformComponent cuiRectTransformComponent2 = cui.TakeFromPoolRect();
 			cuiRectTransformComponent2.AnchorMin = "0.02 0";
@@ -279,7 +299,7 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement, CuiElement>(id, cuiElement, cuiElement2);
 	}
 
-	public static CUI.Pair<string, CuiElement> InputField(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string text, int size, int characterLimit, bool readOnly, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, string command, TextAnchor align, CUI.Handler.FontTypes font, bool @protected, bool autoFocus = false, bool hudMenuInput = false, LineType lineType = (LineType)0, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> InputField(this CUI.Handler cui, CuiElementContainer container, string parent, string color, string text, int size, int characterLimit, bool readOnly, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, string command, TextAnchor align, CUI.Handler.FontTypes font, bool @protected, bool autoFocus = false, bool hudMenuInput = false, LineType lineType = (LineType)0, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool? interactable = null, bool blocksRaycast = true)
 	{
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
@@ -300,6 +320,8 @@ public static class CUIStatics
 		cuiInputFieldComponent.LineType = lineType;
 		cuiInputFieldComponent.Autofocus = autoFocus;
 		cuiInputFieldComponent.HudMenuInput = hudMenuInput;
+		cuiInputFieldComponent.Interactable = interactable;
+		cuiInputFieldComponent.BlocksRaycast = blocksRaycast;
 		cuiElement.Components.Add(cuiInputFieldComponent);
 		if (needsCursor)
 		{
@@ -326,7 +348,7 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
 	}
 
-	public static CUI.Pair<string, CuiElement> Image(this CUI.Handler cui, CuiElementContainer container, string parent, string png, string url, string steamId, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> Image(this CUI.Handler cui, CuiElementContainer container, string parent, string png, string url, string steamId, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
 		if (id == null)
 		{
@@ -339,6 +361,7 @@ public static class CUIStatics
 		cuiRawImageComponent.SteamId = steamId;
 		cuiRawImageComponent.FadeIn = fadeIn;
 		cuiRawImageComponent.Color = ProcessColor(color);
+		cuiRawImageComponent.BlocksRaycast = blocksRaycast;
 		if (material != null)
 		{
 			cuiRawImageComponent.Material = material;
@@ -377,7 +400,7 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
 	}
 
-	public static CUI.Pair<string, CuiElement> SimpleImage(this CUI.Handler cui, CuiElementContainer container, string parent, string png, string sprite, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, string slice = null)
+	public static CUI.Pair<string, CuiElement> SimpleImage(this CUI.Handler cui, CuiElementContainer container, string parent, string png, string sprite, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, string slice = null, float? ppuMultiplier = null, bool blocksRaycast = true)
 	{
 		if (id == null)
 		{
@@ -390,6 +413,8 @@ public static class CUIStatics
 		cuiImageComponent.FadeIn = fadeIn;
 		cuiImageComponent.Color = ProcessColor(color);
 		cuiImageComponent.Slice = slice;
+		cuiImageComponent.PpuMultiplier = ppuMultiplier;
+		cuiImageComponent.BlocksRaycast = blocksRaycast;
 		if (material != null)
 		{
 			cuiImageComponent.Material = material;
@@ -428,7 +453,7 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
 	}
 
-	public static CUI.Pair<string, CuiElement> Sprite(this CUI.Handler cui, CuiElementContainer container, string parent, string sprite, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> Sprite(this CUI.Handler cui, CuiElementContainer container, string parent, string sprite, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, bool blocksRaycast = true)
 	{
 		if (id == null)
 		{
@@ -439,6 +464,7 @@ public static class CUIStatics
 		cuiRawImageComponent.Sprite = sprite;
 		cuiRawImageComponent.FadeIn = fadeIn;
 		cuiRawImageComponent.Color = ProcessColor(color);
+		cuiRawImageComponent.BlocksRaycast = blocksRaycast;
 		if (material != null)
 		{
 			cuiRawImageComponent.Material = material;
@@ -477,7 +503,7 @@ public static class CUIStatics
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
 	}
 
-	public static CUI.Pair<string, CuiElement> ItemImage(this CUI.Handler cui, CuiElementContainer container, string parent, int itemID, ulong skinID, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f)
+	public static CUI.Pair<string, CuiElement> ItemImage(this CUI.Handler cui, CuiElementContainer container, string parent, int itemID, ulong skinID, string color, string material, float xMin, float xMax, float yMin, float yMax, float OxMin, float OxMax, float OyMin, float OyMax, float fadeIn = 0f, float fadeOut = 0f, bool needsCursor = false, bool needsKeyboard = false, string outlineColor = null, string outlineDistance = null, bool outlineUseGraphicAlpha = false, string id = null, string destroyUi = null, bool update = false, bool activeSelf = true, float rotation = 0f, float? ppuMultiplier = null, bool blocksRaycast = true)
 	{
 		if (id == null)
 		{
@@ -489,6 +515,8 @@ public static class CUIStatics
 		cuiImageComponent.SkinId = skinID;
 		cuiImageComponent.FadeIn = fadeIn;
 		cuiImageComponent.Color = ProcessColor(color);
+		cuiImageComponent.PpuMultiplier = ppuMultiplier;
+		cuiImageComponent.BlocksRaycast = blocksRaycast;
 		if (material != null)
 		{
 			cuiImageComponent.Material = material;
@@ -594,6 +622,37 @@ public static class CUIStatics
 			container?.Add(cuiElement);
 		}
 		return new CUI.Pair<string, CuiElement>(id, cuiElement);
+	}
+
+	public static CuiCanvasGroupComponent CanvasGroup(this CUI.Handler cui, CuiElement element, float? alpha, bool? blocksRaycasts, bool? interactable, bool update = false)
+	{
+		CuiCanvasGroupComponent cuiCanvasGroupComponent = cui.TakeFromPoolCanvasGroup();
+		cuiCanvasGroupComponent.Alpha = alpha;
+		cuiCanvasGroupComponent.BlocksRaycasts = blocksRaycasts;
+		cuiCanvasGroupComponent.Interactable = interactable;
+		element.Components.Add(cuiCanvasGroupComponent);
+		return cuiCanvasGroupComponent;
+	}
+
+	public static CuiMaskComponent Mask(this CUI.Handler cui, CuiElement element, bool? showMaskGraphic, bool update = false)
+	{
+		CuiMaskComponent cuiMaskComponent = cui.TakeFromPoolMask();
+		cuiMaskComponent.ShowMaskGraphic = showMaskGraphic;
+		element.Components.Add(cuiMaskComponent);
+		return cuiMaskComponent;
+	}
+
+	public static CuiTooltipComponent Tooltip(this CUI.Handler cui, CuiElement element, string text, TooltipType? tooltipType, string offset, bool useCentre, DelayType? delay, PositionMode? position, bool update = false)
+	{
+		CuiTooltipComponent cuiTooltipComponent = cui.TakeFromPoolTooltip();
+		cuiTooltipComponent.Text = text;
+		cuiTooltipComponent.TooltipType = tooltipType;
+		cuiTooltipComponent.Offset = offset;
+		cuiTooltipComponent.UseCentre = useCentre;
+		cuiTooltipComponent.Delay = delay;
+		cuiTooltipComponent.Position = position;
+		element.Components.Add(cuiTooltipComponent);
+		return cuiTooltipComponent;
 	}
 
 	public static void Send(this CuiElementContainer container, BasePlayer player)

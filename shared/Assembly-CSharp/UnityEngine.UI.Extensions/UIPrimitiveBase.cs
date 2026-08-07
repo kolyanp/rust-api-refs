@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace UnityEngine.UI.Extensions;
 
+[RequireComponent(typeof(CanvasRenderer))]
 public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFilter
 {
 	protected static Material s_ETC1DefaultUI;

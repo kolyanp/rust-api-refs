@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 public class NPCSpawner : SpawnGroup
@@ -86,6 +87,10 @@ public class NPCSpawner : SpawnGroup
 		if ((Object)(object)monumentNavMesh != (Object)null)
 		{
 			return monumentNavMesh.IsBuilding;
+		}
+		if (!AI.useUnityNavmesh && !RustNavigation.Instance.IsDefaultNavmeshBuilt())
+		{
+			return true;
 		}
 		if (!DungeonNavmesh.NavReady())
 		{

@@ -90,7 +90,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	[Header("Upgrades")]
 	public List<UpgradeOption> UpgradeOptions;
 
-	public EntityFuelSystem fuelSystem;
+	public IFuelSystem fuelSystem;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
 	public static float population = 1f;
@@ -416,10 +416,28 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public override void PostServerLoad()
 	{
+		RebuildMaxHealthFromEquipment();
 		base.PostServerLoad();
 		ClearOwnerEntry();
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.On, b: false);
+	}
+
+	private void RebuildMaxHealthFromEquipment()
+	{
+		if (maxHealthOverride > 0f)
+		{
+			return;
+		}
+		float num = StartMaxHealth();
+		foreach (BaseEntity child in children)
+		{
+			if (child is HotAirBalloonArmor hotAirBalloonArmor)
+			{
+				num += hotAirBalloonArmor.AdditionalHealth;
+			}
+		}
+		SetMaxHealth(num);
 	}
 
 	[RPC_Server]
@@ -434,17 +452,16 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.hotAirBalloon = Pool.Get<HotAirBalloon>();
 		info.msg.hotAirBalloon.inflationAmount = inflationLevel;
-		info.msg.hotAirBalloon.sinceLastBlast = TimeSince.op_Implicit(sinceLastBlast);
+		info.msg.hotAirBalloon.sinceLastBlast = ((TimeSince)(ref sinceLastBlast)).PassedSince(info.cachedTime.Time);
 		if (info.forDisk && Object.op_Implicit((Object)(object)myRigidbody))
 		{
 			info.msg.hotAirBalloon.velocity = myRigidbody.linearVelocity;
@@ -517,8 +534,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void EngineSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnHotAirBalloonToggle", this, msg.player) != null)
@@ -916,21 +933,30 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		return num + num2;
 	}
 
-	public override List<ItemAmount> BuildCost()
+	public override EntityBuildCost BuildCost()
 	{
-		List<ItemAmount> list = new List<ItemAmount>(base.BuildCost());
+		EntityBuildCost result = new EntityBuildCost(new List<ItemAmount>());
+		EntityBuildCost entityBuildCost = base.BuildCost();
+		if (entityBuildCost.Items != null)
+		{
+			result.Items.AddRange(entityBuildCost.Items);
+		}
 		foreach (BaseEntity child in children)
 		{
 			if (child is HotAirBalloonEquipment hotAirBalloonEquipment)
 			{
-				list.AddRange(hotAirBalloonEquipment.BuildCost());
+				EntityBuildCost entityBuildCost2 = hotAirBalloonEquipment.BuildCost();
+				if (entityBuildCost2.Items != null)
+				{
+					result.Items.AddRange(entityBuildCost2.Items);
+				}
 			}
 		}
-		return list;
+		return result;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_ReqEquipItem(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

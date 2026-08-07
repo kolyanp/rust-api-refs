@@ -21,6 +21,8 @@ public class Config
 
 	public class CompilerConfig
 	{
+		public bool CompileTestMode;
+
 		public bool UnloadOnFailure;
 
 		public List<string> ConditionalCompilationSymbols;

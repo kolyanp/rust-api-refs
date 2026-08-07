@@ -43,8 +43,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RectTransform serverInfoParent;
 
-	[SerializeField]
 	[Header("Convars")]
+	[SerializeField]
 	private GameObjectRef convarInfoEntryPrefab;
 
 	[SerializeField]

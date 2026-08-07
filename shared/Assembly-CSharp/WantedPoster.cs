@@ -186,8 +186,8 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void ClearPlayer(RPCMessage msg)
 	{
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)

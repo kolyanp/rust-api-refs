@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Facepunch;
 using Rust.Ai.Gen2;
 using UnityEngine;
 
@@ -235,6 +237,24 @@ public static class ConstructionErrors
 		return null;
 	}
 
+	public static bool IsBuildBlockedByMonument(Vector3 pos)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		List<Collider> list = Pool.Get<List<Collider>>();
+		GamePhysics.OverlapSphere(pos, 0.1f, list, 536870912, (QueryTriggerInteraction)2);
+		PreventBuildingMonumentTag preventBuildingMonumentTag = default(PreventBuildingMonumentTag);
+		foreach (Collider item in list)
+		{
+			if (((Component)item).TryGetComponent<PreventBuildingMonumentTag>(ref preventBuildingMonumentTag) && (Object)(object)preventBuildingMonumentTag.GetAttachedMonument() != (Object)null)
+			{
+				Pool.FreeUnmanaged<Collider>(ref list);
+				return true;
+			}
+		}
+		Pool.FreeUnmanaged<Collider>(ref list);
+		return false;
+	}
+
 	public static PreventBuildingMonumentTag GetPreventBuildingMonumentTag(Collider col)
 	{
 		PreventBuildingMonumentTag preventBuildingMonumentTag = default(PreventBuildingMonumentTag);
@@ -247,7 +267,7 @@ public static class ConstructionErrors
 
 	public static void Log(BasePlayer player, string message)
 	{
-		if (!((Object)(object)player == (Object)null) && !string.IsNullOrEmpty(message) && player.isServer && player.net.connection.info.GetBool("client.errortoasts_debug"))
+		if (!((Object)(object)player == (Object)null) && !string.IsNullOrEmpty(message) && player.isServer && player.net.connection != null && player.net.connection.info.GetBool("client.errortoasts_debug"))
 		{
 			player.ChatMessage(message);
 		}

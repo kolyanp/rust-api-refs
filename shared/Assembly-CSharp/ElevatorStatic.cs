@@ -27,6 +27,8 @@ public class ElevatorStatic : Elevator
 
 	public const Flags LiftRecentlyArrived = Flags.Reserved3;
 
+	public List<EntityRef<ElevatorStatic>> clientFloorPositions = new List<EntityRef<ElevatorStatic>>();
+
 	public List<ElevatorStatic> floorPositions = new List<ElevatorStatic>();
 
 	public ElevatorStatic ownerElevator;
@@ -347,10 +349,6 @@ public class ElevatorStatic : Elevator
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		if (base.IsTop)
@@ -360,10 +358,6 @@ public class ElevatorStatic : Elevator
 			{
 				info.msg.elevator.floorList.Add(floorPosition.net.ID);
 			}
-		}
-		else
-		{
-			info.msg.elevator.topFloor = (NetworkableId)(((Object)(object)ownerElevator != (Object)null) ? ownerElevator.net.ID : default(NetworkableId));
 		}
 		info.msg.elevator.floorDisplay = (int)FloorNumberDisplay;
 	}

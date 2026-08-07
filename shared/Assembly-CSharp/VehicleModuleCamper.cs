@@ -187,14 +187,15 @@ public class VehicleModuleCamper : VehicleModuleSeating
 
 	public override void Spawn()
 	{
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
 		base.Spawn();
-		if (!Application.isLoadingSave)
+		bool flag = false;
+		if (!Application.isLoadingSave && !flag)
 		{
 			Locker locker = base.gameManager.CreateEntity(LockerEntity.resourcePath, LockerPoint.localPosition, LockerPoint.localRotation) as Locker;
 			locker.SetParent(this);
@@ -332,8 +333,8 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -1,5 +1,7 @@
+using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasRenderer))]
 public class NonDrawingGraphic : Graphic
 {
 	public override void SetMaterialDirty()

@@ -72,8 +72,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;
@@ -117,8 +117,8 @@ public class Admin : ConsoleSystem
 		public string Protocol;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerConvarInfo
 	{
 		public string FullName;
@@ -128,8 +128,8 @@ public class Admin : ConsoleSystem
 		public string Help;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerUGCInfo(IUGCBrowserEntity fromEntity)
 	{
 		public ulong entityId = fromEntity.UgcEntity.net.ID.Value;
@@ -182,7 +182,7 @@ public class Admin : ConsoleSystem
 		if (!flag && text.Length == 0)
 		{
 			text2 = text2 + "hostname: " + Server.hostname + "\n";
-			text2 = text2 + "version : " + 2631 + " secure (secure mode enabled, connected to Steam3)\n";
+			text2 = text2 + "version : " + 2632 + " secure (secure mode enabled, connected to Steam3)\n";
 			text2 = text2 + "map     : " + Server.level + "\n";
 			text2 += string.Format("players : {0} ({1} max) ({2} queued) ({3} joining)\n\n", new object[4]
 			{
@@ -228,7 +228,7 @@ public class Admin : ConsoleSystem
 						string text5 = Net.sv.GetAveragePing(current.net.connection).ToString();
 						string text6 = current.net.connection.ipaddress;
 						string text7 = current.net.ID.Value.ToString();
-						string text8 = current.violationLevel.ToString("0.0");
+						string text8 = current.ViolationLevel.ToString("0.0");
 						string text9 = current.GetAntiHackKicks().ToString();
 						if (!arg.IsAdmin && !arg.IsRcon)
 						{
@@ -2093,16 +2093,18 @@ public class Admin : ConsoleSystem
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_080e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0813: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0815: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0817: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0843: Unknown result type (might be due to invalid IL or missing references)
-		//IL_085d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_078c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0801: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0803: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0805: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0831: Unknown result type (might be due to invalid IL or missing references)
+		//IL_084b: Unknown result type (might be due to invalid IL or missing references)
 		BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(ArgEx.GetEntityID(arg, 1)) as BaseEntity;
 		if ((Object)(object)baseEntity == (Object)null || baseEntity is BasePlayer || baseEntity is PointEntity)
 		{
@@ -2111,7 +2113,15 @@ public class Admin : ConsoleSystem
 		string text = arg.GetString(0);
 		if ((Object)(object)ArgEx.Player(arg) != (Object)null)
 		{
-			Debug.Log((object)("[ENTCMD] " + ArgEx.Player(arg).displayName + "/" + ArgEx.Player(arg).userID.Get() + " used *" + text + "* on ent: " + ((Object)baseEntity).name));
+			Debug.Log((object)string.Format("[ENTCMD] {0}/{1} used *{2}* on ent [{3}/{4}] at position {5}", new object[6]
+			{
+				ArgEx.Player(arg).displayName,
+				ArgEx.Player(arg).userID.Get(),
+				text,
+				((Object)baseEntity).name,
+				baseEntity.net.ID,
+				((Component)baseEntity).transform.position
+			}));
 		}
 		switch (text)
 		{
@@ -2591,7 +2601,7 @@ public class Admin : ConsoleSystem
 			Address = (showAddress ? x.net.connection.ipaddress : string.Empty),
 			EntityId = x.net.ID.Value,
 			ConnectedSeconds = (int)x.net.connection.GetSecondsConnected(),
-			ViolationLevel = x.violationLevel,
+			ViolationLevel = x.ViolationLevel,
 			Health = x.Health(),
 			Position = ((Component)x).transform.position,
 			IsMuted = x.HasPlayerFlag(BasePlayer.PlayerFlags.ChatMute),
@@ -2616,7 +2626,7 @@ public class Admin : ConsoleSystem
 							Address = string.Empty,
 							EntityId = ((current.net != null) ? current.net.ID.Value : 0),
 							ConnectedSeconds = 0,
-							ViolationLevel = current.violationLevel,
+							ViolationLevel = current.ViolationLevel,
 							Health = current.Health(),
 							Position = ((Component)current).transform.position,
 							IsMuted = false,
@@ -2676,7 +2686,7 @@ public class Admin : ConsoleSystem
 			NetworkOut = (int)((Net.sv != null) ? Net.sv.GetStat(null, BaseNetwork.StatTypeLong.BytesSent_LastSecond) : 0),
 			Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 			SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(),
-			Version = 2631,
+			Version = 2632,
 			Protocol = Protocol.printable
 		};
 	}

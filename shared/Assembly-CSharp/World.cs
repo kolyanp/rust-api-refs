@@ -113,7 +113,7 @@ public static class World
 			{
 				return $"{Name}_{Url.MurmurHashUnsigned()}.map";
 			}
-			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 286 + ".map";
+			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 287 + ".map";
 		}
 	}
 
@@ -137,9 +137,9 @@ public static class World
 			}
 			if (CanLoadFromUrl())
 			{
-				return Name + "." + 286 + ".sav";
+				return Name + "." + 287 + ".sav";
 			}
-			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 286 + ".sav";
+			return Name.Replace(" ", "").ToLower() + "." + Size + "." + Seed + "." + 287 + ".sav";
 		}
 	}
 
@@ -189,7 +189,7 @@ public static class World
 			return;
 		}
 		Regex regex1 = new Regex("proceduralmap\\.[0-9]+\\.[0-9]+\\.[0-9]+(_occlusion)*\\.(map|dat)");
-		Regex regex2 = new Regex("\\.[0-9]+\\.[0-9]+\\." + 286 + "+(_occlusion)*\\.(map|dat)");
+		Regex regex2 = new Regex("\\.[0-9]+\\.[0-9]+\\." + 287 + "+(_occlusion)*\\.(map|dat)");
 		foreach (string item in new string[2] { "*.map", "*.dat" }.SelectMany((string ext) => from path in Directory.GetFiles(MapFolderName, ext)
 			where regex1.IsMatch(path) && !regex2.IsMatch(path)
 			select path))
@@ -226,7 +226,7 @@ public static class World
 
 	private static string SeedIdentifier()
 	{
-		return SystemInfo.deviceUniqueIdentifier + "_" + 286 + "_" + Server.identity;
+		return SystemInfo.deviceUniqueIdentifier + "_" + 287 + "_" + Server.identity;
 	}
 
 	public static void InitSalt(int salt)
@@ -544,21 +544,37 @@ public static class World
 		}
 	}
 
-	public static void Spawn(string category, string[] folders)
+	public static void Spawn(string category, string[] folders, GameObjectRef[] gameObjectRefs = null)
 	{
-		for (int i = SpawnIndex; i < Serialization.world.prefabs.Count; i++)
+		int i = SpawnIndex;
+		for (int count = Serialization.world.prefabs.Count; i < count; i++)
 		{
 			PrefabData val = Serialization.world.prefabs[i];
-			if (!(val.category != category))
+			if (val.category != category)
 			{
-				string text = StringPool.Get(val.id);
-				if (folders == null || StringEx.StartsWithAny(text, folders))
-				{
-					SpawnPrefabData(val);
-					SpawnIndex++;
-					continue;
-				}
 				break;
+			}
+			bool flag = false;
+			if (folders.Length != 0)
+			{
+				flag = StringEx.StartsWithAny(StringPool.Get(val.id), folders);
+			}
+			if (gameObjectRefs != null && !flag)
+			{
+				foreach (GameObjectRef gameObjectRef in gameObjectRefs)
+				{
+					if (gameObjectRef != null && gameObjectRef.isValid && val.id == gameObjectRef.resourceID)
+					{
+						flag = true;
+						break;
+					}
+				}
+			}
+			if (flag)
+			{
+				SpawnPrefabData(val);
+				SpawnIndex++;
+				continue;
 			}
 			break;
 		}

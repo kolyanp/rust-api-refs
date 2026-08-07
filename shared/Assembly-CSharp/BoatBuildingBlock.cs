@@ -255,40 +255,44 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 
 	private void EnsurePopulatedTriggersList()
 	{
-		List<TriggerParent> list = parentTriggers;
-		if (list != null && list.Count > 0)
+		using (TimeWarning.New("EnsurePopulatedTriggersList"))
 		{
-			bool flag = false;
-			foreach (TriggerParent parentTrigger in parentTriggers)
+			List<TriggerParent> list = parentTriggers;
+			if (list != null && list.Count > 0)
 			{
-				if ((Object)(object)parentTrigger == (Object)null)
+				bool flag = false;
+				foreach (TriggerParent parentTrigger in parentTriggers)
 				{
-					flag = true;
-					break;
+					if ((Object)(object)parentTrigger == (Object)null)
+					{
+						flag = true;
+						break;
+					}
+				}
+				if (!flag)
+				{
+					return;
 				}
 			}
-			if (!flag)
+			bool flag2 = false;
+			BoatConstructionSkin boatConstructionSkin = currentSkin as BoatConstructionSkin;
+			Debug.Assert(Object.op_Implicit((Object)(object)boatConstructionSkin) || flag2);
+			if (parentTriggers == null)
 			{
-				return;
+				parentTriggers = new List<TriggerParent>();
 			}
-		}
-		BoatConstructionSkin boatConstructionSkin = currentSkin as BoatConstructionSkin;
-		Debug.Assert(Object.op_Implicit((Object)(object)boatConstructionSkin));
-		if (parentTriggers == null)
-		{
-			parentTriggers = new List<TriggerParent>();
-		}
-		parentTriggers.Clear();
-		if (Object.op_Implicit((Object)(object)boatConstructionSkin.parentTrigger))
-		{
-			parentTriggers.Add(boatConstructionSkin.parentTrigger);
-		}
-		BoatConstructionSkin boatConstructionSkin2 = default(BoatConstructionSkin);
-		foreach (GameObject conditional in boatConstructionSkin.conditionals)
-		{
-			if (conditional.TryGetComponent<BoatConstructionSkin>(ref boatConstructionSkin2) && Object.op_Implicit((Object)(object)boatConstructionSkin2.parentTrigger))
+			parentTriggers.Clear();
+			if (Object.op_Implicit((Object)(object)boatConstructionSkin.parentTrigger))
 			{
-				parentTriggers.Add(boatConstructionSkin2.parentTrigger);
+				parentTriggers.Add(boatConstructionSkin.parentTrigger);
+			}
+			BoatConstructionSkin boatConstructionSkin2 = default(BoatConstructionSkin);
+			foreach (GameObject conditional in boatConstructionSkin.conditionals)
+			{
+				if (conditional.TryGetComponent<BoatConstructionSkin>(ref boatConstructionSkin2) && Object.op_Implicit((Object)(object)boatConstructionSkin2.parentTrigger))
+				{
+					parentTriggers.Add(boatConstructionSkin2.parentTrigger);
+				}
 			}
 		}
 	}
@@ -353,8 +357,8 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 		damageTaken += Mathf.Abs(amount);
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(5f)]
 	public void RPC_WantsPushParentBoat(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))

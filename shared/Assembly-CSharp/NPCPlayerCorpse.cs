@@ -1,10 +1,12 @@
+using ConVar;
+
 public class NPCPlayerCorpse : PlayerCorpse
 {
 	private bool lootEnabled;
 
 	public override float GetRemovalTime()
 	{
-		return 600f;
+		return Server.npccorpsedespawn;
 	}
 
 	public override bool CanLoot()

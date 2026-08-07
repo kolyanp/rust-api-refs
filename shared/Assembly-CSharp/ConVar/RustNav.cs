@@ -12,6 +12,12 @@ public class RustNav : ConsoleSystem
 	[ServerVar]
 	public static float drawRefreshRate = 1f;
 
+	[ServerVar]
+	public static int drawTileBudget = 5;
+
+	[ServerVar]
+	public static int drawManifestInterval = 10;
+
 	private const float traceLength = 500f;
 
 	public static int numThreads = 4;
@@ -35,11 +41,17 @@ public class RustNav : ConsoleSystem
 		BasePlayer basePlayer = ArgEx.Player(arg);
 		if (arg.GetBool(0, !basePlayer.IsInvoking(basePlayer.DrawNavmesh)))
 		{
+			basePlayer.ResetNavmeshDrawState();
+			RustNavigation.AddDrawViewer(basePlayer);
 			basePlayer.InvokeRepeating(basePlayer.DrawNavmesh, 0f, drawRefreshRate);
-			return;
 		}
-		basePlayer.CancelInvoke(basePlayer.DrawNavmesh);
-		basePlayer.ClientRPC(RpcTarget.Player("StopDrawingNavmesh", basePlayer));
+		else
+		{
+			basePlayer.CancelInvoke(basePlayer.DrawNavmesh);
+			RustNavigation.RemoveDrawViewer(basePlayer);
+			basePlayer.ResetNavmeshDrawState();
+			basePlayer.ClientRPC(RpcTarget.Player("StopDrawingNavmesh", basePlayer));
+		}
 	}
 
 	[ServerVar]

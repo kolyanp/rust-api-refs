@@ -21,23 +21,22 @@ public class BuriedItem : IPooled
 
 	public static BuriedItem Create(Item item, Vector3 worldPosition, long expiryTime)
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		BuriedItem buriedItem = Pool.Get<BuriedItem>();
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)item.info == (Object)null || item.info == null)
 		{
 			Debug.LogError((object)$"Tried to create a buried item with an item that has no ItemDefinition! UID: {item.uid}, ItemId: {item.info?.itemid}");
-			Pool.Free<BuriedItem>(ref buriedItem);
 			return null;
 		}
+		BuriedItem buriedItem = Pool.Get<BuriedItem>();
 		buriedItem.ItemId = item.info.itemid;
 		buriedItem.ExpiryTime = expiryTime;
 		buriedItem.Location = new Vector2(worldPosition.x, worldPosition.z);
 		buriedItem.Condition = (item.hasCondition ? new float?(item.condition) : ((float?)null));
 		buriedItem.UID = item.uid.Value;
-		if (item.ownershipShares.Count > 0)
+		if (item.ownershipShares != null && item.ownershipShares.Count > 0)
 		{
 			buriedItem.OwnershipShare = item.ownershipShares[0];
 		}

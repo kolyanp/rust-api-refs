@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Cysharp.Text;
@@ -38,6 +39,8 @@ public struct EventRecordField
 
 	public MemoryStream Bytes;
 
+	public List<int> Ints;
+
 	public ValueUnion Value;
 
 	public FieldType Type;
@@ -53,6 +56,7 @@ public struct EventRecordField
 		String = null;
 		Bytes = null;
 		Chars = default(ReadOnlyMemory<char>);
+		Ints = null;
 		Value = default(ValueUnion);
 	}
 
@@ -65,13 +69,14 @@ public struct EventRecordField
 		String = null;
 		Bytes = null;
 		Chars = default(ReadOnlyMemory<char>);
+		Ints = null;
 		Value = default(ValueUnion);
 	}
 
 	public void Serialize(ref Utf8ValueStringBuilder writer, AnalyticsDocumentMode format)
 	{
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
 		switch (Type)
 		{
 		case FieldType.String:
@@ -86,19 +91,19 @@ public struct EventRecordField
 				break;
 			}
 			string text = String;
-			int length3 = String.Length;
-			for (int k = 0; k < length3; k++)
+			int length = String.Length;
+			for (int j = 0; j < length; j++)
 			{
-				char c2 = text[k];
-				WriteChar(ref writer, c2);
+				char c = text[j];
+				WriteChar(ref writer, c);
 			}
 			break;
 		}
 		case FieldType.Float:
 		{
-			Span<char> destination2 = stackalloc char[128];
-			Value.Float.TryFormat(destination2, out var charsWritten3);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten3));
+			Span<char> destination = stackalloc char[128];
+			Value.Float.TryFormat(destination, out var charsWritten);
+			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination.Slice(0, charsWritten));
 			break;
 		}
 		case FieldType.Number:
@@ -112,16 +117,16 @@ public struct EventRecordField
 		}
 		case FieldType.Vector:
 		{
-			Span<char> destination = stackalloc char[128];
+			Span<char> destination2 = stackalloc char[128];
 			Vector3 vector = Value.Vector;
-			vector.x.TryFormat(destination, out var charsWritten);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination.Slice(0, charsWritten));
+			vector.x.TryFormat(destination2, out var charsWritten2);
+			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
 			((Utf8ValueStringBuilder)(ref writer)).Append(',');
-			vector.y.TryFormat(destination, out charsWritten);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination.Slice(0, charsWritten));
+			vector.y.TryFormat(destination2, out charsWritten2);
+			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
 			((Utf8ValueStringBuilder)(ref writer)).Append(',');
-			vector.z.TryFormat(destination, out charsWritten);
-			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination.Slice(0, charsWritten));
+			vector.z.TryFormat(destination2, out charsWritten2);
+			((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)destination2.Slice(0, charsWritten2));
 			break;
 		}
 		case FieldType.DateTime:
@@ -133,12 +138,12 @@ public struct EventRecordField
 				Span<char> chars = stackalloc char[128];
 				int num = 96;
 				byte[] buffer = Bytes.GetBuffer();
-				for (int j = 0; j < Bytes.Length; j += num)
+				for (int l = 0; l < Bytes.Length; l += num)
 				{
-					int num2 = (int)Bytes.Length - j;
-					int length2 = ((num2 > num) ? num : num2);
-					Convert.TryToBase64Chars(new Span<byte>(buffer, j, length2), chars, out var charsWritten2);
-					Span<char> span2 = chars.Slice(0, charsWritten2);
+					int num2 = (int)Bytes.Length - l;
+					int length3 = ((num2 > num) ? num : num2);
+					Convert.TryToBase64Chars(new Span<byte>(buffer, l, length3), chars, out var charsWritten3);
+					Span<char> span2 = chars.Slice(0, charsWritten3);
 					((Utf8ValueStringBuilder)(ref writer)).Append((ReadOnlySpan<char>)span2);
 				}
 			}
@@ -150,15 +155,31 @@ public struct EventRecordField
 				((Utf8ValueStringBuilder)(ref writer)).Append(Chars.Span);
 				break;
 			}
-			int length = Chars.Length;
+			int length2 = Chars.Length;
 			ReadOnlySpan<char> span = Chars.Span;
-			for (int i = 0; i < length; i++)
+			for (int k = 0; k < length2; k++)
 			{
-				char c = span[i];
-				WriteChar(ref writer, c);
+				char c2 = span[k];
+				WriteChar(ref writer, c2);
 			}
 			break;
 		}
+		case FieldType.JsonIntArray:
+			((Utf8ValueStringBuilder)(ref writer)).Append('[');
+			if (Ints != null)
+			{
+				int count = Ints.Count;
+				for (int i = 0; i < count; i++)
+				{
+					if (i > 0)
+					{
+						((Utf8ValueStringBuilder)(ref writer)).Append(',');
+					}
+					((Utf8ValueStringBuilder)(ref writer)).Append(Ints[i]);
+				}
+			}
+			((Utf8ValueStringBuilder)(ref writer)).Append(']');
+			break;
 		default:
 			Debug.LogWarning((object)"Unhandled field type attempted to be serialized");
 			break;

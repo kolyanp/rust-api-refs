@@ -14,14 +14,14 @@ public class Category_Elevator
 	public class Elevator_Lift
 	{
 		[Patch("OnLiftUse", "OnLiftUse", "Lift", "RPC_UseLift", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("56fcc864229c42139b4d385d87aa890a")]
+		[Identifier("677ac177826645d28101da3c49559f11")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Lift", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Elevator")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Elevator_Lift_56fcc864229c42139b4d385d87aa890a : Patch
+		public class Elevator_Lift_677ac177826645d28101da3c49559f11 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -57,14 +57,14 @@ public class Category_Elevator
 	public class Elevator_ProceduralLift
 	{
 		[Patch("OnLiftUse", "OnLiftUse [ProceduralLift]", "ProceduralLift", "RPC_UseLift", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("8bac829124c14778a6023673c1ffc75f")]
+		[Identifier("12f107bd3b264c7698f4d84d5877ecb6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ProceduralLift", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Elevator")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Elevator_ProceduralLift_8bac829124c14778a6023673c1ffc75f : Patch
+		public class Elevator_ProceduralLift_12f107bd3b264c7698f4d84d5877ecb6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -100,14 +100,14 @@ public class Category_Elevator
 	public class Elevator_Elevator
 	{
 		[Patch("OnElevatorCall", "OnElevatorCall", "Elevator", "<CallElevator>b__26_0", new string[] { "Elevator" })]
-		[Identifier("2f37344d629e44a785be10e402b1c0fb")]
+		[Identifier("54824c63fea34c008eae97df11932699")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Elevator", false)]
 		[Parameter("elevatorEnt", "Elevator", false)]
 		[Return(typeof(void))]
 		[Category("Elevator")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Elevator_Elevator_2f37344d629e44a785be10e402b1c0fb : Patch
+		public class Elevator_Elevator_54824c63fea34c008eae97df11932699 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -139,11 +139,11 @@ public class Category_Elevator
 		}
 
 		[Patch("OnElevatorMove", "OnElevatorMove", "Elevator", "RequestMoveLiftTo", new string[] { "System.Int32", "System.Single&", "Elevator" })]
-		[Identifier("7d139c7cd4914e6289567e200e074e57")]
+		[Identifier("6a1ec81e9b994260a050dbbf2e01a926")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Elevator")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Elevator_Elevator_7d139c7cd4914e6289567e200e074e57 : Patch
+		public class Elevator_Elevator_6a1ec81e9b994260a050dbbf2e01a926 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -194,13 +194,13 @@ public class Category_Elevator
 	public class Elevator_ElevatorLift
 	{
 		[Patch("CanElevatorLiftMove", "CanElevatorLiftMove", "ElevatorLift", "CanMove", new string[] { })]
-		[Identifier("27d82120acfd48518bc205c7fdb967fa")]
+		[Identifier("53de0dce03f14f53a00fbd5673500700")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ElevatorLift", false)]
 		[Return(typeof(bool))]
 		[Category("Elevator")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Elevator_ElevatorLift_27d82120acfd48518bc205c7fdb967fa : Patch
+		public class Elevator_ElevatorLift_53de0dce03f14f53a00fbd5673500700 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -236,7 +236,7 @@ public class Category_Elevator
 		}
 
 		[Patch("OnElevatorButtonPress", "OnElevatorButtonPress", "ElevatorLift", "Server_RaiseLowerFloor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("068bc5ddf3a14364a8d7703729c78cc3")]
+		[Identifier("cc097225fa044eb38e50204ccd5b8bcb")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ElevatorLift", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -245,7 +245,7 @@ public class Category_Elevator
 		[Return(typeof(void))]
 		[Category("Elevator")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Elevator_ElevatorLift_068bc5ddf3a14364a8d7703729c78cc3 : Patch
+		public class Elevator_ElevatorLift_cc097225fa044eb38e50204ccd5b8bcb : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

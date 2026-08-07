@@ -110,4 +110,14 @@ public class NPCMissionProvider : NPCTalking, IMissionProvider
 		base.DoServerDestroy();
 		NPCTalking.serverMissionProviders.Remove((IMissionProvider)this);
 	}
+
+	private void DelayKill()
+	{
+		Kill();
+	}
+
+	public void DelayedKill(float timeInSeconds)
+	{
+		Invoke(DelayKill, timeInSeconds);
+	}
 }

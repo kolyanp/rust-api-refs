@@ -14,12 +14,12 @@ public class ItemModConversation : ItemMod
 
 	public override void ServerCommand(Item item, string command, BasePlayer player)
 	{
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
@@ -29,11 +29,10 @@ public class ItemModConversation : ItemMod
 			{
 				Effect.server.Run(squakEffect.resourcePath, player.eyes.position);
 			}
-			Debug.Log((object)"Starting conversation");
-			BaseEntity baseEntity = GameManager.server.CreateEntity(conversationEntity.resourcePath, ((Component)player).transform.position + Vector3.up * -2f);
-			((Component)baseEntity).GetComponent<NPCMissionProvider>().conversations[0] = conversationData;
-			baseEntity.Spawn();
-			((MonoBehaviour)baseEntity).Invoke("Kill", 600f);
+			NPCMissionProvider obj = GameManager.server.CreateEntity(conversationEntity.resourcePath, ((Component)player).transform.position + Vector3.up * -2f) as NPCMissionProvider;
+			obj.conversations[0] = conversationData;
+			obj.Spawn();
+			obj.DelayedKill(600f);
 		}
 	}
 }

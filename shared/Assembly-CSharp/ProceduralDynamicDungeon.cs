@@ -133,8 +133,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 
 	public override void ServerInit()
 	{
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		if (!Application.isLoadingSave)
 		{
 			baseseed = (seed = (uint)Random.Range(0, 12345567));
@@ -142,7 +142,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 			Debug.Log((object)("Spawning dungeon with seed :" + num));
 		}
 		base.ServerInit();
-		if (!Application.isLoadingSave)
+		bool flag = false;
+		if (!Application.isLoadingSave && !flag)
 		{
 			DoGeneration();
 			BasePortal component = ((Component)GameManager.server.CreateEntity(exitPortalPrefab.resourcePath, entranceHack.exitPointHack.position, entranceHack.exitPointHack.rotation)).GetComponent<BasePortal>();

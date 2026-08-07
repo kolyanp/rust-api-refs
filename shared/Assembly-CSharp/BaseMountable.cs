@@ -87,9 +87,9 @@ public class BaseMountable : BaseCombatEntity
 
 	public float mountLOSVertOffset = 0.5f;
 
+	[Range(0f, 1f)]
 	[Tooltip("The speed of the posde animation for this mountable.")]
 	[Header("Mount Pose")]
-	[Range(0f, 1f)]
 	public float mountedAnimationSpeed;
 
 	public PlayerModel.MountPoses mountPose;
@@ -674,6 +674,20 @@ public class BaseMountable : BaseCombatEntity
 			if (!HasValidDismountPosition(player))
 			{
 				return;
+			}
+			if ((checkPlayerLosOnMount || ConVar.AntiHack.check_mount_distance >= 2) && ConVar.AntiHack.check_mount_distance >= 1)
+			{
+				float distanceFromMountAnchor = GetDistanceFromMountAnchor(player);
+				float num = maxMountDistance;
+				if (GetParentEntity() is BaseMountable baseMountable)
+				{
+					num = Mathf.Max(num, baseMountable.maxMountDistance);
+				}
+				if (distanceFromMountAnchor > num)
+				{
+					Debug.Log((object)$"Player {((Object)player).name} is too far from mount anchor: {distanceFromMountAnchor} > {num}");
+					return;
+				}
 			}
 		}
 		MountPlayer(player);
@@ -1508,11 +1522,16 @@ public class BaseMountable : BaseCombatEntity
 		return false;
 	}
 
+	public float GetDistanceFromMountAnchor(BasePlayer player)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		return Vector3.Distance(((Component)player).transform.position, mountAnchor.position);
+	}
+
 	public bool NearMountPoint(BasePlayer player)
 	{
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)player == (Object)null)
 		{
 			return false;
@@ -1521,11 +1540,11 @@ public class BaseMountable : BaseCombatEntity
 		{
 			return false;
 		}
-		if (Vector3.Distance(((Component)player).transform.position, mountAnchor.position) <= maxMountDistance)
+		if (GetDistanceFromMountAnchor(player) > maxMountDistance)
 		{
-			return CanPlayerSeeMountPoint(player.eyes.HeadRay(), player, 2f);
+			return false;
 		}
-		return false;
+		return CanPlayerSeeMountPoint(player.eyes.HeadRay(), player, 2f);
 	}
 
 	public bool ClothingBlocksMounting(BasePlayer player)

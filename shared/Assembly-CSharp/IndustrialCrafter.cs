@@ -204,8 +204,8 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (_inventory != null)
@@ -390,20 +390,20 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 
 	private void CompleteCraft()
 	{
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
 		Workbench workbench = GetWorkbench();
 		int num;
 		object obj;
@@ -442,7 +442,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		if ((Object)(object)workbench != (Object)null && itemCraftTask != null)
 		{
 			list = Pool.Get<List<Item>>();
-			workbench.CollectBonusItems(null, itemCraftTask, item, list);
+			workbench.CollectBonusItems(null, itemCraftTask, item, list, ItemOwnership.username, ItemOwnershipPhrases.IndustrialCrafter);
 		}
 		if (itemCraftTask != null)
 		{
@@ -456,7 +456,6 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		{
 			foreach (Item item2 in list)
 			{
-				item2.SetItemOwnership(ItemOwnership.username, ItemOwnershipPhrases.IndustrialCrafter);
 				if (!TryInsertToOutput(item2))
 				{
 					item2.Drop(((Component)this).transform.position + ((Component)this).transform.forward * 0.5f, Vector3.zero);
@@ -685,8 +684,8 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	private void SvSwitch(RPCMessage msg)
 	{

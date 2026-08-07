@@ -243,6 +243,8 @@ public class DeepSea : ConsoleSystem
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)PointEntity<DeepSeaManager>.ServerInstance == (Object)null)
 		{
 			arg.ReplyWith("Deep sea not active, run deepsea.createdeepsea first");
@@ -256,7 +258,7 @@ public class DeepSea : ConsoleSystem
 		basePlayer.SendConsoleCommand(DDrawCommand.Sphere(position, duration, flag ? Color.green : Color.red, radius, distanceFade: false));
 	}
 
-	private static BaseEntity GetEntityToTeleport(BasePlayer player)
+	public static BaseEntity GetEntityToTeleport(BasePlayer player)
 	{
 		if (player.isMounted)
 		{
@@ -283,6 +285,29 @@ public class DeepSea : ConsoleSystem
 			}
 		}
 		return player;
+	}
+
+	[ServerVar(Help = "Prints what players on the player's boat will be teleported to the deep sea")]
+	public static void printboatteleports(Arg arg)
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		BaseEntity entityToTeleport = GetEntityToTeleport(ArgEx.Player(arg));
+		if ((Object)(object)entityToTeleport == (Object)null || !(entityToTeleport is BaseBoat))
+		{
+			arg.ReplyWith("Not on a boat");
+			return;
+		}
+		List<BasePlayer> list = new List<BasePlayer>();
+		BaseVehicle.GetPassengersForVehicle(entityToTeleport, list);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.AppendLine($"Boat: {entityToTeleport.ShortPrefabName} ({entityToTeleport.net.ID})");
+		stringBuilder.AppendLine($"Passengers: {list.Count}");
+		foreach (BasePlayer item in list)
+		{
+			stringBuilder.AppendLine($"  {item.displayName} ({item.net.ID})");
+		}
+		arg.ReplyWith(stringBuilder.ToString());
 	}
 
 	[ServerVar(Help = "Spawns a random deep sea island prefab at the player position")]

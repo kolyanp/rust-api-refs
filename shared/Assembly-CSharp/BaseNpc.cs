@@ -680,7 +680,7 @@ public class BaseNpc : BaseCombatEntity
 			velocity = ((Component)baseEntity).transform.InverseTransformDirection(velocity);
 		}
 		Vector3 targetPositionNS = ent.ServerPosition + velocity * Time.fixedDeltaTime;
-		RustNavMesh.Raycast(ent.ServerPosition, targetPositionNS, out var hitWS, -1);
+		RustNavMeshHelpers.Raycast(ent.ServerPosition, targetPositionNS, out var hitWS, -1);
 		if (!Vector3Ex.IsNaNOrInfinity(((NavMeshHit)(ref hitWS)).position))
 		{
 			return ((NavMeshHit)(ref hitWS)).position;

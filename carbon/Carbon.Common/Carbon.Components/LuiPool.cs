@@ -44,6 +44,12 @@ public static class LuiPool
 
 	private static readonly Stack<LuiCompBase> _scrolls = new Stack<LuiCompBase>();
 
+	private static readonly Stack<LuiCompBase> _canvasGroups = new Stack<LuiCompBase>();
+
+	private static readonly Stack<LuiCompBase> _masks = new Stack<LuiCompBase>();
+
+	private static readonly Stack<LuiCompBase> _tooltips = new Stack<LuiCompBase>();
+
 	public static int poolElements => _containers.Count + _texts.Count + _images.Count + _rawImages.Count + _buttons.Count + _outlines.Count + _inputs.Count + _cursors.Count + _rects.Count + _countdowns.Count + _draggables.Count + _slots.Count + _keyboards.Count + _scrolls.Count;
 
 	public static void ReturnComp<T>(T component) where T : LuiCompBase
@@ -91,6 +97,15 @@ public static class LuiPool
 			case LuiCompType.ScrollView:
 				_scrolls.Push(component);
 				break;
+			case LuiCompType.CanvasGroup:
+				_canvasGroups.Push(component);
+				break;
+			case LuiCompType.Mask:
+				_masks.Push(component);
+				break;
+			case LuiCompType.Tooltip:
+				_tooltips.Push(component);
+				break;
 			case LuiCompType.HorizontalLayoutGroup:
 			case LuiCompType.VerticalLayoutGroup:
 			case LuiCompType.GridLayoutGroup:
@@ -116,6 +131,7 @@ public static class LuiPool
 		luiTextComp.color = null;
 		luiTextComp.verticalOverflow = null;
 		luiTextComp.fadeIn = 0f;
+		luiTextComp.blocksRaycast = true;
 		luiTextComp.placeholderParentId = null;
 		return luiTextComp;
 	}
@@ -137,7 +153,9 @@ public static class LuiPool
 		luiImageComp.png = null;
 		luiImageComp.itemid = 0;
 		luiImageComp.skinid = 0uL;
+		luiImageComp.ppuMultiplier = -1f;
 		luiImageComp.fadeIn = 0f;
+		luiImageComp.blocksRaycast = true;
 		luiImageComp.placeholderParentId = null;
 		return luiImageComp;
 	}
@@ -157,6 +175,7 @@ public static class LuiPool
 		luiRawImageComp.png = null;
 		luiRawImageComp.steamid = null;
 		luiRawImageComp.fadeIn = 0f;
+		luiRawImageComp.blocksRaycast = true;
 		luiRawImageComp.placeholderParentId = null;
 		return luiRawImageComp;
 	}
@@ -182,7 +201,9 @@ public static class LuiPool
 		luiButtonComp.disabledColor = null;
 		luiButtonComp.colorMultiplier = -1f;
 		luiButtonComp.fadeDuration = -1f;
+		luiButtonComp.interactable = true;
 		luiButtonComp.fadeIn = 0f;
+		luiButtonComp.blocksRaycast = true;
 		luiButtonComp.placeholderParentId = null;
 		return luiButtonComp;
 	}
@@ -224,7 +245,9 @@ public static class LuiPool
 		luiInputComp.needsKeyboard = false;
 		luiInputComp.hudMenuInput = false;
 		luiInputComp.autofocus = false;
+		luiInputComp.interactable = true;
 		luiInputComp.fadeIn = 0f;
+		luiInputComp.blocksRaycast = true;
 		luiInputComp.placeholderParentId = null;
 		return luiInputComp;
 	}
@@ -438,6 +461,49 @@ public static class LuiPool
 		return luiScrollComp;
 	}
 
+	public static LuiCanvasGroupComp GetCanvasGroup()
+	{
+		if (_canvasGroups.Count == 0)
+		{
+			return new LuiCanvasGroupComp();
+		}
+		LuiCanvasGroupComp luiCanvasGroupComp = _canvasGroups.Pop() as LuiCanvasGroupComp;
+		luiCanvasGroupComp.enabled = true;
+		luiCanvasGroupComp.alpha = -1f;
+		luiCanvasGroupComp.blocksRaycasts = true;
+		luiCanvasGroupComp.interactable = true;
+		return luiCanvasGroupComp;
+	}
+
+	public static LuiMaskComp GetMask()
+	{
+		if (_masks.Count == 0)
+		{
+			return new LuiMaskComp();
+		}
+		LuiMaskComp luiMaskComp = _masks.Pop() as LuiMaskComp;
+		luiMaskComp.enabled = true;
+		luiMaskComp.showMaskGraphic = true;
+		return luiMaskComp;
+	}
+
+	public static LuiTooltipComp GetTooltip()
+	{
+		if (_tooltips.Count == 0)
+		{
+			return new LuiTooltipComp();
+		}
+		LuiTooltipComp luiTooltipComp = _tooltips.Pop() as LuiTooltipComp;
+		luiTooltipComp.enabled = true;
+		luiTooltipComp.tooltipType = null;
+		luiTooltipComp.offset = null;
+		luiTooltipComp.useCentre = false;
+		luiTooltipComp.text = null;
+		luiTooltipComp.delay = null;
+		luiTooltipComp.position = null;
+		return luiTooltipComp;
+	}
+
 	public static LuiCompType GetLuiCompType(Type type)
 	{
 		if ((object)type != null)
@@ -513,6 +579,18 @@ public static class LuiPool
 			if (type == typeof(LuiScrollComp))
 			{
 				return LuiCompType.ScrollView;
+			}
+			if (type == typeof(LuiCanvasGroupComp))
+			{
+				return LuiCompType.CanvasGroup;
+			}
+			if (type == typeof(LuiMaskComp))
+			{
+				return LuiCompType.Mask;
+			}
+			if (type == typeof(LuiTooltipComp))
+			{
+				return LuiCompType.Tooltip;
 			}
 		}
 		return LuiCompType.Image;
@@ -593,6 +671,18 @@ public static class LuiPool
 			if (type == typeof(LuiScrollComp))
 			{
 				return GetScroll() as T;
+			}
+			if (type == typeof(LuiCanvasGroupComp))
+			{
+				return GetCanvasGroup() as T;
+			}
+			if (type == typeof(LuiMaskComp))
+			{
+				return GetMask() as T;
+			}
+			if (type == typeof(LuiTooltipComp))
+			{
+				return GetTooltip() as T;
 			}
 		}
 		return GetImage() as T;

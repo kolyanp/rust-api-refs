@@ -11,9 +11,9 @@ using UnityEngine;
 public class WaterVolumeBurst
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate bool TestBurst_00005E7F_0024PostfixBurstDelegate(in Vector3 position, out WaterLevel.WaterInfo info, float queryRadius = 100f);
+	internal delegate bool TestBurst_000063E3_0024PostfixBurstDelegate(in Vector3 position, out WaterLevel.WaterInfo info, float queryRadius = 100f);
 
-	internal static class TestBurst_00005E7F_0024BurstDirectCall
+	internal static class TestBurst_000063E3_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -24,7 +24,7 @@ public class WaterVolumeBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<TestBurst_00005E7F_0024PostfixBurstDelegate>((TestBurst_00005E7F_0024PostfixBurstDelegate)TestBurst).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<TestBurst_000063E3_0024PostfixBurstDelegate>((TestBurst_000063E3_0024PostfixBurstDelegate)TestBurst).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -50,11 +50,11 @@ public class WaterVolumeBurst
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(TestBurst_00005E7F_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(TestBurst_000063E3_0024PostfixBurstDelegate))]
 	public static bool TestBurst(in Vector3 position, out WaterLevel.WaterInfo info, float queryRadius = 100f)
 	{
-		return TestBurst_00005E7F_0024BurstDirectCall.Invoke(in position, out info, queryRadius);
+		return TestBurst_000063E3_0024BurstDirectCall.Invoke(in position, out info, queryRadius);
 	}
 
 	private static bool CheckCutOffPlanesBurst(in WaterVolumeBurstData data, in Vector3 pos, out float bottomCutY)

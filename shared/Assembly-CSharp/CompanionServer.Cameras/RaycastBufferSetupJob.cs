@@ -1,8 +1,10 @@
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 
 namespace CompanionServer.Cameras;
 
+[BurstCompile]
 public struct RaycastBufferSetupJob : IJob
 {
 	public NativeArray<int> colliderIds;

@@ -99,6 +99,7 @@ public class VendingMachineMapMarker : MapMarker
 					val.itemCondition = sellOrder.itemCondition;
 					val.itemConditionMax = sellOrder.itemConditionMax;
 					val.priceMultiplier = sellOrder.priceMultiplier;
+					val.receivedQuantityMultiplier = sellOrder.receivedQuantityMultiplier;
 					appMarkerData.sellOrders.Add(val);
 				}
 			}

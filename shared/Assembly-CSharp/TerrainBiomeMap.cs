@@ -58,6 +58,13 @@ public class TerrainBiomeMap : TerrainMap<byte>
 		}
 	}
 
+	public void SetupEmpty(int newRes)
+	{
+		res = newRes;
+		num = 5;
+		InitArrays(num * res * res);
+	}
+
 	public override void Dispose()
 	{
 		base.Dispose();

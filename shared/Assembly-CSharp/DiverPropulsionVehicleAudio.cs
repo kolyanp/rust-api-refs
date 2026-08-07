@@ -21,8 +21,8 @@ public class DiverPropulsionVehicleAudio : MonoBehaviour
 	[SerializeField]
 	private SoundDefinition engineActiveLoopDef;
 
-	[Header("Propeller")]
 	[SerializeField]
+	[Header("Propeller")]
 	private SoundDefinition propellerLoopSoundDef;
 
 	[SerializeField]

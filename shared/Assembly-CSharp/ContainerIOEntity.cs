@@ -10,6 +10,7 @@ using UnityEngine.Assertions;
 
 public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntity, ILootableEntity, IInventoryProvider, LootPanel.IHasLootPanel, IContainerSounds
 {
+	[Header("ContainerIOEntity")]
 	public ItemDefinition onlyAllowedItem;
 
 	public ItemContainer.ContentsType allowedContents = ItemContainer.ContentsType.Generic;
@@ -77,6 +78,8 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	public ulong LastLootedBy { get; set; }
 
 	public BasePlayer LastLootedByPlayer { get; set; }
+
+	public override bool PreserveChildrenWhenReskinning => true;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -266,8 +269,8 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 		StorageContainer.DropItems(this, initiator);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (_inventory != null)

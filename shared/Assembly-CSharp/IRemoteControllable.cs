@@ -37,4 +37,6 @@ public interface IRemoteControllable
 	bool InitializeControl(CameraViewerId viewerID);
 
 	void StopControl(CameraViewerId viewerID);
+
+	Matrix4x4 GetEyesMatrix();
 }

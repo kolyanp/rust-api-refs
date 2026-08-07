@@ -30,8 +30,8 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 
 	public List<SkinViewerRenderSettings> renderSettings;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private SkinViewerRenderSettings charmTemplateSettings;
 
 	[SerializeField]
@@ -43,6 +43,8 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 	private CoverImage targetImage;
 
 	private static Item[] schemaItems;
+
+	private readonly Dictionary<Transform, Quaternion> authoredModelRotations = new Dictionary<Transform, Quaternion>();
 
 	private BaseViewModel currentBaseViewModel;
 
@@ -61,6 +63,10 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 	private int currentSkinID;
 
 	private ulong currentWorkshopID;
+
+	private int setGeneration;
+
+	private static readonly List<string> requiredAssetScenes = new List<string> { "AssetScene-prefabs" };
 
 	public GameObject currentSkinGameObject { get; private set; }
 

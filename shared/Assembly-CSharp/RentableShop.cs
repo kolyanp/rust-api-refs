@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using GameMenu;
 using Network;
 using Oxide.Core;
@@ -713,8 +714,8 @@ public class RentableShop : BaseEntity
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	private void Server_OpenVendingAdmin(RPCMessage msg)
 	{
@@ -750,11 +751,14 @@ public class RentableShop : BaseEntity
 	public override void Save(SaveInfo info)
 	{
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.rentableShop = Pool.Get<RentableShop>();
 		info.msg.rentableShop.hasStoredItems = false;
 		info.msg.rentableShop.nextRentDue = nextRentDue;
-		info.msg.rentableShop.timeSinceShopOpened = TimeSince.op_Implicit(TimeSinceShopOpened);
+		RentableShop rentableShop = info.msg.rentableShop;
+		TimeSince timeSinceShopOpened = TimeSinceShopOpened;
+		rentableShop.timeSinceShopOpened = ((TimeSince)(ref timeSinceShopOpened)).PassedSince(info.cachedTime.Time);
 		info.msg.rentableShop.shopNumber = ShopNumber;
 		if (info.forDisk)
 		{
@@ -787,9 +791,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_OpenStore(RPCMessage msg)
 	{
 		if (CanPlayerOpenShop(msg.player) && Interface.CallHook("OnRentableShopOpen", this, msg.player) == null)
@@ -853,16 +857,19 @@ public class RentableShop : BaseEntity
 		nextRentDue = 3600f;
 		InvokeRepeating(DeductRent, 60f, 60f);
 		int amount = Mathf.RoundToInt((float)InitialScrapFee * CurrentRentMultiplier);
+		int openScrapCost = amount;
 		byPlayer.inventory.containerMain.UseAmount(ScrapDef, ref amount);
 		byPlayer.inventory.containerBelt.UseAmount(ScrapDef, ref amount);
 		byPlayer.inventory.containerWear.UseAmount(ScrapDef, ref amount);
-		int amount2 = Mathf.RoundToInt((float)ScrapPerHourRent * 12f * CurrentRentMultiplier);
-		byPlayer.inventory.MoveItemsIntoContainer(ScrapDef, amount2, invisibleVendingMachine.inventory);
+		int num = Mathf.RoundToInt((float)ScrapPerHourRent * 12f * CurrentRentMultiplier);
+		byPlayer.inventory.MoveItemsIntoContainer(ScrapDef, num, invisibleVendingMachine.inventory);
+		Facepunch.Rust.Analytics.Azure.OnShopOpened(this, openScrapCost, num);
 		Interface.CallHook("OnRentableShopOpened", this, byPlayer);
 	}
 
 	public void OnShopClosed(bool notify)
 	{
+		Facepunch.Rust.Analytics.Azure.OnShopClosed(this);
 		if (SpawnedShopkeeperRef.IsValid(serverside: true))
 		{
 			SpawnedShopkeeperRef.Get(base.isServer).Kill();
@@ -920,9 +927,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_OpenStoreInventory(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && ((ulong)msg.player.userID == ShopOwnerId || IsIntruder(msg.player.userID)))
@@ -935,9 +942,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_RetrieveAllStoredItems(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -959,8 +966,8 @@ public class RentableShop : BaseEntity
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_Shop(RPCMessage msg)
 	{
 		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
@@ -1022,11 +1029,12 @@ public class RentableShop : BaseEntity
 			return;
 		}
 		Item activeItem = player.GetActiveItem();
-		if (activeItem != null && !((Object)(object)activeItem.info != (Object)(object)ApartmentDoor.MasterKeyDef) && activeItem.amount >= 1)
+		if (activeItem != null && !((Object)(object)activeItem.info != (Object)(object)ItemManager.Items.MasterKey) && activeItem.amount >= 1)
 		{
 			activeItem.UseItem();
 			AddIntruder(player.userID);
 			player.ShowToast(GameTip.Styles.Blue_Long, Phrase_BreakInSuccess, false);
+			Facepunch.Rust.Analytics.Azure.OnShopBreakIn(player, this);
 			Interface.CallHook("OnRentableShopBreakInCompleted", this, player);
 		}
 	}
@@ -1036,6 +1044,7 @@ public class RentableShop : BaseEntity
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		intruders[user] = TimeUntil.op_Implicit(ApartmentCommands.intruderauthseconds);
 		SendNetworkUpdate();
+		Invoke(ClearIntruder, ApartmentCommands.intruderauthseconds + 0.5f);
 	}
 
 	public bool IsIntruder(ulong user)
@@ -1051,6 +1060,40 @@ public class RentableShop : BaseEntity
 			return false;
 		}
 		return true;
+	}
+
+	private void ClearIntruder()
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<ulong> val = Pool.Get<PooledList<ulong>>();
+		try
+		{
+			foreach (KeyValuePair<ulong, TimeUntil> intruder in intruders)
+			{
+				if (TimeUntil.op_Implicit(intruder.Value) <= 0f)
+				{
+					((List<ulong>)(object)val).Add(intruder.Key);
+				}
+			}
+			foreach (ulong item in (List<ulong>)(object)val)
+			{
+				intruders.Remove(item);
+				BasePlayer basePlayer = BasePlayer.FindByID(item);
+				VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(serverside: true);
+				if ((Object)(object)basePlayer != (Object)null && (Object)(object)vendingMachine != (Object)null && basePlayer.inventory.loot.IsLooting(vendingMachine.inventory))
+				{
+					basePlayer.EndLooting();
+				}
+			}
+			if (((List<ulong>)(object)val).Count > 0)
+			{
+				SendNetworkUpdate();
+			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	[RPC_Server]
@@ -1415,7 +1458,7 @@ public class RentableShop : BaseEntity
 		__sync_SpawnedShopkeeperRef = default(EntityRef<NPCShopKeeper>);
 		__sync_SpawnedVendingMachineRef = default(EntityRef<VendingMachine>);
 		__sync_ShopOwnerId = 0uL;
-		__sync_CurrentRentMultiplier = 0f;
+		__sync_CurrentRentMultiplier = 1f;
 	}
 
 	protected override bool ShouldInvalidateCache(byte id)
@@ -1436,6 +1479,7 @@ public class RentableShop : BaseEntity
 		breakInStarts = new Dictionary<ulong, TimeSince>();
 		intruders = new Dictionary<ulong, TimeUntil>();
 		savedContent = new Dictionary<ulong, PlayerStoreContents>();
+		__sync_CurrentRentMultiplier = 1f;
 		base._002Ector();
 	}
 }

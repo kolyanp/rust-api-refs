@@ -9,11 +9,13 @@ public class MissionUIPanel : MonoBehaviour
 
 	public RustText missionDescText;
 
+	public GameObject mysteryRewardImageParent;
+
 	public GameObject rewardsParent;
 
-	public VirtualItemIcon[] rewardIcons;
-
 	public GameObject bonusRewardsParent;
+
+	public VirtualItemIcon[] rewardIcons;
 
 	public VirtualItemIcon[] bonusIcons;
 

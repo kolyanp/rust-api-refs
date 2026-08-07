@@ -31,5 +31,7 @@ public class CuiTextComponent : ICuiComponent, ICuiColor, ICuiEnableable, ICuiGr
 
 	public string PlaceholderParentId { get; set; }
 
+	public bool? BlocksRaycast { get; set; }
+
 	public bool? Enabled { get; set; }
 }

@@ -11,6 +11,10 @@ namespace Rust.Ai.Gen2.Nav;
 
 public class RustNavigation : FacepunchBehaviour, IServerComponent
 {
+	public NavMeshBuildParams BuildParams = new NavMeshBuildParams(true);
+
+	public NavMeshBuildParams BuildParamsHiRes = new NavMeshBuildParams(true);
+
 	private const string LOG_PREFIX = "[RustNav] ";
 
 	private BackgroundTileBuilder tileBuilder;
@@ -18,6 +22,14 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 	private RustNavmesh _defaultNavmesh;
 
 	private HashSet<IndependantNavmesh> _navmeshes = new HashSet<IndependantNavmesh>();
+
+	private static readonly HashSet<BasePlayer> drawViewers = new HashSet<BasePlayer>();
+
+	private static readonly Dictionary<IndependantNavmesh, int> drawNavIds = new Dictionary<IndependantNavmesh, int>();
+
+	private static int nextDrawNavId = 1;
+
+	public const int DefaultNavmeshDrawId = 0;
 
 	public static RustNavigation Instance { get; private set; }
 
@@ -36,6 +48,11 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			if (EnsureNewNavmesh())
 			{
 				_defaultNavmesh = value;
+				if (_defaultNavmesh != null)
+				{
+					_defaultNavmesh.EmitTileChangeEvents = true;
+				}
+				OnDefaultNavmeshInstanceChanged();
 			}
 		}
 	}
@@ -321,7 +338,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			{
 				return false;
 			}
-			return DefaultNavmesh != null && DefaultNavmesh.IsValid();
+			return DefaultNavmesh != null && DefaultNavmesh.IsBuilt();
 		}
 	}
 
@@ -329,7 +346,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavigation.RebuildTilesInBounds"))
 		{
 			if (!EnsureNewNavmesh())
@@ -344,7 +361,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				{
 					item.RebuildTilesInBounds(rebuildBounds, synchronous);
 				}
-				if (IsDefaultNavmeshBuilt())
+				if (((List<IndependantNavmesh>)(object)val).Count <= 0 && IsDefaultNavmeshBuilt())
 				{
 					DefaultNavmesh.RebuildTilesInBounds(rebuildBounds, synchronous);
 				}
@@ -354,5 +371,92 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				((IDisposable)val)?.Dispose();
 			}
 		}
+	}
+
+	public static int GetDrawNavId(IndependantNavmesh navmesh)
+	{
+		if ((Object)(object)navmesh == (Object)null)
+		{
+			return 0;
+		}
+		if (!drawNavIds.TryGetValue(navmesh, out var value))
+		{
+			value = nextDrawNavId++;
+			drawNavIds[navmesh] = value;
+		}
+		return value;
+	}
+
+	public static void AddDrawViewer(BasePlayer player)
+	{
+		if (!((Object)(object)player == (Object)null))
+		{
+			drawViewers.Add(player);
+		}
+	}
+
+	public static void RemoveDrawViewer(BasePlayer player)
+	{
+		if (!((Object)(object)player == (Object)null))
+		{
+			drawViewers.Remove(player);
+		}
+	}
+
+	public static bool IsDrawViewer(BasePlayer player)
+	{
+		if ((Object)(object)player != (Object)null)
+		{
+			return drawViewers.Contains(player);
+		}
+		return false;
+	}
+
+	public static void NotifyDefaultNavmeshTileChanged(int tx, int ty)
+	{
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		if (drawViewers.Count == 0 || (Object)(object)Instance == (Object)null)
+		{
+			return;
+		}
+		RustNavmesh defaultNavmesh = Instance._defaultNavmesh;
+		if (defaultNavmesh == null || !defaultNavmesh.IsValid())
+		{
+			return;
+		}
+		Bounds tileBounds = defaultNavmesh.rcCalcTileBounds(new Vector2Int(tx, ty));
+		foreach (BasePlayer drawViewer in drawViewers)
+		{
+			if (!((Object)(object)drawViewer == (Object)null) && ViewerCoversTile(drawViewer, tileBounds))
+			{
+				drawViewer.MarkNavmeshTileDirty(tx, ty);
+			}
+		}
+	}
+
+	private static void OnDefaultNavmeshInstanceChanged()
+	{
+		foreach (BasePlayer drawViewer in drawViewers)
+		{
+			if (!((Object)(object)drawViewer == (Object)null))
+			{
+				drawViewer.ResetNavmeshDrawState();
+			}
+		}
+	}
+
+	private static bool ViewerCoversTile(BasePlayer viewer, Bounds tileBounds)
+	{
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		float drawRadius = RustNav.drawRadius;
+		Bounds val = default(Bounds);
+		((Bounds)(ref val))._002Ector(((Component)viewer).transform.position, new Vector3(drawRadius * 2f, ((Bounds)(ref tileBounds)).size.y, drawRadius * 2f));
+		return ((Bounds)(ref val)).Intersects(tileBounds);
 	}
 }

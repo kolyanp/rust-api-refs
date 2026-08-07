@@ -226,6 +226,10 @@ public static class RaidWindow
 				return false;
 			}
 			bool flag3 = info.damageTypes.Contains(DamageType.Explosion);
+			if (!flag3 && Softcore.raidwindow_block_melee_doors && victim is Door && info.damageTypes.IsMeleeType())
+			{
+				flag3 = true;
+			}
 			if (!flag3 && Softcore.raidwindow_block_extra_enabled && !flag2)
 			{
 				flag3 = info.damageTypes.Contains((DamageType)Softcore.raidwindow_block_extra_type);

@@ -202,7 +202,7 @@ public class GenerateRiverLayout : ProceduralComponent
 							Vector3[] points = item.Path.Points;
 							foreach (Vector3 val3 in points)
 							{
-								if (Vector3Ex.SqrMagnitude2D(val2 - val3) < 67600f)
+								if (Vector3Ex.SqrMagnitude2D(val2 - val3) < 270400f)
 								{
 									flag = true;
 									break;
@@ -345,7 +345,7 @@ public class GenerateRiverLayout : ProceduralComponent
 						foreach (Vector3 val16 in points)
 						{
 							Vector3 val17 = val15 - val16;
-							if (((Vector3)(ref val17)).sqrMagnitude < 67600f)
+							if (((Vector3)(ref val17)).sqrMagnitude < 270400f)
 							{
 								list.RemoveAt(num17--);
 								flag4 = true;

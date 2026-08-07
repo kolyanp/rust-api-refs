@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 [CompilerGenerated]
-[EditorBrowsable(EditorBrowsableState.Never)]
 [GeneratedCode("Unity.MonoScriptGenerator.MonoScriptInfoGenerator", null)]
+[EditorBrowsable(EditorBrowsableState.Never)]
 internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 {
 	private struct MonoScriptData
@@ -192,7 +192,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 				104, 46, 85, 110, 105, 116, 121, 69, 110, 103,
 				105, 110, 101, 92, 84, 105, 109, 101, 87, 97,
 				114, 110, 105, 110, 103, 46, 99, 115, 0, 0,
-				0, 1, 0, 0, 0, 52, 92, 65, 115, 115,
+				0, 2, 0, 0, 0, 52, 92, 65, 115, 115,
 				101, 116, 115, 92, 80, 108, 117, 103, 105, 110,
 				115, 92, 70, 97, 99, 101, 112, 117, 110, 99,
 				104, 46, 85, 110, 105, 116, 121, 69, 110, 103,
@@ -218,7 +218,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 				121, 92, 84, 101, 120, 116, 117, 114, 101, 46,
 				99, 115
 			},
-			TypesData = new byte[1298]
+			TypesData = new byte[1338]
 			{
 				0, 0, 0, 0, 25, 70, 97, 99, 101, 112,
 				117, 110, 99, 104, 46, 69, 120, 116, 101, 110,
@@ -329,6 +329,10 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 				28, 70, 97, 99, 101, 112, 117, 110, 99, 104,
 				46, 69, 120, 116, 101, 110, 100, 124, 84, 114,
 				97, 110, 115, 102, 111, 114, 109, 69, 120, 0,
+				0, 0, 0, 35, 70, 97, 99, 101, 112, 117,
+				110, 99, 104, 46, 69, 120, 116, 101, 110, 100,
+				46, 84, 114, 97, 110, 115, 102, 111, 114, 109,
+				69, 120, 124, 85, 110, 115, 97, 102, 101, 0,
 				0, 0, 0, 22, 70, 97, 99, 101, 112, 117,
 				110, 99, 104, 46, 85, 116, 105, 108, 105, 116,
 				121, 124, 77, 101, 115, 104, 0, 0, 0, 0,
@@ -352,7 +356,7 @@ internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 				124, 84, 101, 120, 116, 117, 114, 101
 			},
 			TotalFiles = 30,
-			TotalTypes = 55,
+			TotalTypes = 56,
 			IsEditorOnly = false
 		};
 	}

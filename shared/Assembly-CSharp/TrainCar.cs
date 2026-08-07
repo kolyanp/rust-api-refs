@@ -52,8 +52,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public float lastDecayTick;
 
-	[SerializeField]
 	[Header("Train Car")]
+	[SerializeField]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -101,8 +101,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public float wheelRadius = 0.615f;
 
-	[SerializeField]
 	[FormerlySerializedAs("fxFinalExplosion")]
+	[SerializeField]
 	public GameObjectRef fxDestroyed;
 
 	[SerializeField]
@@ -142,12 +142,12 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	private float decayTimeMultiplier = 1f;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public Vector3 frontBogieLocalOffset;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public Vector3 rearBogieLocalOffset;
 
 	[SerializeField]
@@ -389,15 +389,15 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.baseTrain = Pool.Get<BaseTrain>();
-		info.msg.baseTrain.time = GetNetworkTime();
+		info.msg.baseTrain.time = GetNetworkTime(in info.cachedTime);
 		info.msg.baseTrain.frontBogieYRot = frontBogieYRot;
 		info.msg.baseTrain.rearBogieYRot = rearBogieYRot;
 		info.msg.baseTrain.itemStorageID = itemStorageInstance.uid;
@@ -450,8 +450,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

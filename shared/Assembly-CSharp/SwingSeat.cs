@@ -21,6 +21,17 @@ public class SwingSeat : BaseVehicleSeat
 
 	public float damping;
 
+	public float launchScale = 1f;
+
+	public float launchMinSpeed = 20f;
+
+	[Range(0f, 1f)]
+	public float launchLift = 0.25f;
+
+	public bool heavyLanding;
+
+	public bool flailOnLaunch = true;
+
 	public ChildAnimatorSubSystem swingAnimator;
 
 	public AnimationCurve swingBlendCurve;
@@ -34,6 +45,12 @@ public class SwingSeat : BaseVehicleSeat
 	public float swingMovementSmoothing = 4f;
 
 	public AnimationCurve swingMovementAccentGainCurve;
+
+	public const Flags Flag_Swinging = Flags.Reserved1;
+
+	private const float SwingingVelocityThreshold = 5f;
+
+	private const float SwingingAngleThreshold = 5f;
 
 	private Quaternion pivotBaseRot;
 
@@ -67,6 +84,11 @@ public class SwingSeat : BaseVehicleSeat
 		}
 	}
 
+	public bool IsSwinging()
+	{
+		return HasFlag(Flags.Reserved1);
+	}
+
 	private void ApplySwing(float angle)
 	{
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
@@ -86,9 +108,32 @@ public class SwingSeat : BaseVehicleSeat
 		}
 	}
 
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		UpdateSwingingFlag();
+		if (IsSwinging())
+		{
+			StartSwingTick();
+		}
+	}
+
+	public override void AttemptMount(BasePlayer player, bool doMountChecks = true)
+	{
+		if (!IsSwinging())
+		{
+			base.AttemptMount(player, doMountChecks);
+		}
+	}
+
 	public override void OnPlayerMounted()
 	{
 		base.OnPlayerMounted();
+		StartSwingTick();
+	}
+
+	private void StartSwingTick()
+	{
 		if (swingTick == null)
 		{
 			swingTick = SwingTick;
@@ -99,9 +144,47 @@ public class SwingSeat : BaseVehicleSeat
 		}
 	}
 
+	private void UpdateSwingingFlag()
+	{
+		SetFlag(Flags.Reserved1, Mathf.Abs(velocity) > 5f || Mathf.Abs(SwingAngle) > 5f);
+	}
+
 	public override void OnPlayerDismounted(BasePlayer player)
 	{
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		base.OnPlayerDismounted(player);
+		if ((Object)(object)pivot != (Object)null && (Object)(object)mountAnchor != (Object)null && (Object)(object)player != (Object)null && Mathf.Abs(velocity) > launchMinSpeed)
+		{
+			Vector3 val = pivot.TransformDirection(swingAxis);
+			Vector3 val2 = ((Vector3)(ref val)).normalized * (velocity * (MathF.PI / 180f));
+			Vector3 val3 = mountAnchor.position - pivot.position;
+			Vector3 val4 = Vector3.Cross(val2, val3) * launchScale;
+			val4 += Vector3.up * (((Vector3)(ref val4)).magnitude * launchLift);
+			player.Ragdoll(val4, heavyLanding, flailOnLaunch);
+			BaseMountable mounted = player.GetMounted();
+			if ((Object)(object)mounted != (Object)null)
+			{
+				GameObjectExtensions.SetIgnoreCollisions(((Component)mounted).gameObject, ((Component)this).gameObject, true);
+			}
+		}
 		inputSign = 0;
 	}
 
@@ -139,6 +222,7 @@ public class SwingSeat : BaseVehicleSeat
 			ApplySwing(0f);
 			CancelInvokeFixedTime(swingTick);
 		}
+		UpdateSwingingFlag();
 	}
 
 	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)

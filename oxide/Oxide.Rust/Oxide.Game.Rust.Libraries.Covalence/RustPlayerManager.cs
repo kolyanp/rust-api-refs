@@ -81,11 +81,8 @@ public class RustPlayerManager : IPlayerManager
 
 	public IPlayer FindPlayerById(string id)
 	{
-		if (!allPlayers.TryGetValue(id, out var value))
-		{
-			return null;
-		}
-		return value;
+		RustPlayer value;
+		return allPlayers.TryGetValue(id, out value) ? value : null;
 	}
 
 	public IPlayer FindPlayerByObj(object obj)
@@ -96,11 +93,7 @@ public class RustPlayerManager : IPlayerManager
 	public IPlayer FindPlayer(string partialNameOrId)
 	{
 		IPlayer[] array = FindPlayers(partialNameOrId).ToArray();
-		if (array.Length != 1)
-		{
-			return null;
-		}
-		return array[0];
+		return (array.Length == 1) ? array[0] : null;
 	}
 
 	public IEnumerable<IPlayer> FindPlayers(string partialNameOrId)

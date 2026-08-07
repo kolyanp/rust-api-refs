@@ -1,5 +1,7 @@
 using System;
+using System.Runtime.CompilerServices;
 using ConVar;
+using Facepunch;
 using Network;
 using Rust;
 using UnityEngine;
@@ -15,9 +17,42 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 
 	public bool IsStatic;
 
+	[CompilerGenerated]
+	private float _003CVolume_003Ek__BackingField;
+
+	public const float MinVolume = 0.2f;
+
+	public const float MaxVolume = 1f;
+
+	public const float VolumeStep = 0.2f;
+
+	private const float VolumeTolerance = 0.1f;
+
 	public static ListHashSet<DeployableBoomBox> ServerStaticInstances = new ListHashSet<DeployableBoomBox>();
 
+	private float __sync_Volume;
+
 	public BaseEntity ToBaseEntity => this;
+
+	[Sync(Autosave = true)]
+	public float Volume
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_Volume;
+		}
+		[CompilerGenerated]
+		set
+		{
+			if (!IsSyncVarEqual(__sync_Volume, value))
+			{
+				__sync_Volume = value;
+				byte nameID = __GetWeaverID("Volume");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -64,6 +99,47 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 				}
 				return true;
 			}
+			if (rpc == 4220428048u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Server_UpdateVolume"));
+				}
+				using (TimeWarning.New("Server_UpdateVolume"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.CallsPerSecond.Test(4220428048u, "Server_UpdateVolume", this, player, 5uL))
+						{
+							return true;
+						}
+						if (!RPC_Server.IsVisible.Test(4220428048u, "Server_UpdateVolume", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg3 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							Server_UpdateVolume(msg3);
+						}
+					}
+					catch (Exception ex2)
+					{
+						Debug.LogException(ex2);
+						player.Kick("RPC Error in Server_UpdateVolume");
+					}
+				}
+				return true;
+			}
 			if (rpc == 1785864031 && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -88,18 +164,18 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg3 = new RPCMessage
+							RPCMessage msg4 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							ServerTogglePlay(msg3);
+							ServerTogglePlay(msg4);
 						}
 					}
-					catch (Exception ex2)
+					catch (Exception ex3)
 					{
-						Debug.LogException(ex2);
+						Debug.LogException(ex3);
 						player.Kick("RPC Error in ServerTogglePlay");
 					}
 				}
@@ -196,9 +272,9 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 		return base.CalculateCurrentEnergy(inputAmount, inputSlot);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		BoxController.ServerTogglePlay(msg);
@@ -210,6 +286,19 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 	public void Server_UpdateRadioIP(RPCMessage msg)
 	{
 		BoxController.Server_UpdateRadioIP(msg);
+	}
+
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	private void Server_UpdateVolume(RPCMessage msg)
+	{
+		if (IsOn())
+		{
+			bool flag = msg.read.Bit();
+			float num = Volume + (flag ? 0.2f : (-0.2f));
+			Volume = Mathf.Clamp(Mathf.Round(num / 0.2f) * 0.2f, 0.2f, 1f);
+		}
 	}
 
 	public override void Save(SaveInfo info)
@@ -249,5 +338,116 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 				flagsUpdateScope.Set(Flags.Reserved8, b: true);
 			}
 		}
+	}
+
+	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		if (id == 0)
+		{
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: Volume for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_Volume);
+			return true;
+		}
+		return base.WriteSyncVar(id, writer);
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		if (id == 0)
+		{
+			try
+			{
+				_ = __sync_Volume;
+				float _sync_Volume = reader.Float();
+				__sync_Volume = _sync_Volume;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		}
+		return base.OnSyncVar(id, reader, fromAutoSave);
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (propertyName == "Volume")
+		{
+			return 0;
+		}
+		return byte.MaxValue;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		var (src, num) = netWrite.GetBuffer();
+		if (_autosaveBuffer == null)
+		{
+			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+		}
+		if (_autosaveBuffer.Length < num)
+		{
+			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
+			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+		}
+		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
+		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_Volume = 1f;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		if (id == 0)
+		{
+			return true;
+		}
+		return base.ShouldInvalidateCache(id);
+	}
+
+	public DeployableBoomBox()
+	{
+		Volume = 1f;
+		__sync_Volume = 1f;
+		base._002Ector();
 	}
 }

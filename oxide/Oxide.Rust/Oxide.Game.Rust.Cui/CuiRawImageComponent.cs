@@ -27,5 +27,7 @@ public class CuiRawImageComponent : ICuiComponent, ICuiColor, ICuiEnableable, IC
 
 	public string PlaceholderParentId { get; set; }
 
+	public bool? BlocksRaycast { get; set; }
+
 	public bool? Enabled { get; set; }
 }

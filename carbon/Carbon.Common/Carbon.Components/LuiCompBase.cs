@@ -8,5 +8,7 @@ public class LuiCompBase
 
 	public float fadeIn;
 
+	public bool blocksRaycast = true;
+
 	public string placeholderParentId;
 }

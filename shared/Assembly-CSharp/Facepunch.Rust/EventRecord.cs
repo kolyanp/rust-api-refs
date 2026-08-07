@@ -340,6 +340,11 @@ public class EventRecord : IPooled
 			{
 				Pool.FreeUnmanaged(ref bytes);
 			}
+			List<int> ints = datum.Ints;
+			if (ints != null)
+			{
+				Pool.FreeUnmanaged<int>(ref ints);
+			}
 		}
 		Data.Clear();
 	}
@@ -389,6 +394,21 @@ public class EventRecord : IPooled
 			String = JsonConvert.SerializeObject(data),
 			IsObject = true,
 			Type = FieldType.String
+		});
+		return this;
+	}
+
+	public EventRecord AddIntArray(string key, List<int> values)
+	{
+		if (values == null)
+		{
+			return this;
+		}
+		Data.Add(new EventRecordField(key)
+		{
+			Ints = values,
+			IsObject = true,
+			Type = FieldType.JsonIntArray
 		});
 		return this;
 	}

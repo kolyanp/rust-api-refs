@@ -499,6 +499,11 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		return Time.fixedTime;
 	}
 
+	public override float GetNetworkTime(in ThreadSafeTime time)
+	{
+		return time.FixedTime;
+	}
+
 	public void AIDriverUpdateLoop()
 	{
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
@@ -1723,8 +1728,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		return baseMountable;
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(5f)]
 	public void RPC_WantsPush(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

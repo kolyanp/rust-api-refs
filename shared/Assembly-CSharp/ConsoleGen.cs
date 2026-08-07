@@ -5,6 +5,7 @@ using CompanionServer.Cameras;
 using ConVar;
 using Facepunch;
 using Facepunch.Extend;
+using Facepunch.MarchingCubes;
 using Facepunch.Network;
 using Facepunch.Rcon;
 using Facepunch.Rust;
@@ -15,7 +16,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[1999]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2160]
 	{
 		new ConsoleSystem.Command
 		{
@@ -143,6 +144,54 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				AiMountedWeaponController.time_between_bursts = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "force_charge",
+			Parent = "airfieldairdropterminal",
+			FullName = "airfieldairdropterminal.force_charge",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				AirfieldAirdropTerminal.force_charge(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "force_shortcircuit",
+			Parent = "airfieldairdropterminal",
+			FullName = "airfieldairdropterminal.force_shortcircuit",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				AirfieldAirdropTerminal.force_shortcircuit(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "force_charge",
+			Parent = "airfieldcallchinookterminal",
+			FullName = "airfieldcallchinookterminal.force_charge",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				AirfieldCallChinookTerminal.force_charge(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "force_shortcircuit",
+			Parent = "airfieldcallchinookterminal",
+			FullName = "airfieldcallchinookterminal.force_shortcircuit",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				AirfieldCallChinookTerminal.force_shortcircuit(arg);
 			}
 		},
 		new ConsoleSystem.Command
@@ -676,6 +725,88 @@ public class ConsoleGen
 			{
 				BasePlayer.relationshipUpdateQueueFrameBudgetMs = StringExtensions.ToFloat(str, 0f);
 			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "applyrandomshapes",
+			Parent = "basesculpture",
+			FullName = "basesculpture.applyrandomshapes",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				BaseSculpture.ApplyRandomShapes(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "listsavedsculptures",
+			Parent = "basesculpture",
+			FullName = "basesculpture.listsavedsculptures",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				BaseSculpture.ListSavedSculptures(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "loadsculpture",
+			Parent = "basesculpture",
+			FullName = "basesculpture.loadsculpture",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				BaseSculpture.LoadSculpture(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "printcrc",
+			Parent = "basesculpture",
+			FullName = "basesculpture.printcrc",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				BaseSculpture.PrintCrc(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "savesculpture",
+			Parent = "basesculpture",
+			FullName = "basesculpture.savesculpture",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				BaseSculpture.SaveSculpture(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "useconvexcolliders",
+			Parent = "basesculpture",
+			FullName = "basesculpture.useconvexcolliders",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Use convex colliders for generated blocks on both the client and server - slower to generate but blocks holes, only effects future modifications",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => BaseSculpture.UseConvexColliders.ToString(),
+			SetOveride = delegate(string str)
+			{
+				BaseSculpture.UseConvexColliders = StringExtensions.ToBool(str);
+			},
+			Default = "false"
 		},
 		new ConsoleSystem.Command
 		{
@@ -2154,6 +2285,42 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "pietest",
+			Parent = "communityentity",
+			FullName = "communityentity.pietest",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				CommunityEntity.pietest(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "pietest_next",
+			Parent = "communityentity",
+			FullName = "communityentity.pietest_next",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				CommunityEntity.pietest_next(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "pietest_prev",
+			Parent = "communityentity",
+			FullName = "communityentity.pietest_prev",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				CommunityEntity.pietest_prev(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "pool_stats",
 			Parent = "camerarenderermanager",
 			FullName = "camerarenderermanager.pool_stats",
@@ -2263,7 +2430,7 @@ public class ConsoleGen
 			Parent = "camerarenderer",
 			FullName = "camerarenderer.height",
 			ServerAdmin = true,
-			Description = "(Generated) Height in pixels of the companion server camera render output; default 90",
+			Description = "(Generated) Height in pixels of the companion server camera render output; default 180",
 			Variable = true,
 			GetOveride = delegate
 			{
@@ -2381,6 +2548,20 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "rayjitter",
+			Parent = "camerarenderer",
+			FullName = "camerarenderer.rayjitter",
+			ServerAdmin = true,
+			Description = "(Generated) Maximum per-axis camera rotation jitter, in sample cells, applied to each companion server camera render so a stationary camera still returns a natural scatter of ray samples instead of a rigid grid; 0 disables",
+			Variable = true,
+			GetOveride = () => CameraRenderer.rayJitter.ToString(),
+			SetOveride = delegate(string str)
+			{
+				CameraRenderer.rayJitter = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "renderinterval",
 			Parent = "camerarenderer",
 			FullName = "camerarenderer.renderinterval",
@@ -2431,7 +2612,7 @@ public class ConsoleGen
 			Parent = "camerarenderer",
 			FullName = "camerarenderer.width",
 			ServerAdmin = true,
-			Description = "(Generated) Width in pixels of the companion server camera render output; default 160",
+			Description = "(Generated) Width in pixels of the companion server camera render output; default 320",
 			Variable = true,
 			GetOveride = delegate
 			{
@@ -4879,6 +5060,23 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "check_mount_distance",
+			Parent = "antihack",
+			FullName = "antihack.check_mount_distance",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int check_mount_distance = ConVar.AntiHack.check_mount_distance;
+				return (check_mount_distance < -1 || check_mount_distance > 127) ? check_mount_distance.ToString() : Memoized.IntToString.Get(check_mount_distance);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.AntiHack.check_mount_distance = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "debuglevel",
 			Parent = "antihack",
 			FullName = "antihack.debuglevel",
@@ -5273,6 +5471,23 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				ConVar.AntiHack.forceposition = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "hotbar_network_mode",
+			Parent = "antihack",
+			FullName = "antihack.hotbar_network_mode",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int hotbar_network_mode = ConVar.AntiHack.hotbar_network_mode;
+				return (hotbar_network_mode < -1 || hotbar_network_mode > 127) ? hotbar_network_mode.ToString() : Memoized.IntToString.Get(hotbar_network_mode);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.AntiHack.hotbar_network_mode = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -5715,6 +5930,32 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				ConVar.AntiHack.projectile_damagedepth = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "projectile_defaultcheck",
+			Parent = "antihack",
+			FullName = "antihack.projectile_defaultcheck",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = () => ConVar.AntiHack.projectile_defaultcheck.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.AntiHack.projectile_defaultcheck = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "projectile_deployedcheck",
+			Parent = "antihack",
+			FullName = "antihack.projectile_deployedcheck",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = () => ConVar.AntiHack.projectile_deployedcheck.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.AntiHack.projectile_deployedcheck = StringExtensions.ToBool(str);
 			}
 		},
 		new ConsoleSystem.Command
@@ -6504,6 +6745,39 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "adminapartmentbypass",
+			Parent = "apartment",
+			FullName = "apartment.adminapartmentbypass",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Should admins be able to bypass apartment authorization checks?",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => ApartmentCommands.adminapartmentbypass.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ApartmentCommands.adminapartmentbypass = StringExtensions.ToBool(str);
+			},
+			Default = "False"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "adminapartmentnoclip",
+			Parent = "apartment",
+			FullName = "apartment.adminapartmentnoclip",
+			ServerAdmin = true,
+			Description = "Should admins be able to noclip in apartments?",
+			Variable = true,
+			GetOveride = () => ApartmentCommands.adminapartmentnoclip.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ApartmentCommands.adminapartmentnoclip = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "allowcombatoutsideofbreakin",
 			Parent = "apartment",
 			FullName = "apartment.allowcombatoutsideofbreakin",
@@ -6679,6 +6953,19 @@ public class ConsoleGen
 				ApartmentCommands.masterkeyprice = StringExtensions.ToInt(str, 0);
 			},
 			Default = "1000"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "printapartmentfurniture",
+			Parent = "apartment",
+			FullName = "apartment.printapartmentfurniture",
+			ServerAdmin = true,
+			Description = "Print list of furniture inside your room",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				ApartmentCommands.printapartmentfurniture(arg);
+			}
 		},
 		new ConsoleSystem.Command
 		{
@@ -7494,6 +7781,24 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "scoreforenablingwatertreatmentplant",
+			Parent = "clan",
+			FullName = "clan.scoreforenablingwatertreatmentplant",
+			ServerAdmin = true,
+			Description = "How much score players earn for running the water treatment plant, per consumed item",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int scoreForEnablingWaterTreatmentPlant = Clan.scoreForEnablingWaterTreatmentPlant;
+				return (scoreForEnablingWaterTreatmentPlant < -1 || scoreForEnablingWaterTreatmentPlant > 127) ? scoreForEnablingWaterTreatmentPlant.ToString() : Memoized.IntToString.Get(scoreForEnablingWaterTreatmentPlant);
+			},
+			SetOveride = delegate(string str)
+			{
+				Clan.scoreForEnablingWaterTreatmentPlant = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "scoreforhackingcrates",
 			Parent = "clan",
 			FullName = "clan.scoreforhackingcrates",
@@ -7512,6 +7817,42 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "scoreforinsertheavyfuseinpowerplant",
+			Parent = "clan",
+			FullName = "clan.scoreforinsertheavyfuseinpowerplant",
+			ServerAdmin = true,
+			Description = "How much score players earn for inserting a heavy fuse into powerplant",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int scoreForInsertHeavyFuseInPowerPlant = Clan.scoreForInsertHeavyFuseInPowerPlant;
+				return (scoreForInsertHeavyFuseInPowerPlant < -1 || scoreForInsertHeavyFuseInPowerPlant > 127) ? scoreForInsertHeavyFuseInPowerPlant.ToString() : Memoized.IntToString.Get(scoreForInsertHeavyFuseInPowerPlant);
+			},
+			SetOveride = delegate(string str)
+			{
+				Clan.scoreForInsertHeavyFuseInPowerPlant = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "scoreforlaunchingsatellite",
+			Parent = "clan",
+			FullName = "clan.scoreforlaunchingsatellite",
+			ServerAdmin = true,
+			Description = "How much score players earn for launching a satellite",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int scoreForLaunchingSatellite = Clan.scoreForLaunchingSatellite;
+				return (scoreForLaunchingSatellite < -1 || scoreForLaunchingSatellite > 127) ? scoreForLaunchingSatellite.ToString() : Memoized.IntToString.Get(scoreForLaunchingSatellite);
+			},
+			SetOveride = delegate(string str)
+			{
+				Clan.scoreForLaunchingSatellite = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "scoreforlootingelitecrate",
 			Parent = "clan",
 			FullName = "clan.scoreforlootingelitecrate",
@@ -7526,6 +7867,24 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				Clan.scoreForLootingEliteCrate = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "scoreforlootingsatellite",
+			Parent = "clan",
+			FullName = "clan.scoreforlootingsatellite",
+			ServerAdmin = true,
+			Description = "How much score players earn for looting a crashed satellite's crates",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int scoreForLootingSatellite = Clan.scoreForLootingSatellite;
+				return (scoreForLootingSatellite < -1 || scoreForLootingSatellite > 127) ? scoreForLootingSatellite.ToString() : Memoized.IntToString.Get(scoreForLootingSatellite);
+			},
+			SetOveride = delegate(string str)
+			{
+				Clan.scoreForLootingSatellite = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -7584,6 +7943,24 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "scoreforstartingoilrigfuelswitch",
+			Parent = "clan",
+			FullName = "clan.scoreforstartingoilrigfuelswitch",
+			ServerAdmin = true,
+			Description = "How much score players earn for starting the oil rig fuel switch",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int scoreForStartingOilRigFuelSwitch = Clan.scoreForStartingOilRigFuelSwitch;
+				return (scoreForStartingOilRigFuelSwitch < -1 || scoreForStartingOilRigFuelSwitch > 127) ? scoreForStartingOilRigFuelSwitch.ToString() : Memoized.IntToString.Get(scoreForStartingOilRigFuelSwitch);
+			},
+			SetOveride = delegate(string str)
+			{
+				Clan.scoreForStartingOilRigFuelSwitch = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "scoreforswipingredkeycard",
 			Parent = "clan",
 			FullName = "clan.scoreforswipingredkeycard",
@@ -7611,6 +7988,24 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				Clan.ScoreTest(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "consolehistorysize",
+			Parent = "console",
+			FullName = "console.consolehistorysize",
+			ServerAdmin = true,
+			Description = "Maximum number of console history entries",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int consolehistorysize = Console.consolehistorysize;
+				return (consolehistorysize < -1 || consolehistorysize > 127) ? consolehistorysize.ToString() : Memoized.IntToString.Get(consolehistorysize);
+			},
+			SetOveride = delegate(string str)
+			{
+				Console.consolehistorysize = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -7998,6 +8393,357 @@ public class ConsoleGen
 				Creative.unlimitedIo = StringExtensions.ToBool(str);
 			},
 			Default = "False"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "accuracyadjustspeed",
+			Parent = "dartsgame",
+			FullName = "dartsgame.accuracyadjustspeed",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.accuracyAdjustSpeed.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.accuracyAdjustSpeed = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "accuratevelocitythreshold",
+			Parent = "dartsgame",
+			FullName = "dartsgame.accuratevelocitythreshold",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.accurateVelocityThreshold.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.accurateVelocityThreshold = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.05"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "cooldownbetweenthrows",
+			Parent = "dartsgame",
+			FullName = "dartsgame.cooldownbetweenthrows",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.cooldownBetweenThrows.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.cooldownBetweenThrows = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "3"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "debugcanplayagainstself",
+			Parent = "dartsgame",
+			FullName = "dartsgame.debugcanplayagainstself",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.debugCanPlayAgainstSelf.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.debugCanPlayAgainstSelf = StringExtensions.ToBool(str);
+			},
+			Default = "False"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "holdfocusaddedfriction",
+			Parent = "dartsgame",
+			FullName = "dartsgame.holdfocusaddedfriction",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.holdFocusAddedFriction.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.holdFocusAddedFriction = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.45"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "holdfocusduration",
+			Parent = "dartsgame",
+			FullName = "dartsgame.holdfocusduration",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.holdFocusDuration.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.holdFocusDuration = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "2"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "idlekickseconds",
+			Parent = "dartsgame",
+			FullName = "dartsgame.idlekickseconds",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int idleKickSeconds = DartsGame.idleKickSeconds;
+				return (idleKickSeconds < -1 || idleKickSeconds > 127) ? idleKickSeconds.ToString() : Memoized.IntToString.Get(idleKickSeconds);
+			},
+			SetOveride = delegate(string str)
+			{
+				DartsGame.idleKickSeconds = StringExtensions.ToInt(str, 0);
+			},
+			Default = "180"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxaccuracy",
+			Parent = "dartsgame",
+			FullName = "dartsgame.maxaccuracy",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.maxAccuracy.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.maxAccuracy = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxthrowtimer",
+			Parent = "dartsgame",
+			FullName = "dartsgame.maxthrowtimer",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.maxThrowTimer.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.maxThrowTimer = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "10"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxzoom",
+			Parent = "dartsgame",
+			FullName = "dartsgame.maxzoom",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.maxZoom.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.maxZoom = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.5"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "minaccuracy",
+			Parent = "dartsgame",
+			FullName = "dartsgame.minaccuracy",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.minAccuracy.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.minAccuracy = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "needdoubletowin",
+			Parent = "dartsgame",
+			FullName = "dartsgame.needdoubletowin",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.needDoubleToWin.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.needDoubleToWin = StringExtensions.ToBool(str);
+			},
+			Default = "True"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reticlefriction",
+			Parent = "dartsgame",
+			FullName = "dartsgame.reticlefriction",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.reticleFriction.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.reticleFriction = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.5"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reticleinputbufferapplication",
+			Parent = "dartsgame",
+			FullName = "dartsgame.reticleinputbufferapplication",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.reticleInputBufferApplication.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.reticleInputBufferApplication = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "100"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reticleinputspeed",
+			Parent = "dartsgame",
+			FullName = "dartsgame.reticleinputspeed",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.reticleInputSpeed.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.reticleInputSpeed = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.01"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reticlemaxvelocity",
+			Parent = "dartsgame",
+			FullName = "dartsgame.reticlemaxvelocity",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.reticleMaxVelocity.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.reticleMaxVelocity = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "3"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reticlerandomforcestrength",
+			Parent = "dartsgame",
+			FullName = "dartsgame.reticlerandomforcestrength",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.reticleRandomForceStrength.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.reticleRandomForceStrength = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.5"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reticlespawnpointradiusoffset",
+			Parent = "dartsgame",
+			FullName = "dartsgame.reticlespawnpointradiusoffset",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DartsGame.reticleSpawnPointRadiusOffset.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DartsGame.reticleSpawnPointRadiusOffset = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.5"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "scoretarget",
+			Parent = "dartsgame",
+			FullName = "dartsgame.scoretarget",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Sets the score target in Darts. Standard games are either 301 or 501.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int scoreTarget = DartsGame.scoreTarget;
+				return (scoreTarget < -1 || scoreTarget > 127) ? scoreTarget.ToString() : Memoized.IntToString.Get(scoreTarget);
+			},
+			SetOveride = delegate(string str)
+			{
+				DartsGame.scoreTarget = StringExtensions.ToInt(str, 0);
+			},
+			Default = "301"
 		},
 		new ConsoleSystem.Command
 		{
@@ -8397,6 +9143,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "emptytankermodule",
+			Parent = "debug",
+			FullName = "debug.emptytankermodule",
+			ServerAdmin = true,
+			Description = "emptyTankerModule - Clears the contents of the tanker module(s) of the modular car you're looking at",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Debugging.emptyTankerModule(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "enable_player_movement",
 			Parent = "debug",
 			FullName = "debug.enable_player_movement",
@@ -8419,6 +9178,19 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				Debugging.fillmounts(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "filltankermodule",
+			Parent = "debug",
+			FullName = "debug.filltankermodule",
+			ServerAdmin = true,
+			Description = "fillTankerModule <item> - Fills the tanker module(s) of the modular car you're looking at with the given liquid (e.g. water, water.salt, crude.oil)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Debugging.fillTankerModule(arg);
 			}
 		},
 		new ConsoleSystem.Command
@@ -9367,6 +10139,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "drawnearbybuildings",
+			Parent = "decay",
+			FullName = "decay.drawnearbybuildings",
+			ServerAdmin = true,
+			Description = "drawnearbybuildings <duration> <radius>, shows building ID of entities",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				ConVar.Decay.drawnearbybuildings(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "duration_metal",
 			Parent = "decay",
 			FullName = "decay.duration_metal",
@@ -9448,6 +10233,38 @@ public class ConsoleGen
 			{
 				ConVar.Decay.duration_wood = StringExtensions.ToFloat(str, 0f);
 			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "forcedecaytick",
+			Parent = "decay",
+			FullName = "decay.forcedecaytick",
+			ServerAdmin = true,
+			Description = "Call the decay tick on every single entity on the server (for testing decay works)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				ConVar.Decay.forcedecaytick(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "high_wall_upkeep",
+			Parent = "decay",
+			FullName = "decay.high_wall_upkeep",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Upkeep scale for external walls and gates",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => ConVar.Decay.high_wall_upkeep.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.high_wall_upkeep = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.2"
 		},
 		new ConsoleSystem.Command
 		{
@@ -10187,6 +11004,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "printboatteleports",
+			Parent = "deepsea",
+			FullName = "deepsea.printboatteleports",
+			ServerAdmin = true,
+			Description = "Prints what players on the player's boat will be teleported to the deep sea",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				DeepSea.printboatteleports(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "printentitycount",
 			Parent = "deepsea",
 			FullName = "deepsea.printentitycount",
@@ -10795,6 +11625,20 @@ public class ConsoleGen
 				//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 				string rval = Entity.svspawnitem(arg.GetString(0), arg.GetVector3(1, Vector3.zero));
+				arg.ReplyWithObject(rval);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "spawnvendor",
+			Parent = "entity",
+			FullName = "entity.spawnvendor",
+			ServerAdmin = true,
+			Description = "(Generated) Spawns a complete NPC vendor by vendor name - both the shopkeeper NPC and the invisible vending machine it needs - at the position the calling player is looking at",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				string rval = Entity.svspawnvendor(arg.GetString(0));
 				arg.ReplyWithObject(rval);
 			}
 		},
@@ -11621,6 +12465,18 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "respawn_sleepingbag_favourite",
+			Parent = "global",
+			FullName = "global.respawn_sleepingbag_favourite",
+			ServerUser = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Global.respawn_sleepingbag_favourite(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "respawn_sleepingbag_remove",
 			Parent = "global",
 			FullName = "global.respawn_sleepingbag_remove",
@@ -11918,6 +12774,19 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				Global.teleport2owneditem(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "teleport2satellitecrashsite",
+			Parent = "global",
+			FullName = "global.teleport2satellitecrashsite",
+			ServerAdmin = true,
+			Description = "(Generated) Teleports the calling admin to the currently locked-in satellite crash site. Does nothing if no satellite is descending.",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Global.teleport2satellitecrashsite(arg);
 			}
 		},
 		new ConsoleSystem.Command
@@ -12965,7 +13834,7 @@ public class ConsoleGen
 			{
 				Nexus.endpoint = str;
 			},
-			Default = "https://api.facepunch.com/api/nexus/"
+			Default = "https://gw.facepunch.com/nexus/"
 		},
 		new ConsoleSystem.Command
 		{
@@ -14045,6 +14914,20 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				Player.abandonmission(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "adminsafezonelooting",
+			Parent = "player",
+			FullName = "player.adminsafezonelooting",
+			ServerAdmin = true,
+			Description = "Should admins be allowed to loot incapacitated players (or their corpse / bag) in safe-zones?",
+			Variable = true,
+			GetOveride = () => Player.adminsafezonelooting.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Player.adminsafezonelooting = StringExtensions.ToBool(str);
 			}
 		},
 		new ConsoleSystem.Command
@@ -15463,6 +16346,23 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "drawmanifestinterval",
+			Parent = "rustnav",
+			FullName = "rustnav.drawmanifestinterval",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int drawManifestInterval = RustNav.drawManifestInterval;
+				return (drawManifestInterval < -1 || drawManifestInterval > 127) ? drawManifestInterval.ToString() : Memoized.IntToString.Get(drawManifestInterval);
+			},
+			SetOveride = delegate(string str)
+			{
+				RustNav.drawManifestInterval = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "drawradius",
 			Parent = "rustnav",
 			FullName = "rustnav.drawradius",
@@ -15485,6 +16385,23 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				RustNav.drawRefreshRate = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "drawtilebudget",
+			Parent = "rustnav",
+			FullName = "rustnav.drawtilebudget",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int drawTileBudget = RustNav.drawTileBudget;
+				return (drawTileBudget < -1 || drawTileBudget > 127) ? drawTileBudget.ToString() : Memoized.IntToString.Get(drawTileBudget);
+			},
+			SetOveride = delegate(string str)
+			{
+				RustNav.drawTileBudget = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -15522,6 +16439,964 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				RustNav.SetNumThreads(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "control_window",
+			Parent = "satellite",
+			FullName = "satellite.control_window",
+			ServerAdmin = true,
+			Description = "Seconds of thruster control window",
+			Variable = true,
+			GetOveride = () => Satellite.control_window.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.control_window = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "cooldown_hours_max",
+			Parent = "satellite",
+			FullName = "satellite.cooldown_hours_max",
+			ServerAdmin = true,
+			Description = "Maximum cooldown between satellite events, in game hours",
+			Variable = true,
+			GetOveride = () => Satellite.cooldown_hours_max.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.cooldown_hours_max = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "cooldown_hours_min",
+			Parent = "satellite",
+			FullName = "satellite.cooldown_hours_min",
+			ServerAdmin = true,
+			Description = "Minimum cooldown between satellite events, in game hours (not real minutes) — converted to real time via the map's day length, same as the airdrop event scheduler.",
+			Variable = true,
+			GetOveride = () => Satellite.cooldown_hours_min.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.cooldown_hours_min = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "crashing_fx_at_distance",
+			Parent = "satellite",
+			FullName = "satellite.crashing_fx_at_distance",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Run the crashing FX pass (FX Pass 3) through the whole phase-2 descent, including the distance-projected stretch, instead of waiting until the satellite enters real draw distance. The projected-mode fixup still applies — its particles simulate in local space and scale with the model; its trails stay gated until real rendering.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.crashing_fx_at_distance.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.crashing_fx_at_distance = StringExtensions.ToBool(str);
+			},
+			Default = "True"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "crate_fire_duration",
+			Parent = "satellite",
+			FullName = "satellite.crate_fire_duration",
+			ServerAdmin = true,
+			Description = "Seconds the crash loot crates burn and stay unlootable after impact. All crates unlock together when this expires.",
+			Variable = true,
+			GetOveride = () => Satellite.crate_fire_duration.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.crate_fire_duration = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "debug",
+			Parent = "satellite",
+			FullName = "satellite.debug",
+			ServerAdmin = true,
+			Description = "Log crash-target search diagnostics (samples, blockers, reasons)",
+			Variable = true,
+			GetOveride = () => Satellite.debug.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.debug = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "default_crash_radius",
+			Parent = "satellite",
+			FullName = "satellite.default_crash_radius",
+			ServerAdmin = true,
+			Description = "Starting impact radius before thruster adjustments, in meters",
+			Variable = true,
+			GetOveride = () => Satellite.default_crash_radius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.default_crash_radius = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "descent_angle",
+			Parent = "satellite",
+			FullName = "satellite.descent_angle",
+			ServerAdmin = true,
+			Description = "Angle (degrees from vertical) the satellite descends at. Higher = more horizontal streak across the sky. Clamped to 45 so it always reaches the ground within 45 degrees of straight down. Only used when flyover_altitude is 0 — the flyover path has its own geometry.",
+			Variable = true,
+			GetOveride = () => Satellite.descent_angle.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.descent_angle = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "descent_seconds",
+			Parent = "satellite",
+			FullName = "satellite.descent_seconds",
+			ServerAdmin = true,
+			Description = "Descent duration in seconds (0 = use day length fraction; nonzero values are clamped to a minimum of final_descent_seconds so the phase-2 window always fits inside the descent)",
+			Variable = true,
+			GetOveride = () => Satellite.descent_seconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.descent_seconds = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "final_descent_seconds",
+			Parent = "satellite",
+			FullName = "satellite.final_descent_seconds",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Seconds before the scheduled crash that the satellite begins its phase-2 physics descent. Phase 1 slides in to the phase-2 start point up until then, then the satellite drops at a speed timed to hit the ground exactly on schedule. The start point is placed at the satellite's finalDescentSpeed times this window, so lengthening it starts the descent higher rather than slowing the fall.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.final_descent_seconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.final_descent_seconds = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "300"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "final_descent_speed",
+			Parent = "satellite",
+			FullName = "satellite.final_descent_speed",
+			ServerAdmin = true,
+			Description = "Speed (m/s) of the phase-2 physics descent (0 = use the satellite prefab's finalDescentSpeed). Together with final_descent_seconds this sets where phase 2 starts — speed times seconds back up the descent line — so e.g. 180s at 80 m/s starts the drop 14.4km out.",
+			Variable = true,
+			GetOveride = () => Satellite.final_descent_speed.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.final_descent_speed = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "flyover_altitude",
+			Parent = "satellite",
+			FullName = "satellite.flyover_altitude",
+			ServerAdmin = true,
+			Description = "Altitude (m above the crash target) of the phase-2 flyover cruise. The satellite enters near-horizontally at this height, streaks across the sky, then bends into a dive onto the target from flyover_dive_distance out. 0 = disable the flyover and use the legacy straight-line descent at descent_angle.",
+			Variable = true,
+			GetOveride = () => Satellite.flyover_altitude.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.flyover_altitude = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "flyover_dive_distance",
+			Parent = "satellite",
+			FullName = "satellite.flyover_dive_distance",
+			ServerAdmin = true,
+			Description = "Horizontal distance (m) from the crash target at which the flyover bends into its terminal dive. Smaller = a longer level cruise with a steeper final plunge.",
+			Variable = true,
+			GetOveride = () => Satellite.flyover_dive_distance.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.flyover_dive_distance = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "free_fuel",
+			Parent = "satellite",
+			FullName = "satellite.free_fuel",
+			ServerAdmin = true,
+			Description = "If true, firing satellite thrusters does not consume fuel",
+			Variable = true,
+			GetOveride = () => Satellite.free_fuel.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.free_fuel = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "free_power",
+			Parent = "satellite",
+			FullName = "satellite.free_power",
+			ServerAdmin = true,
+			Description = "If true, powering up the satellite computer does not require any items",
+			Variable = true,
+			GetOveride = () => Satellite.free_power.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.free_power = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_large_max",
+			Parent = "satellite",
+			FullName = "satellite.fuel_large_max",
+			ServerAdmin = true,
+			Description = "Maximum fuel rolled for large satellites (3000-5000kg)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_large_max = Satellite.fuel_large_max;
+				return (fuel_large_max < -1 || fuel_large_max > 127) ? fuel_large_max.ToString() : Memoized.IntToString.Get(fuel_large_max);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_large_max = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_large_min",
+			Parent = "satellite",
+			FullName = "satellite.fuel_large_min",
+			ServerAdmin = true,
+			Description = "Minimum fuel rolled for large satellites (3000-5000kg)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_large_min = Satellite.fuel_large_min;
+				return (fuel_large_min < -1 || fuel_large_min > 127) ? fuel_large_min.ToString() : Memoized.IntToString.Get(fuel_large_min);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_large_min = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_max",
+			Parent = "satellite",
+			FullName = "satellite.fuel_max",
+			ServerAdmin = true,
+			Description = "Hard maximum on generated fuel, applied after the per-size roll regardless of size",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_max = Satellite.fuel_max;
+				return (fuel_max < -1 || fuel_max > 127) ? fuel_max.ToString() : Memoized.IntToString.Get(fuel_max);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_max = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_medium_max",
+			Parent = "satellite",
+			FullName = "satellite.fuel_medium_max",
+			ServerAdmin = true,
+			Description = "Maximum fuel rolled for medium satellites (1500-3000kg)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_medium_max = Satellite.fuel_medium_max;
+				return (fuel_medium_max < -1 || fuel_medium_max > 127) ? fuel_medium_max.ToString() : Memoized.IntToString.Get(fuel_medium_max);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_medium_max = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_medium_min",
+			Parent = "satellite",
+			FullName = "satellite.fuel_medium_min",
+			ServerAdmin = true,
+			Description = "Minimum fuel rolled for medium satellites (1500-3000kg)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_medium_min = Satellite.fuel_medium_min;
+				return (fuel_medium_min < -1 || fuel_medium_min > 127) ? fuel_medium_min.ToString() : Memoized.IntToString.Get(fuel_medium_min);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_medium_min = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_min",
+			Parent = "satellite",
+			FullName = "satellite.fuel_min",
+			ServerAdmin = true,
+			Description = "Hard minimum on generated fuel, applied after the per-size roll regardless of size",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_min = Satellite.fuel_min;
+				return (fuel_min < -1 || fuel_min > 127) ? fuel_min.ToString() : Memoized.IntToString.Get(fuel_min);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_min = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_small_max",
+			Parent = "satellite",
+			FullName = "satellite.fuel_small_max",
+			ServerAdmin = true,
+			Description = "Maximum fuel rolled for small satellites (500-1500kg)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_small_max = Satellite.fuel_small_max;
+				return (fuel_small_max < -1 || fuel_small_max > 127) ? fuel_small_max.ToString() : Memoized.IntToString.Get(fuel_small_max);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_small_max = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuel_small_min",
+			Parent = "satellite",
+			FullName = "satellite.fuel_small_min",
+			ServerAdmin = true,
+			Description = "Minimum fuel rolled for small satellites (500-1500kg)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int fuel_small_min = Satellite.fuel_small_min;
+				return (fuel_small_min < -1 || fuel_small_min > 127) ? fuel_small_min.ToString() : Memoized.IntToString.Get(fuel_small_min);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.fuel_small_min = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "initial_offset_attempts",
+			Parent = "satellite",
+			FullName = "satellite.initial_offset_attempts",
+			ServerAdmin = true,
+			Description = "How many times to re-roll the initial random map position, re-checking the full crash-site acceptance each time, until a valid starting target is found. Guarantees the control phase never starts on an unusable spot.",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int initial_offset_attempts = Satellite.initial_offset_attempts;
+				return (initial_offset_attempts < -1 || initial_offset_attempts > 127) ? initial_offset_attempts.ToString() : Memoized.IntToString.Get(initial_offset_attempts);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.initial_offset_attempts = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "kill_radius",
+			Parent = "satellite",
+			FullName = "satellite.kill_radius",
+			ServerAdmin = true,
+			Description = "Radius (m) around the impact point cleared on crash — players killed, construction/deployables/vehicles destroyed, vegetation removed",
+			Variable = true,
+			GetOveride = () => Satellite.kill_radius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.kill_radius = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "lateral_distance",
+			Parent = "satellite",
+			FullName = "satellite.lateral_distance",
+			ServerAdmin = true,
+			Description = "Lateral offset multiplier per thruster fire (meters)",
+			Variable = true,
+			GetOveride = () => Satellite.lateral_distance.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.lateral_distance = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "launch",
+			Parent = "satellite",
+			FullName = "satellite.launch",
+			ServerAdmin = true,
+			Description = "Dev: search for a safe crash site around the calling player using the exact same acceptance checks a control computer's lock-in uses (topology, water, unevenness, safezones, obstructions), then launch the full orbital descent there. Not a full session replica: searches around the player rather than a computer's semi-random targeting center, always does a fresh scan (no thruster-history reuse), and has no owning computer (no countdown screen, radius floor still enforced, no-build volume self-despawns after impact instead of being computer-managed): satellite.launch [radius]",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Satellite.launch(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "launchquick",
+			Parent = "satellite",
+			FullName = "satellite.launchquick",
+			ServerAdmin = true,
+			Description = "Dev: exactly satellite.launch — same crash-site search and validation — but skips the wait: the satellite spawns already in phase 2, 30 seconds from impact, at the point of the descent path it would normally reach then: satellite.launchquick [radius]",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Satellite.launchquick(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "min_crash_radius",
+			Parent = "satellite",
+			FullName = "satellite.min_crash_radius",
+			ServerAdmin = true,
+			Description = "Minimum crash radius in meters",
+			Variable = true,
+			GetOveride = () => Satellite.min_crash_radius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.min_crash_radius = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "nudge_distance_max",
+			Parent = "satellite",
+			FullName = "satellite.nudge_distance_max",
+			ServerAdmin = true,
+			Description = "Maximum random aim drift (meters) applied when tightening the impact radius",
+			Variable = true,
+			GetOveride = () => Satellite.nudge_distance_max.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.nudge_distance_max = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "nudge_distance_min",
+			Parent = "satellite",
+			FullName = "satellite.nudge_distance_min",
+			ServerAdmin = true,
+			Description = "Minimum random aim drift (meters) applied when tightening the impact radius, at a fully random angle so it can't be cancelled out exactly by the cardinal-direction lateral thrusters",
+			Variable = true,
+			GetOveride = () => Satellite.nudge_distance_min.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.nudge_distance_min = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "obstruction_tc_reorder",
+			Parent = "satellite",
+			FullName = "satellite.obstruction_tc_reorder",
+			ServerAdmin = true,
+			Description = "Crash targeting: use the tool-cupboard grid to test likely-occupied samples last, so a clear spot is usually found with fewer physics checks. The physics check stays authoritative.",
+			Variable = true,
+			GetOveride = () => Satellite.obstruction_tc_reorder.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.obstruction_tc_reorder = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "phase1_extra_distance",
+			Parent = "satellite",
+			FullName = "satellite.phase1_extra_distance",
+			ServerAdmin = true,
+			Description = "Extra distance (m) further out, along the descent line, that phase 1 starts. The satellite slides steadily from there in to the orbit point over phase 1, then phase 2 continues along the same line.",
+			Variable = true,
+			GetOveride = () => Satellite.phase1_extra_distance.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.phase1_extra_distance = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "phase1_grow_scale",
+			Parent = "satellite",
+			FullName = "satellite.phase1_grow_scale",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Multiplier the orbiting satellite's glow billboard grows to by the end of phase 1 (starts at 1x). Purely a visual telegraph; replicated because the grow runs client-side.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.phase1_grow_scale.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.phase1_grow_scale = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "4"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "random",
+			Parent = "satellite",
+			FullName = "satellite.random",
+			ServerAdmin = true,
+			Description = "Trigger a satellite crash at a random valid position on the map",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Satellite.random(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "require_powerplant",
+			Parent = "satellite",
+			FullName = "satellite.require_powerplant",
+			ServerAdmin = true,
+			Description = "If true, the satellite control computer can only be powered up while the power plant is active (powergrid stage 1+). Ignored when the powergrid system itself is disabled.",
+			Variable = true,
+			GetOveride = () => Satellite.require_powerplant.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.require_powerplant = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "reuse_last_crash_spot",
+			Parent = "satellite",
+			FullName = "satellite.reuse_last_crash_spot",
+			ServerAdmin = true,
+			Description = "Crash targeting: before scanning, re-test the previously found crash spot. Small thruster nudges usually leave it valid, returning in a single check.",
+			Variable = true,
+			GetOveride = () => Satellite.reuse_last_crash_spot.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.reuse_last_crash_spot = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "rotation_strength",
+			Parent = "satellite",
+			FullName = "satellite.rotation_strength",
+			ServerAdmin = true,
+			Description = "Heading rotation per thruster fire (degrees)",
+			Variable = true,
+			GetOveride = () => Satellite.rotation_strength.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.rotation_strength = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "shrink_expand_radius",
+			Parent = "satellite",
+			FullName = "satellite.shrink_expand_radius",
+			ServerAdmin = true,
+			Description = "Impact radius change per thruster fire (meters)",
+			Variable = true,
+			GetOveride = () => Satellite.shrink_expand_radius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.shrink_expand_radius = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "site_check_physical_geometry",
+			Parent = "satellite",
+			FullName = "satellite.site_check_physical_geometry",
+			ServerAdmin = true,
+			Description = "Also raycast the crash-site footprint against real collision geometry, rejecting spots with rocks or scenery the heightmap can't see",
+			Variable = true,
+			GetOveride = () => Satellite.site_check_physical_geometry.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.site_check_physical_geometry = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "site_clearance_radius",
+			Parent = "satellite",
+			FullName = "satellite.site_clearance_radius",
+			ServerAdmin = true,
+			Description = "Clearance (m) the crash-site search demands around a candidate — rejected if any player building, prevent-building volume or safezone is within this range. Kept separate from kill_radius so targeting standoff can exceed what the impact destroys; 16 matches the building-privilege radius, so a valid site is never inside a base's TC influence.",
+			Variable = true,
+			GetOveride = () => Satellite.site_clearance_radius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.site_clearance_radius = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "site_footprint_radius",
+			Parent = "satellite",
+			FullName = "satellite.site_footprint_radius",
+			ServerAdmin = true,
+			Description = "Radius (m) around a candidate crash spot sampled for ground shape — roughly the crash remains footprint. Used both to reject unsuitable spots and to fit the spawned remains to the ground.",
+			Variable = true,
+			GetOveride = () => Satellite.site_footprint_radius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.site_footprint_radius = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "site_max_slope",
+			Parent = "satellite",
+			FullName = "satellite.site_max_slope",
+			ServerAdmin = true,
+			Description = "Max overall ground slope (degrees) across the crash footprint before a spot is rejected",
+			Variable = true,
+			GetOveride = () => Satellite.site_max_slope.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.site_max_slope = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "site_max_unevenness",
+			Parent = "satellite",
+			FullName = "satellite.site_max_unevenness",
+			ServerAdmin = true,
+			Description = "Max terrain height deviation (m) from the crash footprint's best-fit plane before a spot is rejected as too uneven (cliff edges, crests, dips the remains meshes can't hide)",
+			Variable = true,
+			GetOveride = () => Satellite.site_max_unevenness.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.site_max_unevenness = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Render the satellite's descent as a map-wide sky ribbon tracing the real flight path, visible from any distance at any draw distance setting. Rendered client-side from the entity's networked positions.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail = StringExtensions.ToBool(str);
+			},
+			Default = "True"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail_age_fade",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail_age_fade",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Fade each point of the sky ribbon out over its lifetime (sky_trail_seconds), like a TrailRenderer — the streak continuously dissolves behind the satellite instead of holding full brightness until its points expire.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail_age_fade.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail_age_fade = StringExtensions.ToBool(str);
+			},
+			Default = "True"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail_drain_seconds",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail_drain_seconds",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Seconds the sky ribbon takes to drain away tail-first after the satellite crashes or is destroyed. The recorded point ages are compressed into this window, so the ribbon keeps shrinking exactly the way it does in flight, and the impact end of the streak is the last to go.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail_drain_seconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail_drain_seconds = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "10"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail_max_length",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail_max_length",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Maximum length of the sky ribbon in meters of flight path — the tail is trimmed to keep the ribbon at or under this. 0 = no length cap, letting the sky_trail_seconds lifetime fade own the tail instead of a hard cut.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail_max_length.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail_max_length = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail_noise",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail_noise",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Meters of smooth random wobble baked into the sky ribbon as it's laid down, so the streak reads as turbulent rather than a perfect straight line. Keep it under the dish's size (~3m) or the trail visibly detaches from the model. 0 = perfectly straight.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail_noise.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail_noise = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail_seconds",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail_seconds",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Seconds of flight path the sky ribbon spans — its TrailRenderer-style lifetime: with sky_trail_age_fade on, points dissolve to nothing as they reach this age. Capped by the ribbon's internal point budget at ~128s.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail_seconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail_seconds = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "60"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sky_trail_width_degrees",
+			Parent = "satellite",
+			FullName = "satellite.sky_trail_width_degrees",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "On-screen thickness of the sky ribbon's head, in degrees of view angle — it holds the same apparent width whatever distance it's projected at, tapering to a point at the tail.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.sky_trail_width_degrees.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.sky_trail_width_degrees = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "0.075"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "targeting_budget_ms",
+			Parent = "satellite",
+			FullName = "satellite.targeting_budget_ms",
+			ServerAdmin = true,
+			Description = "Crash targeting: max milliseconds per frame spent scanning for a safe crash site. The scan resumes next frame when exceeded.",
+			Variable = true,
+			GetOveride = () => Satellite.targeting_budget_ms.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.targeting_budget_ms = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "targeting_coverage_factor",
+			Parent = "satellite",
+			FullName = "satellite.targeting_coverage_factor",
+			ServerAdmin = true,
+			Description = "Crash targeting: candidate samples tested per clearance-footprint, i.e. per (targetingRadius/clearanceRadius)^2. The sample count scales with the targeting area, so a small circle runs far fewer checks than a large one. ~1.2 is bare geometric coverage (samples spaced ~one clearance apart); the default adds margin to catch tight gaps. Pushing it much higher mostly adds correlated, redundant checks.",
+			Variable = true,
+			GetOveride = () => Satellite.targeting_coverage_factor.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.targeting_coverage_factor = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "targeting_min_samples",
+			Parent = "satellite",
+			FullName = "satellite.targeting_min_samples",
+			ServerAdmin = true,
+			Description = "Crash targeting: minimum candidate samples per search, regardless of how small the targeting circle is. Floors the area-scaled sample count so a small but cluttered area still gets a fair number of attempts.",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int targeting_min_samples = Satellite.targeting_min_samples;
+				return (targeting_min_samples < -1 || targeting_min_samples > 127) ? targeting_min_samples.ToString() : Memoized.IntToString.Get(targeting_min_samples);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.targeting_min_samples = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "thruster_extra_steps",
+			Parent = "satellite",
+			FullName = "satellite.thruster_extra_steps",
+			ServerAdmin = true,
+			Description = "When a thruster move finds no valid crash site, how many extra steps to take in the same direction before giving up. Fuel cost is linear in the number of steps taken (a 3-step move costs 3 fuel), and a further step isn't attempted if the player can't afford it.",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int thruster_extra_steps = Satellite.thruster_extra_steps;
+				return (thruster_extra_steps < -1 || thruster_extra_steps > 127) ? thruster_extra_steps.ToString() : Memoized.IntToString.Get(thruster_extra_steps);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.thruster_extra_steps = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "thruster_module_count",
+			Parent = "satellite",
+			FullName = "satellite.thruster_module_count",
+			ServerAdmin = true,
+			Description = "Thruster modules salvaged from fully harvesting the crash remains",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int thruster_module_count = Satellite.thruster_module_count;
+				return (thruster_module_count < -1 || thruster_module_count > 127) ? thruster_module_count.ToString() : Memoized.IntToString.Get(thruster_module_count);
+			},
+			SetOveride = delegate(string str)
+			{
+				Satellite.thruster_module_count = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "thruster_module_min_condition",
+			Parent = "satellite",
+			FullName = "satellite.thruster_module_min_condition",
+			ServerAdmin = true,
+			Description = "Minimum condition fraction of salvaged thruster modules, regardless of how much fuel the satellite burned before lock-in",
+			Variable = true,
+			GetOveride = () => Satellite.thruster_module_min_condition.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.thruster_module_min_condition = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "trail_alpha_scale",
+			Parent = "satellite",
+			FullName = "satellite.trail_alpha_scale",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Multiplier on the alpha of the satellite trails' authored colour gradients, saturating at full opacity — the authored fades drop to near-transparent within the first quarter of the trail, so values above 1 keep progressively more of its length visible. Applied alongside trail_time_scale as the trails switch on.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.trail_alpha_scale.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.trail_alpha_scale = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "trail_time_scale",
+			Parent = "satellite",
+			FullName = "satellite.trail_time_scale",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Multiplier on the authored lifetime of the satellite's trail renderers — a trail spans this many times the authored seconds of flight path, so it directly scales the visible streak length. Applied as the trails switch on (they sit out the projected far-distance stretch and only run once the satellite is drawn at its real position), so changes take effect at the next handover, not mid-trail. Replicated because trails render client-side.",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Satellite.trail_time_scale.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.trail_time_scale = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "trigger",
+			Parent = "satellite",
+			FullName = "satellite.trigger",
+			ServerAdmin = true,
+			Description = "Trigger a satellite crash at the calling player's position or optional coordinates, with an optional satellite mass (kg) driving loot like a computer-controlled crash: satellite.trigger [mass] or satellite.trigger [x z [mass]]",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Satellite.trigger(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "wreck_fire_duration",
+			Parent = "satellite",
+			FullName = "satellite.wreck_fire_duration",
+			ServerAdmin = true,
+			Description = "Seconds the main wreck stays too hot to harvest after impact",
+			Variable = true,
+			GetOveride = () => Satellite.wreck_fire_duration.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Satellite.wreck_fire_duration = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -15989,6 +17864,20 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				ConVar.Server.bulletdamage = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "bypassiteminputrestriction",
+			Parent = "server",
+			FullName = "server.bypassiteminputrestriction",
+			ServerAdmin = true,
+			Description = "Allows items to be moved into containers that block item input",
+			Variable = true,
+			GetOveride = () => ConVar.Server.bypassiteminputrestriction.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.bypassiteminputrestriction = StringExtensions.ToBool(str);
 			}
 		},
 		new ConsoleSystem.Command
@@ -16702,6 +18591,84 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				ConVar.Server.filefolderoverride = str;
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "filerequestbytesburst",
+			Parent = "server",
+			FullName = "server.filerequestbytesburst",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Burst of requested file data bytes each client can be sent before further requests are deferred. Replicated so clients throttle their own requests to match",
+			Replicated = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int filerequestbytesburst = ConVar.Server.filerequestbytesburst;
+				return (filerequestbytesburst < -1 || filerequestbytesburst > 127) ? filerequestbytesburst.ToString() : Memoized.IntToString.Get(filerequestbytesburst);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.filerequestbytesburst = StringExtensions.ToInt(str, 0);
+			},
+			Default = "4194304"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "filerequestbytespersecond",
+			Parent = "server",
+			FullName = "server.filerequestbytespersecond",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Bytes per second of requested file data (sign textures, photos, cassette audio, sculpts) sent to each client; requests beyond this are deferred, not dropped. Replicated so clients throttle their own requests to match",
+			Replicated = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int filerequestbytespersecond = ConVar.Server.filerequestbytespersecond;
+				return (filerequestbytespersecond < -1 || filerequestbytespersecond > 127) ? filerequestbytespersecond.ToString() : Memoized.IntToString.Get(filerequestbytespersecond);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.filerequestbytespersecond = StringExtensions.ToInt(str, 0);
+			},
+			Default = "2097152"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "filerequestdebug",
+			Parent = "server",
+			FullName = "server.filerequestdebug",
+			ServerAdmin = true,
+			Description = "Print file request rate limiting activity to the server console: incoming requests, bytes sent, and per-connection budget usage as it recovers over time",
+			Variable = true,
+			GetOveride = () => ConVar.Server.filerequestdebug.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.filerequestdebug = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "filerequestqueuelength",
+			Parent = "server",
+			FullName = "server.filerequestqueuelength",
+			ServerAdmin = true,
+			Description = "Maximum deferred file requests per client; requests beyond this are dropped (a legitimate client's own request throttle never fills the queue)",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int filerequestqueuelength = ConVar.Server.filerequestqueuelength;
+				return (filerequestqueuelength < -1 || filerequestqueuelength > 127) ? filerequestqueuelength.ToString() : Memoized.IntToString.Get(filerequestqueuelength);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.filerequestqueuelength = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -18275,6 +20242,20 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "npccorpsedespawn",
+			Parent = "server",
+			FullName = "server.npccorpsedespawn",
+			ServerAdmin = true,
+			Description = "Seconds before a NPC corpse is removed from the world; default is 600 seconds (10 minutes)",
+			Variable = true,
+			GetOveride = () => ConVar.Server.npccorpsedespawn.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.npccorpsedespawn = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "occlusiongatherbatchplayercount",
 			Parent = "server",
 			FullName = "server.occlusiongatherbatchplayercount",
@@ -18456,6 +20437,24 @@ public class ConsoleGen
 				ConVar.Server.parachuteRepackTime = StringExtensions.ToFloat(str, 0f);
 			},
 			Default = "8"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "parallelnetworkqueuebatchsize",
+			Parent = "server",
+			FullName = "server.parallelnetworkqueuebatchsize",
+			ServerAdmin = true,
+			Description = "UsePlayerUpdateJobs 4 related - affects how many players get batched into 1 task by counting the size of their network queues. Higher number - less tasks",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int parallelNetworkQueueBatchSize = ConVar.Server.ParallelNetworkQueueBatchSize;
+				return (parallelNetworkQueueBatchSize < -1 || parallelNetworkQueueBatchSize > 127) ? parallelNetworkQueueBatchSize.ToString() : Memoized.IntToString.Get(parallelNetworkQueueBatchSize);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.ParallelNetworkQueueBatchSize = StringExtensions.ToInt(str, 0);
+			}
 		},
 		new ConsoleSystem.Command
 		{
@@ -19832,7 +21831,7 @@ public class ConsoleGen
 			Parent = "server",
 			FullName = "server.useplayerupdatejobs",
 			ServerAdmin = true,
-			Description = "Player Update parallelism mode: 2-4, Higher modes are faster but more experimental. 3 by default",
+			Description = "Player Update parallelism mode: 3-4, Higher modes are faster but more experimental. 3 by default",
 			Variable = true,
 			GetOveride = delegate
 			{
@@ -20073,7 +22072,7 @@ public class ConsoleGen
 			FullName = "softcore.raidwindow_block_extra_enabled",
 			ServerAdmin = true,
 			Saved = true,
-			Description = "(Generated) Outside the window, also block a non-explosive damage type against non-twig building blocks (e.g. shotgunning down a stone wall). Melee is never affected",
+			Description = "(Generated) Outside the window, also block a non-explosive damage type against non-twig building blocks (e.g. shotgunning down a stone wall). Melee is only affected by softcore.raidwindow_block_melee_doors",
 			Variable = true,
 			GetOveride = () => Softcore.raidwindow_block_extra_enabled.ToString(),
 			SetOveride = delegate(string str)
@@ -20098,6 +22097,21 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				Softcore.raidwindow_block_extra_type = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "raidwindow_block_melee_doors",
+			Parent = "softcore",
+			FullName = "softcore.raidwindow_block_melee_doors",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "(Generated) Outside the window, block melee damage to doors so they can't be beaten down while the window is closed",
+			Variable = true,
+			GetOveride = () => Softcore.raidwindow_block_melee_doors.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Softcore.raidwindow_block_melee_doors = StringExtensions.ToBool(str);
 			}
 		},
 		new ConsoleSystem.Command
@@ -20470,6 +22484,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "ore_map",
+			Parent = "spawn",
+			FullName = "spawn.ore_map",
+			ServerAdmin = true,
+			Description = "Renders a PNG of every spawned ore nodes location to <rootFolder>/debug/ore-nodes.png (blue rings = safezones)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Spawn.ore_map(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "player_base",
 			Parent = "spawn",
 			FullName = "spawn.player_base",
@@ -20580,6 +22607,45 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				Spawn.respawn_populations = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "respawnloot_all",
+			Parent = "spawn",
+			FullName = "spawn.respawnloot_all",
+			ServerAdmin = true,
+			Description = "Respawns loot in all loot containers currently on the server",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Spawn.respawnloot_all(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "respawnloot_lookingat",
+			Parent = "spawn",
+			FullName = "spawn.respawnloot_lookingat",
+			ServerAdmin = true,
+			Description = "Respawns loot in the loot container currently being looked at",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Spawn.respawnloot_lookingat(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "respawnloot_radius",
+			Parent = "spawn",
+			FullName = "spawn.respawnloot_radius",
+			ServerAdmin = true,
+			Description = "Respawns loot in all loot containers within the given radius",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Spawn.respawnloot_radius(arg);
 			}
 		},
 		new ConsoleSystem.Command
@@ -23542,6 +25608,57 @@ public class ConsoleGen
 			{
 				ExcavatorSignalComputer.chargeNeededForSupplies = StringExtensions.ToFloat(str, 0f);
 			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "collidermiplevel",
+			Parent = "marchingcubesmanager",
+			FullName = "marchingcubesmanager.collidermiplevel",
+			ServerAdmin = true,
+			Description = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int colliderMipLevel = MarchingCubesManager.ColliderMipLevel;
+				return (colliderMipLevel < -1 || colliderMipLevel > 127) ? colliderMipLevel.ToString() : Memoized.IntToString.Get(colliderMipLevel);
+			},
+			SetOveride = delegate(string str)
+			{
+				MarchingCubesManager.ColliderMipLevel = StringExtensions.ToInt(str, 0);
+			},
+			Default = "1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "debuglog",
+			Parent = "marchingcubesmanager",
+			FullName = "marchingcubesmanager.debuglog",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = () => MarchingCubesManager.DebugLog.ToString(),
+			SetOveride = delegate(string str)
+			{
+				MarchingCubesManager.DebugLog = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "generatorpoolcount",
+			Parent = "marchingcubesmanager",
+			FullName = "marchingcubesmanager.generatorpoolcount",
+			ServerAdmin = true,
+			Description = "[1-16] - each generator has constant memory overhead, but will allow more to process at once",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int generatorPoolCount = MarchingCubesManager.GeneratorPoolCount;
+				return (generatorPoolCount < -1 || generatorPoolCount > 127) ? generatorPoolCount.ToString() : Memoized.IntToString.Get(generatorPoolCount);
+			},
+			SetOveride = delegate(string str)
+			{
+				MarchingCubesManager.GeneratorPoolCount = StringExtensions.ToInt(str, 0);
+			},
+			Default = "4"
 		},
 		new ConsoleSystem.Command
 		{
@@ -26848,6 +28965,257 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "debug_pool",
+			Parent = "pooltable",
+			FullName = "pooltable.debug_pool",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Pooltable.debug_pool.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Pooltable.debug_pool = StringExtensions.ToBool(str);
+			},
+			Default = "False"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "idle_reset_seconds",
+			Parent = "pooltable",
+			FullName = "pooltable.idle_reset_seconds",
+			ServerAdmin = true,
+			Description = "(Generated) Anyone can reset a pool game nobody has interacted with for this many seconds",
+			Variable = true,
+			GetOveride = () => Pooltable.idle_reset_seconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Pooltable.idle_reset_seconds = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "physics_update_rate",
+			Parent = "pooltable",
+			FullName = "pooltable.physics_update_rate",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Pooltable.physics_update_rate.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Pooltable.physics_update_rate = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "64"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "show_tooltips",
+			Parent = "pooltable",
+			FullName = "pooltable.show_tooltips",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Show pool game tooltip notifications",
+			Variable = true,
+			GetOveride = () => Pooltable.show_tooltips.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Pooltable.show_tooltips = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "watch_after_shot_seconds",
+			Parent = "pooltable",
+			FullName = "pooltable.watch_after_shot_seconds",
+			ServerAdmin = true,
+			Description = "(Generated) Seconds the shooter stays seated watching their shot before being dismounted",
+			Variable = true,
+			GetOveride = () => Pooltable.watch_after_shot_seconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Pooltable.watch_after_shot_seconds = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "enabled",
+			Parent = "powergrid",
+			FullName = "powergrid.enabled",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => Powergrid.enabled.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.enabled = StringExtensions.ToBool(str);
+			},
+			Default = "True"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fusefastdeterioratelowest",
+			Parent = "powergrid",
+			FullName = "powergrid.fusefastdeterioratelowest",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "If enabled, whenever no heavy fuse in the power plant is below fuseFastDeteriorationThreshold, the single lowest condition fuse deteriorates at the fast rate anyway.",
+			Variable = true,
+			GetOveride = () => Powergrid.fuseFastDeteriorateLowest.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.fuseFastDeteriorateLowest = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fusefastdeteriorationscale",
+			Parent = "powergrid",
+			FullName = "powergrid.fusefastdeteriorationscale",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "How much faster heavy fuses plugged into the power plant deteriorate once their normalized condition is at or below fuseFastDeteriorationThreshold.",
+			Variable = true,
+			GetOveride = () => Powergrid.fuseFastDeteriorationScale.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.fuseFastDeteriorationScale = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fusefastdeteriorationthreshold",
+			Parent = "powergrid",
+			FullName = "powergrid.fusefastdeteriorationthreshold",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Normalized condition (0-1) at which heavy fuses plugged into the power plant start deteriorating faster. At or below this threshold the deterioration rate is multiplied by fuseFastDeteriorationScale. Set to 0 to disable accelerated deterioration.",
+			Variable = true,
+			GetOveride = () => Powergrid.fuseFastDeteriorationThreshold.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.fuseFastDeteriorationThreshold = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuselifespanseconds",
+			Parent = "powergrid",
+			FullName = "powergrid.fuselifespanseconds",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = () => Powergrid.fuseLifespanSeconds.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.fuseLifespanSeconds = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "greenrecyclerfullefficiencystage",
+			Parent = "powergrid",
+			FullName = "powergrid.greenrecyclerfullefficiencystage",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int greenRecyclerFullEfficiencyStage = Powergrid.greenRecyclerFullEfficiencyStage;
+				return (greenRecyclerFullEfficiencyStage < -1 || greenRecyclerFullEfficiencyStage > 127) ? greenRecyclerFullEfficiencyStage.ToString() : Memoized.IntToString.Get(greenRecyclerFullEfficiencyStage);
+			},
+			SetOveride = delegate(string str)
+			{
+				Powergrid.greenRecyclerFullEfficiencyStage = StringExtensions.ToInt(str, 0);
+			},
+			Default = "-1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "simulatepowerplantfuses",
+			Parent = "powergrid",
+			FullName = "powergrid.simulatepowerplantfuses",
+			ServerAdmin = true,
+			Variable = true,
+			GetOveride = delegate
+			{
+				int simulatePowerPlantFuses = Powergrid.simulatePowerPlantFuses;
+				return (simulatePowerPlantFuses < -1 || simulatePowerPlantFuses > 127) ? simulatePowerPlantFuses.ToString() : Memoized.IntToString.Get(simulatePowerPlantFuses);
+			},
+			SetOveride = delegate(string str)
+			{
+				Powergrid.simulatePowerPlantFuses = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "stagechangeworkqueuebudget",
+			Parent = "powergrid",
+			FullName = "powergrid.stagechangeworkqueuebudget",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Max time per frame (ms) to spend notifying powergrid entities of a stage change.",
+			Variable = true,
+			GetOveride = () => Powergrid.stageChangeWorkQueueBudget.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.stageChangeWorkQueueBudget = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "stagechangeworkqueuedelaybetweenjobs",
+			Parent = "powergrid",
+			FullName = "powergrid.stagechangeworkqueuedelaybetweenjobs",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Time to wait (s) between each individual entity getting notified of a powergrid stage change. Higher values will delay the time it takes for all entities to receive notification of a stage change. Entities can skip this wait with stageChangeWorkQueueGroupJobsDistance",
+			Variable = true,
+			GetOveride = () => Powergrid.stageChangeWorkQueueDelayBetweenJobs.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.stageChangeWorkQueueDelayBetweenJobs = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "stagechangeworkqueuegroupjobsdistance",
+			Parent = "powergrid",
+			FullName = "powergrid.stagechangeworkqueuegroupjobsdistance",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "If a powergrid entity is within this range of the first powergrid entity to receive a stage change update this frame, then that entity will also receive an update (skipping stageChangeWorkQueueTimeBetweenJobs)",
+			Variable = true,
+			GetOveride = () => Powergrid.stageChangeWorkQueueGroupJobsDistance.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.stageChangeWorkQueueGroupJobsDistance = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "status",
+			Parent = "powergrid",
+			FullName = "powergrid.status",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Powergrid.status(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "materialtoradsratio",
 			Parent = "radiation",
 			FullName = "radiation.materialtoradsratio",
@@ -28930,6 +31298,157 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				VineMountable.allowChaining = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "forceenableconditionalspawning",
+			Parent = "watercatcher",
+			FullName = "watercatcher.forceenableconditionalspawning",
+			ServerAdmin = true,
+			Description = "Debug flag to force enable conditional spawning for all water catchers, regardless of their individual settings.",
+			Variable = true,
+			GetOveride = () => WaterCatcher.ForceEnableConditionalSpawning.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterCatcher.ForceEnableConditionalSpawning = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "watercatcherbudgetms",
+			Parent = "watercatcher",
+			FullName = "watercatcher.watercatcherbudgetms",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterCatcher.WaterCatcherBudgetMs.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterCatcher.WaterCatcherBudgetMs = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "get_num_listeners",
+			Parent = "watertreatmentswitchbroadcast",
+			FullName = "watertreatmentswitchbroadcast.get_num_listeners",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				WaterTreatmentSwitchBroadcast.get_num_listeners(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "senddebugbroadcast",
+			Parent = "watertreatmentswitchbroadcast",
+			FullName = "watertreatmentswitchbroadcast.senddebugbroadcast",
+			ServerAdmin = true,
+			Description = "Force the water treatment switch broadcast on/off for testing. Pass no argument (or 'clear') to release the override and return to power-derived state.",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				WaterTreatmentSwitchBroadcast.SendDebugBroadcast(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "debug_wtp_pressure",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.debug_wtp_pressure",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				WaterTreatmentWaterTank.debug_wtp_pressure(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "force_pressure",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.force_pressure",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				WaterTreatmentWaterTank.force_pressure(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxpressure",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.maxpressure",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterTank.maxPressure.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterTank.maxPressure = StringExtensions.ToFloat(str, 0f);
+			},
+			Default = "300"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "pressuredecaypertick",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.pressuredecaypertick",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterTank.pressureDecayPerTick.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterTank.pressureDecayPerTick = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "pressureoffthreshold",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.pressureoffthreshold",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterTank.pressureOffThreshold.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterTank.pressureOffThreshold = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "pressureonthreshold",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.pressureonthreshold",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterTank.pressureOnThreshold.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterTank.pressureOnThreshold = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "secondsbeforedecayingpressure",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.secondsbeforedecayingpressure",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterTank.secondsBeforeDecayingPressure.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterTank.secondsBeforeDecayingPressure = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command

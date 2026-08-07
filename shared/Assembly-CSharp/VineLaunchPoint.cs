@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using Spatial;
 using UnityEngine;
 
+[ResetStaticFields]
 public class VineLaunchPoint : MonoBehaviour
 {
 	[Header("References")]
@@ -32,7 +34,7 @@ public class VineLaunchPoint : MonoBehaviour
 
 	public VineSwingingTree ParentTree;
 
-	private static Grid<VineLaunchPoint> pointGrid = new Grid<VineLaunchPoint>(32, 8096f);
+	public static Grid<VineLaunchPoint> pointGrid = new Grid<VineLaunchPoint>(32, 8096f);
 
 	private bool hasDied;
 

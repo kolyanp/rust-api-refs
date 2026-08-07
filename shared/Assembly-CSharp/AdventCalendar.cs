@@ -117,15 +117,15 @@ public class AdventCalendar : BaseCombatEntity
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
 		if (Interface.CallHook("OnAdventGiftAward", this, player) != null)
 		{
 			return;
@@ -142,10 +142,7 @@ public class AdventCalendar : BaseCombatEntity
 		}
 		playerRewardHistory[player.userID].Add(num);
 		Effect.server.Run(giftEffect.resourcePath, ((Component)player).transform.position);
-		if (num >= 0 && num < crosses.Length)
-		{
-			Effect.server.Run(boxCloseEffect.resourcePath, ((Component)this).transform.position + Vector3.up * 1.5f);
-		}
+		Effect.server.Run(boxCloseEffect.resourcePath, ((Component)this).transform.position + Vector3.up * 1.5f);
 		DayReward dayReward = days[num];
 		ItemAmount[] rewards = dayReward.rewards;
 		if ((int)ConVar.Server.Era != 0 && dayReward.alternativeRewards != null)
@@ -198,9 +195,9 @@ public class AdventCalendar : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_RequestGift(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

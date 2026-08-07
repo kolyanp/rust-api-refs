@@ -30,6 +30,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	private TimeSince lastDoorMovingTime;
 
+	private TransformHandle doorPhysHingeHandle;
+
 	private float steerInput;
 
 	private bool steerMod;
@@ -45,16 +47,16 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private Transform damagePoint;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private float timeBetweenFire = 2f;
 
 	[SerializeField]
 	private float maxForwardSpeed = 1.5f;
 
+	[SerializeField]
 	[Header("Head")]
 	[Space]
-	[SerializeField]
 	private BatteringRamHead headPrefab;
 
 	[SerializeField]
@@ -71,8 +73,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private ImpactEffect[] impactEffects;
 
-	[SerializeField]
 	[Header("IK")]
+	[SerializeField]
 	private Transform leftHandTarget;
 
 	[SerializeField]
@@ -98,8 +100,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[Header("Cockpit")]
 	public Transform fuelGauge;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 fuelAngle;
 
 	private float cachedFuelFraction;
@@ -131,8 +133,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public GameObjectRef closeEndEffect;
 
-	[Header("Effects")]
 	[Tooltip("Effect played at local 0,0,0 in addition to the impact effects")]
+	[Header("Effects")]
 	public GameObjectRef hitEffect;
 
 	public VehicleLight[] vehicleLights;
@@ -181,6 +183,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
+	public Vector3 DamagePointPosition => damagePoint.position;
+
 	public override float DriveWheelVelocity
 	{
 		get
@@ -221,9 +225,17 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	{
 		get
 		{
-			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 			if (base.isServer)
 			{
+				if (BaseNetworkable.UseParallelSaves)
+				{
+					Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in doorPhysHingeHandle);
+					return ((Quaternion)(ref localRotMT)).eulerAngles.x;
+				}
 				return doorPhysicsHinge.localEulerAngles.x;
 			}
 			return 0f;
@@ -431,9 +443,9 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	protected void RPC_CloseDoor(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract(usableWhileCrawling: true) && CanCloseDoor() && Interface.CallHook("OnSiegeWeaponDoorClose", this, rpc.player) == null)
@@ -600,8 +612,14 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	public override void ServerInit()
 	{
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		InvokeRandomized(UpdateClients, 0f, 0.1f, 0.01f);
+		if ((Object)(object)doorPhysicsHinge != (Object)null)
+		{
+			doorPhysHingeHandle = ((Component)doorPhysicsHinge).transformHandle;
+		}
 	}
 
 	public override void PostServerLoad()
@@ -746,11 +764,10 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	private void ScanEntities(BasePlayer driver)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		List<BaseEntity> entities = Pool.Get<List<BaseEntity>>();
 		Vis.Entities(damagePoint.position, 1f, entities, 1210286337, (QueryTriggerInteraction)1);
-		FilterEntities(entities, driver, damagePoint.position);
+		FilterEntities(entities, driver);
 		bool flag = entities.Count != 0;
 		if (!flag)
 		{
@@ -774,42 +791,15 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}, 0.5f);
 	}
 
-	private void FilterEntities(List<BaseEntity> entityList, BasePlayer driver, Vector3 pos)
+	private void FilterEntities(List<BaseEntity> entityList, BasePlayer driver)
 	{
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
 		for (int i = 0; i < entityList.Count; i++)
 		{
 			BaseEntity baseEntity = entityList[i];
 			if (baseEntity.isServer && !list.Contains(baseEntity) && (!((Object)(object)driver != (Object)null) || !((Object)(object)baseEntity == (Object)(object)driver)) && !((Object)(object)baseEntity == (Object)(object)this) && !((Object)(object)baseEntity == (Object)(object)Head))
 			{
-				Vector3 val = baseEntity.ClosestPoint(pos);
-				Vector3 val2 = val - pos;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
-				Vector3 targetPos = val + normalized * 0.5f;
-				bool num = baseEntity.IsVisible(pos, val);
-				bool flag = num && baseEntity.CanSee(val, targetPos);
-				if (num && flag)
-				{
-					list.Add(baseEntity);
-				}
+				list.Add(baseEntity);
 			}
 		}
 		entityList.Clear();
@@ -1193,7 +1183,7 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		{
 			info.msg.batteringRam.doorAngle = DoorAngle;
 		}
-		info.msg.batteringRam.time = GetNetworkTime();
+		info.msg.batteringRam.time = GetNetworkTime(in info.cachedTime);
 	}
 
 	public override void Load(LoadInfo info)

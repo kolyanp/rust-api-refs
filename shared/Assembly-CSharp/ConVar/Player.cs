@@ -47,6 +47,9 @@ public class Player : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, players drop their backpack when downed/wounded; disable to keep the backpack on the body until death or recovery")]
 	public static bool dropbackpackondowned = true;
 
+	[ServerVar(Help = "Should admins be allowed to loot incapacitated players (or their corpse / bag) in safe-zones?")]
+	public static bool adminsafezonelooting = false;
+
 	[ServerVar(Saved = true, ShowInAdminUI = true, Help = "Whether the crawling state expires")]
 	public static bool woundforever = false;
 
@@ -78,8 +81,8 @@ public class Player : ConsoleSystem
 		}
 	}
 
-	[ClientVar(AllowRunFromServer = true)]
 	[ServerUserVar]
+	[ClientVar(AllowRunFromServer = true)]
 	public static void cinematic_play(Arg arg)
 	{
 		if (!arg.HasArgs() || !arg.IsServerside)
@@ -109,8 +112,8 @@ public class Player : ConsoleSystem
 		}
 	}
 
-	[ServerUserVar]
 	[ClientVar(AllowRunFromServer = true)]
+	[ServerUserVar]
 	public static void cinematic_stop(Arg arg)
 	{
 		if (!arg.IsServerside)

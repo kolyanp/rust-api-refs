@@ -6,8 +6,7 @@ namespace ConVar;
 
 public class Creative : ConsoleSystem
 {
-	[ReplicatedVar(Help = "Apply creative mode to the entire server", Saved = true)]
-	public static bool allUsers;
+	private static bool _allUsers;
 
 	[ServerVar(Saved = true, Help = "(Generated) Failsafe toggle that must be true before any alwaysOn commands work; prevents items from accidentally entering the always-on state outside of creative mode")]
 	public static bool alwaysOnEnabled;
@@ -27,6 +26,19 @@ public class Creative : ConsoleSystem
 	[ReplicatedVar(Help = "Bypasses limits on IO length and points", Saved = true)]
 	public static bool unlimitedIo;
 
+	[ReplicatedVar(Help = "Apply creative mode to the entire server", Saved = true)]
+	public static bool allUsers
+	{
+		get
+		{
+			return _allUsers;
+		}
+		set
+		{
+			_allUsers = value;
+		}
+	}
+
 	[ServerVar(Help = "(Generated) Enables or disables creative mode for a specific player by name or Steam ID; creative mode removes resource costs and unlocks building freely")]
 	public static void toggleCreativeModeUser(Arg arg)
 	{
@@ -38,6 +50,7 @@ public class Creative : ConsoleSystem
 			return;
 		}
 		player.SetPlayerFlag(BasePlayer.PlayerFlags.CreativeMode, flag);
+		player.Command("debug.setcreative_ui", flag || allUsers);
 		arg.ReplyWith($"{player.displayName} creative mode: {flag}");
 	}
 

@@ -20,8 +20,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 	[SerializeField]
 	private FlagCheck flagCheck;
 
-	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
 	[SerializeField]
+	[Tooltip("Specify any flags that must NOT be on for this toggle to be on")]
 	private BaseEntity.Flags notFlag;
 
 	[SerializeField]
@@ -44,8 +44,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public void DoUpdate(BaseEntity entity)
 	{
-		bool flag = ((flagCheck == FlagCheck.All) ? entity.HasFlag(this.flag) : entity.HasAny(this.flag));
-		if (entity.HasAny(notFlag))
+		bool flag = ((flagCheck == FlagCheck.All) ? entity.HasFlag(this.flag) : entity.HasAnyFlag(this.flag));
+		if (entity.HasAnyFlag(notFlag))
 		{
 			flag = false;
 		}

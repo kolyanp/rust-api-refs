@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class MountedWeaponViewmodel : BaseViewModel
 {
-	[SerializeField]
 	[Header("Mounted Weapon Viewmodel")]
+	[SerializeField]
 	private bool _invertForward;
 
 	[SerializeField]

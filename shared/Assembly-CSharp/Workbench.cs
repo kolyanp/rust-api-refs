@@ -77,14 +77,16 @@ public class Workbench : StorageContainer
 	[Tooltip("Editor-only transform holding visual placement points. Should be removed at runtime.")]
 	public Transform upgradeVisualPlacement;
 
-	[Tooltip("Active when no upgrades are installed at all. Disabled when any upgrade is present.")]
 	[Header("Filler Visuals")]
+	[Tooltip("Active when no upgrades are installed at all. Disabled when any upgrade is present.")]
 	public Transform fullFillerVisual;
 
 	[Tooltip("Individual filler transforms that are hidden when their associated upgrade is installed.")]
 	public UpgradeFillerVisual[] upgradeFillerVisuals;
 
 	private readonly List<CachedUpgrade> cachedServerUpgrades = new List<CachedUpgrade>();
+
+	public static readonly Phrase RecycleBinNotEmptyPhrase = new Phrase("workbench.recyclebin.notempty", "Empty the recycle bin before removing it");
 
 	public const int blueprintSlot = 0;
 
@@ -103,6 +105,8 @@ public class Workbench : StorageContainer
 	private const string legacyWorkbenchLootPanel = "workbench";
 
 	private const string upgradeWorkbenchLootPanel = "workbench_upgrades";
+
+	private const string recycleBinLootPanel = "generic_resizable";
 
 	private Vector3 originalCraftTriggerSize = Vector3.zero;
 
@@ -158,6 +162,8 @@ public class Workbench : StorageContainer
 		}
 	}
 
+	public override bool ValidateMeleeColliderAntihack => false;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("Workbench.OnRpcMessage"))
@@ -199,6 +205,43 @@ public class Workbench : StorageContainer
 				}
 				return true;
 			}
+			if (rpc == 2475703927u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RPC_OpenRecycleBin"));
+				}
+				using (TimeWarning.New("RPC_OpenRecycleBin"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(2475703927u, "RPC_OpenRecycleBin", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg3 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RPC_OpenRecycleBin(msg3);
+						}
+					}
+					catch (Exception ex2)
+					{
+						Debug.LogException(ex2);
+						player.Kick("RPC Error in RPC_OpenRecycleBin");
+					}
+				}
+				return true;
+			}
 			if (rpc == 2535666051u && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -219,18 +262,18 @@ public class Workbench : StorageContainer
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg3 = new RPCMessage
+							RPCMessage msg4 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							RPC_OpenUpgradeInventory(msg3);
+							RPC_OpenUpgradeInventory(msg4);
 						}
 					}
-					catch (Exception ex2)
+					catch (Exception ex3)
 					{
-						Debug.LogException(ex2);
+						Debug.LogException(ex3);
 						player.Kick("RPC Error in RPC_OpenUpgradeInventory");
 					}
 				}
@@ -256,18 +299,18 @@ public class Workbench : StorageContainer
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg4 = new RPCMessage
+							RPCMessage msg5 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							RPC_SendTechTreeMultiplier(msg4);
+							RPC_SendTechTreeMultiplier(msg5);
 						}
 					}
-					catch (Exception ex3)
+					catch (Exception ex4)
 					{
-						Debug.LogException(ex3);
+						Debug.LogException(ex4);
 						player.Kick("RPC Error in RPC_SendTechTreeMultiplier");
 					}
 				}
@@ -293,18 +336,18 @@ public class Workbench : StorageContainer
 					{
 						using (TimeWarning.New("Call"))
 						{
-							RPCMessage msg5 = new RPCMessage
+							RPCMessage msg6 = new RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							RPC_TechTreeUnlock(msg5);
+							RPC_TechTreeUnlock(msg6);
 						}
 					}
-					catch (Exception ex4)
+					catch (Exception ex5)
 					{
-						Debug.LogException(ex4);
+						Debug.LogException(ex5);
 						player.Kick("RPC Error in RPC_TechTreeUnlock");
 					}
 				}
@@ -489,8 +532,8 @@ public class Workbench : StorageContainer
 		return num;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SendTechTreeMultiplier(RPCMessage msg)
 	{
 		ClientRPC(RpcTarget.Player("RPC_TechTreeMultiplier", msg.player), GetTechTreeCostMultiplier());
@@ -653,31 +696,47 @@ public class Workbench : StorageContainer
 
 	public void GiveBonusItems(BasePlayer crafter, ItemCraftTask task, Item craftedItem)
 	{
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		List<Item> list = Pool.Get<List<Item>>();
-		CollectBonusItems(crafter, task, craftedItem, list);
-		foreach (Item item in list)
+		for (int i = 0; i < cachedServerUpgrades.Count; i++)
 		{
-			item.OnVirginSpawn(crafter);
-			item.SetItemOwnership(crafter, ItemOwnershipPhrases.CraftedPhrase);
-			if (!crafter.inventory.GiveItem(item))
+			CachedUpgrade cachedUpgrade = cachedServerUpgrades[i];
+			list.Clear();
+			cachedUpgrade.mod.GetBonusItems(this, crafter, task, craftedItem, cachedUpgrade.item, list);
+			foreach (Item item in list)
 			{
-				item.Drop(crafter.inventory.containerMain.dropPosition, crafter.inventory.containerMain.dropVelocity);
+				item.OnVirginSpawn(crafter);
+				item.SetItemOwnership(crafter, ItemOwnershipPhrases.CraftedPhrase);
+				if (!cachedUpgrade.mod.TryGiveBonusItem(this, crafter, cachedUpgrade.item, item) && !crafter.inventory.GiveItem(item))
+				{
+					item.Drop(crafter.inventory.containerMain.dropPosition, crafter.inventory.containerMain.dropVelocity);
+				}
 			}
 		}
 		Pool.FreeUnmanaged<Item>(ref list);
 	}
 
-	public void CollectBonusItems(BasePlayer crafter, ItemCraftTask task, Item craftedItem, List<Item> bonusItems)
+	public void CollectBonusItems(BasePlayer crafter, ItemCraftTask task, Item craftedItem, List<Item> overflow, string ownerUsername, Phrase ownershipReason)
 	{
+		List<Item> list = Pool.Get<List<Item>>();
 		for (int i = 0; i < cachedServerUpgrades.Count; i++)
 		{
 			CachedUpgrade cachedUpgrade = cachedServerUpgrades[i];
-			cachedUpgrade.mod.GetBonusItems(this, crafter, task, craftedItem, cachedUpgrade.item, bonusItems);
+			list.Clear();
+			cachedUpgrade.mod.GetBonusItems(this, crafter, task, craftedItem, cachedUpgrade.item, list);
+			foreach (Item item in list)
+			{
+				item.SetItemOwnership(ownerUsername, ownershipReason);
+				if (!cachedUpgrade.mod.TryGiveBonusItem(this, crafter, cachedUpgrade.item, item))
+				{
+					overflow.Add(item);
+				}
+			}
 		}
+		Pool.FreeUnmanaged<Item>(ref list);
 	}
 
 	public void NotifyUpgradeInstalled(Item upgradeItem)
@@ -862,8 +921,8 @@ public class Workbench : StorageContainer
 		return base.PlayerOpenLoot(player, panelToOpen, doPositionChecks);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenUpgradeInventory(RPCMessage msg)
 	{
 		if (isLootable && !Static)
@@ -1001,8 +1060,8 @@ public class Workbench : StorageContainer
 		return blueprintBaseDef;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_BeginExperiment(RPCMessage msg)
 	{
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -1207,6 +1266,11 @@ public class Workbench : StorageContainer
 			{
 				return false;
 			}
+			Item slot = base.inventory.GetSlot(targetSlot);
+			if (slot != null && slot.contents != null && !slot.contents.IsEmpty())
+			{
+				return false;
+			}
 			ItemModWorkbenchUpgrade component = ((Component)item.info).GetComponent<ItemModWorkbenchUpgrade>();
 			if ((Object)(object)component != (Object)null && component.CanInstallInWorkbench(this, item, targetSlot))
 			{
@@ -1215,6 +1279,68 @@ public class Workbench : StorageContainer
 			return false;
 		}
 		return false;
+	}
+
+	public override PlayerInventory.CanMoveFromResponse CanMoveFrom(BasePlayer player, Item item)
+	{
+		PlayerInventory.CanMoveFromResponse result = base.CanMoveFrom(player, item);
+		if (!result.allowed)
+		{
+			return result;
+		}
+		if (item.parent == base.inventory && IsUpgradeSlot(item.position) && item.contents != null && !item.contents.IsEmpty())
+		{
+			return PlayerInventory.CanMoveFromResponse.Failure(RecycleBinNotEmptyPhrase);
+		}
+		return result;
+	}
+
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	public void RPC_OpenRecycleBin(RPCMessage msg)
+	{
+		if (!isLootable || Static)
+		{
+			return;
+		}
+		BasePlayer player = msg.player;
+		if (!Object.op_Implicit((Object)(object)player) || !player.CanInteract())
+		{
+			return;
+		}
+		Item recycleBinUpgradeItem = GetRecycleBinUpgradeItem();
+		if (recycleBinUpgradeItem?.contents != null)
+		{
+			if (IsLocked() || IsTransferring())
+			{
+				player.ShowToast(GameTip.Styles.Red_Normal, StorageContainer.LockedMessage, false);
+			}
+			else if (onlyOneUser && IsOpen())
+			{
+				player.ShowToast(GameTip.Styles.Red_Normal, StorageContainer.InUseMessage, false);
+			}
+			else if (CanOpenLootPanel(player, "generic_resizable") && player.inventory.loot.StartLootingEntity(this))
+			{
+				SetFlagLocal(Flags.Open, b: true);
+				player.inventory.loot.AddContainer(recycleBinUpgradeItem.contents);
+				player.inventory.loot.SendImmediate();
+				player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), "generic_resizable");
+				SendNetworkUpdate();
+			}
+		}
+	}
+
+	private Item GetRecycleBinUpgradeItem()
+	{
+		for (int i = 2; i < RequiredInventorySlots; i++)
+		{
+			Item slot = base.inventory.GetSlot(i);
+			if (slot != null && (Object)(object)((Component)slot.info).GetComponent<ItemModWorkbenchRecycleBin>() != (Object)null)
+			{
+				return slot;
+			}
+		}
+		return null;
 	}
 
 	public static int ScrapForResearch(ItemDefinition info, int workbenchLevel, out int tax, Workbench workbench = null)

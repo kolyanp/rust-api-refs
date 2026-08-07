@@ -20,25 +20,48 @@ public class CH47AIBrain : BaseAIBrain
 			return false;
 		}
 
+		public bool ActiveAirfieldCall()
+		{
+			if (AirfieldCallChinookTerminal.isActive && (Object)(object)AirfieldCallChinookTerminal.selectedChinook == (Object)null)
+			{
+				return (Object)(object)AirfieldCallChinookTerminal.selectedChinookDropZone != (Object)null;
+			}
+			return false;
+		}
+
+		public bool IsRespondingToAirfieldCall(CH47HelicopterAIController heli)
+		{
+			if (AirfieldCallChinookTerminal.isActive && (Object)(object)AirfieldCallChinookTerminal.selectedChinook == (Object)(object)heli)
+			{
+				return (Object)(object)AirfieldCallChinookTerminal.selectedChinookDropZone != (Object)null;
+			}
+			return false;
+		}
+
 		public bool CanDrop()
 		{
-			if (Time.time > nextDropTime)
+			CH47HelicopterAIController cH47HelicopterAIController = brain.GetBrainBaseEntity() as CH47HelicopterAIController;
+			if (Time.time > nextDropTime || IsRespondingToAirfieldCall(cH47HelicopterAIController))
 			{
-				return (brain.GetBrainBaseEntity() as CH47HelicopterAIController).CanDropCrate();
+				return cH47HelicopterAIController.CanDropCrate();
 			}
 			return false;
 		}
 
 		public override float GetWeight()
 		{
-			//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 			if (!CanDrop())
 			{
 				return 0f;
 			}
 			if (IsInState())
+			{
+				return 10000f;
+			}
+			if (ActiveAirfieldCall())
 			{
 				return 10000f;
 			}
@@ -60,31 +83,52 @@ public class CH47AIBrain : BaseAIBrain
 
 		public override void StateEnter(BaseAIBrain brain, BaseEntity entity)
 		{
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-			CH47HelicopterAIController obj = entity as CH47HelicopterAIController;
-			obj.SetDropDoorOpen(open: true);
-			obj.EnableFacingOverride(enabled: false);
-			CH47DropZone closest = CH47DropZone.GetClosest(((Component)obj).transform.position);
-			if ((Object)(object)closest == (Object)null)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+			CH47HelicopterAIController cH47HelicopterAIController = entity as CH47HelicopterAIController;
+			cH47HelicopterAIController.SetDropDoorOpen(open: true);
+			cH47HelicopterAIController.EnableFacingOverride(enabled: false);
+			CH47DropZone cH47DropZone = CH47DropZone.GetClosest(((Component)cH47HelicopterAIController).transform.position);
+			if (ActiveAirfieldCall())
+			{
+				Debug.Log((object)$"Chinook {cH47HelicopterAIController.net.ID} is responding to active chinook call at drop zone {((Component)AirfieldCallChinookTerminal.selectedChinookDropZone).transform.position}");
+				cH47DropZone = AirfieldCallChinookTerminal.selectedChinookDropZone;
+				AirfieldCallChinookTerminal.selectedChinook = cH47HelicopterAIController;
+			}
+			if ((Object)(object)cH47DropZone == (Object)null)
 			{
 				nextDropTime = Time.time + 60f;
 			}
-			brain.mainInterestPoint = ((Component)closest).transform.position;
-			obj.SetMoveTarget(brain.mainInterestPoint);
+			brain.mainInterestPoint = ((Component)cH47DropZone).transform.position;
+			cH47HelicopterAIController.SetMoveTarget(brain.mainInterestPoint);
 			base.StateEnter(brain, entity);
 		}
 
 		public override StateStatus StateThink(float delta, BaseAIBrain brain, BaseEntity entity)
 		{
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 			base.StateThink(delta, brain, entity);
 			CH47HelicopterAIController cH47HelicopterAIController = entity as CH47HelicopterAIController;
+			if (ActiveAirfieldCall())
+			{
+				Debug.Log((object)$"Chinook {cH47HelicopterAIController.net.ID} is rerouting crate drop to active chinook call at drop zone {((Component)AirfieldCallChinookTerminal.selectedChinookDropZone).transform.position}");
+				CH47DropZone selectedChinookDropZone = AirfieldCallChinookTerminal.selectedChinookDropZone;
+				AirfieldCallChinookTerminal.selectedChinook = cH47HelicopterAIController;
+				brain.mainInterestPoint = ((Component)selectedChinookDropZone).transform.position;
+				cH47HelicopterAIController.SetMoveTarget(brain.mainInterestPoint);
+			}
 			if (CanDrop() && Vector3Ex.Distance2D(brain.mainInterestPoint, ((Component)cH47HelicopterAIController).transform.position) < 5f)
 			{
 				Vector3 linearVelocity = cH47HelicopterAIController.rigidBody.linearVelocity;
@@ -92,6 +136,10 @@ public class CH47AIBrain : BaseAIBrain
 				{
 					cH47HelicopterAIController.DropCrate();
 					nextDropTime = Time.time + 120f;
+					if (IsRespondingToAirfieldCall(cH47HelicopterAIController))
+					{
+						AirfieldCallChinookTerminal.selectedChinookDropZone.Used();
+					}
 				}
 			}
 			return StateStatus.Running;
@@ -545,6 +593,15 @@ public class CH47AIBrain : BaseAIBrain
 			return Vector3Ex.Distance2D(GetDestination(), ((Component)brain).transform.position) < patrolApproachDist;
 		}
 
+		public bool ActiveAirfieldCall()
+		{
+			if (AirfieldCallChinookTerminal.isActive && (Object)(object)AirfieldCallChinookTerminal.selectedChinook == (Object)null)
+			{
+				return (Object)(object)AirfieldCallChinookTerminal.selectedChinookDropZone != (Object)null;
+			}
+			return false;
+		}
+
 		public Vector3 GetDestination()
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -555,7 +612,11 @@ public class CH47AIBrain : BaseAIBrain
 		{
 			if (base.CanInterrupt())
 			{
-				return AtPatrolDestination();
+				if (!AtPatrolDestination())
+				{
+					return ActiveAirfieldCall();
+				}
+				return true;
 			}
 			return false;
 		}

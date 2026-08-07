@@ -214,6 +214,12 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		}
 	}
 
+	public Matrix4x4 GetEyesMatrix()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		return viewEyes.localToWorldMatrix;
+	}
+
 	public virtual void UserInput(InputState inputState, CameraViewerId viewerID)
 	{
 	}
@@ -269,8 +275,8 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -299,10 +305,10 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

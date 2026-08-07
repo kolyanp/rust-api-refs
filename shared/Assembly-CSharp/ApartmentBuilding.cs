@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -225,6 +226,7 @@ public class ApartmentBuilding : BaseEntity
 			{
 				player.ChatMessage("You have upgraded to room " + apartmentRoom.RoomNumber);
 			}
+			Facepunch.Rust.Analytics.Azure.OnApartmentUpgrade(player, playerApartment, apartmentRoom, upgradeCost);
 			Interface.CallHook("OnApartmentRoomUpgraded", apartmentRoom, player, size, this);
 		}
 	}
@@ -236,24 +238,24 @@ public class ApartmentBuilding : BaseEntity
 		{
 			array[i].MoveToContainer(newRoom.UpkeepTerminal.inventory);
 		}
-		StorageContainer[] array2 = oldRoom.Furniture.OfType<StorageContainer>().ToArray();
-		StorageContainer[] array3 = newRoom.Furniture.OfType<StorageContainer>().ToArray();
-		List<StorageContainer> list = array3.ToList();
+		IItemContainerEntity[] array2 = oldRoom.Furniture.OfType<IItemContainerEntity>().ToArray();
+		IItemContainerEntity[] array3 = newRoom.Furniture.OfType<IItemContainerEntity>().ToArray();
+		List<IItemContainerEntity> list = array3.ToList();
 		PooledList<Item> val = Pool.Get<PooledList<Item>>();
 		try
 		{
-			StorageContainer[] array4 = array2;
-			foreach (StorageContainer oldFurniture in array4)
+			IItemContainerEntity[] array4 = array2;
+			foreach (IItemContainerEntity oldFurniture in array4)
 			{
-				StorageContainer storageContainer = list.FirstOrDefault((StorageContainer x) => x.PrefabName == oldFurniture.PrefabName && x.inventory.capacity == oldFurniture.inventory.capacity);
-				if ((Object)(object)storageContainer == (Object)null)
+				IItemContainerEntity itemContainerEntity = list.FirstOrDefault((IItemContainerEntity x) => x.PrefabName == oldFurniture.PrefabName && x.inventory.capacity == oldFurniture.inventory.capacity);
+				if (itemContainerEntity == null)
 				{
-					storageContainer = list.FirstOrDefault((StorageContainer x) => x.PrefabName == oldFurniture.PrefabName);
+					itemContainerEntity = list.FirstOrDefault((IItemContainerEntity x) => x.PrefabName == oldFurniture.PrefabName);
 				}
-				if ((Object)(object)storageContainer != (Object)null)
+				if (itemContainerEntity != null)
 				{
-					list.Remove(storageContainer);
-					oldFurniture.MoveAllInventoryItems(storageContainer.inventory);
+					list.Remove(itemContainerEntity);
+					StorageContainer.MoveAllInventoryItems(oldFurniture.inventory, itemContainerEntity.inventory);
 				}
 				if (oldFurniture.inventory.itemList.Count > 0)
 				{
@@ -266,11 +268,11 @@ public class ApartmentBuilding : BaseEntity
 			}
 			int num2 = 0;
 			array4 = array3;
-			foreach (StorageContainer storageContainer2 in array4)
+			foreach (IItemContainerEntity itemContainerEntity2 in array4)
 			{
-				if (!storageContainer2.inventory.IsFull())
+				if (!itemContainerEntity2.inventory.IsFull())
 				{
-					for (; num2 < ((List<Item>)(object)val).Count && ((List<Item>)(object)val)[num2].MoveToContainer(storageContainer2.inventory); num2++)
+					for (; num2 < ((List<Item>)(object)val).Count && ((List<Item>)(object)val)[num2].MoveToContainer(itemContainerEntity2.inventory); num2++)
 					{
 					}
 				}
@@ -339,6 +341,7 @@ public class ApartmentBuilding : BaseEntity
 		{
 			return false;
 		}
+		Facepunch.Rust.Analytics.Azure.OnApartmentCheckOut(player, playerApartment);
 		Checkout(playerApartment);
 		Interface.CallHook("OnApartmentRoomCheckedout", player, playerApartment, this);
 		return true;
@@ -380,10 +383,7 @@ public class ApartmentBuilding : BaseEntity
 			int purchaseScrapCost = GetPurchaseScrapCost(size);
 			player.inventory.Take(null, ItemManager.Items.Scrap.itemid, purchaseScrapCost);
 			GiveRoomToPlayer(player, apartmentRoom);
-			if (player.Connection != null)
-			{
-				player.ChatMessage("You have rented room " + apartmentRoom.RoomNumber);
-			}
+			Facepunch.Rust.Analytics.Azure.OnApartmentCheckIn(player, apartmentRoom, purchaseScrapCost);
 			Interface.CallHook("OnApartmentRoomPurchased", apartmentRoom, player, size, this);
 		}
 	}

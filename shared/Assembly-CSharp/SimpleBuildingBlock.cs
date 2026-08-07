@@ -106,8 +106,8 @@ public class SimpleBuildingBlock : StabilityEntity, ISimpleUpgradable, IReskinCa
 		return true;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void DoSimpleUpgrade(RPCMessage msg)
 	{

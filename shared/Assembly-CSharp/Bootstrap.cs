@@ -36,6 +36,8 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	public Phrase currentLoadingPhrase;
 
+	private float currentLoadingProgress = -1f;
+
 	public CanvasGroup BootstrapUiCanvas;
 
 	public GameObject errorPanel;
@@ -44,11 +46,23 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	public RustText statusText;
 
+	private const bool fastBootstrap = false;
+
 	private Phrase openingBundles = new Phrase("bootstrap.openingbundles", "Opening Bundles");
+
+	private static string loadingStepName;
+
+	private static RealTimeSince timeSinceStepStart;
+
+	private static RealTimeSince timeSinceBootstrapStart;
 
 	private static string lastWrittenValue;
 
 	public static bool needsSetup => !bootstrapInitRun;
+
+	private static bool ShouldDoServerStartupYields => true;
+
+	public static bool GameUIEnabled => true;
 
 	public static bool isPresent
 	{
@@ -216,6 +230,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 	private unsafe IEnumerator Start()
 	{
 		WriteToLog("Bootstrap Startup");
+		timeSinceBootstrapStart = RealTimeSince.op_Implicit(0f);
 		EarlyInitialize();
 		BenchmarkTimer.Enabled = CommandLine.Full.Contains("+autobench");
 		Stopwatch timer = BenchmarkTimer.Get("bootstrap");
@@ -278,7 +293,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 				{
 					break;
 				}
-				yield return ((MonoBehaviour)this).StartCoroutine(LoadingUpdate(Phrase.op_Implicit($"Loading Menu Prefabs {assetSceneProgress * 100f:0.0}%")));
+				yield return ((MonoBehaviour)this).StartCoroutine(LoadingUpdate(Phrase.op_Implicit("Loading Menu Prefabs"), assetSceneProgress));
 			}
 		}
 		if (FileSystem.Backend.isError)
@@ -384,6 +399,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			{
 				yield return ((MonoBehaviour)this).StartCoroutine(DedicatedServerStartup());
 				timer?.Stop();
+				WriteToLog($"[Bootstrap] completed in {RealTimeSince.op_Implicit(timeSinceBootstrapStart):0.00}s");
 				GameManager.Destroy(((Component)this).gameObject);
 			}
 		}
@@ -471,7 +487,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		if (Object.op_Implicit((Object)(object)SingletonComponent<AiManager>.Instance) && ((Behaviour)SingletonComponent<AiManager>.Instance).enabled)
 		{
 			SingletonComponent<AiManager>.Instance.Initialize();
-			if (AI.useUnityNavmesh && !AiManager.nav_disable && AI.npc_enable && (Object)(object)TerrainMeta.Path != (Object)null)
+			if (!AiManager.nav_disable && AI.npc_enable && (Object)(object)TerrainMeta.Path != (Object)null)
 			{
 				foreach (MonumentInfo monument in TerrainMeta.Path.Monuments)
 				{
@@ -511,25 +527,49 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		Object.DontDestroyOnLoad((Object)(object)val);
 		ServerMgr serverMgr = val.GetComponent<ServerMgr>();
 		bool saveWasLoaded = serverMgr.Initialize(doLoad, saveFileOverride, allowOutOfDateSaves);
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		if (!AI.useUnityNavmesh && !AiManager.nav_disable && Object.op_Implicit((Object)(object)RustNavigation.Instance) && ((Behaviour)RustNavigation.Instance).enabled && !RustNavigation.Instance.IsDefaultNavmeshBuilt())
 		{
 			RustNavigation.Log("No navmesh loaded from save, building navmesh now");
 			((MonoBehaviour)RustNavigation.Instance).StartCoroutine(RustNavigation.Instance.BootstrapBuildNavMesh());
 		}
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		SaveRestore.InitializeEntityLinks();
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		SaveRestore.InitializeEntitySupports();
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		SaveRestore.InitializeEntityConditionals();
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		SaveRestore.GetSaveCache();
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		BaseGameMode.CreateGameMode();
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		MissionManifest.Get();
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		if (Clan.enabled)
 		{
 			ClanManager clanManager = ClanManager.ServerInstance;
@@ -548,12 +588,18 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		{
 			ClanManager.ServerInstance.Kill();
 		}
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		if (ServerOcclusion.OcclusionEnabled)
 		{
 			ServerOcclusion.SetupGrid();
 		}
-		yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		if (ShouldDoServerStartupYields)
+		{
+			yield return CoroutineEx.waitForSecondsRealtime(0.1f);
+		}
 		if (NexusServer.Started)
 		{
 			NexusServer.UploadMapImage();
@@ -592,6 +638,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
 		}
 		RustEmojiLibrary.FindAllServerEmoji();
+		UnderwearManifest.Get();
 		if (ConVar.Time.pausewhileloading)
 		{
 			Time.timeScale = timeScale;
@@ -637,13 +684,32 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		Application.Quit();
 	}
 
-	public static IEnumerator LoadingUpdate(Phrase phrase)
+	public static IEnumerator LoadingUpdate(Phrase phrase, float progress = -1f)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Bootstrap>.Instance))
 		{
+			LogLoadingStep(phrase.english);
 			SingletonComponent<Bootstrap>.Instance.currentLoadingPhrase = phrase;
+			SingletonComponent<Bootstrap>.Instance.currentLoadingProgress = progress;
 			yield return CoroutineEx.waitForEndOfFrame;
 			yield return CoroutineEx.waitForEndOfFrame;
+		}
+	}
+
+	private static void LogLoadingStep(string step)
+	{
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		if (!(step == loadingStepName))
+		{
+			if (loadingStepName != null)
+			{
+				WriteToLog($"[Bootstrap] {loadingStepName} done in {RealTimeSince.op_Implicit(timeSinceStepStart):0.00}s");
+			}
+			WriteToLog("[Bootstrap] " + step);
+			loadingStepName = step;
+			timeSinceStepStart = RealTimeSince.op_Implicit(0f);
 		}
 	}
 

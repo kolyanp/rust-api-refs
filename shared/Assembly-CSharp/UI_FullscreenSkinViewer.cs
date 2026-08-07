@@ -37,16 +37,16 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject navButtonsGroup;
 
-	[SerializeField]
 	[Header("Drag")]
+	[SerializeField]
 	private float inertiaDecay = 5f;
 
-	[Header("Pan")]
 	[SerializeField]
+	[Header("Pan")]
 	private Vector2 panLimitX = new Vector2(-0.2f, 0.2f);
 
 	[SerializeField]

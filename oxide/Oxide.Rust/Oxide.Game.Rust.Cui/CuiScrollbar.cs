@@ -31,5 +31,8 @@ public class CuiScrollbar : ICuiEnableable
 	[JsonProperty("trackColor")]
 	public string TrackColor { get; set; }
 
+	[JsonProperty("fadeDuration")]
+	public float? FadeDuration { get; set; }
+
 	public bool? Enabled { get; set; }
 }

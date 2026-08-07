@@ -100,12 +100,40 @@ public static class CuiHelper
 		return false;
 	}
 
+	public static bool DestroyUi(BasePlayer player, List<string> elems)
+	{
+		if (player?.net == null || elems == null || elems.Count == 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < elems.Count; i++)
+		{
+			Interface.CallHook("OnDestroyUI", player, elems[i]);
+		}
+		CommunityEntity.ServerInstance.SendDestroyUIs(player, elems);
+		return true;
+	}
+
+	public static bool DestroyUi(BasePlayer player, string[] elems)
+	{
+		if (player?.net == null || elems == null || elems.Length == 0)
+		{
+			return false;
+		}
+		for (int i = 0; i < elems.Length; i++)
+		{
+			Interface.CallHook("OnDestroyUI", player, elems[i]);
+		}
+		CommunityEntity.ServerInstance.SendDestroyUIs(player, elems);
+		return true;
+	}
+
 	public static void SetColor(this ICuiColor elem, Color color)
 	{
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		elem.Color = string.Format("{0} {1} {2} {3}", new object[4] { color.r, color.g, color.b, color.a });
 	}
 

@@ -159,7 +159,32 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 
 	public static List<BaseEntity> FindMapEntities()
 	{
-		return new List<BaseEntity>(Object.FindObjectsByType<BaseEntity>((FindObjectsSortMode)0));
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		List<BaseEntity> list = new List<BaseEntity>(Object.FindObjectsByType<BaseEntity>((FindObjectsSortMode)0));
+		SceneToPrefabSpawner[] array = Object.FindObjectsByType<SceneToPrefabSpawner>((FindObjectsSortMode)0);
+		foreach (SceneToPrefabSpawner sceneToPrefabSpawner in array)
+		{
+			if (sceneToPrefabSpawner.Entities.Count > 0)
+			{
+				list.AddRange(sceneToPrefabSpawner.Entities);
+				continue;
+			}
+			foreach (SceneToPrefabSpawner.EntitySpawnInfo item in sceneToPrefabSpawner.EntitiesToSpawn)
+			{
+				BaseEntity baseEntity = GameManager.server.CreateEntity(item.PrefabName, ((Component)sceneToPrefabSpawner).transform.TransformPoint(item.Position), ((Component)sceneToPrefabSpawner).transform.rotation * item.Rotation);
+				if (baseEntity is ApartmentRoom apartmentRoom)
+				{
+					apartmentRoom.RoomNumber = item.ApartmentRoomNumber;
+				}
+				list.Add(baseEntity);
+				sceneToPrefabSpawner.Entities.Add(baseEntity);
+			}
+		}
+		return list;
 	}
 
 	public static void ClearMapEntities(List<BaseEntity> entities)
@@ -257,7 +282,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 					binaryReader.ReadChar();
 					SaveCreatedTime = Epoch.ToDateTime((long)binaryReader.ReadInt32());
 				}
-				if (binaryReader.ReadUInt32() != 286)
+				if (binaryReader.ReadUInt32() != 287)
 				{
 					if (allowOutOfDateSaves)
 					{
@@ -851,7 +876,7 @@ public class SaveRestore : SingletonComponent<SaveRestore>
 		writer.Write(JsonConvert.SerializeObject((object)saveExtraData));
 		writer.Write((sbyte)68);
 		writer.Write(Epoch.FromDateTime(SaveCreatedTime));
-		writer.Write(286u);
+		writer.Write(287u);
 	}
 
 	private static int WriteEntities(BinaryWriter writer)

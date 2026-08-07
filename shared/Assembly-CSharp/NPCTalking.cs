@@ -233,11 +233,6 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		return HasFlag(Flags.Reserved1);
 	}
 
-	public BaseEntity Entity()
-	{
-		return this;
-	}
-
 	internal override void DoServerDestroy()
 	{
 		for (int num = conversingPlayers.Count - 1; num >= 0; num--)
@@ -312,8 +307,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_BeginTalking(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -421,9 +416,9 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 	{
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_EndTalking(RPCMessage msg)
 	{
 		Server_OnConversationEnded(msg.player);
@@ -444,8 +439,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		return true;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void Server_ResponsePressed(RPCMessage msg)
 	{
@@ -528,9 +523,9 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		Interface.CallHook("OnNpcConversationResponded", this, player, conversationFor, responseNode);
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_RewardChoiceSelected(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

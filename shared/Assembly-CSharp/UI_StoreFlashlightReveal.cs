@@ -20,7 +20,7 @@ public class UI_StoreFlashlightReveal : MonoBehaviour
 	[SerializeField]
 	private string imageExtension;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private float fadeSpeed;
 }

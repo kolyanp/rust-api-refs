@@ -1,3 +1,4 @@
+using ConVar;
 using Facepunch;
 using ProtoBuf;
 using Rust;
@@ -50,7 +51,7 @@ public class PlayerCorpse : LootableCorpse
 
 	public override bool OnStartBeingLooted(BasePlayer baseEntity)
 	{
-		if ((baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && !baseEntity.InSafeCombatZone())
+		if ((!Player.adminsafezonelooting || !baseEntity.IsAdmin) && (baseEntity.InSafeZone() || InSafeZone()) && (ulong)baseEntity.userID != playerSteamID && (!baseEntity.InSafeCombatZone() || !InSafeCombatZone()))
 		{
 			baseEntity.ShowToast(GameTip.Styles.Error, CantLootSafeZoneError, false);
 			return false;

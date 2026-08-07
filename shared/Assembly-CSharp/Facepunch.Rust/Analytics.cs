@@ -331,6 +331,30 @@ public static class Analytics
 			public const string DeepSeaToggle = "deep_sea_toggle";
 
 			public const string PlayerBoatFinish = "player_boat_finish";
+
+			public const string ApartmentCheckIn = "apartment_checkin";
+
+			public const string ApartmentCheckOut = "apartment_checkout";
+
+			public const string ApartmentUpgrade = "apartment_upgrade";
+
+			public const string ApartmentBreakIn = "apartment_breakin";
+
+			public const string ShopOpened = "shop_opened";
+
+			public const string ShopClosed = "shop_closed";
+
+			public const string ShopBreakIn = "shop_breakin";
+
+			public const string ClanCreated = "clan_created";
+
+			public const string ClanDisbanded = "clan_disbanded";
+
+			public const string ClanMemberAdded = "clan_member_added";
+
+			public const string ClanMemberRemoved = "clan_member_removed";
+
+			public const string ClanScoreEvent = "clan_score_event";
 		}
 
 		private struct SimpleItemAmount(Item item)
@@ -545,7 +569,7 @@ public static class Analytics
 			obj["changeset"] = ((current != null) ? current.Scm.ChangeId : null) ?? "editor";
 			BuildInfo current2 = BuildInfo.Current;
 			obj["branch"] = ((current2 != null) ? current2.Scm.Branch : null) ?? "editor";
-			obj["network_version"] = 2631.ToString();
+			obj["network_version"] = 2632.ToString();
 			obj["eos_sdk"] = ((object)VersionInterface.GetVersion())?.ToString() ?? "disabled";
 			return obj;
 		}
@@ -882,8 +906,8 @@ public static class Analytics
 					.AddField("ip_convar", Net.sv.ip)
 					.AddField("port_convar", Net.sv.port)
 					.AddField("net_protocol", Net.sv.ProtocolId)
-					.AddField("protocol_network", 2631)
-					.AddField("protocol_save", 286);
+					.AddField("protocol_network", 2632)
+					.AddField("protocol_save", 287);
 				BuildInfo current = BuildInfo.Current;
 				EventRecord eventRecord2 = eventRecord.AddField("changeset", ((current != null) ? current.Scm.ChangeId : null) ?? "0").AddField("unity_version", Application.unityVersion);
 				BuildInfo current2 = BuildInfo.Current;
@@ -1617,7 +1641,7 @@ public static class Analytics
 					.AddField("message", message);
 				if (BuildInfo.Current != null)
 				{
-					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2631);
+					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2632);
 				}
 				switch (type)
 				{
@@ -3086,6 +3110,236 @@ public static class Analytics
 				Debug.LogException(ex);
 			}
 		}
+
+		public static void OnApartmentCheckIn(BasePlayer entity, ApartmentRoom room, int scrapCost)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("apartment_checkin").AddField("player_steamid", entity.UserIDString).AddField("apartment_number", room.RoomNumber)
+					.AddField("apartment_size", (int)room.Size)
+					.AddField("apartment_scrap_cost", scrapCost));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnApartmentCheckOut(BasePlayer entity, ApartmentRoom room)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("apartment_checkout").AddField("player_steamid", entity.UserIDString).AddObject("apartment_owners", room.Owners)
+					.AddField("apartment_number", room.RoomNumber)
+					.AddField("apartment_size", (int)room.Size));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnApartmentUpgrade(BasePlayer entity, ApartmentRoom oldRoom, ApartmentRoom newRoom, int scrapCost)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("apartment_upgrade").AddField("player_steamid", entity.UserIDString).AddField("old_apartment_number", oldRoom.RoomNumber)
+					.AddField("new_apartment_number", newRoom.RoomNumber)
+					.AddField("old_apartment_size", (int)oldRoom.Size)
+					.AddField("new_apartment_size", (int)newRoom.Size)
+					.AddField("upgrade_scrap_cost", scrapCost));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnApartmentBreakIn(BasePlayer entity, ApartmentRoom room)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("apartment_breakin").AddField("player_steamid", entity.UserIDString).AddObject("apartment_owners", room.Owners)
+					.AddField("apartment_number", room.RoomNumber)
+					.AddField("apartment_size", (int)room.Size));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnShopOpened(RentableShop shop, int openScrapCost, int upkeepScrapCost)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("shop_opened").AddField("player_steamid", shop.ShopOwnerId).AddField("shop_number", shop.ShopNumberId)
+					.AddField("shop_open_scrap_cost", openScrapCost)
+					.AddField("shop_upkeep_scrap_cost", upkeepScrapCost));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnShopClosed(RentableShop shop)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("shop_closed").AddField("player_steamid", shop.ShopOwnerId).AddField("shop_number", shop.ShopNumberId));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnShopBreakIn(BasePlayer entity, RentableShop shop)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("shop_breakin").AddField("player_steamid", entity.UserIDString).AddField("shop_owner", shop.ShopOwnerId)
+					.AddField("shop_number", shop.ShopNumberId));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnClanCreated(ulong playerSteamId, IClan clan)
+		{
+			OnClanUpdate("clan_created", playerSteamId, playerSteamId, clan);
+		}
+
+		public static void OnClanDisbanded(ulong playerSteamId, IClan clan)
+		{
+			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			PooledList<ulong> val = Pool.Get<PooledList<ulong>>();
+			try
+			{
+				foreach (ClanMember member in clan.Members)
+				{
+					((List<ulong>)(object)val).Add(member.SteamId);
+				}
+				SubmitPoint(EventRecord.New("clan_disbanded").AddField("player_steamid", playerSteamId).AddObject("impacted_steamids", val)
+					.AddField("clan_id", clan.ClanId)
+					.AddField("clan_name", clan.Name));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		public static void OnClanMemberAdded(ulong playerSteamId, IClan clan)
+		{
+			OnClanUpdate("clan_member_added", playerSteamId, playerSteamId, clan);
+		}
+
+		public static void OnClanMemberRemoved(ulong impactedSteamId, ulong playerSteamId, IClan clan)
+		{
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			if (clan.Members.Count == 0 || (clan.Members.Count == 1 && clan.Members[0].SteamId == impactedSteamId))
+			{
+				OnClanDisbanded(playerSteamId, clan);
+			}
+			else
+			{
+				OnClanUpdate("clan_member_removed", playerSteamId, impactedSteamId, clan);
+			}
+		}
+
+		private static void OnClanUpdate(string eventId, ulong playerSteamId, ulong impactedSteamId, IClan clan)
+		{
+			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			PooledList<ulong> val = Pool.Get<PooledList<ulong>>();
+			try
+			{
+				foreach (ClanMember member in clan.Members)
+				{
+					((List<ulong>)(object)val).Add(member.SteamId);
+				}
+				SubmitPoint(EventRecord.New(eventId).AddField("player_steamid", playerSteamId).AddField("impacted_steamid", impactedSteamId)
+					.AddField("clan_id", clan.ClanId)
+					.AddField("clan_name", clan.Name)
+					.AddObject("clan_members", val));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+
+		public unsafe static void OnClanScoreEvent(IClan clan, ClanScoreEvent entry)
+		{
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("clan_score_event").AddField("player_steamid", entry.SteamId.ToString()).AddField("clan_id", clan.ClanId)
+					.AddField("event_type", ((object)(*(ClanScoreEventType*)(&entry.Type))/*cast due to constrained. prefix*/).ToString())
+					.AddField("event_score", entry.Score)
+					.AddField("event_multiplier", entry.Multiplier));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
 	}
 
 	private const int ShutdownTimeoutMs = 10000;
@@ -3140,7 +3394,7 @@ public static class Analytics
 	public static bool GameplayTickAnalyticsConVar { get; set; }
 
 	[RconVar(Name = "gameplay_rpc_analytics", Saved = true, Help = "Toggle whether gameplay rpc logging is collected")]
-	public static bool GameplayRpcAnalyticsConVar { get; set; } = false;
+	public static bool GameplayRpcAnalyticsConVar { get; set; } = true;
 
 	public static void StartForServer()
 	{

@@ -25,7 +25,7 @@ public class BradleySpawner : MonoBehaviour, IServerComponent
 	public void Start()
 	{
 		singleton = this;
-		((MonoBehaviour)this).Invoke("DelayedStart", 3f);
+		SingletonComponent<InvokeHandler>.Instance.Invoke(DelayedStart, 3f);
 	}
 
 	public void DelayedStart()
@@ -34,7 +34,7 @@ public class BradleySpawner : MonoBehaviour, IServerComponent
 		{
 			DoRespawn();
 		}
-		((MonoBehaviour)this).InvokeRepeating("CheckIfRespawnNeeded", 0f, 5f);
+		SingletonComponent<InvokeHandler>.Instance.InvokeRepeating(CheckIfRespawnNeeded, 0f, 5f);
 	}
 
 	public void CheckIfRespawnNeeded()
@@ -47,8 +47,8 @@ public class BradleySpawner : MonoBehaviour, IServerComponent
 
 	public void ScheduleRespawn()
 	{
-		((MonoBehaviour)this).CancelInvoke("DoRespawn");
-		((MonoBehaviour)this).Invoke("DoRespawn", Random.Range(Bradley.respawnDelayMinutes - Bradley.respawnDelayVariance, Bradley.respawnDelayMinutes + Bradley.respawnDelayVariance) * 60f);
+		SingletonComponent<InvokeHandler>.Instance.CancelInvoke(DoRespawn);
+		SingletonComponent<InvokeHandler>.Instance.Invoke(DoRespawn, Random.Range(Bradley.respawnDelayMinutes - Bradley.respawnDelayVariance, Bradley.respawnDelayMinutes + Bradley.respawnDelayVariance) * 60f);
 		pendingRespawn = true;
 	}
 

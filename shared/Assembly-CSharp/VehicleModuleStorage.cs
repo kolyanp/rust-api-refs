@@ -20,9 +20,30 @@ public class VehicleModuleStorage : VehicleModuleSeating
 	[SerializeField]
 	private Storage storage;
 
+	[SerializeField]
+	private GameObjectRef crudeExplosionEntity;
+
+	[SerializeField]
+	private GameObjectRef crudeExplosionEffect;
+
+	[SerializeField]
+	private float explosionThreshold = 50f;
+
+	[SerializeField]
+	private float minimumTimeBetweenExplosions = 5f;
+
+	[SerializeField]
+	private int oilToConsumePerExplosion = 100;
+
 	private EntityRef storageUnitInstance;
 
+	private static ItemDefinition _crudeItem = null;
+
 	public static readonly Phrase StorageCantBeMovedError = new Phrase("error.itemsinstorage", "Cannot move item: Storage contains items!");
+
+	private TimeSince lastExplosionSpawned;
+
+	public static ItemDefinition CrudeItem => _crudeItem ?? (_crudeItem = ItemManager.FindItemDefinition("crude.oil"));
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -123,6 +144,11 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		storageUnitInstance.uid = info.msg.simpleUID.uid;
 	}
 
+	public BaseEntity GetStorageUnitInstance()
+	{
+		return storageUnitInstance.Get(base.isServer);
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -138,8 +164,7 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		IItemContainerEntity container = GetContainer();
 		if (!ObjectEx.IsUnityNull(container))
 		{
-			ItemContainer inventory = container.inventory;
-			inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			InitStorageEvents(container.inventory);
 		}
 	}
 
@@ -173,17 +198,21 @@ public class VehicleModuleStorage : VehicleModuleSeating
 	[UnityEvent]
 	public void CreateStorageEntity()
 	{
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		if (IsFullySpawned() && base.isServer && !storageUnitInstance.IsValid(base.isServer))
 		{
 			BaseEntity baseEntity = GameManager.server.CreateEntity(storage.storageUnitPrefab.resourcePath, storage.storageUnitPoint.localPosition, storage.storageUnitPoint.localRotation);
 			storageUnitInstance.Set(baseEntity);
 			baseEntity.SetParent(this);
 			baseEntity.Spawn();
-			ItemContainer inventory = GetContainer().inventory;
-			inventory.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(inventory.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			InitStorageEvents(GetContainer().inventory);
 		}
+	}
+
+	protected virtual void InitStorageEvents(ItemContainer container)
+	{
+		container.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(container.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
 	}
 
 	[UnityEvent]
@@ -207,8 +236,8 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open(RPCMessage msg)
 	{
 		TryOpen(msg.player);
@@ -266,6 +295,55 @@ public class VehicleModuleStorage : VehicleModuleSeating
 			else
 			{
 				base.Car.ClientRPC(RpcTarget.NetworkGroup("CodeEntryFailed"));
+			}
+		}
+	}
+
+	public override void Hurt(HitInfo info)
+	{
+		TrySpawnExplosion(info);
+		base.Hurt(info);
+	}
+
+	private void TrySpawnExplosion(HitInfo info)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		if (!(TimeSince.op_Implicit(lastExplosionSpawned) > minimumTimeBetweenExplosions) || !(info.damageTypes.Get(DamageType.Explosion) > explosionThreshold) || !(storageUnitInstance.Get(serverside: true) is LiquidContainer liquidContainer))
+		{
+			return;
+		}
+		Item liquidItem = liquidContainer.GetLiquidItem();
+		if (liquidItem == null || !(liquidItem.info.shortname == "crude.oil") || liquidItem.amount < oilToConsumePerExplosion)
+		{
+			return;
+		}
+		liquidItem.UseItem(oilToConsumePerExplosion);
+		lastExplosionSpawned = TimeSince.op_Implicit(0f);
+		if (!crudeExplosionEntity.isValid)
+		{
+			return;
+		}
+		BaseEntity baseEntity = GameManager.server.CreateEntity(crudeExplosionEntity.resourcePath, ((Component)this).transform.position, ((Component)this).transform.rotation);
+		if (!((Object)(object)baseEntity == (Object)null))
+		{
+			ServerProjectile component = ((Component)baseEntity).GetComponent<ServerProjectile>();
+			baseEntity.Spawn();
+			TimedExplosive timedExplosive = default(TimedExplosive);
+			if ((Object)(object)component != (Object)null && ((Component)component).TryGetComponent<TimedExplosive>(ref timedExplosive))
+			{
+				timedExplosive.creatorEntity = creatorEntity;
+				timedExplosive.Explode();
+			}
+			if (crudeExplosionEffect.isValid)
+			{
+				Effect.server.Run(crudeExplosionEffect.resourcePath, ((Component)baseEntity).transform.position);
 			}
 		}
 	}

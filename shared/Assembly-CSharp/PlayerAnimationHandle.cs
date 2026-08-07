@@ -15,16 +15,25 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 
 	public float Length { get; private set; }
 
-	public bool Valid { get; private set; }
+	public readonly bool Valid
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			if (!PlayableExtensions.IsValid<AnimationClipPlayable>(Playable))
+			{
+				return PlayableExtensions.IsValid<AnimatorControllerPlayable>(Controller);
+			}
+			return true;
+		}
+	}
 
 	public int InputPort { get; private set; }
 
 	public AvatarMask CurrentMask { get; private set; }
 
-	public static PlayerAnimationHandle InvalidHandle => new PlayerAnimationHandle
-	{
-		Valid = false
-	};
+	public static PlayerAnimationHandle InvalidHandle => default(PlayerAnimationHandle);
 
 	public bool Equals(PlayerAnimationHandle other)
 	{
@@ -41,7 +50,7 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 		if (((AnimationClipPlayable)(ref playable)).Equals(other.Playable))
 		{
 			AnimationLayerMixerPlayable layerMixer = LayerMixer;
-			if (((AnimationLayerMixerPlayable)(ref layerMixer)).Equals(other.LayerMixer) && ((object)Graph/*cast due to constrained. prefix*/).Equals((object?)other.Graph) && Length.Equals(other.Length) && Valid == other.Valid)
+			if (((AnimationLayerMixerPlayable)(ref layerMixer)).Equals(other.LayerMixer) && ((object)Graph/*cast due to constrained. prefix*/).Equals((object?)other.Graph) && Length.Equals(other.Length))
 			{
 				return InputPort == other.InputPort;
 			}
@@ -63,7 +72,7 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		return HashCode.Combine<AnimationClipPlayable, AnimationLayerMixerPlayable, PlayableGraph, float, bool, int>(Playable, LayerMixer, Graph, Length, Valid, InputPort);
+		return HashCode.Combine<AnimationClipPlayable, AnimationLayerMixerPlayable, PlayableGraph, float, int>(Playable, LayerMixer, Graph, Length, InputPort);
 	}
 
 	public readonly void SetProgress(float progress)
@@ -106,9 +115,10 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 
 	public readonly void PlayFromStart()
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		if (Valid)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		if (PlayableExtensions.IsValid<AnimationClipPlayable>(Playable))
 		{
 			PlayableExtensions.SetTime<AnimationClipPlayable>(Playable, 0.0);
 			PlayableExtensions.Play<AnimationClipPlayable>(Playable);
@@ -137,9 +147,10 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 
 	public void SetMask(AvatarMask newMask)
 	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)newMask == (Object)null))
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)newMask == (Object)null) && Valid && PlayableExtensions.IsValid<AnimationLayerMixerPlayable>(LayerMixer))
 		{
 			AnimationLayerMixerPlayable layerMixer = LayerMixer;
 			((AnimationLayerMixerPlayable)(ref layerMixer)).SetLayerMaskFromAvatarMask((uint)InputPort, newMask);
@@ -201,7 +212,6 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 				((PlayableGraph)(ref graph)).DestroyPlayable<AnimatorControllerPlayable>(Controller);
 			}
 		}
-		Valid = false;
 	}
 
 	public readonly float GetNormalizedTime()
@@ -228,11 +238,11 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		PlayerAnimationHandle result = default(PlayerAnimationHandle);
 		PlayableExtensions.DisconnectInput<AnimationLayerMixerPlayable>(layerMixer, inputPort);
 		result.Length = clip.length;
@@ -240,7 +250,6 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 		result.LayerMixer = layerMixer;
 		result.InputPort = inputPort;
 		result.Playable = AnimationClipPlayable.Create(playableGraph, clip);
-		result.Valid = true;
 		result.CurrentMask = mask;
 		PlayableExtensions.ConnectInput<AnimationLayerMixerPlayable, AnimationClipPlayable>(layerMixer, inputPort, result.Playable, 0);
 		PlayableExtensions.SetInputWeight<AnimationLayerMixerPlayable>(layerMixer, inputPort, initialWeight);
@@ -264,16 +273,15 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		PlayerAnimationHandle result = default(PlayerAnimationHandle);
 		PlayableExtensions.DisconnectInput<AnimationLayerMixerPlayable>(layerMixer, inputPort);
 		result.Graph = playableGraph;
 		result.LayerMixer = layerMixer;
 		result.InputPort = inputPort;
 		result.Controller = AnimatorControllerPlayable.Create(playableGraph, controller);
-		result.Valid = true;
 		result.CurrentMask = mask;
 		PlayableExtensions.ConnectInput<AnimationLayerMixerPlayable, AnimatorControllerPlayable>(layerMixer, inputPort, result.Controller, 0);
 		PlayableExtensions.SetInputWeight<AnimationLayerMixerPlayable>(layerMixer, inputPort, initialWeight);

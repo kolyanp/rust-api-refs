@@ -41,44 +41,50 @@ public struct LuiBuilderInstance : IDisposable
 			LuiCompType.Slot => "Slot", 
 			LuiCompType.NeedsKeyboard => "NeedsKeyboard", 
 			LuiCompType.ScrollView => "UnityEngine.UI.ScrollView", 
+			LuiCompType.CanvasGroup => "UnityEngine.UI.CanvasGroup", 
+			LuiCompType.Mask => "UnityEngine.UI.Mask", 
+			LuiCompType.Tooltip => "Tooltip", 
 			_ => "UnityEngine.UI.Image", 
 		};
 	}
 
 	public LuiBuilderInstance(LUI cui)
 	{
-		//IL_0e25: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e2a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0779: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0780: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0786: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a0d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0a2a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_09f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e50: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e57: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e5d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e44: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1317: Unknown result type (might be due to invalid IL or missing references)
-		//IL_131c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0e74: Unknown result type (might be due to invalid IL or missing references)
-		//IL_134d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_136a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_138f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_13de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_11d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_1200: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ea8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ead: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a90: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0aad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a56: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0a73: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ed3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0eda: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ee0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ec7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_139a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_139f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0805: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0ef7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_13ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_143b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1440: Unknown result type (might be due to invalid IL or missing references)
+		//IL_168c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1691: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1412: Unknown result type (might be due to invalid IL or missing references)
+		//IL_142f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_16ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1461: Unknown result type (might be due to invalid IL or missing references)
+		//IL_122f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_123c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_125f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1266: Unknown result type (might be due to invalid IL or missing references)
+		//IL_126c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1253: Unknown result type (might be due to invalid IL or missing references)
+		//IL_1283: Unknown result type (might be due to invalid IL or missing references)
 		this.WriteStartArray();
 		int count = cui.elements.Count;
 		int num = 0;
@@ -143,6 +149,11 @@ public struct LuiBuilderInstance : IDisposable
 					{
 						this.WriteComma();
 						this.WriteField("fadeIn", luiComponent.fadeIn);
+					}
+					if (!luiComponent.blocksRaycast)
+					{
+						this.WriteComma();
+						this.WriteField("blocksRaycast", value: false);
 					}
 					if (luiComponent.placeholderParentId != null)
 					{
@@ -216,6 +227,11 @@ public struct LuiBuilderInstance : IDisposable
 							this.WriteComma();
 							this.WriteField("fillCenter", value: true);
 						}
+						if (luiImageComp.ppuMultiplier != -1f)
+						{
+							this.WriteComma();
+							this.WriteField("ppuMultiplier", luiImageComp.ppuMultiplier);
+						}
 						if (luiImageComp.png != null)
 						{
 							this.WriteComma();
@@ -278,6 +294,11 @@ public struct LuiBuilderInstance : IDisposable
 					{
 						LuiButtonComp luiButtonComp = luiComponent as LuiButtonComp;
 						num2++;
+						if (!luiButtonComp.interactable)
+						{
+							this.WriteComma();
+							this.WriteField("interactable", value: false);
+						}
 						if (luiButtonComp.command != null)
 						{
 							this.WriteComma();
@@ -439,6 +460,11 @@ public struct LuiBuilderInstance : IDisposable
 						{
 							this.WriteComma();
 							this.WriteField("autofocus", value: true);
+						}
+						if (!luiInputComp.interactable)
+						{
+							this.WriteComma();
+							this.WriteField("interactable", value: false);
 						}
 						break;
 					}
@@ -907,6 +933,79 @@ public struct LuiBuilderInstance : IDisposable
 						{
 							this.WriteComma();
 							this.WriteField("verticalNormalizedPosition", luiScrollComp.verticalNormalizedPosition);
+						}
+						break;
+					}
+					case LuiCompType.CanvasGroup:
+					{
+						LuiCanvasGroupComp luiCanvasGroupComp = luiComponent as LuiCanvasGroupComp;
+						num2++;
+						if (luiCanvasGroupComp.alpha != -1f)
+						{
+							this.WriteComma();
+							this.WriteField("alpha", luiCanvasGroupComp.alpha);
+						}
+						if (!luiCanvasGroupComp.blocksRaycasts)
+						{
+							this.WriteComma();
+							this.WriteField("blocksRaycasts", value: false);
+						}
+						if (!luiCanvasGroupComp.interactable)
+						{
+							this.WriteComma();
+							this.WriteField("interactable", value: false);
+						}
+						if (luiCanvasGroupComp.fade != LUI.defaultFade)
+						{
+							this.WriteComma();
+							this.WriteField("fade", luiCanvasGroupComp.fade);
+						}
+						break;
+					}
+					case LuiCompType.Mask:
+					{
+						LuiMaskComp luiMaskComp = luiComponent as LuiMaskComp;
+						num2++;
+						if (!luiMaskComp.showMaskGraphic)
+						{
+							this.WriteComma();
+							this.WriteField("showMaskGraphic", value: false);
+						}
+						break;
+					}
+					case LuiCompType.Tooltip:
+					{
+						LuiTooltipComp luiTooltipComp = luiComponent as LuiTooltipComp;
+						num2++;
+						if (luiTooltipComp.tooltipType != null)
+						{
+							this.WriteComma();
+							this.WriteField("tooltipType", luiTooltipComp.tooltipType);
+						}
+						if (luiTooltipComp.offset != null)
+						{
+							this.WriteComma();
+							this.WriteField("offset", luiTooltipComp.offset);
+						}
+						if (luiTooltipComp.useCentre)
+						{
+							this.WriteComma();
+							this.WriteField("useCentre", value: true);
+						}
+						if (luiTooltipComp.text != null)
+						{
+							this.WriteComma();
+							this.WriteField("text", luiTooltipComp.text);
+						}
+						if (luiTooltipComp.delay != null)
+						{
+							this.WriteComma();
+							this.WriteField("delay", luiTooltipComp.delay);
+						}
+						if (luiTooltipComp.position != null)
+						{
+							this.WriteComma();
+							this.WriteField("position", luiTooltipComp.position);
 						}
 						break;
 					}

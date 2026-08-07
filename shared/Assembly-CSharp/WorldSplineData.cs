@@ -84,6 +84,61 @@ public class WorldSplineData
 		return inputTangents[maxPointsIndex];
 	}
 
+	public float GetClosestDistance(Vector3 localPoint)
+	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		float num = float.MaxValue;
+		float num2 = 0f;
+		Vector3 val;
+		for (int i = 0; i < LUTValues.Count; i++)
+		{
+			LUTEntry lUTEntry = LUTValues[i];
+			for (int j = 0; j < lUTEntry.points.Count; j++)
+			{
+				val = lUTEntry.points[j].pos - localPoint;
+				float sqrMagnitude = ((Vector3)(ref val)).sqrMagnitude;
+				if (sqrMagnitude < num)
+				{
+					num = sqrMagnitude;
+					num2 = lUTEntry.points[j].distance;
+				}
+			}
+		}
+		float num3 = inputLUTInterval;
+		for (int k = 0; k < 5; k++)
+		{
+			num3 *= 0.5f;
+			float num4 = Mathf.Max(num2 - num3, 0f);
+			float num5 = Mathf.Min(num2 + num3, Length);
+			val = GetPointCubicHermite(num4) - localPoint;
+			float sqrMagnitude2 = ((Vector3)(ref val)).sqrMagnitude;
+			val = GetPointCubicHermite(num5) - localPoint;
+			float sqrMagnitude3 = ((Vector3)(ref val)).sqrMagnitude;
+			if (sqrMagnitude2 < num)
+			{
+				num = sqrMagnitude2;
+				num2 = num4;
+			}
+			else if (sqrMagnitude3 < num)
+			{
+				num = sqrMagnitude3;
+				num2 = num5;
+			}
+		}
+		return num2;
+	}
+
 	public Vector3 GetPointCubicHermite(float distance)
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)

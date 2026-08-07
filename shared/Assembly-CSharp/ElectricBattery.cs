@@ -293,7 +293,7 @@ public class ElectricBattery : IOEntity, IInstanceDataReceiver
 	public override void SendAdditionalData(BasePlayer player, int slot, bool input)
 	{
 		int passthroughAmountForAnySlot = GetPassthroughAmountForAnySlot(slot, input);
-		ClientRPC(RpcTarget.Player("Client_ReceiveAdditionalData", player), currentEnergy, passthroughAmountForAnySlot, rustWattSeconds, activeDrain);
+		ClientRPC(RpcTarget.Player("Client_ReceiveAdditionalData", player), currentEnergy, passthroughAmountForAnySlot, rustWattSeconds, (float)activeDrain);
 	}
 
 	public override void OnCircuitChanged(bool forceUpdate)

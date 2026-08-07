@@ -26,6 +26,8 @@ public class UI_DeveloperTools : UI_Window
 		public UI_Window uiWindow;
 	}
 
+	public const string DisableDevToolsWarmup = "Facepunch.DisableDevToolsWarmup";
+
 	public static UI_DeveloperTools Instance;
 
 	[SerializeField]
@@ -47,8 +49,8 @@ public class UI_DeveloperTools : UI_Window
 	[SerializeField]
 	private RectTransform tabContentParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Image blurImage;
 
 	[SerializeField]

@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ItemModWorkbenchRecycleBin : ItemModWorkbenchUpgrade
 {
-	[Tooltip("Maximum fraction of each ingredient that can be refunded (0-1). A random value between 0 and this is rolled each craft.")]
 	[Header("Recycle Bin")]
+	[Tooltip("Maximum fraction of each ingredient that can be refunded (0-1). A random value between 0 and this is rolled each craft.")]
 	[Range(0f, 0.5f)]
 	public float maxRefundFraction = 0.1f;
 
@@ -37,5 +37,14 @@ public class ItemModWorkbenchRecycleBin : ItemModWorkbenchUpgrade
 				}
 			}
 		}
+	}
+
+	public override bool TryGiveBonusItem(Workbench workbench, BasePlayer crafter, Item upgradeItem, Item bonusItem)
+	{
+		if (upgradeItem?.contents == null)
+		{
+			return false;
+		}
+		return bonusItem.MoveToContainer(upgradeItem.contents);
 	}
 }

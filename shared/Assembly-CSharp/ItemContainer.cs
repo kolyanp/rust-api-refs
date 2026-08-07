@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConVar;
 using Development.Attributes;
 using Facepunch;
 using Network;
@@ -24,7 +25,8 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		NoBrokenItems = 0x40,
 		NoItemInput = 0x80,
 		ContentsHidden = 0x100,
-		IsArmor = 0x200
+		IsArmor = 0x200,
+		DroppedItemContainer = 0x400
 	}
 
 	[Flags]
@@ -79,6 +81,8 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	public bool isServer;
 
 	public int maxStackSize;
+
+	public bool allowItemsToIncreaseToMaxStackSize;
 
 	public int containerVolume;
 
@@ -213,7 +217,11 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 
 	public bool PlayerItemInputBlocked()
 	{
-		return HasFlag(Flag.NoItemInput);
+		if (HasFlag(Flag.NoItemInput))
+		{
+			return !ConVar.Server.bypassiteminputrestriction;
+		}
+		return false;
 	}
 
 	void IPooled.EnterPool()
@@ -598,6 +606,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		return null;
 	}
 
+	public bool TryGetItemAtSlot(int slot, out Item item)
+	{
+		item = GetSlot(slot);
+		return item != null;
+	}
+
 	public bool QuickIndustrialPreCheck(Item toTransfer, Vector2i range, int fakeSlots, out int foundSlot)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
@@ -793,12 +807,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		Clear();
 	}
 
-	public int GetAmount(int itemid, bool onlyUsableAmounts)
+	public int GetAmount(int itemid, bool onlyUsableAmounts, bool redirectAllowed = false)
 	{
 		int num = 0;
 		foreach (Item item in itemList)
 		{
-			if (item.info.itemid == itemid && (!onlyUsableAmounts || !item.IsBusy()))
+			if (item.info.MatchesItemId(itemid, redirectAllowed) && (!onlyUsableAmounts || !item.IsBusy()))
 			{
 				num += item.amount;
 			}
@@ -819,12 +833,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		return num;
 	}
 
-	public int GetOkConditionAmount(int itemid, bool onlyUsableAmounts)
+	public int GetOkConditionAmount(int itemid, bool onlyUsableAmounts, bool redirectAllowed = false)
 	{
 		int num = 0;
 		foreach (Item item in itemList)
 		{
-			if (item.info.itemid == itemid && (!onlyUsableAmounts || !item.IsBusy()) && !(item.condition <= 0f))
+			if (item.info.MatchesItemId(itemid, redirectAllowed) && (!onlyUsableAmounts || !item.IsBusy()) && !(item.condition <= 0f))
 			{
 				num += item.amount;
 			}
@@ -906,7 +920,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 	}
 
-	public ItemContainer Save(bool bIncludeContainer = true)
+	public ItemContainer Save(bool bIncludeContainer = true, bool stripBelt = false)
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -929,6 +943,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 		val.flags = (int)flags;
 		val.maxStackSize = maxStackSize;
+		val.allowItemsToIncreaseToMaxStackSize = allowItemsToIncreaseToMaxStackSize;
 		val.volume = containerVolume;
 		if (availableSlots != null && availableSlots.Count > 0)
 		{
@@ -941,7 +956,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		for (int k = 0; k < itemList.Count; k++)
 		{
 			Item item = itemList[k];
-			if (item.IsValid())
+			if (item.IsValid() && (!stripBelt || ConVar.AntiHack.hotbar_network_mode <= 0 || (ConVar.AntiHack.hotbar_network_mode != 2 && !item.info.HasItemModEntity)))
 			{
 				val.contents.Add(item.Save(bIncludeContainer));
 			}
@@ -953,8 +968,8 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("ItemContainer.Load"))
 		{
 			uid = container.UID;
@@ -975,6 +990,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 				onlyAllowedItems = null;
 			}
 			maxStackSize = container.maxStackSize;
+			allowItemsToIncreaseToMaxStackSize = container.allowItemsToIncreaseToMaxStackSize;
 			containerVolume = container.volume;
 			availableSlots.Clear();
 			if (container.availableSlots != null)
@@ -1043,7 +1059,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	}
 
 	[PoolAnalyzerNonCaching]
-	public int Take(List<Item> collect, int itemid, int iAmount, bool takeBroken = true)
+	public int Take(List<Item> collect, int itemid, int iAmount, bool takeBroken = true, bool redirectAllowed = false)
 	{
 		int num = 0;
 		if (iAmount == 0)
@@ -1052,51 +1068,59 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		}
 		List<Item> list = Pool.Get<List<Item>>();
 		List<Item> list2 = Pool.Get<List<Item>>();
-		foreach (Item item2 in itemList)
+		for (int i = 0; i < ((!redirectAllowed) ? 1 : 2); i++)
 		{
-			if (item2.info.itemid != itemid || (!takeBroken && item2.info.condition.enabled && item2.condition <= 0f))
+			if (num >= iAmount)
 			{
-				continue;
+				break;
 			}
-			int num2 = iAmount - num;
-			if (num2 <= 0)
+			bool flag = i == 1;
+			foreach (Item item2 in itemList)
 			{
-				continue;
-			}
-			if (item2.amount > num2)
-			{
-				num += num2;
-				if (collect != null)
+				if (!item2.info.MatchesItemId(itemid, redirectAllowed) || item2.info.itemid != itemid != flag || (!takeBroken && item2.info.condition.enabled && item2.condition <= 0f))
 				{
-					Item item = item2.SplitItem(num2);
-					if (item != null)
+					continue;
+				}
+				int num2 = iAmount - num;
+				if (num2 <= 0)
+				{
+					continue;
+				}
+				if (item2.amount > num2)
+				{
+					num += num2;
+					if (collect != null)
 					{
-						item.CollectedForCrafting(playerOwner);
-						collect.Add(item);
+						Item item = item2.SplitItem(num2);
+						if (item != null)
+						{
+							item.CollectedForCrafting(playerOwner);
+							collect.Add(item);
+						}
+					}
+					else
+					{
+						item2.UseItem(num2);
+					}
+					break;
+				}
+				if (item2.amount <= num2)
+				{
+					num += item2.amount;
+					if (collect != null)
+					{
+						collect.Add(item2);
+						list.Add(item2);
+					}
+					else
+					{
+						list2.Add(item2);
 					}
 				}
-				else
+				if (num == iAmount)
 				{
-					item2.UseItem(num2);
+					break;
 				}
-				break;
-			}
-			if (item2.amount <= num2)
-			{
-				num += item2.amount;
-				if (collect != null)
-				{
-					collect.Add(item2);
-					list.Add(item2);
-				}
-				else
-				{
-					list2.Add(item2);
-				}
-			}
-			if (num == iAmount)
-			{
-				break;
 			}
 		}
 		foreach (Item item3 in list)
@@ -1369,7 +1393,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		{
 			return;
 		}
-		int num2 = ((limitStack == LimitStack.All) ? Mathf.Min(itemToCreate.stackable, ContainerMaxStackSize()) : int.MaxValue);
+		int num2 = ((limitStack != LimitStack.All) ? int.MaxValue : ((!allowItemsToIncreaseToMaxStackSize) ? Mathf.Min(itemToCreate.stackable, ContainerMaxStackSize()) : Mathf.Max(itemToCreate.stackable, ContainerMaxStackSize())));
 		if (num2 <= 0)
 		{
 			return;

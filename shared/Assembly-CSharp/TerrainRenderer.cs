@@ -1,4 +1,5 @@
 using System;
+using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -167,9 +168,16 @@ public class TerrainRenderer
 			}
 			break;
 		case TerrainRendererBackend.GeoClipmapping:
-			geoClipTerrain.terrainMaterial = config.GeoClipmapMaterial;
+		{
+			bool flag = RustRenderPipeline.IsActive() && (Object)(object)config.GeoClipmapMaterialHoles != (Object)null;
+			geoClipTerrain.terrainMaterial = (flag ? config.GeoClipmapMaterialHoles : config.GeoClipmapMaterial);
 			break;
 		}
+		}
+	}
+
+	public void SetGeoClipMaterial(TerrainConfig config, bool useStencilHoles)
+	{
 	}
 
 	public Vector3 GetPosition()

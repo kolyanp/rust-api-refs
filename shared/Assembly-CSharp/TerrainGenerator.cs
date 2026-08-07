@@ -71,6 +71,7 @@ public class TerrainGenerator : SingletonComponent<TerrainGenerator>
 		gameObject.AddComponent<TerrainPath>();
 		gameObject.AddComponent<TerrainTexturing>();
 		gameObject.AddComponent<TerrainWaterFlowMap>();
+		gameObject.AddComponent<TerrainHoleRenderer>();
 		if (Object.op_Implicit((Object)(object)val2))
 		{
 			terrainMeta.terrainRenderer.SetTerrain(val2);

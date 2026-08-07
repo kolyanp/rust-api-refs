@@ -1,3 +1,4 @@
+using Rust.UI;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -11,6 +12,18 @@ public class UIVideoPlayer : UIDialog
 	public VideoPlayer videoPlayer;
 
 	public RawImage videoCanvas;
+
+	public CanvasGroup controlsCanvas;
+
+	public RustSlider volumeSlider;
+
+	public RectTransform volumeSliderRect;
+
+	public RustIcon volumeIcon;
+
+	public Icons[] volumeLoudnessIcons;
+
+	public RectTransform volumeKnob;
 
 	public RectTransform videoProgressBar;
 

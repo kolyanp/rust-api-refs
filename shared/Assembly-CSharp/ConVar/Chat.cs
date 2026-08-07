@@ -58,8 +58,8 @@ public class Chat : ConsoleSystem
 	[ReplicatedVar]
 	public static bool hideChatInTutorial = true;
 
-	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
 	[ServerVar(Help = "Number of messages to keep in memory for chat history")]
@@ -447,8 +447,8 @@ public class Chat : ConsoleSystem
 		return false;
 	}
 
-	[Help("Return the last x lines of the console. Default is 200")]
 	[ServerVar]
+	[Help("Return the last x lines of the console. Default is 200")]
 	public static IEnumerable<ChatEntry> tail(Arg arg)
 	{
 		int num = arg.GetInt(0, 200);
@@ -460,8 +460,8 @@ public class Chat : ConsoleSystem
 		return ((IEnumerable<ChatEntry>)History).Skip(num2);
 	}
 
-	[Help("Search the console for a particular string")]
 	[ServerVar]
+	[Help("Search the console for a particular string")]
 	public static IEnumerable<ChatEntry> search(Arg arg)
 	{
 		string search = arg.GetString(0, null);

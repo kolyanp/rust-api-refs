@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using ProtoBuf;
 
 public class AIDesign
@@ -19,6 +20,7 @@ public class AIDesign
 		AvailableStates.AddRange(states);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public void Load(AIDesign design, BaseEntity owner)
 	{
 		Scope = (AIDesignScope)design.scope;
@@ -27,6 +29,7 @@ public class AIDesign
 		InitStateContainers(design, owner);
 	}
 
+	[PoolAnalyzerNonCaching]
 	private void InitStateContainers(AIDesign design, BaseEntity owner)
 	{
 		stateContainers = new Dictionary<int, AIStateContainer>();

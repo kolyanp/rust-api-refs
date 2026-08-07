@@ -1,32 +1,10 @@
 using System;
+using AmplifyOcclusion;
 using UnityEngine;
 
 [AddComponentMenu("")]
 public class AmplifyOcclusionBase : MonoBehaviour
 {
-	public enum ApplicationMethod
-	{
-		PostEffect,
-		Deferred,
-		Debug
-	}
-
-	public enum PerPixelNormalSource
-	{
-		None,
-		Camera,
-		GBuffer,
-		GBufferOctaEncoded
-	}
-
-	public enum SampleCountLevel
-	{
-		Low,
-		Medium,
-		High,
-		VeryHigh
-	}
-
 	[Header("Ambient Occlusion")]
 	public ApplicationMethod ApplyMethod;
 
@@ -35,14 +13,14 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity = 1f;
 
 	public Color Tint = Color.black;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius = 2f;
 
 	[NonSerialized]
@@ -51,8 +29,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public int PixelRadiusLimit = 512;
 
 	[NonSerialized]
-	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	[Range(0f, 2f)]
+	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity = 1f;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -63,8 +41,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias = 0.05f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness = 1f;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -80,8 +58,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength = 50f;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Intensity parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToIntensity;
 
 	public Color FadeToTint = Color.black;
@@ -90,8 +68,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius = 2f;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent = 1.8f;
 
 	[Tooltip("Final Thickness parameter.")]
@@ -109,8 +87,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(1f, 4f)]
 	public int BlurPasses = 1;
 
-	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	[Range(0f, 20f)]
+	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	public float BlurSharpness = 10f;
 
 	[Header("Temporal Filter")]
@@ -121,8 +99,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 1f)]
 	public float FilterBlending = 0.5f;
 
-	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	public float FilterResponse = 0.5f;
 
 	[NonSerialized]

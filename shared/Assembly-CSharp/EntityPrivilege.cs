@@ -169,8 +169,8 @@ public class EntityPrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void ClearList(RPCMessage rpc)
 	{
 		if (CanAdministrate(rpc.player))

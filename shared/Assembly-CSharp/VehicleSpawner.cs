@@ -25,6 +25,14 @@ public class VehicleSpawner : BaseEntity
 		void Kill(DestroyMode mode, bool runCallbacks);
 	}
 
+	public enum VehicleSpawnerType
+	{
+		Unknown,
+		Boats,
+		Helicopter,
+		Horse
+	}
+
 	[Serializable]
 	public class SpawnPair
 	{
@@ -38,6 +46,8 @@ public class VehicleSpawner : BaseEntity
 	public float cleanupRadius = 10f;
 
 	public float occupyRadius = 5f;
+
+	public VehicleSpawnerType spawnerType;
 
 	public TriggerBase additionalNudgeTrigger;
 
@@ -123,12 +133,12 @@ public class VehicleSpawner : BaseEntity
 	public void CleanupArea(float radius)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
 		List<IVehicleSpawnUser> list = Pool.Get<List<IVehicleSpawnUser>>();
 		Vis.Entities(((Component)spawnOffset).transform.position, radius, list, 32768, (QueryTriggerInteraction)2);
 		foreach (IVehicleSpawnUser item in list)
 		{
-			if (!item.IsClient && !item.IsDestroyed)
+			if (!item.IsClient && !item.IsDestroyed && (spawnerType != VehicleSpawnerType.Boats || !(item is BaseHelicopter)))
 			{
 				item.Kill(DestroyMode.None, runCallbacks: true);
 			}

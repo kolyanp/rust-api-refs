@@ -14,6 +14,8 @@ public class Spawnable : MonoBehaviour, IServerComponent
 	[SerializeField]
 	private string ForceSpawnInfoMessage = string.Empty;
 
+	public bool CanSpawnInSafeZone = true;
+
 	internal bool SpawnIndividual;
 
 	internal Vector3 SpawnPosition;

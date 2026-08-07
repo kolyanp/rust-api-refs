@@ -27,12 +27,12 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 
 	private Vector2 animatedSphericRotation = new Vector2(0f, 0f);
 
-	[Tooltip("Sensitivity value for rotating camera around following object")]
 	[Space(10f)]
+	[Tooltip("Sensitivity value for rotating camera around following object")]
 	public float RotationSensitivity = 10f;
 
-	[Range(0.1f, 1f)]
 	[Header("If you want camera rotation to be smooth")]
+	[Range(0.1f, 1f)]
 	public float RotationSpeed = 1f;
 
 	[Header("If you want camera to follow target with some smoothness")]

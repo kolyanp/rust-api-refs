@@ -1,9 +1,11 @@
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
 namespace CompanionServer.Cameras;
 
+[BurstCompile]
 public struct RaycastSamplePositionsJob : IJob
 {
 	public int2 res;

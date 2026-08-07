@@ -31,14 +31,14 @@ public class RgbEffects : SingletonComponent<RgbEffects>
 
 	public Color comfortedColor;
 
-	[ClientVar(Name = "static", Help = "(Generated) Sets all RGB lighting devices to a static colour; takes an RGBA colour argument and applies it to the RGB controller instance")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[ClientVar(Name = "static", Help = "(Generated) Sets all RGB lighting devices to a static colour; takes an RGBA colour argument and applies it to the RGB controller instance")]
 	public static void ConVar_Static(ConsoleSystem.Arg args)
 	{
 	}
 
-	[ClientVar(Name = "pulse", Help = "(Generated) Pulses all RGB lighting devices to a given colour over the specified duration in seconds; uses the RGB controller pulse animation")]
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[ClientVar(Name = "pulse", Help = "(Generated) Pulses all RGB lighting devices to a given colour over the specified duration in seconds; uses the RGB controller pulse animation")]
 	public static void ConVar_Pulse(ConsoleSystem.Arg args)
 	{
 	}

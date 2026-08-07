@@ -1,4 +1,4 @@
 public static class NexusVariables
 {
-	public static readonly string Blueprints = $"blueprints.{15}";
+	public static readonly string Blueprints = $"blueprints.{16}";
 }

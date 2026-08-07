@@ -7,7 +7,14 @@ using UnityEngine.Assertions;
 
 public class ElectricSwitch : IOEntity
 {
+	[Header("Electric Switch")]
 	public bool isToggleSwitch;
+
+	public bool requiresPowergrid;
+
+	private Action _actionUnBusy;
+
+	private Action actionUnBusy => UnBusy;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -68,6 +75,13 @@ public class ElectricSwitch : IOEntity
 		return 0;
 	}
 
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Busy, b: false);
+	}
+
 	public override void ResetIOState()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
@@ -108,13 +122,6 @@ public class ElectricSwitch : IOEntity
 		}
 	}
 
-	public override void ServerInit()
-	{
-		base.ServerInit();
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Busy, b: false);
-	}
-
 	public virtual void SetSwitch(bool state)
 	{
 		if (state != IsOn())
@@ -124,7 +131,7 @@ public class ElectricSwitch : IOEntity
 				flagsUpdateScope.Set(Flags.On, state);
 				flagsUpdateScope.Set(Flags.Busy, b: true);
 			}
-			Invoke(UnBusy, 0.5f);
+			Invoke(actionUnBusy, 0.5f);
 			SendNetworkUpdateImmediate();
 			MarkDirty();
 		}
@@ -135,8 +142,8 @@ public class ElectricSwitch : IOEntity
 		SetSwitch(!IsOn());
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Switch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnSwitchToggle", this, msg.player) == null)

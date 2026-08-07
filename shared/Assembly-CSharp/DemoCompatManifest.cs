@@ -22,6 +22,8 @@ public class DemoCompatManifest : ScriptableObject
 		public string newPath;
 
 		public string guid;
+
+		public long remappedAt;
 	}
 
 	public DeprecatedEntry[] entries = Array.Empty<DeprecatedEntry>();

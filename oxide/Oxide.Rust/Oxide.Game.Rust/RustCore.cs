@@ -273,18 +273,19 @@ public class RustCore : CSPlugin
 				dictionary[item] = (pluginLoader.PluginErrors.TryGetValue(item, out var value) ? value : "Unloaded");
 			}
 		}
-		if (array.Length + dictionary.Count < 1)
+		int num = array.Length + dictionary.Count;
+		if (num < 1)
 		{
 			player.Reply(lang.GetMessage("NoPluginsFound", this, player.Id));
 			return;
 		}
 		string text = $"Listing {array.Length + dictionary.Count} plugins:";
-		int num = 1;
+		int num2 = 1;
 		foreach (Plugin item2 in array.Where((Plugin p) => p.Filename != null))
 		{
 			text += string.Format("\n  {0:00} \"{1}\" ({2}) by {3} ({4:0.00}s / {5}) - {6}", new object[7]
 			{
-				num++,
+				num2++,
 				item2.Title,
 				item2.Version,
 				item2.Author,
@@ -295,7 +296,7 @@ public class RustCore : CSPlugin
 		}
 		foreach (string key in dictionary.Keys)
 		{
-			text += $"\n  {num++:00} {key} - {dictionary[key]}";
+			text += $"\n  {num2++:00} {key} - {dictionary[key]}";
 		}
 		player.Reply(text);
 	}
@@ -672,7 +673,15 @@ public class RustCore : CSPlugin
 				permission.CreateGroup(defaultGroup, defaultGroup, num++);
 			}
 		}
-		permission.RegisterValidate((string s) => ulong.TryParse(s, out var result) && ((result == 0L) ? 1 : ((int)Math.Floor(Math.Log10(result) + 1.0))) >= 17);
+		permission.RegisterValidate(delegate(string s)
+		{
+			if (ulong.TryParse(s, out var result))
+			{
+				int num2 = ((result == 0L) ? 1 : ((int)Math.Floor(Math.Log10(result) + 1.0)));
+				return num2 >= 17;
+			}
+			return false;
+		});
 		permission.CleanUp();
 	}
 
@@ -776,10 +785,10 @@ public class RustCore : CSPlugin
 
 	public static BasePlayer FindPlayer(string nameOrIdOrIp)
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer result = null;
 		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
 		try
@@ -820,12 +829,12 @@ public class RustCore : CSPlugin
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		enumerator = BasePlayer.sleepingPlayerList.GetEnumerator();
+		Enumerator<BasePlayer> enumerator2 = BasePlayer.sleepingPlayerList.GetEnumerator();
 		try
 		{
-			while (enumerator.MoveNext())
+			while (enumerator2.MoveNext())
 			{
-				BasePlayer current2 = enumerator.Current;
+				BasePlayer current2 = enumerator2.Current;
 				if (string.IsNullOrEmpty(current2.UserIDString))
 				{
 					continue;
@@ -846,20 +855,20 @@ public class RustCore : CSPlugin
 					}
 				}
 			}
-			return result;
 		}
 		finally
 		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 		}
+		return result;
 	}
 
 	public static BasePlayer FindPlayerByName(string name)
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer result = null;
 		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
 		try
@@ -884,12 +893,12 @@ public class RustCore : CSPlugin
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		enumerator = BasePlayer.sleepingPlayerList.GetEnumerator();
+		Enumerator<BasePlayer> enumerator2 = BasePlayer.sleepingPlayerList.GetEnumerator();
 		try
 		{
-			while (enumerator.MoveNext())
+			while (enumerator2.MoveNext())
 			{
-				BasePlayer current2 = enumerator.Current;
+				BasePlayer current2 = enumerator2.Current;
 				if (!string.IsNullOrEmpty(current2.displayName))
 				{
 					if (current2.displayName.Equals(name, StringComparison.OrdinalIgnoreCase))
@@ -902,20 +911,20 @@ public class RustCore : CSPlugin
 					}
 				}
 			}
-			return result;
 		}
 		finally
 		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 		}
+		return result;
 	}
 
 	public static BasePlayer FindPlayerById(ulong id)
 	{
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
 		try
 		{
@@ -932,12 +941,12 @@ public class RustCore : CSPlugin
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		enumerator = BasePlayer.sleepingPlayerList.GetEnumerator();
+		Enumerator<BasePlayer> enumerator2 = BasePlayer.sleepingPlayerList.GetEnumerator();
 		try
 		{
-			while (enumerator.MoveNext())
+			while (enumerator2.MoveNext())
 			{
-				BasePlayer current2 = enumerator.Current;
+				BasePlayer current2 = enumerator2.Current;
 				if ((ulong)current2.userID == id)
 				{
 					return current2;
@@ -946,48 +955,50 @@ public class RustCore : CSPlugin
 		}
 		finally
 		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 		}
 		return null;
 	}
 
 	public static BasePlayer FindPlayerByIdString(string id)
 	{
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
 		try
 		{
 			while (enumerator.MoveNext())
 			{
 				BasePlayer current = enumerator.Current;
-				if (!string.IsNullOrEmpty(current.UserIDString) && current.UserIDString.Equals(id))
+				if (string.IsNullOrEmpty(current.UserIDString) || !current.UserIDString.Equals(id))
 				{
-					return current;
+					continue;
 				}
+				return current;
 			}
 		}
 		finally
 		{
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
-		enumerator = BasePlayer.sleepingPlayerList.GetEnumerator();
+		Enumerator<BasePlayer> enumerator2 = BasePlayer.sleepingPlayerList.GetEnumerator();
 		try
 		{
-			while (enumerator.MoveNext())
+			while (enumerator2.MoveNext())
 			{
-				BasePlayer current2 = enumerator.Current;
-				if (!string.IsNullOrEmpty(current2.UserIDString) && current2.UserIDString.Equals(id))
+				BasePlayer current2 = enumerator2.Current;
+				if (string.IsNullOrEmpty(current2.UserIDString) || !current2.UserIDString.Equals(id))
 				{
-					return current2;
+					continue;
 				}
+				return current2;
 			}
 		}
 		finally
 		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 		}
 		return null;
 	}
@@ -995,11 +1006,7 @@ public class RustCore : CSPlugin
 	[HookMethod("IOnBaseCombatEntityHurt")]
 	private object IOnBaseCombatEntityHurt(BaseCombatEntity entity, HitInfo hitInfo)
 	{
-		if (!(entity is BasePlayer))
-		{
-			return Interface.CallHook("OnEntityTakeDamage", entity, hitInfo);
-		}
-		return null;
+		return (entity is BasePlayer) ? null : Interface.CallHook("OnEntityTakeDamage", entity, hitInfo);
 	}
 
 	[HookMethod("IOnNpcTarget")]
@@ -1063,11 +1070,7 @@ public class RustCore : CSPlugin
 	private object ICanPickupEntity(BasePlayer basePlayer, BaseEntity entity)
 	{
 		object obj = Interface.CallHook("CanPickupEntity", basePlayer, entity);
-		if (!(obj is bool) || (bool)obj)
-		{
-			return null;
-		}
-		return true;
+		return (obj is bool && !(bool)obj) ? ((object)true) : null;
 	}
 
 	[HookMethod("IOnBasePlayerAttacked")]
@@ -1096,11 +1099,7 @@ public class RustCore : CSPlugin
 	[HookMethod("IOnBasePlayerHurt")]
 	private object IOnBasePlayerHurt(BasePlayer basePlayer, HitInfo hitInfo)
 	{
-		if (!isPlayerTakingDamage)
-		{
-			return Interface.CallHook("OnEntityTakeDamage", basePlayer, hitInfo);
-		}
-		return null;
+		return isPlayerTakingDamage ? null : Interface.CallHook("OnEntityTakeDamage", basePlayer, hitInfo);
 	}
 
 	[HookMethod("OnServerUserSet")]
@@ -1151,18 +1150,14 @@ public class RustCore : CSPlugin
 		object obj2 = Interface.CallHook("CanClientLogin", connection);
 		object obj3 = Interface.CallHook("CanUserLogin", username, text, obj);
 		object obj4 = ((obj2 == null) ? obj3 : obj2);
-		if (obj4 is string || (obj4 is bool && !(bool)obj4))
+		if (obj4 is string || (obj4 is bool flag && !flag))
 		{
 			ConnectionAuth.Reject(connection, (obj4 is string) ? obj4.ToString() : lang.GetMessage("ConnectionRejected", this, text));
 			return true;
 		}
 		object obj5 = Interface.CallHook("OnUserApprove", connection);
-		object result = Interface.CallHook("OnUserApproved", username, text, obj);
-		if (obj5 != null)
-		{
-			return obj5;
-		}
-		return result;
+		object obj6 = Interface.CallHook("OnUserApproved", username, text, obj);
+		return (obj5 == null) ? obj6 : obj5;
 	}
 
 	[HookMethod("IOnPlayerBanned")]
@@ -1190,12 +1185,8 @@ public class RustCore : CSPlugin
 			return Interface.CallHook("OnPlayerOfflineChat", playerId, playerName, message, channel);
 		}
 		object obj = Interface.CallHook("OnPlayerChat", basePlayer, message, channel);
-		object result = Interface.CallHook("OnUserChat", basePlayer.IPlayer, message);
-		if (obj != null)
-		{
-			return obj;
-		}
-		return result;
+		object obj2 = Interface.CallHook("OnUserChat", basePlayer.IPlayer, message);
+		return (obj == null) ? obj2 : obj;
 	}
 
 	private void TryRunPlayerCommand(BasePlayer basePlayer, string message, string commandPrefix)
@@ -1222,7 +1213,8 @@ public class RustCore : CSPlugin
 		}
 		object obj = Interface.CallHook("OnPlayerCommand", basePlayer, command, args);
 		object obj2 = Interface.CallHook("OnUserCommand", basePlayer.IPlayer, command, args);
-		if (((obj == null) ? obj2 : obj) != null)
+		object obj3 = ((obj == null) ? obj2 : obj);
+		if (obj3 != null)
 		{
 			return;
 		}
@@ -1253,7 +1245,8 @@ public class RustCore : CSPlugin
 			StackTrace stackTrace = new StackTrace(ex, 0, fNeedFileInfo: true);
 			for (int i = 0; i < stackTrace.FrameCount; i++)
 			{
-				MethodBase method = stackTrace.GetFrame(i).GetMethod();
+				StackFrame frame = stackTrace.GetFrame(i);
+				MethodBase method = frame.GetMethod();
 				if ((object)method != null && (object)method.DeclaringType != null && method.DeclaringType.Namespace == "Oxide.Plugins")
 				{
 					empty = method.DeclaringType.Name;
@@ -1324,7 +1317,8 @@ public class RustCore : CSPlugin
 	[HookMethod("OnPlayerKicked")]
 	private void OnPlayerKicked(BasePlayer basePlayer, string reason)
 	{
-		if (basePlayer.IPlayer != null)
+		IPlayer iPlayer = basePlayer.IPlayer;
+		if (iPlayer != null)
 		{
 			Interface.CallHook("OnUserKicked", basePlayer.IPlayer, reason);
 		}
@@ -1334,11 +1328,7 @@ public class RustCore : CSPlugin
 	private object OnPlayerRespawn(BasePlayer basePlayer)
 	{
 		IPlayer iPlayer = basePlayer.IPlayer;
-		if (iPlayer == null)
-		{
-			return null;
-		}
-		return Interface.CallHook("OnUserRespawn", iPlayer);
+		return (iPlayer != null) ? Interface.CallHook("OnUserRespawn", iPlayer) : null;
 	}
 
 	[HookMethod("OnPlayerRespawned")]
@@ -1382,11 +1372,7 @@ public class RustCore : CSPlugin
 	[HookMethod("IOnRconInitialize")]
 	private object IOnRconInitialize()
 	{
-		if (!Interface.Oxide.Config.Rcon.Enabled)
-		{
-			return null;
-		}
-		return true;
+		return Interface.Oxide.Config.Rcon.Enabled ? ((object)true) : null;
 	}
 
 	[HookMethod("IOnRunCommandLine")]
@@ -1420,7 +1406,8 @@ public class RustCore : CSPlugin
 		}
 		object obj = Interface.CallHook("OnServerCommand", arg);
 		object obj2 = Interface.CallHook("OnServerCommand", arg.cmd.FullName, RustCommandSystem.ExtractArgs(arg));
-		if (((obj == null) ? obj2 : obj) != null)
+		object obj3 = ((obj == null) ? obj2 : obj);
+		if (obj3 != null)
 		{
 			return true;
 		}

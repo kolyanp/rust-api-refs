@@ -67,21 +67,21 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Range(0f, 360f)]
 	[Header("                ")]
 	[Header("Motion Blur")]
+	[Range(0f, 360f)]
 	public float shutterAngle;
 
 	[Range(-100f, 100f)]
-	[Header("Distortion")]
 	[Header("                ")]
+	[Header("Distortion")]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
 	public float chromaticAbberation;
 
-	[Header("Post Effects")]
 	[Header("                ")]
+	[Header("Post Effects")]
 	public TonemappingMode ToneMapping = TonemappingMode.Neutral;
 
 	public float Exposure = 2.34f;
@@ -121,14 +121,14 @@ public class ModelViewer_MainCameraParameters
 
 	public Color Color = Color.white;
 
-	[Header("                ")]
 	[Header("Vignette")]
+	[Header("                ")]
 	public float Darkness;
 
 	public float Sharpness;
 
-	[Header("Grain")]
 	[Header("                ")]
+	[Header("Grain")]
 	public bool Coloured = true;
 
 	[Range(0f, 1f)]

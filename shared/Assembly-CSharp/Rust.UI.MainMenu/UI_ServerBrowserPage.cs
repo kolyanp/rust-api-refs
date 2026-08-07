@@ -15,12 +15,12 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private UI_Window _shockbyteWindow;
 
-	[SerializeField]
 	[Header("Categories")]
+	[SerializeField]
 	private List<Rust.UI.MainMenu.ServerBrowserCategoryData> _categories;
 
-	[SerializeField]
 	[Header("Headers")]
+	[SerializeField]
 	private List<Rust.UI.MainMenu.ServerBrowserHeader> _headers;
 
 	[Header("Filters")]

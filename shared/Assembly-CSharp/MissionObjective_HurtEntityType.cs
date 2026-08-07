@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rust/Missions/OBJECTIVES/HurtEntityType")]
@@ -13,7 +14,7 @@ public class MissionObjective_HurtEntityType : MissionObjective
 
 	private bool isInitalized;
 
-	private readonly ListHashSet<uint> targetPrefabIDs = new ListHashSet<uint>();
+	private readonly HashSet<uint> targetPrefabIDs = new HashSet<uint>();
 
 	private void EnsureInitialized()
 	{
@@ -26,7 +27,7 @@ public class MissionObjective_HurtEntityType : MissionObjective
 		{
 			if (baseEntityRef.isValid)
 			{
-				targetPrefabIDs.TryAdd(baseEntityRef.Get().prefabID);
+				targetPrefabIDs.Add(baseEntityRef.Get().prefabID);
 			}
 		}
 		isInitalized = true;
@@ -70,22 +71,14 @@ public class MissionObjective_HurtEntityType : MissionObjective
 			uid = payload.NetworkIdentifier
 		};
 		BaseCombatEntity baseCombatEntity = entityRef.Get(serverside: true);
-		if (!baseCombatEntity.IsValid())
+		if (baseCombatEntity.IsValid() && targetPrefabIDs.Contains(baseCombatEntity.prefabID))
 		{
-			return;
-		}
-		for (int i = 0; i < targetPrefabIDs.Count; i++)
-		{
-			if (targetPrefabIDs[i] == baseCombatEntity.prefabID)
+			instance.objectiveStatuses[index].progressCurrent += amount;
+			if (instance.objectiveStatuses[index].progressCurrent >= targetDamage)
 			{
-				instance.objectiveStatuses[index].progressCurrent += amount;
-				if (instance.objectiveStatuses[index].progressCurrent >= targetDamage)
-				{
-					CompleteObjective(index, instance, playerFor);
-				}
-				playerFor.MissionsDirty(saveImmediately: true);
-				break;
+				CompleteObjective(index, instance, playerFor);
 			}
+			playerFor.MissionsDirty(saveImmediately: true);
 		}
 	}
 }

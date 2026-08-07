@@ -96,15 +96,15 @@ public static class OxideCompat
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static Timer TimerOnce(Timers timers, float delay, Action callback, Plugin owner = null)
+	public static Oxide.Plugins.Timer TimerOnce(PluginTimers timer, float delay, Action callback, Plugin owner = null)
 	{
-		return timers.Once(delay, callback);
+		return timer.Once(delay, callback);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static Timer TimerRepeat(Timers timers, float delay, int reps, Action callback, Plugin owner = null)
+	public static Oxide.Plugins.Timer TimerRepeat(PluginTimers timer, float delay, int reps, Action callback, Plugin owner = null)
 	{
-		return timers.Repeat(delay, reps, callback);
+		return timer.Repeat(delay, reps, callback);
 	}
 
 	static OxideCompat()

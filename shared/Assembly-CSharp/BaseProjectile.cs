@@ -22,8 +22,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
 			[InspectorFlags]
+			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -1454,9 +1454,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1502,8 +1502,8 @@ public class BaseProjectile : AttackEntity
 		return true;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
@@ -1545,8 +1545,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1685,9 +1685,9 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
+	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)

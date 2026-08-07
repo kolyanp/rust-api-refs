@@ -14,14 +14,14 @@ public class Category_Crafting
 	public class Crafting_Recycler
 	{
 		[Patch("CanRecycle", "CanRecycle", "Recycler", "HasRecyclable", new string[] { })]
-		[Identifier("2d0a7597bc674350847bfae3d5c57542")]
+		[Identifier("8e31259b5de5439eaf782cd18cf5865e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Recycler", false)]
 		[Parameter("local1", "Item", false)]
 		[Return(typeof(bool))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_Recycler_2d0a7597bc674350847bfae3d5c57542 : Patch
+		public class Crafting_Recycler_8e31259b5de5439eaf782cd18cf5865e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -59,14 +59,14 @@ public class Category_Crafting
 		}
 
 		[Patch("CanBeRecycled", "CanBeRecycled", "Recycler", "CanBeRecycled", new string[] { "Item" })]
-		[Identifier("7bef037d49df4e0d9b852db7b2a4f943")]
+		[Identifier("499c581c551d48e29e595c612d0706ca")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("item", "Item", false)]
 		[Parameter("self", "Recycler", false)]
 		[Return(typeof(bool))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_Recycler_7bef037d49df4e0d9b852db7b2a4f943 : Patch
+		public class Crafting_Recycler_499c581c551d48e29e595c612d0706ca : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -107,13 +107,13 @@ public class Category_Crafting
 	public class Crafting_ItemCrafter
 	{
 		[Patch("CanCraft", "CanCraft [ItemCrafter]", "ItemCrafter", "CanCraft", new string[] { "ItemBlueprint", "System.Int32", "System.Boolean" })]
-		[Identifier("ad43e9c1f1f642af88931ea77f91c0a6")]
+		[Identifier("8257ac9746944474b73bc29dcf87c9c5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ItemCrafter", false)]
 		[Return(typeof(bool))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_ItemCrafter_ad43e9c1f1f642af88931ea77f91c0a6 : Patch
+		public class Crafting_ItemCrafter_8257ac9746944474b73bc29dcf87c9c5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -157,13 +157,13 @@ public class Category_Crafting
 		}
 
 		[Patch("OnIngredientsCollect", "OnIngredientsCollect", "ItemCrafter", "CollectIngredients", new string[] { "ItemBlueprint", "ItemCraftTask", "System.Int32", "BasePlayer", "System.Boolean" })]
-		[Identifier("1111513a2ebc4d2b92d01ee89b616772")]
+		[Identifier("82171977a2864f529eb15ef2c45b659f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ItemCrafter", false)]
 		[Return(typeof(void))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_ItemCrafter_1111513a2ebc4d2b92d01ee89b616772 : Patch
+		public class Crafting_ItemCrafter_82171977a2864f529eb15ef2c45b659f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -210,7 +210,7 @@ public class Category_Crafting
 	public class Crafting_PlayerBlueprints
 	{
 		[Patch("CanCraft", "CanCraft [PlayerBlueprints]", "PlayerBlueprints", "CanCraft", new string[] { "System.Int32", "System.Int32", "BasePlayer" })]
-		[Identifier("8ff2ccf106934cabbc226c66d3982a5d")]
+		[Identifier("df253498e08b4953bdeab50fb16938e2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerBlueprints", false)]
 		[Parameter("local0", "ItemDefinition", false)]
@@ -218,7 +218,7 @@ public class Category_Crafting
 		[Return(typeof(bool))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_PlayerBlueprints_8ff2ccf106934cabbc226c66d3982a5d : Patch
+		public class Crafting_PlayerBlueprints_df253498e08b4953bdeab50fb16938e2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -262,7 +262,7 @@ public class Category_Crafting
 	public class Crafting_SprayCan
 	{
 		[Patch("OnEntityReskin", "OnEntityReskin", "SprayCan", "ChangeItemSkin", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e688676525a44989a623b5a36d410517")]
+		[Identifier("ac8722eea421452d850203c883e82527")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local3", "BaseEntity", false)]
 		[Parameter("local5", "System.UInt64", false)]
@@ -270,7 +270,7 @@ public class Category_Crafting
 		[Return(typeof(void))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_SprayCan_e688676525a44989a623b5a36d410517 : Patch
+		public class Crafting_SprayCan_ac8722eea421452d850203c883e82527 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -308,7 +308,7 @@ public class Category_Crafting
 		}
 
 		[Patch("OnEntityReskinned", "OnEntityReskinned", "SprayCan", "ChangeItemSkin", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("4ef22458d3fc43b7aa8042c175897a8b")]
+		[Identifier("7e04afb9e6d6432ab6ea2875950050a0")]
 		[Dependencies(new string[] { "OnEntityReskin" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local3", "BaseEntity", false)]
@@ -316,7 +316,7 @@ public class Category_Crafting
 		[Parameter("player", "BasePlayer", false)]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_SprayCan_4ef22458d3fc43b7aa8042c175897a8b : Patch
+		public class Crafting_SprayCan_7e04afb9e6d6432ab6ea2875950050a0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -348,7 +348,7 @@ public class Category_Crafting
 		}
 
 		[Patch("OnSprayCreate", "OnSprayCreate", "SprayCan", "CreateSpray", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d99d1aa994124883b3584c9e31849469")]
+		[Identifier("d17958e8296e480380923fd1650f3b58")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SprayCan", false)]
 		[Parameter("local0", "UnityEngine.Vector3", false)]
@@ -356,7 +356,7 @@ public class Category_Crafting
 		[Return(typeof(void))]
 		[Category("Crafting")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Crafting_SprayCan_d99d1aa994124883b3584c9e31849469 : Patch
+		public class Crafting_SprayCan_d17958e8296e480380923fd1650f3b58 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

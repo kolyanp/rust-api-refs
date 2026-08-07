@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using ConVar;
+using Facepunch;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -54,6 +56,19 @@ public class CommunityEntity : PointEntity
 	{
 		public float duration;
 	}
+
+	public enum TooltipType
+	{
+		Default,
+		AlwaysOnTop,
+		AlwaysOnTopEmoji
+	}
+
+	public GameObject TooltipRef;
+
+	public GameObject TooltipAlwaysOnTopRef;
+
+	public GameObject TooltipAlwaysOnTopEmojiRef;
 
 	public static CommunityEntity ServerInstance;
 
@@ -131,6 +146,80 @@ public class CommunityEntity : PointEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	[ServerVar]
+	public static void pietest(ConsoleSystem.Arg arg)
+	{
+		CustomPie val = Pool.Get<CustomPie>();
+		try
+		{
+			val.menus = Pool.Get<List<CustomPieMenu>>();
+			AddPieMenu(val, "Switch Night", "Switch to night mode", "env.time 0", "assets/icons/device_add.png", disabled: false, selected: false, "", "");
+			AddPieMenu(val, "Switch Day", "Switch to day mode", "env.time 12", "assets/icons/device_add.png", disabled: false, selected: false, "", "");
+			AddPieMenu(val, "Rain", "Make it rain on the server", "sv weather.load storm", "assets/icons/embrella.png", disabled: false, selected: false, "", "");
+			AddPieMenu(val, "Be Malicious", "This attempts to open your player inventory.", "inventory.toggle", "assets/icons/explosion_sprite.png", disabled: false, selected: false, "", "");
+			AddPieMenu(val, "Left/Right Test", "Pick one or the other", "pietest_prev", "assets/icons/facepunch.png", disabled: false, selected: false, "pietest_prev", "pietest_next");
+			AddPieMenu(val, "Exit", "Close this context menu", "", "assets/icons/close.png", disabled: false, selected: false, "", "");
+			ServerInstance.SendPie(ArgEx.Player(arg), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	[ServerVar]
+	public static void pietest_prev(ConsoleSystem.Arg arg)
+	{
+		CustomPie val = Pool.Get<CustomPie>();
+		try
+		{
+			val.menus = Pool.Get<List<CustomPieMenu>>();
+			AddPieMenu(val, "Go Back", null, "pietest", "assets/icons/fun.png", disabled: false, selected: false, "", "");
+			AddPieMenu(val, "Or Don't", "You went previous", "pietest", "assets/icons/fun.png", disabled: true, selected: false, "", "");
+			ServerInstance.SendPie(ArgEx.Player(arg), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	[ServerVar]
+	public static void pietest_next(ConsoleSystem.Arg arg)
+	{
+		CustomPie val = Pool.Get<CustomPie>();
+		try
+		{
+			val.menus = Pool.Get<List<CustomPieMenu>>();
+			AddPieMenu(val, "Go Back", null, "pietest", "assets/icons/fun.png", disabled: false, selected: false, "", "");
+			AddPieMenu(val, "Or Don't", "You went next", "pietest", "assets/icons/fun.png", disabled: true, selected: false, "", "");
+			ServerInstance.SendPie(ArgEx.Player(arg), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private static void AddPieMenu(CustomPie pie, string name, string description, string command, string sprite, bool disabled, bool selected, string next, string prev)
+	{
+		CustomPieMenu val = Pool.Get<CustomPieMenu>();
+		val.name = name;
+		val.description = description;
+		val.command = command;
+		val.sprite = sprite;
+		val.disabled = disabled;
+		val.selected = selected;
+		val.nextCommand = next;
+		val.prevCommand = prev;
+		pie.menus.Add(val);
+	}
+
+	public void SendPie(BasePlayer player, CustomPie pie)
+	{
+		ClientRPC(RpcTarget.Player("OpenPie", player), pie);
+	}
+
 	[RPC_Server]
 	public void DragRPC(RPCMessage rpc)
 	{
@@ -192,6 +281,42 @@ public class CommunityEntity : PointEntity
 		else
 		{
 			ClientInstance = null;
+		}
+	}
+
+	public void SendDestroyUIs(BasePlayer player, List<string> uiPanels)
+	{
+		CommunityEntity_DestroyUIs val = Pool.Get<CommunityEntity_DestroyUIs>();
+		try
+		{
+			val.list = Pool.Get<List<string>>();
+			for (int i = 0; i < uiPanels.Count; i++)
+			{
+				val.list.Add(uiPanels[i]);
+			}
+			ClientRPC(RpcTarget.Player("DestroyUIs", player), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public void SendDestroyUIs(BasePlayer player, string[] uiPanels)
+	{
+		CommunityEntity_DestroyUIs val = Pool.Get<CommunityEntity_DestroyUIs>();
+		try
+		{
+			val.list = Pool.Get<List<string>>();
+			for (int i = 0; i < uiPanels.Length; i++)
+			{
+				val.list.Add(uiPanels[i]);
+			}
+			ClientRPC(RpcTarget.Player("DestroyUIs", player), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 }

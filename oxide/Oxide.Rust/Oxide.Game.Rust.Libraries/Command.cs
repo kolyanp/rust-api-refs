@@ -166,11 +166,11 @@ public class Command : Library
 
 	public void AddConsoleCommand(string command, Plugin plugin, Func<ConsoleSystem.Arg, bool> callback)
 	{
-		//IL_02c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_034f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_037c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
 		if (plugin != null && !pluginRemovedFromManager.ContainsKey(plugin))
 		{
 			pluginRemovedFromManager[plugin] = plugin.OnRemovedFromManager.Add(plugin_OnRemovedFromManager);
@@ -265,10 +265,10 @@ public class Command : Library
 
 	private void RemoveConsoleCommand(ConsoleCommand command)
 	{
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		if (!consoleCommands.ContainsKey(command.Name))
 		{
 			return;
@@ -304,12 +304,13 @@ public class Command : Library
 	private void plugin_OnRemovedFromManager(Plugin sender, PluginManager manager)
 	{
 		ConsoleCommand[] array = consoleCommands.Values.Where((ConsoleCommand c) => c.Callback.Plugin == sender).ToArray();
-		foreach (ConsoleCommand command in array)
+		ConsoleCommand[] array2 = array;
+		foreach (ConsoleCommand command in array2)
 		{
 			RemoveConsoleCommand(command);
 		}
-		ChatCommand[] array2 = chatCommands.Values.Where((ChatCommand c) => c.Plugin == sender).ToArray();
-		foreach (ChatCommand command2 in array2)
+		ChatCommand[] array3 = chatCommands.Values.Where((ChatCommand c) => c.Plugin == sender).ToArray();
+		foreach (ChatCommand command2 in array3)
 		{
 			RemoveChatCommand(command2);
 		}
@@ -342,10 +343,6 @@ public class Command : Library
 		{
 			return false;
 		}
-		if (!RustCore.RestrictedCommands.Contains(command))
-		{
-			return !RustCore.RestrictedCommands.Contains(text3);
-		}
-		return false;
+		return !RustCore.RestrictedCommands.Contains(command) && !RustCore.RestrictedCommands.Contains(text3);
 	}
 }

@@ -16,13 +16,12 @@ public class ChickenCoop : StorageContainer
 
 		public TimeUntil TimeUntilHatch;
 
-		public void CopyTo(ChickenStatus status)
+		public void CopyTo(ChickenStatus status, ThreadSafeTime time)
 		{
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 			status.spawnedChicken = SpawnedAnimal.uid;
-			status.timeUntilHatch = TimeUntil.op_Implicit(TimeUntilHatch);
+			status.timeUntilHatch = ((TimeUntil)(ref TimeUntilHatch)).LeftFrom(time.Time);
 		}
 
 		public void CopyFrom(ChickenStatus status)
@@ -359,7 +358,7 @@ public class ChickenCoop : StorageContainer
 		foreach (AnimalStatus animal in Animals)
 		{
 			ChickenStatus val = Pool.Get<ChickenStatus>();
-			animal.CopyTo(val);
+			animal.CopyTo(val, info.cachedTime);
 			info.msg.chickenCoop.chickens.Add(val);
 		}
 	}
@@ -443,8 +442,8 @@ public class ChickenCoop : StorageContainer
 		flagsUpdateScope.Set(Flags.Reserved3, b: true);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	private void RequestAnimalStats(RPCMessage msg)
 	{

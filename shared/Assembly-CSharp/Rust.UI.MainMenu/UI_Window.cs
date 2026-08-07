@@ -9,15 +9,15 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _skipAutoFixState;
 
-	[SerializeField]
 	[Header("Window - Transitions")]
+	[SerializeField]
 	private FlexTransition _openTransition;
 
 	[SerializeField]
 	private bool _oneShotTransition;
 
-	[SerializeField]
 	[Header("Window - Components")]
+	[SerializeField]
 	protected CanvasGroup _group;
 
 	[SerializeField]

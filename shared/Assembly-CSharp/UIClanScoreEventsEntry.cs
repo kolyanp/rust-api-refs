@@ -26,6 +26,16 @@ public class UIClanScoreEventsEntry : BaseMonoBehaviour, IUIPlayerRefreshCallbac
 
 	public static readonly Phrase SwipedRedKeycardEvent = (Phrase)(object)new TokenisedPhrase("clan.score_event.swiped_red_keycard", "{0} swiped a red keycard.");
 
+	public static readonly Phrase InsertHeavyFuseInPowerPlant = (Phrase)(object)new TokenisedPhrase("clan.score_event.inserted_heavy_fuse_power_plant", "{0} inserted a heavy fuse at powerplant.");
+
+	public static readonly Phrase LootSatelliteEvent = (Phrase)(object)new TokenisedPhrase("clan.score_event.loot_satellite", "{0} has looted a crashed satellite.");
+
+	public static readonly Phrase EnableWaterTreatmentPlantEvent = (Phrase)(object)new TokenisedPhrase("clan.score_event.enable_water_treatment_plant", "{0} ran the Water Treatment Plant.");
+
+	public static readonly Phrase LaunchSatelliteEvent = (Phrase)(object)new TokenisedPhrase("clan.score_event.launch_satellite", "{0} launched a satellite.");
+
+	public static readonly Phrase StartedOilRigFuelSwitchEvent = (Phrase)(object)new TokenisedPhrase("clan.score_event.started_oil_rig_fuel_switch", "{0} started the Oil Rig fuel switch.");
+
 	public static readonly Phrase UnknownEvent = (Phrase)(object)new TokenisedPhrase("clan.score_event.unknown", "{0} did something (event type = {1}).");
 
 	public RustText Event;

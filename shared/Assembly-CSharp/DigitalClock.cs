@@ -195,8 +195,8 @@ public class DigitalClock : IOEntity, INotifyLOD
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.InputValidation(new Type[] { typeof(DigitalClockMessage) })]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.InputValidation(new Type[] { typeof(DigitalClockMessage) })]
 	public void RPC_SetAlarms(RPCMessage msg)
 	{
 		if (!CanPlayerAdmin(msg.player))

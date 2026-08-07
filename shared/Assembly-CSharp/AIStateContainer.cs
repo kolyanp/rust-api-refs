@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using ProtoBuf;
 
 public class AIStateContainer
@@ -11,6 +12,7 @@ public class AIStateContainer
 
 	public int InputMemorySlot { get; private set; } = -1;
 
+	[PoolAnalyzerNonCaching]
 	public void Init(AIStateContainer container, BaseEntity owner)
 	{
 		ID = container.id;

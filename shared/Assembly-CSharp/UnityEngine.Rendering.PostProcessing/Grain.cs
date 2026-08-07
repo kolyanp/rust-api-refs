@@ -26,8 +26,8 @@ public sealed class Grain : PostProcessEffectSettings
 		value = 1f
 	};
 
-	[Range(0f, 1f)]
 	[DisplayName("Luminance Contribution")]
+	[Range(0f, 1f)]
 	[Tooltip("Controls the noise response curve based on scene luminance. Lower values mean less noise in dark areas.")]
 	public FloatParameter lumContrib = new FloatParameter
 	{

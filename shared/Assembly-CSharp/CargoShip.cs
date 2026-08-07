@@ -788,12 +788,18 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		float waterSurface = WaterLevel.GetWaterSurface(((Component)this).transform.position, waves: false, volumes: false);
 		Vector3 val = ((Component)this).transform.InverseTransformPoint(((Component)waterLine).transform.position);
 		((Component)this).transform.position = new Vector3(((Component)this).transform.position.x, waterSurface - val.y, ((Component)this).transform.position.z);
-		SpawnSubEntities();
+		if (0 == 0)
+		{
+			SpawnSubEntities();
+		}
 		if (HasFinishedDocking)
 		{
 			Invoke(StartEgress, Mathf.Max(EventTimeRemaining, 120f));
 		}
-		CreateMapMarker();
+		if (0 == 0)
+		{
+			CreateMapMarker();
+		}
 	}
 
 	public void UpdateRadiation()

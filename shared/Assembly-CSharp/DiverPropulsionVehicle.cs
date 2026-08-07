@@ -65,8 +65,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float minWaterDepth = 0.75f;
 
-	[Header("DPV - Control stability")]
 	[SerializeField]
+	[Header("DPV - Control stability")]
 	private float rotStability = 0.05f;
 
 	[SerializeField]
@@ -617,6 +617,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	{
 		base.InitShared();
 		EntityFuelSystem entityFuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		IFuelSystem fuelSystem = entityFuelSystem;
 		if (base.isServer)
 		{
 			StorageContainer fuelContainer = entityFuelSystem.GetFuelContainer();
@@ -625,7 +626,7 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 				SetFuelUpdateInventoryCallback(fuelContainer);
 			}
 		}
-		engineController = new VehicleEngineController<DiverPropulsionVehicle>(this, entityFuelSystem, base.isServer, engineStartupTime);
+		engineController = new VehicleEngineController<DiverPropulsionVehicle>(this, fuelSystem, base.isServer, engineStartupTime);
 	}
 
 	public override void Load(LoadInfo info)

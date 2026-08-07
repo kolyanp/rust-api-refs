@@ -8,7 +8,7 @@ public interface IMissionProvider
 
 	Vector3 ProviderPosition();
 
-	BaseEntity Entity();
+	BaseEntity GetEntity();
 
 	BufferList<BaseMission> GetAllMissions();
 

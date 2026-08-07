@@ -15,13 +15,13 @@ public class Category_Fishing
 	public class Fishing_BaseFishingRod
 	{
 		[Patch("OnFishingStopped", "OnFishingStopped", "BaseFishingRod", "Server_Cancel", new string[] { "BaseFishingRod/FailReason" })]
-		[Identifier("929902a5db14402db57e199a7f4591a0")]
+		[Identifier("40dbcc887e4b4dafb6f6246071288b80")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFishingRod", false)]
 		[Parameter("reason", "BaseFishingRod+FailReason", false)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_929902a5db14402db57e199a7f4591a0 : Patch
+		public class Fishing_BaseFishingRod_40dbcc887e4b4dafb6f6246071288b80 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -50,7 +50,7 @@ public class Category_Fishing
 		}
 
 		[Patch("OnFishingRodCast", "OnFishingRodCast", "BaseFishingRod", "Server_RequestCast", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("fba8e683ee0349bc92e3f59b842754a2")]
+		[Identifier("91d6bb3fde0148d5ba35d9a789f093f0")]
 		[Dependencies(new string[] { "CanCastFishingRod" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFishingRod", false)]
@@ -58,7 +58,7 @@ public class Category_Fishing
 		[Parameter("local2", "Item", false)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_fba8e683ee0349bc92e3f59b842754a2 : Patch
+		public class Fishing_BaseFishingRod_91d6bb3fde0148d5ba35d9a789f093f0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -88,7 +88,7 @@ public class Category_Fishing
 		}
 
 		[Patch("OnFishCaught", "OnFishCaught", "BaseFishingRod", "CatchProcessBudgeted", new string[] { })]
-		[Identifier("945bd1af365f48faac2ec5b694d2c205")]
+		[Identifier("c253c492eb7e4d9bb4d590b5eeea12b1")]
 		[Dependencies(new string[] { "OnFishCatch" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseFishingRod", false)]
@@ -96,7 +96,7 @@ public class Category_Fishing
 		[Parameter("local2", "BasePlayer", false)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_945bd1af365f48faac2ec5b694d2c205 : Patch
+		public class Fishing_BaseFishingRod_c253c492eb7e4d9bb4d590b5eeea12b1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -127,11 +127,11 @@ public class Category_Fishing
 		}
 
 		[Patch("CanCastFishingRod", "CanCastFishingRod", "BaseFishingRod", "Server_RequestCast", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d38fbcc5bea0452e807b366bc6c75e66")]
+		[Identifier("6fba4440ef094f6d9d09f488dacb89e6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_d38fbcc5bea0452e807b366bc6c75e66 : Patch
+		public class Fishing_BaseFishingRod_6fba4440ef094f6d9d09f488dacb89e6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -190,11 +190,11 @@ public class Category_Fishing
 		}
 
 		[Patch("CanCatchFish", "CanCatchFish", "BaseFishingRod", "CatchProcessBudgeted", new string[] { })]
-		[Identifier("4b3d613deb894ac2a0e34cf2b3ce2338")]
+		[Identifier("b6539bb2a64e4af789a85585b99512cf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_4b3d613deb894ac2a0e34cf2b3ce2338 : Patch
+		public class Fishing_BaseFishingRod_b6539bb2a64e4af789a85585b99512cf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -248,12 +248,12 @@ public class Category_Fishing
 		}
 
 		[Patch("OnFishCatch", "OnFishCatch", "BaseFishingRod", "CatchProcessBudgeted", new string[] { })]
-		[Identifier("96deb51467c744b4b601268173f91a97")]
+		[Identifier("2dedc639bdc74503bfe6beed6578c71c")]
 		[Dependencies(new string[] { "CanCatchFish" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Fishing")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Fishing_BaseFishingRod_96deb51467c744b4b601268173f91a97 : Patch
+		public class Fishing_BaseFishingRod_2dedc639bdc74503bfe6beed6578c71c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

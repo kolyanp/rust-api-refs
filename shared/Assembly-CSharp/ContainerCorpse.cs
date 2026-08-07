@@ -292,7 +292,8 @@ public class ContainerCorpse : ConstructableEntity
 	{
 		SaveInfo info = new SaveInfo
 		{
-			forDisk = true
+			forDisk = true,
+			cachedTime = ThreadSafeTime.TakeSnapshot()
 		};
 		Entity val = (info.msg = Pool.Get<Entity>());
 		try
@@ -363,9 +364,9 @@ public class ContainerCorpse : ConstructableEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_RequestOwnerData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

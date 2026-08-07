@@ -10,6 +10,8 @@ public class ESPPlayerInfo : MonoBehaviour
 
 	public RustText Text;
 
+	public GameObject Dot;
+
 	public TextMeshProUGUI[] TextElements;
 
 	public RustIcon Loading;

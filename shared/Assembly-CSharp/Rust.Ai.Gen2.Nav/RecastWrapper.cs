@@ -25,7 +25,7 @@ public static class RecastWrapper
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool SamplePosition(IntPtr navMesh, in Vector3 position, in Vector3 extents, out Vector3 nearestPosition);
+	public static extern bool SamplePosition(IntPtr navMesh, in Vector3 position, in Vector3 extents, out Vector3 nearestPosition, out ulong nearestPolyRef);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
@@ -33,7 +33,7 @@ public static class RecastWrapper
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool Move(IntPtr navMesh, in Vector3 startPos, in Vector3 endPos, out Vector3 movedPos);
+	public static extern bool Move(IntPtr navMesh, ulong startRef, in Vector3 startPos, in Vector3 endPos, out ulong outRef, out Vector3 movedPos);
 
 	[DllImport("RustNative")]
 	public static extern DtStatus FindPath(IntPtr navMesh, in Vector3 start, in Vector3 end, [Out] Vector3[] path, out int pathLength, int maxIterations);

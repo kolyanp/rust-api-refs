@@ -68,6 +68,12 @@ public class IOEntity : DecayEntity
 			return ioEnt;
 		}
 
+		public bool TryGet(out IOEntity ioEntity, bool isServer = true)
+		{
+			ioEntity = Get(isServer);
+			return (Object)(object)ioEntity != (Object)null;
+		}
+
 		public void Clear()
 		{
 			IOEntity obj = ioEnt;
@@ -305,12 +311,12 @@ public class IOEntity : DecayEntity
 	[ReplicatedVar(Default = "True", Help = "Allows the deployment and usage of IO entities on player boats and tugboats.")]
 	public static bool allow_on_boats;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing high priority electric io entities per server frame (monuments)")]
+	[ServerVar]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
+	[ServerVar]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
 	[ServerVar]
@@ -567,7 +573,7 @@ public class IOEntity : DecayEntity
 		ClearIndustrialPreventBuilding();
 	}
 
-	public Phrase GetDisplayName()
+	public virtual Phrase GetDisplayName()
 	{
 		if (!((Object)(object)sourceItem != (Object)null))
 		{
@@ -652,6 +658,50 @@ public class IOEntity : DecayEntity
 			}
 		}
 		return true;
+	}
+
+	public virtual bool CanSkipWireToolBuildAuthorisation()
+	{
+		return false;
+	}
+
+	public virtual bool CanBreakConnection(BasePlayer player, int slotIndex, bool isInput)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		return player.CanBuild(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
+	}
+
+	public IOEntity GetConnectedTo(int slotIndex, bool isInput)
+	{
+		IOSlot[] array = (isInput ? inputs : outputs);
+		if (array == null || slotIndex < 0 || slotIndex >= array.Length)
+		{
+			return null;
+		}
+		IOSlot iOSlot = array[slotIndex];
+		if (iOSlot?.connectedTo == null)
+		{
+			return null;
+		}
+		return iOSlot.connectedTo.Get(base.isServer);
+	}
+
+	public bool TryGetConnectedTo(int slotIndex, bool isInput, out IOEntity connectedTo)
+	{
+		connectedTo = GetConnectedTo(slotIndex, isInput);
+		return (Object)(object)connectedTo != (Object)null;
+	}
+
+	public virtual float GetMinWireSlack(bool isInput, int slotIndex)
+	{
+		return 0f;
+	}
+
+	public virtual float GetMaxWireSlack(bool isInput, int slotIndex)
+	{
+		return 2f;
 	}
 
 	public virtual bool WantsPassthroughPower()
@@ -1206,7 +1256,16 @@ public class IOEntity : DecayEntity
 
 	public virtual void UpdateHasPower(int inputAmount, int inputSlot)
 	{
-		SetFlagLocal(Flags.Reserved8, inputAmount >= ConsumptionAmount() && inputAmount > 0);
+		SetFlagLocal(Flags.Reserved8, GetHasPower(inputAmount, inputSlot));
+	}
+
+	public virtual bool GetHasPower(int inputAmount, int inputSlot)
+	{
+		if (inputAmount >= ConsumptionAmount())
+		{
+			return inputAmount > 0;
+		}
+		return false;
 	}
 
 	public void TouchInternal()
@@ -1599,6 +1658,7 @@ public class IOEntity : DecayEntity
 					iOSlot2.connectedTo.Get().SendChangedToRoot(forceUpdate: true);
 				}
 			}
+			OnOutputDisconnected(index);
 		}
 		iOEntity.SendNetworkUpdateImmediate();
 		if (ioType == IOType.Industrial)
@@ -1610,6 +1670,10 @@ public class IOEntity : DecayEntity
 			iOEntity.NotifyIndustrialNetworkChanged();
 		}
 		return true;
+	}
+
+	protected virtual void OnOutputDisconnected(int index)
+	{
 	}
 
 	public void DisconnectAll()

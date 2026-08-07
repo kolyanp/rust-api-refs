@@ -6,8 +6,8 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.DepthOfFieldRenderer), "Unity/Depth of Field", false)]
 public sealed class DepthOfField : PostProcessEffectSettings
 {
-	[Min(0.1f)]
 	[Tooltip("Distance to the point of focus.")]
+	[Min(0.1f)]
 	public FloatParameter focusDistance = new FloatParameter
 	{
 		value = 10f

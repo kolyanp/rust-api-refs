@@ -21,7 +21,7 @@ public class Info : BasePlayerHandler<AppEmpty>
 		val.players = (uint)BasePlayer.activePlayerList.Count;
 		val.maxPlayers = (uint)ConVar.Server.maxplayers;
 		val.queuedPlayers = (uint)SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued;
-		val.seed = World.Seed;
+		val.seed = (uint)World.Timestamp;
 		val.camerasEnabled = CameraRenderer.enabled;
 		if (NexusServer.Started)
 		{

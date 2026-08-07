@@ -24,6 +24,8 @@ public class WheelSwitch : IOEntity
 
 	public float kineticEnergyPerSec = 1f;
 
+	public bool requiresPowerToTurn;
+
 	private BasePlayer rotatorPlayer;
 
 	private float progressTickRate = 0.1f;
@@ -189,8 +191,8 @@ public class WheelSwitch : IOEntity
 		flagsUpdateScope.Set(Flags.Reserved4, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void CancelRotate(RPCMessage msg)
 	{
 		CancelPlayerRotation();

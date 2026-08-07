@@ -30,11 +30,6 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		public GameObjectRef alarmEffect;
 	}
 
-	private class TeleportPassenger
-	{
-		public BasePlayer Player;
-	}
-
 	private struct PlacedPoint(Vector2 pos, float radius)
 	{
 		public Vector2 pos = pos;
@@ -807,25 +802,37 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = AdjustPortalExitPosition(normalizedPosition, centerOfArea, distanceToMove);
 		Vector3 val2 = AdjustPortalExitPosition(((Bounds)(ref portalWorldBounds)).min, centerOfArea, distanceToMove);
 		Vector3 val3 = AdjustPortalExitPosition(((Bounds)(ref portalWorldBounds)).max, centerOfArea, distanceToMove);
@@ -857,23 +864,27 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = startPos;
 		int num = 0;
 		while (Vector3.Distance(val, endPos) > 1f && num++ < 100)
@@ -946,7 +957,8 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if ((Object)(object)WaterSystem.Instance == (Object)null)
+		bool flag = false;
+		if ((Object)(object)WaterSystem.Instance == (Object)null && !flag)
 		{
 			Kill();
 			return;
@@ -1128,23 +1140,32 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public void MoveToDeepSea(BaseEntity entity)
 	{
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)entity == (Object)null))
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)entity == (Object)null)
 		{
-			if (entity.isClient)
+			return;
+		}
+		if (entity.isClient)
+		{
+			Debug.LogError((object)"DeepSea: Can't move a clientside entity to the deep sea");
+		}
+		else if (!IsInsideDeepSea((BaseNetworkable)entity))
+		{
+			PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
+			try
 			{
-				Debug.LogError((object)"DeepSea: Can't move a clientside entity to the deep sea");
-			}
-			else if (!IsInsideDeepSea((BaseNetworkable)entity))
-			{
-				List<TeleportPassenger> passengers = GetPassengers(entity);
-				PreTeleportEntity(entity, passengers, isEnterDeepSea: true);
+				BaseVehicle.GetPassengersForVehicle(entity, (List<BasePlayer>)(object)val);
+				PreTeleportEntity(entity, (List<BasePlayer>)(object)val, isEnterDeepSea: true);
 				Vector3 deepSeaEntrancePosition = GetDeepSeaEntrancePosition(entity);
 				TeleportEntity(entity, deepSeaEntrancePosition);
-				PostTeleportEntity(entity, passengers);
+				PostTeleportEntity(entity, (List<BasePlayer>)(object)val);
 				NotifyEntityMovedToDeepSea(entity);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
 			}
 		}
 	}
@@ -1153,61 +1174,54 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)entity == (Object)null))
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)entity == (Object)null)
 		{
-			if (entity.isClient)
-			{
-				Debug.LogError((object)"DeepSea: Can't move a clientside entity to the main island");
-				return;
-			}
-			if (!IsInsideDeepSea((BaseNetworkable)entity))
-			{
-				Debug.LogWarning((object)$"DeepSea: Trying to remove entity {entity} from the deep sea but not inside it");
-				return;
-			}
-			Vector3 deepSeaExitPosition = GetDeepSeaExitPosition(entity);
-			List<TeleportPassenger> passengers = GetPassengers(entity);
-			PreTeleportEntity(entity, passengers, isEnterDeepSea: false);
+			return;
+		}
+		if (entity.isClient)
+		{
+			Debug.LogError((object)"DeepSea: Can't move a clientside entity to the main island");
+			return;
+		}
+		if (!IsInsideDeepSea((BaseNetworkable)entity))
+		{
+			Debug.LogWarning((object)$"DeepSea: Trying to remove entity {entity} from the deep sea but not inside it");
+			return;
+		}
+		Vector3 deepSeaExitPosition = GetDeepSeaExitPosition(entity);
+		PooledList<BasePlayer> val = Pool.Get<PooledList<BasePlayer>>();
+		try
+		{
+			BaseVehicle.GetPassengersForVehicle(entity, (List<BasePlayer>)(object)val);
+			PreTeleportEntity(entity, (List<BasePlayer>)(object)val, isEnterDeepSea: false);
 			TeleportEntity(entity, deepSeaExitPosition);
-			PostTeleportEntity(entity, passengers);
+			PostTeleportEntity(entity, (List<BasePlayer>)(object)val);
 			NotifyEntityMovedToMainIsland(entity);
 		}
-	}
-
-	private static List<TeleportPassenger> GetPassengers(BaseEntity entity)
-	{
-		List<TeleportPassenger> list = new List<TeleportPassenger>();
-		List<BasePlayer> list2 = Pool.Get<List<BasePlayer>>();
-		BaseVehicle.GetPassengersForVehicle(entity, list2);
-		foreach (BasePlayer item in list2)
+		finally
 		{
-			list.Add(new TeleportPassenger
-			{
-				Player = item
-			});
+			((IDisposable)val)?.Dispose();
 		}
-		Pool.FreeUnmanaged<BasePlayer>(ref list2);
-		return list;
 	}
 
-	private static void PreTeleportEntity(BaseEntity entity, List<TeleportPassenger> passengers, bool isEnterDeepSea)
+	private static void PreTeleportEntity(BaseEntity entity, List<BasePlayer> passengers, bool isEnterDeepSea)
 	{
 		if (entity is BasePlayer player)
 		{
 			PreTeleportPlayer(player, isEnterDeepSea);
 			return;
 		}
-		foreach (TeleportPassenger passenger in passengers)
+		foreach (BasePlayer passenger in passengers)
 		{
-			PreTeleportPlayer(passenger.Player, isEnterDeepSea);
+			PreTeleportPlayer(passenger, isEnterDeepSea);
 			if (isEnterDeepSea)
 			{
-				NotifyEntityMovedToDeepSea(passenger.Player);
+				NotifyEntityMovedToDeepSea(passenger);
 			}
 			else
 			{
-				NotifyEntityMovedToMainIsland(passenger.Player);
+				NotifyEntityMovedToMainIsland(passenger);
 			}
 		}
 	}
@@ -1246,32 +1260,32 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		}
 	}
 
-	private static void PostTeleportEntity(BaseEntity entity, List<TeleportPassenger> passengers)
+	private static void PostTeleportEntity(BaseEntity entity, List<BasePlayer> passengers)
 	{
 		Dictionary<BasePlayer, BaseMountable> dictionary = Pool.Get<Dictionary<BasePlayer, BaseMountable>>();
-		foreach (TeleportPassenger passenger in passengers)
+		foreach (BasePlayer passenger in passengers)
 		{
-			BaseMountable mounted = passenger.Player.GetMounted();
+			BaseMountable mounted = passenger.GetMounted();
 			if ((Object)(object)mounted != (Object)null)
 			{
-				dictionary[passenger.Player] = mounted;
+				dictionary[passenger] = mounted;
 			}
-			passenger.Player.EnsureDismounted();
-			passenger.Player.SendNetworkUpdateImmediate();
+			passenger.EnsureDismounted();
+			passenger.SendNetworkUpdateImmediate();
 			if (Rust.GameInfo.HasAchievements)
 			{
-				passenger.Player.GiveAchievement("ENTER_DEEP_SEA");
+				passenger.GiveAchievement("ENTER_DEEP_SEA");
 			}
 		}
 		entity.UpdateNetworkGroup();
-		foreach (TeleportPassenger passenger2 in passengers)
+		foreach (BasePlayer passenger2 in passengers)
 		{
-			passenger2.Player.UpdateNetworkGroup();
+			passenger2.UpdateNetworkGroup();
 		}
 		entity.SendNetworkUpdateImmediate();
-		foreach (TeleportPassenger passenger3 in passengers)
+		foreach (BasePlayer passenger3 in passengers)
 		{
-			passenger3.Player.SendNetworkUpdateImmediate();
+			passenger3.SendNetworkUpdateImmediate();
 		}
 		foreach (KeyValuePair<BasePlayer, BaseMountable> item in dictionary)
 		{
@@ -1281,7 +1295,6 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 				value.MountPlayer(item.Key);
 			}
 		}
-		Pool.FreeUnmanaged<TeleportPassenger>(ref passengers);
 		Pool.FreeUnmanaged<BasePlayer, BaseMountable>(ref dictionary);
 	}
 

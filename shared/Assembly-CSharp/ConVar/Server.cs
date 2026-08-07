@@ -161,6 +161,12 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "(Generated) Override the geographic region code used for ping estimation in the server browser; leave empty to use automatic detection")]
 	public static string ping_region_code_override = "";
 
+	[ServerVar(Help = "Seconds before a NPC corpse is removed from the world; default is 600 seconds (10 minutes)")]
+	public static float npccorpsedespawn = 600f;
+
+	[ServerVar(Help = "Allows items to be moved into containers that block item input")]
+	public static bool bypassiteminputrestriction = false;
+
 	private static string _favoritesEndpoint = "";
 
 	[ServerVar(Saved = true, ShowInAdminUI = true, Help = "(Generated) URL of the banner/header image shown at the top of this server's page in the server browser")]
@@ -637,6 +643,18 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "Maximum number of bytes permitted in VoiceData packets, oversized packets will be dropped")]
 	public static int maxpacketsize_voicedata = 8096;
 
+	[ReplicatedVar(Help = "Bytes per second of requested file data (sign textures, photos, cassette audio, sculpts) sent to each client; requests beyond this are deferred, not dropped. Replicated so clients throttle their own requests to match")]
+	public static int filerequestbytespersecond = 2097152;
+
+	[ReplicatedVar(Help = "Burst of requested file data bytes each client can be sent before further requests are deferred. Replicated so clients throttle their own requests to match")]
+	public static int filerequestbytesburst = 4194304;
+
+	[ServerVar(Help = "Maximum deferred file requests per client; requests beyond this are dropped (a legitimate client's own request throttle never fills the queue)")]
+	public static int filerequestqueuelength = 256;
+
+	[ServerVar(Help = "Print file request rate limiting activity to the server console: incoming requests, bytes sent, and per-connection budget usage as it recovers over time")]
+	public static bool filerequestdebug = false;
+
 	[ServerVar(Help = "(Generated) Maximum tick-update packets per second accepted from each client; these carry player inputs and must stay within this rate to be processed")]
 	public static int maxpacketspersecond_tick = 300;
 
@@ -655,7 +673,7 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "MS per frame to spend warming up entity save caches")]
 	public static int saveframebudget = 5;
 
-	[ServerVar(Help = "Player Update parallelism mode: 2-4, Higher modes are faster but more experimental. 3 by default")]
+	[ServerVar(Help = "Player Update parallelism mode: 3-4, Higher modes are faster but more experimental. 3 by default")]
 	public static int UsePlayerUpdateJobs = 3;
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - how many players to gather occlusion pairs for per task")]
@@ -666,6 +684,9 @@ public class Server : ConsoleSystem
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 2 related - how many destroy messages to batch into 1 task")]
 	public static int DestroyTaskBatchCount = 128;
+
+	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - affects how many players get batched into 1 task by counting the size of their network queues. Higher number - less tasks")]
+	public static int ParallelNetworkQueueBatchSize = 256;
 
 	[ServerVar(Help = "(Generated) Setting this to true assigns a new random value to the world generation seed; useful for wipe scripts that want a fresh random map each time")]
 	public static bool randomize_seed
@@ -1037,8 +1058,6 @@ public class Server : ConsoleSystem
 			Net.sv.logging = value;
 		}
 	}
-
-	public static bool UseUniTasks => UsePlayerUpdateJobs >= 3;
 
 	[ReplicatedVar(Name = "era", Help = "none,primitive,medieval,frontier,rust")]
 	public static string era
@@ -1698,20 +1717,21 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "(Generated) Sends a video URL to all connected players, causing the in-game video player to open and play the specified video on every client")]
 	public static void BroadcastPlayVideo(Arg arg)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		string text = arg.GetString(0);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			arg.ReplyWith("Missing video URL");
 			return;
 		}
+		bool flag = arg.GetBool(1);
 		Enumerator<BasePlayer> enumerator = BasePlayer.activePlayerList.GetEnumerator();
 		try
 		{
 			while (enumerator.MoveNext())
 			{
-				enumerator.Current.Command("client.playvideo", text);
+				enumerator.Current.Command("client.playvideo", text, flag);
 			}
 		}
 		finally

@@ -5,8 +5,8 @@ namespace ConVar;
 [Factory("ping")]
 public class Ping : ConsoleSystem
 {
-	[ClientVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
 	[ServerVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
+	[ClientVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
 	public static int ping_samples
 	{
 		get
@@ -33,8 +33,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
 	[ServerVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
+	[ClientVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
 	public static int ping_refresh_interval
 	{
 		get
@@ -61,8 +61,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) When enabled, logs ping estimation results to the console; useful for debugging regional latency measurement accuracy")]
 	[ServerVar(Help = "(Generated) When enabled, logs ping estimation results to the console; useful for debugging regional latency measurement accuracy")]
+	[ClientVar(Help = "(Generated) When enabled, logs ping estimation results to the console; useful for debugging regional latency measurement accuracy")]
 	public static bool ping_estimate_logging
 	{
 		get

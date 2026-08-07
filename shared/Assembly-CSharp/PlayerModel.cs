@@ -120,12 +120,6 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	protected static int catching = Animator.StringToHash("waitingToCatch");
 
-	protected static int shieldBlockingParam = Animator.StringToHash("shieldBlocking");
-
-	protected static int shieldDeploy = Animator.StringToHash("ShieldDeploy");
-
-	protected static int shieldMeleeAttackParam = Animator.StringToHash("shieldMeleeAttack");
-
 	protected static int sittingStateParam = Animator.StringToHash("sitting");
 
 	private static readonly int[] AnimatorFloatParamsToCopy = new int[5] { forward, right, speed, vehicle_aim_yaw, poseType };
@@ -233,8 +227,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public SubsurfaceProfile subsurfaceProfile;
 
-	[Header("Parameters")]
 	[Range(0f, 1f)]
+	[Header("Parameters")]
 	public float voiceVolume;
 
 	[Range(0f, 1f)]

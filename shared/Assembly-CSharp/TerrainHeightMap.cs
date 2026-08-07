@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using TerrainHeightMapJobs;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -49,12 +50,92 @@ public class TerrainHeightMap : TerrainMap<short>
 		}
 	}
 
+	public struct HeightSampler
+	{
+		private unsafe short* data;
+
+		private int res;
+
+		private int len;
+
+		private float scaleX;
+
+		private float baseX;
+
+		private float scaleZ;
+
+		private float baseZ;
+
+		private float posY;
+
+		private float sizeY;
+
+		private unsafe short* rowT;
+
+		private unsafe short* rowB;
+
+		private float wz;
+
+		public unsafe static HeightSampler Create(NativeArray<short> heights, int res, Vector3 mapOrigin, Vector3 mapSize, float posY, float sizeY)
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+			int num = res - 1;
+			return new HeightSampler
+			{
+				data = (short*)NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr<short>(heights),
+				res = res,
+				len = num,
+				scaleX = (float)num / mapSize.x,
+				baseX = (0f - mapOrigin.x) * ((float)num / mapSize.x),
+				scaleZ = (float)num / mapSize.z,
+				baseZ = (0f - mapOrigin.z) * ((float)num / mapSize.z),
+				posY = posY,
+				sizeY = sizeY
+			};
+		}
+
+		public unsafe void BeginRow(float worldZ)
+		{
+			float num = worldZ * scaleZ + baseZ;
+			int num2 = (int)num;
+			wz = Mathf.Clamp01(num - (float)num2);
+			num2 = ((num2 >= 0) ? num2 : 0);
+			num2 = ((num2 <= len) ? num2 : len);
+			int num3 = ((num < (float)len) ? res : 0);
+			rowT = data + num2 * res;
+			rowB = rowT + num3;
+		}
+
+		public unsafe float SampleRow(float worldX)
+		{
+			float num = worldX * scaleX + baseX;
+			int num2 = (int)num;
+			float num3 = Mathf.Clamp01(num - (float)num2);
+			num2 = ((num2 >= 0) ? num2 : 0);
+			num2 = ((num2 <= len) ? num2 : len);
+			int num4 = ((num < (float)len) ? 1 : 0);
+			float num5 = BitUtility.Short2Float((int)rowT[num2]);
+			float num6 = BitUtility.Short2Float((int)rowT[num2 + num4]);
+			float num7 = BitUtility.Short2Float((int)rowB[num2]);
+			float num8 = BitUtility.Short2Float((int)rowB[num2 + num4]);
+			float num9 = (num6 - num5) * num3 + num5;
+			float num10 = (num8 - num7) * num3 + num7;
+			return posY + ((num10 - num9) * wz + num9) * sizeY;
+		}
+	}
+
 	public Texture2D HeightTexture;
 
 	public Texture2D NormalTexture;
 
-	[Header("Collider Sampling")]
 	[Min(1f)]
+	[Header("Collider Sampling")]
 	public int ColliderSamplesPerAxis = 1;
 
 	[Range(0f, 1f)]
@@ -1126,5 +1207,24 @@ public class TerrainHeightMap : TerrainMap<short>
 				}
 			}
 		}
+	}
+
+	public HeightSampler CreateSampler(bool deepSea)
+	{
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		if (!deepSea)
+		{
+			return HeightSampler.Create(src, res, TerrainMeta.Position, TerrainMeta.Size, TerrainMeta.Position.y, TerrainMeta.Size.y);
+		}
+		return HeightSampler.Create(deepSeaHeights, res, ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).min, ((Bounds)(ref DeepSeaManager.DeepSeaBounds)).size, TerrainMeta.Position.y, TerrainMeta.Size.y);
 	}
 }

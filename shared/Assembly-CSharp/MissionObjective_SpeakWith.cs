@@ -21,7 +21,7 @@ public class MissionObjective_SpeakWith : MissionObjective
 			SetObjectiveWorldLocation(index, instance, missionProvider.ProviderPosition());
 			if (showPing && playerFor.IsInTutorial)
 			{
-				playerFor.RegisterPingedEntity(missionProvider.Entity(), BasePlayer.PingType.GoTo);
+				playerFor.RegisterPingedEntity(missionProvider.GetEntity(), BasePlayer.PingType.GoTo);
 			}
 			playerFor.MissionsDirty();
 		}
@@ -32,11 +32,11 @@ public class MissionObjective_SpeakWith : MissionObjective
 		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0321: Unknown result type (might be due to invalid IL or missing references)
-		//IL_034e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_035c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0322: Unknown result type (might be due to invalid IL or missing references)
+		//IL_034f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_036b: Unknown result type (might be due to invalid IL or missing references)
 		base.ProcessMissionEvent(playerFor, instance, index, type, payload, amount);
 		if (type != BaseMission.MissionEventType.CONVERSATION)
 		{
@@ -79,7 +79,7 @@ public class MissionObjective_SpeakWith : MissionObjective
 				((Object)this).name,
 				((Object)mission).name,
 				instance.providerID.Value,
-				((Object)missionProvider.Entity()).name,
+				((Object)missionProvider.GetEntity()).name,
 				payload.NetworkIdentifier
 			}));
 		}

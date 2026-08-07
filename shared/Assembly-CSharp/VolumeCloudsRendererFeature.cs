@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(VolumeCloudsCamera), typeof(VolumeCloudsCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/VolumeCloudsRendererFeature")]
+[RustRendererFeatureCameraComponent(typeof(VolumeCloudsCamera), typeof(VolumeCloudsCameraContext))]
 public class VolumeCloudsRendererFeature : RustRendererFeature
 {
 	private VolumeCloudsShadowPass _shadowPass;
@@ -33,21 +33,21 @@ public class VolumeCloudsRendererFeature : RustRendererFeature
 		if (_drawPass == null)
 		{
 			VolumeCloudsDrawPass volumeCloudsDrawPass = new VolumeCloudsDrawPass();
-			((RustRenderPass)volumeCloudsDrawPass).renderPassEvent = (RenderPassEvent)7;
+			((RustRenderPass)volumeCloudsDrawPass).renderPassEvent = (RenderPassEvent)8;
 			((RustRenderPass)volumeCloudsDrawPass).sort = 2;
 			_drawPass = volumeCloudsDrawPass;
 		}
 		if (_upscalePass == null)
 		{
 			VolumeCloudsUpscalePass volumeCloudsUpscalePass = new VolumeCloudsUpscalePass();
-			((RustRenderPass)volumeCloudsUpscalePass).renderPassEvent = (RenderPassEvent)7;
+			((RustRenderPass)volumeCloudsUpscalePass).renderPassEvent = (RenderPassEvent)8;
 			((RustRenderPass)volumeCloudsUpscalePass).sort = 3;
 			_upscalePass = volumeCloudsUpscalePass;
 		}
 		if (_scatteringPass == null)
 		{
 			VolumeCloudsAtmosphericScatteringPass volumeCloudsAtmosphericScatteringPass = new VolumeCloudsAtmosphericScatteringPass();
-			((RustRenderPass)volumeCloudsAtmosphericScatteringPass).renderPassEvent = (RenderPassEvent)7;
+			((RustRenderPass)volumeCloudsAtmosphericScatteringPass).renderPassEvent = (RenderPassEvent)8;
 			((RustRenderPass)volumeCloudsAtmosphericScatteringPass).sort = 4;
 			_scatteringPass = volumeCloudsAtmosphericScatteringPass;
 		}

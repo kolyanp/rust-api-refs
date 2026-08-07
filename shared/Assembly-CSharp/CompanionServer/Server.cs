@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CompanionServer.Handlers;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Newtonsoft.Json;
 using ProtoBuf;
@@ -96,21 +97,25 @@ public static class Server
 		return Listener?.Update() ?? false;
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void Broadcast(PlayerTarget target, AppBroadcast broadcast)
 	{
 		Listener?.PlayerSubscribers?.Send(target, broadcast);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void Broadcast(EntityTarget target, AppBroadcast broadcast)
 	{
 		Listener?.EntitySubscribers?.Send(target, broadcast);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void Broadcast(ClanTarget target, AppBroadcast broadcast)
 	{
 		Listener?.ClanSubscribers?.Send(target, broadcast);
 	}
 
+	[PoolAnalyzerNonCaching]
 	public static void Broadcast(CameraTarget target, AppBroadcast broadcast)
 	{
 		Listener?.CameraSubscribers?.Send(target, broadcast);

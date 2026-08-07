@@ -21,6 +21,8 @@ public class UICompass : MonoBehaviour
 
 	public CompassMapMarker DeepSeaExitMarker;
 
+	public CompassBagMarker SleepingBagMarker;
+
 	public static readonly Phrase IslandInfoPhrase = new Phrase("nexus.compass.island_info", "Continue for {distance} to travel to {zone}");
 
 	private static readonly int CompassScroll = Shader.PropertyToID("_CompassScroll");

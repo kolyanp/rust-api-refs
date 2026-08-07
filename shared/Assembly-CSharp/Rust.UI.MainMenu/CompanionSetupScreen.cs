@@ -11,6 +11,7 @@ public class CompanionSetupScreen : UI_Window
 		Error,
 		NoServer,
 		NotSupported,
+		NotPushEnabled,
 		NotInstalled,
 		Disabled,
 		Enabled,
@@ -26,6 +27,8 @@ public class CompanionSetupScreen : UI_Window
 	public GameObject errorMessage;
 
 	public GameObject notSupportedMessage;
+
+	public GameObject notPushEnabledMessage;
 
 	public GameObject disabledMessage;
 

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading;
+using Development.Attributes;
 using Facepunch;
 using SilentOrbit.ProtocolBuffers;
 using UnityEngine;
@@ -389,6 +390,7 @@ public class NetRead : Stream, IPooled
 		return this.Read<Color32>();
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public T Proto<T>(T proto = null) where T : class, IProto<T>, new()
 	{
 		if (proto == null)
@@ -399,6 +401,7 @@ public class NetRead : Stream, IPooled
 		return proto;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public T ProtoDelta<T>(T proto) where T : class, IProto<T>, new()
 	{
 		if (proto == null)

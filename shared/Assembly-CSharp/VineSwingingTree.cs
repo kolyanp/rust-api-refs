@@ -27,6 +27,8 @@ public class VineSwingingTree : TreeEntity
 
 	public List<EntityRef<VineMountable>> SpawnedVines = new List<EntityRef<VineMountable>>();
 
+	public override bool IncludeInNavmesh => true;
+
 	public VineMountable GetSpawnedVine(VineLaunchPoint point)
 	{
 		int index = point.Index();

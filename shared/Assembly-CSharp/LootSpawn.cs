@@ -117,10 +117,10 @@ public class LootSpawn : ScriptableObject
 
 	public void SpawnIntoContainer(ItemContainer container, ItemOwnershipShare ownership = default(ItemOwnershipShare), ItemContainer fallbackContainer = null)
 	{
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		EnsureFilterUpdated();
 		if (allowedSubSpawn != null && allowedSubSpawn.Length != 0)
 		{
@@ -139,40 +139,58 @@ public class LootSpawn : ScriptableObject
 				{
 					continue;
 				}
-				Item item = null;
-				if (itemAmountRanged.itemDef.spawnAsBlueprint)
-				{
-					ItemDefinition blueprintBaseDef = GetBlueprintBaseDef();
-					if ((Object)(object)blueprintBaseDef == (Object)null)
-					{
-						continue;
-					}
-					Item item2 = ItemManager.Create(blueprintBaseDef, 1, 0uL, isServerSide: true, 0uL);
-					item2.blueprintTarget = itemAmountRanged.itemDef.itemid;
-					item = item2;
-				}
-				else
-				{
-					item = ItemManager.CreateByItemID(itemAmountRanged.itemid, (int)itemAmountRanged.GetAmount(), 0uL, 0uL);
-				}
-				if (item == null)
+				int num = (int)itemAmountRanged.GetAmount();
+				ItemDefinition itemDef = itemAmountRanged.itemDef;
+				if ((Object)(object)itemDef == (Object)null)
 				{
 					continue;
 				}
-				item.OnVirginSpawn();
-				if (ownership.IsValid())
+				int num2 = 0;
+				while (num > 0 && num2 < 20)
 				{
-					item.SetItemOwnership(ownership.username, ownership.reason);
-				}
-				if (!item.MoveToContainer(container) && (fallbackContainer == null || !item.MoveToContainer(fallbackContainer)))
-				{
-					if (Object.op_Implicit((Object)(object)container.playerOwner))
+					num2++;
+					Item item = null;
+					if (itemAmountRanged.itemDef.spawnAsBlueprint)
 					{
-						item.Drop(container.playerOwner.GetDropPosition(), container.playerOwner.GetDropVelocity());
+						ItemDefinition blueprintBaseDef = GetBlueprintBaseDef();
+						if ((Object)(object)blueprintBaseDef == (Object)null)
+						{
+							break;
+						}
+						Item item2 = ItemManager.Create(blueprintBaseDef, 1, 0uL, isServerSide: true, 0uL);
+						item2.blueprintTarget = itemAmountRanged.itemDef.itemid;
+						item = item2;
+						num = 0;
 					}
 					else
 					{
-						item.Remove();
+						int num3 = itemDef.stackable;
+						if (container.maxStackSize > 0)
+						{
+							num3 = Mathf.Min(num3, container.maxStackSize);
+						}
+						item = ItemManager.Create(itemDef, Mathf.Max(1, Mathf.Min(num, num3)), 0uL, isServerSide: true, 0uL);
+					}
+					if (item == null)
+					{
+						continue;
+					}
+					num -= item.amount;
+					item.OnVirginSpawn();
+					if (ownership.IsValid())
+					{
+						item.SetItemOwnership(ownership.username, ownership.reason);
+					}
+					if (!item.MoveToContainer(container) && (fallbackContainer == null || !item.MoveToContainer(fallbackContainer)))
+					{
+						if (Object.op_Implicit((Object)(object)container.playerOwner))
+						{
+							item.Drop(container.playerOwner.GetDropPosition(), container.playerOwner.GetDropVelocity());
+						}
+						else
+						{
+							item.Remove();
+						}
 					}
 				}
 			}

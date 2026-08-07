@@ -92,6 +92,19 @@ public class Entity : ConsoleSystem
 		public bool Valid => string.IsNullOrEmpty(Error);
 	}
 
+	private struct VendorDefinition
+	{
+		public string VendingMachinePrefab;
+
+		public string ShopKeeperPrefab;
+	}
+
+	private static readonly Dictionary<string, VendorDefinition> VendorDefinitions = new Dictionary<string, VendorDefinition>(StringComparer.OrdinalIgnoreCase) { ["waterwell"] = new VendorDefinition
+	{
+		VendingMachinePrefab = "assets/prefabs/deployable/vendingmachine/npcvendingmachines/shopkeeper_vm_invis_waterwell.prefab",
+		ShopKeeperPrefab = "assets/prefabs/npc/waterwell/waterwell_shopkeeper.prefab"
+	} };
+
 	private static void GetEntityTable(TextTable table, Func<EntityInfo, bool> filter)
 	{
 		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
@@ -178,8 +191,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists the networked entity with the given network entity ID in a formatted table; admin-only on client")]
 	public static void find_id(Arg args)
 	{
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
@@ -237,8 +250,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities whose status string contains the given filter text in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities whose status string contains the given filter text in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities whose status string contains the given filter text in a formatted table; admin-only on client")]
 	public static void find_status(Arg args)
 	{
 		string filter = args.GetString(0);
@@ -254,8 +267,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Lists all networked entities within the given radius in metres of the calling player in a formatted table; admin-only on client")]
 	[ServerVar(Help = "(Generated) Lists all networked entities within the given radius in metres of the calling player in a formatted table; admin-only on client")]
+	[ClientVar(Help = "(Generated) Lists all networked entities within the given radius in metres of the calling player in a formatted table; admin-only on client")]
 	public static void find_radius(Arg args)
 	{
 		BasePlayer player = ArgEx.Player(args);
@@ -438,6 +451,103 @@ public class Entity : ConsoleSystem
 		baseEntity.UpdateNetworkGroup();
 		Debug.Log((object)$"{arg} spawned \"{baseEntity}\" at {pos}");
 		return "spawned " + ((object)baseEntity)?.ToString() + " at " + ((object)(*(Vector3*)(&pos))/*cast due to constrained. prefix*/).ToString();
+	}
+
+	private static string UnknownVendorMessage(string name)
+	{
+		return "Unknown vendor \"" + name + "\" - known vendors: " + string.Join(", ", VendorDefinitions.Keys);
+	}
+
+	[ServerVar(Name = "spawnvendor", Help = "(Generated) Spawns a complete NPC vendor by vendor name - both the shopkeeper NPC and the invisible vending machine it needs - at the position the calling player is looking at")]
+	public static string svspawnvendor(string name)
+	{
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(ConsoleSystem.CurrentArgs);
+		if (string.IsNullOrEmpty(name) || !VendorDefinitions.TryGetValue(name, out var value))
+		{
+			return UnknownVendorMessage(name);
+		}
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			return "spawnvendor has to be run by a player - it spawns the vendor wherever you're looking";
+		}
+		Ray val = basePlayer.eyes.HeadRay();
+		RaycastHit val2 = default(RaycastHit);
+		if (!Physics.Raycast(val, ref val2, 100f, 1218652417, (QueryTriggerInteraction)1))
+		{
+			return "Nothing to place the vendor on - look at the ground and try again";
+		}
+		Vector3 point = ((RaycastHit)(ref val2)).point;
+		Vector3 val3 = -Vector3Ex.XZ3D(((Ray)(ref val)).direction);
+		Quaternion rot = Quaternion.LookRotation((((Vector3)(ref val3)).sqrMagnitude > 0.001f) ? val3 : Vector3.forward, Vector3.up);
+		InvisibleVendingMachine invisibleVendingMachine = SpawnVendorEntity<InvisibleVendingMachine>(value.VendingMachinePrefab, point, rot);
+		if ((Object)(object)invisibleVendingMachine == (Object)null)
+		{
+			Debug.Log((object)$"{basePlayer} failed to spawn \"{value.VendingMachinePrefab}\" for the \"{name}\" vendor");
+			return "Couldn't spawn the vending machine for the \"" + name + "\" vendor";
+		}
+		NPCShopKeeper nPCShopKeeper = SpawnVendorEntity<NPCShopKeeper>(value.ShopKeeperPrefab, point, rot);
+		if ((Object)(object)nPCShopKeeper == (Object)null)
+		{
+			invisibleVendingMachine.Kill();
+			Debug.Log((object)$"{basePlayer} failed to spawn \"{value.ShopKeeperPrefab}\" for the \"{name}\" vendor");
+			return "Couldn't spawn the shopkeeper for the \"" + name + "\" vendor";
+		}
+		if ((Object)(object)nPCShopKeeper.GetVendingMachine() != (Object)(object)invisibleVendingMachine)
+		{
+			Debug.LogWarning((object)("Spawned the \"" + name + "\" vendor but the shopkeeper didn't pair up with its vending machine - the shop won't be interactable"));
+		}
+		Debug.Log((object)$"{basePlayer} spawned the \"{name}\" vendor at {point}");
+		return $"spawned the \"{name}\" vendor at {point}";
+	}
+
+	private static T SpawnVendorEntity<T>(string prefabName, Vector3 pos, Quaternion rot) where T : BaseEntity
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		BaseEntity baseEntity = GameManager.server.CreateEntity(prefabName, pos, rot);
+		if ((Object)(object)baseEntity == (Object)null)
+		{
+			return null;
+		}
+		if (!(baseEntity is T val))
+		{
+			Debug.LogError((object)("\"" + prefabName + "\" is not a " + typeof(T).Name + " - the vendor definition is wrong"));
+			GameManager.Destroy(((Component)baseEntity).gameObject);
+			return null;
+		}
+		if (val is BasePlayer basePlayer)
+		{
+			basePlayer.OverrideViewAngles(((Quaternion)(ref rot)).eulerAngles);
+		}
+		val.Spawn();
+		EntityParentSettings entityParentSettings = default(EntityParentSettings);
+		if (((Component)val).TryGetComponent<EntityParentSettings>(ref entityParentSettings))
+		{
+			entityParentSettings.TryDetachChildren(val);
+		}
+		val.UpdateNetworkGroup();
+		return val;
 	}
 
 	[ServerVar(Name = "spawnitem", Help = "(Generated) Spawns a dropped item entity server-side by item short name at a given world position")]

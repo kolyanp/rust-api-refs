@@ -106,9 +106,9 @@ public class InstantCameraTool : HeldEntity
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	private void TakePhoto(RPCMessage msg)
 	{
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)

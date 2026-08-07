@@ -43,6 +43,12 @@ public class TriggerHurtNotChild : TriggerBase, IServerComponent, IHurtTrigger
 
 	public float activationDelay;
 
+	public bool ScaleWithDistToTriggerCenter;
+
+	public Collider triggerCollider;
+
+	public float DamageMultAtCenter = 1f;
+
 	private Dictionary<BaseEntity, float> entryTimes;
 
 	private TimeSince timeSinceAcivation;
@@ -168,18 +174,28 @@ public class TriggerHurtNotChild : TriggerBase, IServerComponent, IHurtTrigger
 	{
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0244: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0254: Unknown result type (might be due to invalid IL or missing references)
 		if (CollectionEx.IsNullOrEmpty(entityContents))
 		{
 			return;
@@ -207,7 +223,17 @@ public class TriggerHurtNotChild : TriggerBase, IServerComponent, IHurtTrigger
 				{
 					num *= lootContainerMultiplier;
 				}
-				Vector3 val = ((Component)item).transform.position + Vector3.up * 1f;
+				if (ScaleWithDistToTriggerCenter && Object.op_Implicit((Object)(object)triggerCollider))
+				{
+					Vector3 val = item.TriggerPoint();
+					Bounds bounds = triggerCollider.bounds;
+					float num2 = Vector3.Distance(val, BoundsEx.ClosestPointOnSurface(bounds, val));
+					float num3 = Vector3.Distance(val, ((Bounds)(ref bounds)).center);
+					float num4 = num2 + num3;
+					float num5 = Mathf.Lerp(1f, DamageMultAtCenter, 1f - num3 / num4);
+					num *= num5;
+				}
+				Vector3 val2 = ((Component)item).transform.position + Vector3.up * 1f;
 				bool flag = item is BasePlayer || item is BaseNpc;
 				BaseEntity baseEntity = null;
 				BaseEntity weaponPrefab = null;
@@ -224,8 +250,8 @@ public class TriggerHurtNotChild : TriggerBase, IServerComponent, IHurtTrigger
 				{
 					DoHitEffects = true,
 					HitEntity = item,
-					HitPositionWorld = val,
-					HitPositionLocal = ((Component)item).transform.InverseTransformPoint(val),
+					HitPositionWorld = val2,
+					HitPositionLocal = ((Component)item).transform.InverseTransformPoint(val2),
 					HitNormalWorld = Vector3.up,
 					HitMaterial = (flag ? StringPool.Get("Flesh") : 0u),
 					WeaponPrefab = weaponPrefab,

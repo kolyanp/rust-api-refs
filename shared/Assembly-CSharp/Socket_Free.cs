@@ -9,6 +9,7 @@ public class Socket_Free : Socket_Base
 
 	public bool snapToTargetProvidedRotations;
 
+	[Tooltip("Allows for rolling the rotation of the deployable depending on distance. If you don't want the deployable to be able to rotate on it's Z axis, disable this.")]
 	public bool blendAimAngle = true;
 
 	public override bool TestTarget(Construction.Target target)

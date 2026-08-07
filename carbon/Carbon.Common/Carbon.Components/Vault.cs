@@ -10,7 +10,6 @@ using Carbon.Extensions;
 using Facepunch;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Shims;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Modes;
@@ -207,7 +206,6 @@ public class Vault
 		}
 	}
 
-	[Preserve]
 	public class Protected : JsonConverter
 	{
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ConVar;
+using Development.Attributes;
 using Facepunch;
 using Network;
 using Oxide.Core;
@@ -938,88 +939,13 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 						{
 							return true;
 						}
-						long position = msg.read.Position;
-						AIDesign val = msg.read.Proto<AIDesign>((AIDesign)null);
-						try
+						if (!BaseEntity.RPC_Server.IsVisible.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
 						{
-							foreach (AIStateContainer stateContainer in val.stateContainers)
-							{
-								foreach (AIEventData @event in stateContainer.events)
-								{
-									if (@event.timerData != null)
-									{
-										if (!BaseEntity.RPC_Server.InputValidation.Test(@event.timerData.duration))
-										{
-											return true;
-										}
-										if (!BaseEntity.RPC_Server.InputValidation.Test(@event.timerData.durationMax))
-										{
-											return true;
-										}
-									}
-									if (@event.playerDetectedData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.playerDetectedData.range))
-									{
-										return true;
-									}
-									if (@event.healthBelowData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.healthBelowData.healthFraction))
-									{
-										return true;
-									}
-									if (@event.inRangeData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.inRangeData.range))
-									{
-										return true;
-									}
-									if (@event.hungerAboveData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.hungerAboveData.value))
-									{
-										return true;
-									}
-									if (@event.tirednessAboveData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.tirednessAboveData.value))
-									{
-										return true;
-									}
-									if (@event.threatDetectedData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.threatDetectedData.range))
-									{
-										return true;
-									}
-									if (@event.targetDetectedData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.targetDetectedData.range))
-									{
-										return true;
-									}
-									if (@event.ammoBelowData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.ammoBelowData.value))
-									{
-										return true;
-									}
-									if (@event.chanceData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.chanceData.value))
-									{
-										return true;
-									}
-									if (@event.timeSinceThreatData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.timeSinceThreatData.value))
-									{
-										return true;
-									}
-									if (@event.aggressionTimerData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.aggressionTimerData.value))
-									{
-										return true;
-									}
-									if (@event.inRangeOfHomeData != null && !BaseEntity.RPC_Server.InputValidation.Test(@event.inRangeOfHomeData.range))
-									{
-										return true;
-									}
-								}
-							}
-							msg.read.Position = position;
-							if (!BaseEntity.RPC_Server.IsVisible.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
-							{
-								return true;
-							}
-							if (!BaseEntity.RPC_Server.MaxDistance.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
-							{
-								return true;
-							}
+							return true;
 						}
-						finally
+						if (!BaseEntity.RPC_Server.MaxDistance.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
 						{
-							((IDisposable)val)?.Dispose();
+							return true;
 						}
 					}
 					try
@@ -1172,8 +1098,8 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	private void RequestAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (UseAIDesign && !((Object)(object)msg.player == (Object)null) && AIDesign != null && PlayerCanDesignAI(msg.player))
@@ -1189,7 +1115,6 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 	[BaseEntity.RPC_Server.IsVisible(3f)]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
-	[BaseEntity.RPC_Server.InputValidation(new Type[] { typeof(AIDesign) })]
 	private void SubmitAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (!UseAIDesign || (Object)(object)msg.player == (Object)null || !PlayerCanDesignAI(msg.player))
@@ -1197,41 +1122,48 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 			return;
 		}
 		AIDesign val = msg.read.Proto<AIDesign>((AIDesign)null);
-		if (!LoadAIDesign(val, msg.player, loadedDesignIndex))
+		try
 		{
-			return;
-		}
-		SaveDesign();
-		if (val.scope == 2)
-		{
-			return;
-		}
-		BaseEntity baseEntity = GetBaseEntity();
-		BaseEntity[] array = BaseEntity.Util.FindTargets(baseEntity.ShortPrefabName, onlyPlayers: false);
-		if (array == null || array.Length == 0)
-		{
-			return;
-		}
-		BaseEntity[] array2 = array;
-		foreach (BaseEntity baseEntity2 in array2)
-		{
-			if ((Object)(object)baseEntity2 == (Object)null || (Object)(object)baseEntity2 == (Object)(object)baseEntity)
+			if (!LoadAIDesign(val, msg.player, loadedDesignIndex))
 			{
-				continue;
+				return;
 			}
-			List<EntityComponentBase> components = baseEntity2.Components;
-			if (components == null)
+			SaveDesign();
+			if (val.scope == 2)
 			{
-				continue;
+				return;
 			}
-			foreach (EntityComponentBase item in components)
+			BaseEntity baseEntity = GetBaseEntity();
+			BaseEntity[] array = BaseEntity.Util.FindTargets(baseEntity.ShortPrefabName, onlyPlayers: false);
+			if (array == null || array.Length == 0)
 			{
-				if (item is global::IAIDesign iAIDesign)
+				return;
+			}
+			BaseEntity[] array2 = array;
+			foreach (BaseEntity baseEntity2 in array2)
+			{
+				if ((Object)(object)baseEntity2 == (Object)null || (Object)(object)baseEntity2 == (Object)(object)baseEntity)
 				{
-					iAIDesign.LoadAIDesign(val, null);
-					break;
+					continue;
+				}
+				List<EntityComponentBase> components = baseEntity2.Components;
+				if (components == null)
+				{
+					continue;
+				}
+				foreach (EntityComponentBase item in components)
+				{
+					if (item is global::IAIDesign iAIDesign)
+					{
+						iAIDesign.LoadAIDesign(val, null);
+						break;
+					}
 				}
 			}
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -1240,6 +1172,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		ClearDesigningPlayer();
 	}
 
+	[PoolAnalyzerNonCaching]
 	void global::IAIDesign.LoadAIDesign(AIDesign design, BasePlayer player)
 	{
 		LoadAIDesign(design, player, loadedDesignIndex);
@@ -1271,6 +1204,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 	{
 	}
 
+	[PoolAnalyzerNonCaching]
 	protected bool LoadAIDesign(AIDesign design, BasePlayer player, int index)
 	{
 		if (design == null)

@@ -9,6 +9,8 @@ using UnityEngine.Assertions;
 
 public class LiquidContainer : ContainerIOEntity
 {
+	public const Flags Flag_OpenTap = Flags.Reserved5;
+
 	public ItemDefinition defaultLiquid;
 
 	public int startingAmount;
@@ -27,9 +29,9 @@ public class LiquidContainer : ContainerIOEntity
 
 	private int currentDrainAmount;
 
-	private HashSet<IOEntity> connectedList = new HashSet<IOEntity>();
+	protected HashSet<IOEntity> connectedList = new HashSet<IOEntity>();
 
-	private HashSet<ContainerIOEntity> pushTargets = new HashSet<ContainerIOEntity>();
+	protected HashSet<ContainerIOEntity> pushTargets = new HashSet<ContainerIOEntity>();
 
 	private const int maxPushTargets = 12;
 
@@ -163,6 +165,17 @@ public class LiquidContainer : ContainerIOEntity
 	public override void OnCircuitChanged(bool forceUpdate)
 	{
 		base.OnCircuitChanged(forceUpdate);
+		RefreshDrainsAndPushTargets();
+	}
+
+	protected override void OnOutputDisconnected(int index)
+	{
+		base.OnOutputDisconnected(index);
+		RefreshDrainsAndPushTargets();
+	}
+
+	private void RefreshDrainsAndPushTargets()
+	{
 		ClearDrains();
 		Invoke(updateDrainAmountAction, 0.1f);
 		if (autofillOutputs && HasLiquidItem())
@@ -421,18 +434,19 @@ public class LiquidContainer : ContainerIOEntity
 			return;
 		}
 		Item liquidItem = GetLiquidItem();
+		int num = 0;
 		if (pushTargets.Count > 0)
 		{
-			int num = Mathf.Clamp(autofillTickAmount, 0, liquidItem.amount) / pushTargets.Count;
-			if (num == 0 && liquidItem.amount > 0)
+			int num2 = Mathf.Clamp(autofillTickAmount, 0, liquidItem.amount) / pushTargets.Count;
+			if (num2 == 0 && liquidItem.amount > 0)
 			{
-				num = liquidItem.amount;
+				num2 = liquidItem.amount;
 			}
-			if (ConVar.Server.waterContainersLeaveWaterBehind && num == liquidItem.amount)
+			if (ConVar.Server.waterContainersLeaveWaterBehind && num2 == liquidItem.amount)
 			{
-				num--;
+				num2--;
 			}
-			if (num == 0)
+			if (num2 == 0)
 			{
 				return;
 			}
@@ -447,9 +461,14 @@ public class LiquidContainer : ContainerIOEntity
 				}
 				else if (pushTarget.inventory.CanAcceptItem(liquidItem, 0) == ItemContainer.CanAcceptResult.CanAccept && (pushTarget.inventory.CanAccept(liquidItem) || pushTarget.inventory.FindItemByItemID(liquidItem.info.itemid) != null))
 				{
-					int num2 = Mathf.Clamp(num, 0, pushTarget.inventory.GetMaxTransferAmount(liquidItem.info));
-					pushTarget.inventory.AddItem(liquidItem.info, num2, 0uL);
-					liquidItem.amount -= num2;
+					int num3 = Mathf.Clamp(num2, 0, pushTarget.inventory.GetMaxTransferAmount(liquidItem.info));
+					pushTarget.inventory.AddItem(liquidItem.info, num3, 0uL);
+					if (liquidItem.IsLocked())
+					{
+						pushTarget.inventory.GetSlot(0)?.LockUnlock(bNewState: true);
+					}
+					num += num3;
+					liquidItem.amount -= num3;
 					liquidItem.MarkDirty();
 					if (liquidItem.amount <= 0)
 					{
@@ -457,6 +476,10 @@ public class LiquidContainer : ContainerIOEntity
 					}
 				}
 			}
+		}
+		if (num > 0)
+		{
+			OnWaterMoved(num);
 		}
 		if (liquidItem.amount <= 0 || pushTargets.Count == 0)
 		{
@@ -466,6 +489,10 @@ public class LiquidContainer : ContainerIOEntity
 			}
 			CancelInvoke(pushLiquidAction);
 		}
+	}
+
+	protected virtual void OnWaterMoved(int amount)
+	{
 	}
 
 	private void CheckPushLiquid(IOEntity connected, Item ourFuel, IOEntity fromSource, int depth, HashSet<IOEntity> checkEntities)

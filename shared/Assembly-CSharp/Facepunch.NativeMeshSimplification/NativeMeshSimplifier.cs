@@ -136,9 +136,9 @@ public class NativeMeshSimplifier : IDisposable
 
 	public void Dispose()
 	{
-		_vertices.Dispose();
-		_triangles.Dispose();
-		_refs.Dispose();
+		NativeListEx.SafeDispose(ref _vertices);
+		NativeListEx.SafeDispose(ref _triangles);
+		NativeListEx.SafeDispose(ref _refs);
 	}
 
 	public JobHandle ScheduleMeshSimplify(float reductionModifier, NativeList<float3> verticesIn, NativeList<int> indicesIn, NativeList<float3> verticesOut, NativeList<int> indicesOut, JobHandle inputDeps)

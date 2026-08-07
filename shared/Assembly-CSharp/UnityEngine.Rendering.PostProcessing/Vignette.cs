@@ -24,8 +24,8 @@ public sealed class Vignette : PostProcessEffectSettings
 		value = new Vector2(0.5f, 0.5f)
 	};
 
-	[Tooltip("Amount of vignetting on screen.")]
 	[Range(0f, 1f)]
+	[Tooltip("Amount of vignetting on screen.")]
 	public FloatParameter intensity = new FloatParameter
 	{
 		value = 0f

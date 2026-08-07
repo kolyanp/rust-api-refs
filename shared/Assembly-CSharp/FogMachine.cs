@@ -65,8 +65,8 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetFogOff(RPCMessage msg)
 	{
 		if (!IsOn() || !msg.player.CanBuild())

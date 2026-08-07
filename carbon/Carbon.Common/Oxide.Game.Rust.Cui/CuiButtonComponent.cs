@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine.UI;
@@ -50,8 +51,15 @@ public class CuiButtonComponent : ICuiComponent, ICuiColor, ICuiEnableable, ICui
 	[JsonProperty("fadeIn")]
 	public float FadeIn { get; set; }
 
+	[JsonProperty("interactable")]
+	public bool? Interactable { get; set; }
+
 	[JsonProperty("placeholderParentId")]
 	public string PlaceholderParentId { get; set; }
+
+	[JsonProperty("blocksRaycast")]
+	[DefaultValue(true)]
+	public bool BlocksRaycast { get; set; } = true;
 
 	[JsonProperty("enabled")]
 	public bool? Enabled { get; set; }

@@ -47,6 +47,12 @@ public class SleepingBagButton : MonoBehaviour
 
 	public Image ConfirmSlider;
 
+	public GameObject FavouriteActiveRoot;
+
+	public GameObject FavouriteInactiveRoot;
+
+	public Button FavouriteButton;
+
 	public static Phrase toastHoldToUnclaimBag = new Phrase("hold_unclaim_bag", "Hold down the delete button to unclaim a sleeping bag");
 
 	public GameObject CorpseRoot;

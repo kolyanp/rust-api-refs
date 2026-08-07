@@ -150,13 +150,9 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (!cachedPrivilege.IsSet && GetBuilding() != null)
-		{
-			FindPrivilege();
-		}
 		info.msg.displayingBoxStorage = Pool.Get<DisplayingBoxStorage>();
 		bool flag = (Object)(object)info.forConnection?.player != (Object)null && CanShowToPlayer(info.forConnection.player as BasePlayer);
 		if ((info.forDisk || flag) && cachedPrivilege.IsSet)
@@ -167,9 +163,9 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 		{
 			using (TimeWarning.New("DisplayingBoxStorage.SaveResourceProportions"))
 			{
-				PooledList<float> proportions = Pool.Get<PooledList<float>>();
-				GetResourceProportions(ref proportions);
-				info.msg.displayingBoxStorage.resources = (List<float>)(object)proportions;
+				List<float> list = Pool.Get<List<float>>();
+				GetResourceProportions(list);
+				info.msg.displayingBoxStorage.resources = list;
 			}
 		}
 	}
@@ -225,13 +221,13 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 		dirtyCache = true;
 	}
 
-	private bool GetResourceProportions(ref PooledList<float> proportions)
+	private bool GetResourceProportions(List<float> proportions)
 	{
 		using (TimeWarning.New("DisplayingBoxStorage.GetResourceProportions"))
 		{
 			if (!dirtyCache)
 			{
-				((List<float>)(object)proportions).AddRange((IEnumerable<float>)cachedResourceProportions);
+				proportions.AddRange(cachedResourceProportions);
 				return true;
 			}
 			if (cachedResourceProportions == null)
@@ -260,7 +256,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Misc));
 			Pool.FreeUnmanaged<DisplayCategory, int>(ref categorySlotCache);
 			dirtyCache = false;
-			((List<float>)(object)proportions).AddRange((IEnumerable<float>)cachedResourceProportions);
+			proportions.AddRange(cachedResourceProportions);
 			return false;
 		}
 	}
@@ -331,10 +327,14 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 
 	public void OnPrivilegeUpdated(BaseEntity privilegeEntity, HashSet<ulong> authorizedPlayers)
 	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		if (!cachedPrivilege.IsSet && GetBuilding() != null)
+		{
+			FindPrivilege();
+		}
 		if (cachedPrivilege.IsSet && (Object)(object)privilegeEntity != (Object)null && privilegeEntity.net.ID != cachedPrivilege.uid)
 		{
 			return;
@@ -372,9 +372,9 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 				if (val == null)
 				{
 					val = Pool.Get<DisplayingBoxStorage>();
-					PooledList<float> proportions = Pool.Get<PooledList<float>>();
-					GetResourceProportions(ref proportions);
-					val.resources = (List<float>)(object)proportions;
+					List<float> list = Pool.Get<List<float>>();
+					GetResourceProportions(list);
+					val.resources = list;
 					if (cachedPrivilege.IsSet)
 					{
 						val.privelegeEntityId = cachedPrivilege.uid;

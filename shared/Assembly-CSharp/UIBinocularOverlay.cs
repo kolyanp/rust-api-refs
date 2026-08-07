@@ -12,6 +12,8 @@ public class UIBinocularOverlay : UIBlackoutOverlay, IShadowGroupVisibility
 
 	public Vector2 RangeScreenPosition = new Vector2(0f, 0f);
 
+	public Material binocularEffectMaterial;
+
 	public Image overlayImage;
 
 	[Header("Day/Night Settings")]

@@ -28,7 +28,7 @@ public class ImageDatabaseModule : CarbonModule<ImageDatabaseConfig, EmptyModule
 
 		public WebRequests.WebRequest.Client Client;
 
-		private Timer _timeout;
+		private Oxide.Plugins.Timer _timeout;
 
 		private int _index;
 

@@ -26,6 +26,8 @@ public class RustEmojiLibrary : BaseScriptableObject
 	{
 		public string Name;
 
+		public Phrase ItemDisplayPhrase;
+
 		public EmojiType Type;
 
 		public EmojiResult[] Emoji;
@@ -237,11 +239,12 @@ public class RustEmojiLibrary : BaseScriptableObject
 		}
 		foreach (ItemDefinition item in ItemManager.itemList)
 		{
-			if (!item.Hidden() && !((Object)(object)item.iconSprite == (Object)null))
+			if (!((Object)(object)item.iconSprite == (Object)null) && (!item.Hidden() || item.vehicleItem))
 			{
 				all.Add(new EmojiSource
 				{
 					Name = item.shortname,
+					ItemDisplayPhrase = item.displayName,
 					Type = EmojiType.Item,
 					Emoji = new EmojiResult[1]
 					{

@@ -46,7 +46,7 @@ public class SocketMod_PlantCheck : SocketMod
 		bool result = !wantsCollide;
 		foreach (BaseEntity item in list)
 		{
-			if (!place.ShouldIgnoreEntity(item))
+			if (!((Object)(object)item == (Object)null) && !place.ShouldIgnoreEntity(item))
 			{
 				GrowableEntity component = ((Component)item).GetComponent<GrowableEntity>();
 				if (Object.op_Implicit((Object)(object)component) && wantsCollide)

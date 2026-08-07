@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Fridge : ContainerIOEntity, IFoodSpoilModifier
 {
+	[Header("Fridge")]
 	public ItemCategory OnlyAcceptCategory = ItemCategory.All;
 
 	public List<ItemDefinition> IncludedItems = new List<ItemDefinition>();

@@ -63,8 +63,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[ServerVar]
 	[Help("Shore drift speed in metres per second")]
+	[ServerVar]
 	public static float drift_speed = 1f;
 
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about AI ejection events when passengers are removed from boat seats")]
@@ -645,10 +645,9 @@ public class BaseBoat : BaseVehicle
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.baseBoat = Pool.Get<BaseBoat>();
-		info.msg.baseBoat.shoreDriftTimerValue = TimeSince.op_Implicit(shoreDriftTimer);
+		info.msg.baseBoat.shoreDriftTimerValue = ((TimeSince)(ref shoreDriftTimer)).PassedSince(info.cachedTime.Time);
 	}
 
 	public override void Load(LoadInfo info)

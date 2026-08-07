@@ -114,8 +114,8 @@ public class PaintedItemStorageEntity : BaseEntity, IServerFileReceiver, IUGCBro
 		info.msg.paintedItem.editedBy = lastEditedBy;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void Server_UpdateImage(RPCMessage msg)
 	{
 		//IL_005a: Unknown result type (might be due to invalid IL or missing references)

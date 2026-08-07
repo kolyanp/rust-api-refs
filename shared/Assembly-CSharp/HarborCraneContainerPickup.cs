@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Facepunch;
+using Facepunch.Extend;
 using ProtoBuf;
 using UnityEngine;
 
@@ -68,6 +69,8 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	private float moveDelay;
 
+	private TransformHandle serverTowerGrabHandle;
+
 	private PickupState currentPickupState;
 
 	private float lockOnTime;
@@ -76,6 +79,8 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	public override void ServerInit()
 	{
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		AllCranes.Add(this);
 		List<HarborCraneContainerSpawnPoint> list = Pool.Get<List<HarborCraneContainerSpawnPoint>>();
@@ -90,6 +95,7 @@ public class HarborCraneContainerPickup : HarborCrane
 			});
 		}
 		Pool.FreeUnmanaged<HarborCraneContainerSpawnPoint>(ref list);
+		serverTowerGrabHandle = ((Component)ServerTowerGrab).transformHandle;
 		UpdateArm();
 		SendNetworkUpdate();
 	}
@@ -195,17 +201,22 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.harborCrane = Pool.Get<HarborCrane>();
-		info.msg.harborCrane.depth = ServerTowerGrab.localPosition.z;
-		info.msg.harborCrane.height = ServerTowerGrab.localPosition.y;
-		info.msg.harborCrane.time = GetNetworkTime();
+		Vector3 val = ((!BaseNetworkable.UseParallelSaves) ? ServerTowerGrab.localPosition : Facepunch.Extend.TransformEx.Unsafe.GetLocalPosMT(in serverTowerGrabHandle));
+		info.msg.harborCrane.depth = val.z;
+		info.msg.harborCrane.height = val.y;
+		info.msg.harborCrane.time = GetNetworkTime(in info.cachedTime);
 		info.msg.harborCrane.maxMoveHeight = maxTargetHeight;
 		info.msg.harborCrane.toParent = toParent.uid;
 		info.msg.harborCrane.startForward = startForward;
@@ -220,9 +231,9 @@ public class HarborCraneContainerPickup : HarborCrane
 			info.msg.harborCrane.queuedMoves = Pool.Get<List<QueuedMove>>();
 			foreach (QueuedMove item in movesToMake)
 			{
-				QueuedMove val = Pool.Get<QueuedMove>();
-				CreateMove(item, val);
-				info.msg.harborCrane.queuedMoves.Add(val);
+				QueuedMove val2 = Pool.Get<QueuedMove>();
+				CreateMove(item, val2);
+				info.msg.harborCrane.queuedMoves.Add(val2);
 			}
 		}
 		info.msg.harborCrane.currentPickupState = (int)currentPickupState;

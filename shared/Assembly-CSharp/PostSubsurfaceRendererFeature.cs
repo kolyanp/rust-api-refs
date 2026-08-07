@@ -10,6 +10,8 @@ public class PostSubsurfaceRendererFeature : RustRendererFeature
 
 	public float depthScale = 100f;
 
+	public Shader postProcessSubSurfaceShader;
+
 	public override void Create()
 	{
 	}

@@ -19,7 +19,7 @@ public class ExplosionPlatformActivator : MonoBehaviour
 	private void Start()
 	{
 		currentRepeatTime = DefaultRepeatTime;
-		((MonoBehaviour)this).Invoke("Init", TimeDelay);
+		SingletonComponent<InvokeHandler>.Instance.Invoke(Init, TimeDelay);
 	}
 
 	private void Init()

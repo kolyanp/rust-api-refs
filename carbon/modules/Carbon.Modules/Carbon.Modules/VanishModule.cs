@@ -452,17 +452,19 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0379: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0394: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0399: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0389: Unknown result type (might be due to invalid IL or missing references)
+		//IL_038e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0393: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0398: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0496: Unknown result type (might be due to invalid IL or missing references)
-		//IL_049d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_050f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0495: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_050e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0270: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
@@ -555,7 +557,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			}
 		}
 		((Component)player).transform.localScale = Vector3.one;
-		player.ResetAntiHack(player.ActivePlayerInd, AntiHack.PlayerSpeedhackStates, AntiHack.PlayerFlyhackStates);
+		BasePlayer.ResetAntiHack(player, AntiHack.PlayerStates, AntiHack.PlayerNoclipStates, AntiHack.PlayerSpeedhackStates, AntiHack.PlayerFlyhackStates);
 		((BaseEntity)player).syncPosition = true;
 		((BaseNetworkable)player)._limitedNetworking = false;
 		player.isInvisible = false;
@@ -674,19 +676,19 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 
 	private unsafe void _drawUI(BasePlayer player)
 	{
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
 		CUI val = default(CUI);
 		((CUI)(ref val))._002Ector(Handler);
 		try
 		{
-			CuiElementContainer val2 = ((CUI)(ref val)).CreateContainer("vanishui", "0 0 0 0", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, false, false, (ClientPanels)5, "vanishui", true, 0f);
+			CuiElementContainer val2 = ((CUI)(ref val)).CreateContainer("vanishui", "0 0 0 0", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, false, false, (ClientPanels)5, "vanishui", true, 0f, true);
 			if (!string.IsNullOrEmpty(base.ConfigInstance.InvisibleText))
 			{
 				float[] invisibleTextAnchorX = base.ConfigInstance.InvisibleTextAnchorX;
 				float[] invisibleTextAnchorY = base.ConfigInstance.InvisibleTextAnchorY;
-				((CUI)(ref val)).CreateText(val2, "vanishui", base.ConfigInstance.InvisibleTextColor, base.ConfigInstance.InvisibleText, base.ConfigInstance.InvisibleTextSize, invisibleTextAnchorX[0], invisibleTextAnchorX[1], invisibleTextAnchorY[0], invisibleTextAnchorY[1], 0f, 0f, 0f, 0f, base.ConfigInstance.InvisibleTextAnchor, (FontTypes)1, (VerticalWrapMode)1, 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f);
+				((CUI)(ref val)).CreateText(val2, "vanishui", base.ConfigInstance.InvisibleTextColor, base.ConfigInstance.InvisibleText, base.ConfigInstance.InvisibleTextSize, invisibleTextAnchorX[0], invisibleTextAnchorX[1], invisibleTextAnchorY[0], invisibleTextAnchorY[1], 0f, 0f, 0f, 0f, base.ConfigInstance.InvisibleTextAnchor, (FontTypes)1, (VerticalWrapMode)1, 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, true);
 			}
 			if (!string.IsNullOrEmpty(base.ConfigInstance.InvisibleIconUrl))
 			{
@@ -694,7 +696,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				float[] invisibleIconMaxAnchor = base.ConfigInstance.InvisibleIconMaxAnchor;
 				float[] invisibleIconMinOffset = base.ConfigInstance.InvisibleIconMinOffset;
 				float[] invisibleIconMaxOffset = base.ConfigInstance.InvisibleIconMaxOffset;
-				((CUI)(ref val)).CreateClientImage(val2, "vanishui", base.ConfigInstance.InvisibleIconUrl, base.ConfigInstance.InvisibleIconColor, (string)null, invisibleIconMinAnchor[0], invisibleIconMaxAnchor[0], invisibleIconMinAnchor[1], invisibleIconMaxAnchor[1], invisibleIconMinOffset[0], invisibleIconMaxOffset[0], invisibleIconMinOffset[1], invisibleIconMaxOffset[1], 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f);
+				((CUI)(ref val)).CreateClientImage(val2, "vanishui", base.ConfigInstance.InvisibleIconUrl, base.ConfigInstance.InvisibleIconColor, (string)null, invisibleIconMinAnchor[0], invisibleIconMaxAnchor[0], invisibleIconMinAnchor[1], invisibleIconMaxAnchor[1], invisibleIconMinOffset[0], invisibleIconMaxOffset[0], invisibleIconMinOffset[1], invisibleIconMaxOffset[1], 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, true);
 			}
 			((CUI)(ref val)).Send(val2, player);
 		}

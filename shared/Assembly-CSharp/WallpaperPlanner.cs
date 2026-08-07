@@ -294,9 +294,9 @@ public class WallpaperPlanner : Planner
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void SERVER_SwitchMode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

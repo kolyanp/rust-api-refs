@@ -1,10 +1,13 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.PostProcessing;
 
 [ExecuteInEditMode]
 public class DofExposer : ListComponent<DofExposer>
 {
 	public PostProcessVolume PostVolume;
+
+	public Volume PostVolumeRRP;
 
 	public bool DofEnabled;
 

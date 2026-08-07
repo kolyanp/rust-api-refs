@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -9,18 +10,47 @@ using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class Recycler : StorageContainer
+public class Recycler : StorageContainer, IPowergridEntity
 {
+	public enum RecyclerState
+	{
+		Unpowered,
+		PoweredInactive,
+		PoweredActive
+	}
+
+	public const Flags Flag_InSafeZone = Flags.Reserved9;
+
+	public const Flags Flag_ReceivingPowergridPower = Flags.Reserved11;
+
 	private static readonly int Param_On = Animator.StringToHash("on");
+
+	[Header("Recycler")]
+	public RecyclerConfig.RecyclerType recyclerType;
 
 	public Animator Animator;
 
-	[Tooltip("Depreciated")]
-	public float recycleEfficiency = 0.6f;
+	public MeshRenderer lightRenderer;
 
-	public float safezoneRecycleEfficiency = 0.4f;
+	public Renderer[] recyclerRenderers;
 
-	public float radtownRecycleEfficiency = 0.6f;
+	public Light lightComponent;
+
+	public Color lightGreenColor = new Color(2f / 3f, 1f, 0.08627451f);
+
+	public Color lightRedColor = new Color(1f, 0.04849673f, 0.01568627f);
+
+	public string recyclerGreenMaterialAssetPath;
+
+	public string recyclerYellowMaterialAssetPath;
+
+	public string recyclerRedMaterialAssetPath;
+
+	public string lightRedMaterialAssetPath;
+
+	public string lightGreenMaterialAssetPath;
+
+	public string lightOffMaterialAssetPath;
 
 	public SoundDefinition grindingLoopDef;
 
@@ -30,9 +60,59 @@ public class Recycler : StorageContainer
 
 	public GameObjectRef stopSound;
 
-	public const Flags SafeZone = Flags.Reserved9;
+	public GameObjectRef errorSound;
+
+	private Action _actionRecycleThink;
 
 	public float scrapRemainder;
+
+	private float lastFetchedEfficiency;
+
+	private int __sync_CurrentReceivedPowergridStage;
+
+	private int __sync_RecyclerTypeSyncVar;
+
+	[Sync(Autosave = true)]
+	public int CurrentReceivedPowergridStage
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_CurrentReceivedPowergridStage;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			if (!IsSyncVarEqual(__sync_CurrentReceivedPowergridStage, value))
+			{
+				__sync_CurrentReceivedPowergridStage = value;
+				byte nameID = __GetWeaverID("CurrentReceivedPowergridStage");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	[Sync(Autosave = true)]
+	public int RecyclerTypeSyncVar
+	{
+		[CompilerGenerated]
+		get
+		{
+			return __sync_RecyclerTypeSyncVar;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			if (!IsSyncVarEqual(__sync_RecyclerTypeSyncVar, value))
+			{
+				__sync_RecyclerTypeSyncVar = value;
+				byte nameID = __GetWeaverID("RecyclerTypeSyncVar");
+				QueueSyncVar(nameID);
+			}
+		}
+	}
+
+	private Action actionRecycleThink => RecycleThink;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -98,14 +178,56 @@ public class Recycler : StorageContainer
 		return false;
 	}
 
+	bool IPowergridEntity.Server_ShouldConnectToPowergrid()
+	{
+		return true;
+	}
+
+	void IPowergridEntity.Server_OnPowergridStageChanged(int newStage)
+	{
+		if (base.isServer)
+		{
+			CurrentReceivedPowergridStage = newStage;
+			Server_RefreshPowergridState();
+		}
+	}
+
+	public void Server_RefreshPowergridState()
+	{
+		if (!base.isServer)
+		{
+			return;
+		}
+		int num = 0;
+		RecyclerConfig instance = RecyclerConfig.instance;
+		if (instance != null && instance.TryGetConfigForType(GetRecyclerType(), out var zoneConfig))
+		{
+			num = zoneConfig.requiredPowergridStageToUse;
+		}
+		bool b = num <= 0 || GetEffectivePowergridStage() >= num;
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.Reserved11, b);
+	}
+
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(RecyclerItemFilter));
-		ItemContainer itemContainer2 = base.inventory;
-		itemContainer2.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(itemContainer2.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
-		UpdateInSafeZone();
+		if (base.isServer)
+		{
+			ItemContainer itemContainer = base.inventory;
+			itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(RecyclerItemFilter));
+			ItemContainer itemContainer2 = base.inventory;
+			itemContainer2.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(itemContainer2.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
+			RecyclerTypeSyncVar = (int)recyclerType;
+			UpdateInSafeZone();
+			Server_RefreshPowergridState();
+		}
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		Server_RefreshPowergridState();
 	}
 
 	private void OnItemAddedRemoved(Item item, bool added)
@@ -142,12 +264,12 @@ public class Recycler : StorageContainer
 		return true;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void SVSwitch(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
-		if (flag == IsOn() || (Object)(object)msg.player == (Object)null || Interface.CallHook("OnRecyclerToggle", this, msg.player) != null || (!flag && onlyOneUser && (Object)(object)msg.player.inventory.loot.entitySource != (Object)(object)this) || (flag && !HasRecyclable()))
+		if (flag == IsOn() || (Object)(object)msg.player == (Object)null || Interface.CallHook("OnRecyclerToggle", this, msg.player) != null || (onlyOneUser && (Object)(object)msg.player.inventory.loot.entitySource != (Object)(object)this) || (flag && GetRecyclerState() == RecyclerState.Unpowered) || (flag && !HasRecyclable()))
 		{
 			return;
 		}
@@ -232,11 +354,11 @@ public class Recycler : StorageContainer
 		return false;
 	}
 
-	public void RecycleThink()
+	private void RecycleThink()
 	{
-		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = false;
-		float num = (IsSafezoneRecycler() ? safezoneRecycleEfficiency : radtownRecycleEfficiency);
+		float num = lastFetchedEfficiency;
 		int num2 = 0;
 		while (true)
 		{
@@ -365,79 +487,166 @@ public class Recycler : StorageContainer
 		}
 	}
 
-	public float GetRecycleThinkDuration()
-	{
-		if (IsSafezoneRecycler())
-		{
-			return 8f;
-		}
-		return 5f;
-	}
-
 	public void StartRecycling()
 	{
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		if (!IsOn())
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		if (!base.isServer || IsOn())
 		{
-			InvokeRepeating(RecycleThink, GetRecycleThinkDuration(), GetRecycleThinkDuration());
-			Effect.server.Run(startSound.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
-			SetFlagLocal(Flags.On, b: true);
-			SendNetworkUpdateImmediate();
+			return;
 		}
+		GetRecyclerStats(out var efficiency, out var duration);
+		lastFetchedEfficiency = efficiency;
+		InvokeRepeating(actionRecycleThink, duration, duration);
+		Effect.server.Run(startSound.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.On, b: true);
 	}
 
 	public void StopRecycling()
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		CancelInvoke(RecycleThink);
-		if (IsOn())
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		if (!base.isServer)
 		{
-			Effect.server.Run(stopSound.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
-			SetFlagLocal(Flags.On, b: false);
-			SendNetworkUpdateImmediate();
+			return;
 		}
+		if (IsInvoking(actionRecycleThink))
+		{
+			CancelInvoke(actionRecycleThink);
+		}
+		if (!IsOn())
+		{
+			return;
+		}
+		Effect.server.Run(stopSound.resourcePath, this, 0u, Vector3.zero, Vector3.zero);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.On, b: false);
 	}
 
 	public void UpdateInSafeZone()
 	{
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		BaseGameMode activeGameMode = BaseGameMode.GetActiveGameMode(base.isServer);
-		if ((Object)(object)activeGameMode != (Object)null && !activeGameMode.safeZone)
+		if (base.isServer)
 		{
-			flagsUpdateScope.Set(Flags.Reserved9, b: false);
-			return;
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
+			{
+				flagsUpdateScope.Set(Flags.Reserved9, IsInSafeZone());
+			}
+			Server_RefreshPowergridState();
 		}
-		bool b = false;
+	}
+
+	private bool IsInSafeZone()
+	{
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		if (BaseGameMode.TryGetActiveGameMode(base.isServer, out var gameMode) && !gameMode.safeZone)
+		{
+			return false;
+		}
+		bool result = false;
 		List<TriggerBase> list = Pool.Get<List<TriggerBase>>();
 		GamePhysics.OverlapSphere<TriggerBase>(((Component)this).transform.position, 1f, list, 262144, (QueryTriggerInteraction)2);
-		foreach (TriggerBase item in list)
+		int i = 0;
+		for (int count = list.Count; i < count; i++)
 		{
-			if (!((Object)(object)item == (Object)null))
+			TriggerBase triggerBase = list[i];
+			if (!((Object)(object)triggerBase == (Object)null))
 			{
-				if (item is TriggerSafeZone)
+				if (triggerBase is TriggerSafeZone)
 				{
-					b = true;
+					result = true;
 				}
-				else if (item is TriggerSafeZoneOverride { IsCombatActive: not false })
+				else if (triggerBase is TriggerSafeZoneOverride { IsCombatActive: not false })
 				{
-					b = false;
+					result = false;
 					break;
 				}
 			}
 		}
+		Pool.FreeUnmanaged<TriggerBase>(ref list);
+		return result;
+	}
+
+	public override void OnFlagsChanged(Flags old, Flags next)
+	{
+		base.OnFlagsChanged(old, next);
 		if (base.isServer)
 		{
-			flagsUpdateScope.Set(Flags.Reserved9, b);
+			bool num = (old & Flags.Reserved11) == Flags.Reserved11;
+			bool flag = (next & Flags.Reserved11) == Flags.Reserved11;
+			if (num != flag && !flag)
+			{
+				StopRecycling();
+			}
 		}
-		Pool.FreeUnmanaged<TriggerBase>(ref list);
 	}
 
 	public bool IsSafezoneRecycler()
 	{
 		return HasFlag(Flags.Reserved9);
+	}
+
+	public RecyclerState GetRecyclerState()
+	{
+		if (RequiresPowergrid() && Powergrid.enabled && !IsReceivingPowergridPower())
+		{
+			return RecyclerState.Unpowered;
+		}
+		if (!IsOn())
+		{
+			return RecyclerState.PoweredInactive;
+		}
+		return RecyclerState.PoweredActive;
+	}
+
+	public bool IsReceivingPowergridPower()
+	{
+		return HasFlag(Flags.Reserved11);
+	}
+
+	public int GetEffectivePowergridStage()
+	{
+		if (!Powergrid.enabled)
+		{
+			return 0;
+		}
+		return CurrentReceivedPowergridStage;
+	}
+
+	public void GetRecyclerStats(out float efficiency, out float duration)
+	{
+		efficiency = 0f;
+		duration = 0f;
+		RecyclerConfig.RecyclerType recyclerType = GetRecyclerType();
+		if (RecyclerConfig.instance.TryGetConfigForType(recyclerType, out var zoneConfig))
+		{
+			bool enabled = Powergrid.enabled;
+			int effectivePowergridStage = GetEffectivePowergridStage();
+			bool flag = false;
+			flag = ((recyclerType != RecyclerConfig.RecyclerType.Green || Powergrid.greenRecyclerFullEfficiencyStage < 0) ? (enabled && effectivePowergridStage >= zoneConfig.efficiencyBuffPowergridStage && zoneConfig.efficiencyBuffPowergridStage > 0) : (effectivePowergridStage >= Powergrid.greenRecyclerFullEfficiencyStage && zoneConfig.efficiencyBuffPowergridStage > 0));
+			bool flag2 = enabled && effectivePowergridStage >= zoneConfig.durationBuffPowergridStage && zoneConfig.durationBuffPowergridStage > 0;
+			efficiency = (flag ? zoneConfig.powergridEfficiency : zoneConfig.efficiency);
+			duration = (flag2 ? zoneConfig.powergridDuration : zoneConfig.duration);
+		}
+	}
+
+	public RecyclerConfig.RecyclerType GetRecyclerType()
+	{
+		RecyclerConfig.RecyclerType recyclerTypeSyncVar = (RecyclerConfig.RecyclerType)RecyclerTypeSyncVar;
+		if (!IsSafezoneRecycler() && recyclerTypeSyncVar == RecyclerConfig.RecyclerType.Yellow)
+		{
+			return RecyclerConfig.RecyclerType.Green;
+		}
+		return recyclerTypeSyncVar;
+	}
+
+	public bool RequiresPowergrid()
+	{
+		if (!RecyclerConfig.instance.TryGetConfigForType(GetRecyclerType(), out var zoneConfig))
+		{
+			return false;
+		}
+		return zoneConfig.requiredPowergridStageToUse > 0;
 	}
 
 	[UnityEvent]
@@ -452,5 +661,148 @@ public class Recycler : StorageContainer
 
 	private void ToggleAnim(bool toggle)
 	{
+	}
+
+	private void OnSyncVar_Server_RecyclerTypeSyncVar(int newValue)
+	{
+	}
+
+	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
+	{
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		switch (id)
+		{
+		case 0:
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: CurrentReceivedPowergridStage for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_CurrentReceivedPowergridStage);
+			return true;
+		case 1:
+			if (Global.developer > 2)
+			{
+				NetworkableId iD = net.ID;
+				Debug.Log((object)("SyncVar Writing: RecyclerTypeSyncVar for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
+			}
+			SyncVarNetWrite(writer, __sync_RecyclerTypeSyncVar);
+			OnSyncVar_Server_RecyclerTypeSyncVar(__sync_RecyclerTypeSyncVar);
+			return true;
+		default:
+			return base.WriteSyncVar(id, writer);
+		}
+	}
+
+	protected override bool OnSyncVar(byte id, NetRead reader, bool fromAutoSave = false)
+	{
+		switch (id)
+		{
+		case 0:
+			try
+			{
+				_ = __sync_CurrentReceivedPowergridStage;
+				int _sync_CurrentReceivedPowergridStage = reader.Int32();
+				__sync_CurrentReceivedPowergridStage = _sync_CurrentReceivedPowergridStage;
+			}
+			catch (Exception ex2)
+			{
+				Debug.LogException(ex2);
+			}
+			return true;
+		case 1:
+			try
+			{
+				_ = __sync_RecyclerTypeSyncVar;
+				int _sync_RecyclerTypeSyncVar = reader.Int32();
+				__sync_RecyclerTypeSyncVar = _sync_RecyclerTypeSyncVar;
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+			return true;
+		default:
+			return base.OnSyncVar(id, reader, fromAutoSave);
+		}
+	}
+
+	private byte __GetWeaverID(string propertyName)
+	{
+		if (!(propertyName == "CurrentReceivedPowergridStage"))
+		{
+			if (propertyName == "RecyclerTypeSyncVar")
+			{
+				return 1;
+			}
+			return byte.MaxValue;
+		}
+		return 0;
+	}
+
+	protected override void WriteAutoSaveSyncVars(NetWrite writer)
+	{
+		base.WriteAutoSaveSyncVars(writer);
+		WriteSyncVar(0, writer);
+		WriteSyncVar(1, writer);
+	}
+
+	protected override void ReadAutoSaveSyncVars(NetRead reader)
+	{
+		base.ReadAutoSaveSyncVars(reader);
+		OnSyncVar(0, reader, fromAutoSave: true);
+		OnSyncVar(1, reader, fromAutoSave: true);
+	}
+
+	protected override bool AutoSaveSyncVars(SaveInfo save)
+	{
+		NetWrite netWrite = Net.sv.StartWrite();
+		WriteAutoSaveSyncVars(netWrite);
+		var (src, num) = netWrite.GetBuffer();
+		if (_autosaveBuffer == null)
+		{
+			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+		}
+		if (_autosaveBuffer.Length < num)
+		{
+			BaseEntity._autosaveBufferPool.Return(_autosaveBuffer);
+			_autosaveBuffer = BaseEntity._autosaveBufferPool.Rent(num);
+		}
+		Buffer.BlockCopy(src, 0, _autosaveBuffer, 0, num);
+		save.msg.baseEntity.syncVars = _autosaveBuffer;
+		Pool.Free<NetWrite>(ref netWrite);
+		return true;
+	}
+
+	protected override bool AutoLoadSyncVars(LoadInfo load)
+	{
+		if (load.msg.baseEntity != null && load.msg.baseEntity.syncVars != null)
+		{
+			NetRead netRead = Pool.Get<NetRead>();
+			netRead.Init(load.msg.baseEntity.syncVars.AsSpan());
+			ReadAutoSaveSyncVars(netRead);
+			Pool.Free<NetRead>(ref netRead);
+		}
+		return true;
+	}
+
+	protected override void ResetSyncVars()
+	{
+		base.ResetSyncVars();
+		__sync_CurrentReceivedPowergridStage = 0;
+		__sync_RecyclerTypeSyncVar = 0;
+	}
+
+	protected override bool ShouldInvalidateCache(byte id)
+	{
+		return id switch
+		{
+			0 => true, 
+			1 => true, 
+			_ => base.ShouldInvalidateCache(id), 
+		};
 	}
 }

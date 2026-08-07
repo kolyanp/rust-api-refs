@@ -16,6 +16,8 @@ public class TimerSwitch : IOEntity
 
 	private float serverStartTime = -1f;
 
+	public BasePlayer lastUsedPlayer { get; private set; }
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("TimerSwitch.OnRpcMessage"))
@@ -154,6 +156,7 @@ public class TimerSwitch : IOEntity
 	public void SVSwitch(RPCMessage msg)
 	{
 		SwitchPressed();
+		lastUsedPlayer = msg.player;
 	}
 
 	public void SwitchPressed()

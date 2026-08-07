@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 
 public static class ClanLeaderboardExtensions
 {
+	[PoolAnalyzerGetWrapper]
 	public static ClanLeaderboard ToProto(this List<ClanLeaderboardEntry> leaderboard)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -19,6 +21,7 @@ public static class ClanLeaderboardExtensions
 		return obj;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static Entry ToProto(this ClanLeaderboardEntry entry)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

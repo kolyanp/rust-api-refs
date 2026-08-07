@@ -55,9 +55,9 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 	[Range(0f, 3f)]
 	public float underwaterDrag = 2f;
 
-	[FormerlySerializedAs("flatWaterLerp")]
-	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
 	[Range(0f, 1f)]
+	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
+	[FormerlySerializedAs("flatWaterLerp")]
 	public float wavesEffect = 1f;
 
 	public Action<bool> SubmergedChanged;
@@ -69,8 +69,8 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	public bool FlowForceDisabled;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private BuoyancyPointData[] pointData;
 
 	private bool initedPointArrays;

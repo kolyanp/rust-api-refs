@@ -731,8 +731,8 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SV_OpenStorage(RPCMessage msg)
 	{
 		if (CanBeLooted(msg.player))
@@ -743,6 +743,16 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 				droneStorage.PlayerOpenLoot(msg.player);
 			}
 		}
+	}
+
+	public override bool CanBeLooted(BasePlayer player)
+	{
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		if (base.isServer && TriggerSafeZone.IsBoundsInsideSafeZone(WorldSpaceBounds(), checkCombatZones: false))
+		{
+			return false;
+		}
+		return base.CanBeLooted(player);
 	}
 
 	public override void Load(LoadInfo info)

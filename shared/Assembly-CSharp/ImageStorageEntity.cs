@@ -33,13 +33,6 @@ public class ImageStorageEntity : BaseEntity
 				}
 				using (TimeWarning.New("ImageRequested"))
 				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!RPC_Server.CallsPerSecond.Test(652912521u, "ImageRequested", this, player, 3uL))
-						{
-							return true;
-						}
-					}
 					try
 					{
 						using (TimeWarning.New("Call"))
@@ -65,24 +58,29 @@ public class ImageStorageEntity : BaseEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	private void ImageRequested(RPCMessage msg)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)msg.player == (Object)null))
 		{
-			byte[] array = FileStorage.server.Get(CrcToLoad, StorageType, net.ID);
-			if (array == null)
-			{
-				Debug.LogWarning((object)"Image entity has no image!");
-				return;
-			}
-			SendInfo sendInfo = new SendInfo(msg.connection);
-			sendInfo.method = SendMethod.Reliable;
-			sendInfo.channel = 2;
-			SendInfo sendInfo2 = sendInfo;
-			ClientRPC(RpcTarget.SendInfo("ReceiveImage", sendInfo2), (uint)array.Length, array);
+			ServerFileRequestQueue.Request(msg.connection, this, ServerFileRequestQueue.RequestKind.EntityImage, CrcToLoad, StorageType, null);
 		}
+	}
+
+	internal int SendRequestedImage(Connection connection)
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		byte[] array = FileStorage.server.Get(CrcToLoad, StorageType, net.ID);
+		if (array == null)
+		{
+			Debug.LogWarning((object)"Image entity has no image!");
+			return 0;
+		}
+		SendInfo sendInfo = new SendInfo(connection);
+		sendInfo.method = SendMethod.Reliable;
+		sendInfo.channel = 2;
+		SendInfo sendInfo2 = sendInfo;
+		ClientRPC(RpcTarget.SendInfo("ReceiveImage", sendInfo2), (uint)array.Length, array);
+		return array.Length;
 	}
 }

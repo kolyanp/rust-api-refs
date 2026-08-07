@@ -3,7 +3,11 @@ using UnityEngine;
 
 public class VehicleLiftOccupantTrigger : TriggerBase
 {
+	public bool checkNonModularCarVehicles;
+
 	public ModularCar carOccupant { get; private set; }
+
+	public BaseVehicle vehicleOccupant { get; private set; }
 
 	protected override void OnDisable()
 	{
@@ -13,6 +17,10 @@ public class VehicleLiftOccupantTrigger : TriggerBase
 			if ((Object)(object)carOccupant != (Object)null)
 			{
 				carOccupant = null;
+			}
+			if ((Object)(object)vehicleOccupant != (Object)null)
+			{
+				vehicleOccupant = null;
 			}
 		}
 	}
@@ -28,7 +36,14 @@ public class VehicleLiftOccupantTrigger : TriggerBase
 		{
 			return null;
 		}
-		if (!(baseEntity is ModularCar))
+		if (checkNonModularCarVehicles)
+		{
+			if (!(baseEntity is BaseVehicle))
+			{
+				return null;
+			}
+		}
+		else if (!(baseEntity is ModularCar))
 		{
 			return null;
 		}
@@ -38,7 +53,18 @@ public class VehicleLiftOccupantTrigger : TriggerBase
 	internal override void OnEntityEnter(BaseEntity ent)
 	{
 		base.OnEntityEnter(ent);
-		if ((Object)(object)carOccupant == (Object)null && ent.isServer)
+		if (checkNonModularCarVehicles)
+		{
+			if ((Object)(object)vehicleOccupant == (Object)null && ent.isServer)
+			{
+				vehicleOccupant = (BaseVehicle)ent;
+			}
+			if ((Object)(object)carOccupant == (Object)null && ent.isServer && ent is ModularCar modularCar)
+			{
+				carOccupant = modularCar;
+			}
+		}
+		else if ((Object)(object)carOccupant == (Object)null && ent.isServer)
 		{
 			carOccupant = (ModularCar)ent;
 		}
@@ -47,10 +73,11 @@ public class VehicleLiftOccupantTrigger : TriggerBase
 	internal override void OnEntityLeave(BaseEntity ent)
 	{
 		base.OnEntityLeave(ent);
-		if (!((Object)(object)carOccupant == (Object)(object)ent))
+		if (!((Object)(object)carOccupant == (Object)(object)ent) && (!checkNonModularCarVehicles || !((Object)(object)vehicleOccupant == (Object)(object)ent)))
 		{
 			return;
 		}
+		vehicleOccupant = null;
 		carOccupant = null;
 		if (entityContents == null || entityContents.Count <= 0)
 		{
@@ -58,11 +85,23 @@ public class VehicleLiftOccupantTrigger : TriggerBase
 		}
 		foreach (BaseEntity entityContent in entityContents)
 		{
-			if ((Object)(object)entityContent != (Object)null)
+			if (!((Object)(object)entityContent != (Object)null))
+			{
+				continue;
+			}
+			if (checkNonModularCarVehicles)
+			{
+				vehicleOccupant = (BaseVehicle)entityContent;
+				if (entityContent is ModularCar modularCar)
+				{
+					carOccupant = modularCar;
+				}
+			}
+			else
 			{
 				carOccupant = (ModularCar)entityContent;
-				break;
 			}
+			break;
 		}
 	}
 }

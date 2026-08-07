@@ -1,9 +1,80 @@
 using System;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class TerrainAlphaMap : TerrainMap<byte>
 {
+	public struct AlphaSampler
+	{
+		private unsafe byte* data;
+
+		private int res;
+
+		private int len;
+
+		private float scaleX;
+
+		private float baseX;
+
+		private float scaleZ;
+
+		private float baseZ;
+
+		private unsafe byte* rowT;
+
+		private unsafe byte* rowB;
+
+		private float wz;
+
+		public unsafe static AlphaSampler Create(NativeArray<byte> alphas, int res, Vector3 mapPos, Vector3 oneOverSize)
+		{
+			//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+			int num = res - 1;
+			float num2 = oneOverSize.x * (float)num;
+			float num3 = oneOverSize.z * (float)num;
+			return new AlphaSampler
+			{
+				data = (byte*)NativeArrayUnsafeUtility.GetUnsafeReadOnlyPtr<byte>(alphas),
+				res = res,
+				len = num,
+				scaleX = num2,
+				baseX = (0f - mapPos.x) * num2,
+				scaleZ = num3,
+				baseZ = (0f - mapPos.z) * num3
+			};
+		}
+
+		public unsafe void BeginRow(float worldZ)
+		{
+			float num = worldZ * scaleZ + baseZ;
+			int num2 = Mathf.Clamp((int)num, 0, len);
+			int num3 = Mathf.Min(num2 + 1, len);
+			wz = Mathf.Clamp01(num - (float)num2);
+			rowT = data + num2 * res;
+			rowB = data + num3 * res;
+		}
+
+		public unsafe float SampleRow(float worldX)
+		{
+			float num = worldX * scaleX + baseX;
+			int num2 = Mathf.Clamp((int)num, 0, len);
+			int num3 = Mathf.Min(num2 + 1, len);
+			float num4 = Mathf.Clamp01(num - (float)num2);
+			float num5 = BitUtility.Byte2Float((int)rowT[num2]);
+			float num6 = BitUtility.Byte2Float((int)rowT[num3]);
+			float num7 = BitUtility.Byte2Float((int)rowB[num2]);
+			float num8 = BitUtility.Byte2Float((int)rowB[num3]);
+			float num9 = (num6 - num5) * num4 + num5;
+			return ((num8 - num7) * num4 + num7 - num9) * wz + num9;
+		}
+	}
+
 	[FormerlySerializedAs("ColorTexture")]
 	public Texture2D AlphaTexture;
 
@@ -103,6 +174,11 @@ public class TerrainAlphaMap : TerrainMap<byte>
 		return BitUtility.Byte2Float((int)src[z * res + x]);
 	}
 
+	public float GetAlphaFloat(int x, int z)
+	{
+		return GetAlpha(x, z);
+	}
+
 	public void SetAlpha(Vector3 worldPos, float a)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
@@ -149,5 +225,13 @@ public class TerrainAlphaMap : TerrainMap<byte>
 			}
 		};
 		ApplyFilter(normX, normZ, radius, fade, action);
+	}
+
+	public AlphaSampler CreateSampler()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		return AlphaSampler.Create(src, res, TerrainMeta.Position, TerrainMeta.OneOverSize);
 	}
 }

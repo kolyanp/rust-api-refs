@@ -50,7 +50,7 @@ public class AiLocationManager : FacepunchBehaviour, IServerComponent
 		AICoverPoint[] componentsInChildren = ((Component)CoverPointGroup).GetComponentsInChildren<AICoverPoint>();
 		foreach (AICoverPoint aICoverPoint in componentsInChildren)
 		{
-			if (RustNavMesh.SamplePosition(((Component)aICoverPoint).transform.position, out var hitNS, 4f, -1))
+			if (RustNavMeshHelpers.SamplePosition(((Component)aICoverPoint).transform.position, out var hitNS, 4f, -1))
 			{
 				((Component)aICoverPoint).transform.position = ((NavMeshHit)(ref hitNS)).position;
 			}

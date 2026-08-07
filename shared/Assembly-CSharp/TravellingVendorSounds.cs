@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class TravellingVendorSounds : MonoBehaviour
 {
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private EngineAudioSet EngineAudioSet;
 
 	[SerializeField]
@@ -27,8 +27,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float gearMissCooldown = 5f;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -43,8 +43,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve suspensionUpAngleDeltaGain;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -76,8 +76,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float brakeHissCooldown = 2f;
 
-	[Header("Misc")]
 	[SerializeField]
+	[Header("Misc")]
 	private SoundDefinition angryHornSoundDef;
 
 	[SerializeField]

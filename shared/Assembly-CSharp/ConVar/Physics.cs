@@ -50,8 +50,8 @@ public class Physics : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, horses can be temporarily ragdolled by large physics impacts; disabling keeps horses upright during collisions")]
 	public static bool allowhorsetempragdoll = true;
 
-	[ClientVar(Help = "(Generated) When enabled, physics transform syncs are batched per frame for efficiency; disable to force immediate per-object sync")]
 	[ServerVar(Help = "(Generated) When enabled, physics transform syncs are batched per frame for efficiency; disable to force immediate per-object sync")]
+	[ClientVar(Help = "(Generated) When enabled, physics transform syncs are batched per frame for efficiency; disable to force immediate per-object sync")]
 	public static bool batchsynctransforms = true;
 
 	private static bool _treecollision = true;
@@ -132,8 +132,8 @@ public class Physics : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, Unity Physics auto-syncs transform changes to physics each frame; disable to manually control when transforms sync")]
 	[ClientVar(Help = "(Generated) When enabled, Unity Physics auto-syncs transform changes to physics each frame; disable to manually control when transforms sync")]
+	[ServerVar(Help = "(Generated) When enabled, Unity Physics auto-syncs transform changes to physics each frame; disable to manually control when transforms sync")]
 	public static bool autosynctransforms
 	{
 		get

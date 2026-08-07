@@ -1,3 +1,4 @@
+using Development.Attributes;
 using ProtoBuf;
 using UnityEngine;
 
@@ -53,6 +54,7 @@ public class BaseAIEvent
 		EventType = type;
 	}
 
+	[PoolAnalyzerNonCaching]
 	public virtual void Init(AIEventData data, BaseEntity owner)
 	{
 		Init(data.triggerStateContainer, data.id, owner, data.inputMemorySlot, data.outputMemorySlot, data.inverted);

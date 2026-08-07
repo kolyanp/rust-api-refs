@@ -536,11 +536,12 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_0266: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
 		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
 		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ca: Unknown result type (might be due to invalid IL or missing references)
 		if (!AI.move)
 		{
 			return false;
@@ -647,9 +648,13 @@ public class BaseNavigator : BaseMonoBehaviour
 			bool flag;
 			if (AI.usecalculatepath)
 			{
-				flag = RustNavMesh.CalculatePath(((Component)this).transform.position, Destination, navMeshQueryFilter, path);
+				flag = RustNavMeshHelpers.CalculatePath(((Component)this).transform.position, Destination, navMeshQueryFilter, path);
 				if (flag)
 				{
+					if ((int)path.status != 0)
+					{
+						return false;
+					}
 					Agent.SetPath(path);
 				}
 				else if (AI.usesetdestinationfallback)

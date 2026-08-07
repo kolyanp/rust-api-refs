@@ -1,15 +1,7 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class ExplosionsParticleSystemScaler : MonoBehaviour
+public class ExplosionsParticleSystemScaler : MonoBehaviour, IClientComponent, IEditorComponent
 {
 	public float particlesScale = 1f;
-
-	private void Start()
-	{
-	}
-
-	private void Update()
-	{
-	}
 }

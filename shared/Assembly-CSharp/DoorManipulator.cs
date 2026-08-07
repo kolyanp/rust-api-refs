@@ -19,6 +19,8 @@ public class DoorManipulator : IOEntity
 
 	private bool toggle = true;
 
+	public override bool ValidateMeleeColliderAntihack => false;
+
 	public virtual bool CanPairWithLockedDoors()
 	{
 		return true;

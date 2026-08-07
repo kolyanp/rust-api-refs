@@ -184,18 +184,13 @@ public static class DemoCompat
 		}
 		BuildLookups();
 		int count = _deprecatedHashToPath.Count;
-		int count2 = _remapHashToNewPath.Count;
 		if (header == null || header.manifestCRC == 0)
 		{
 			Debug.Log((object)"[DemoCompat] Demo has no manifest CRC — compatibility layer active as precaution.");
 		}
-		else if (header.manifestCRC != GameManifest.CRC)
-		{
-			Debug.Log((object)$"[DemoCompat] Demo manifest CRC {header.manifestCRC} differs from current {GameManifest.CRC} — compatibility layer active.");
-		}
 		else
 		{
-			Debug.Log((object)$"[DemoCompat] Demo CRC matches but {count2} local remaps exist (manifest.asset not yet rebuilt) — compatibility layer active.");
+			Debug.Log((object)$"[DemoCompat] Demo manifest CRC {header.manifestCRC} differs from current {GameManifest.CRC} — compatibility layer active.");
 		}
 		if (count > 0)
 		{
@@ -209,11 +204,7 @@ public static class DemoCompat
 		{
 			return true;
 		}
-		if (header.manifestCRC != GameManifest.CRC)
-		{
-			return true;
-		}
-		return false;
+		return header.manifestCRC != GameManifest.CRC;
 	}
 
 	public static void Reset()

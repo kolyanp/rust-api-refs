@@ -94,6 +94,7 @@ public class WipeTimer : BaseEntity
 	public override void ServerInit()
 	{
 		base.ServerInit();
+		GetTimeZone();
 		RecalculateWipeFrequency();
 		InvokeRepeating(TryAndUpdate, 1f, 4f);
 	}
@@ -135,19 +136,19 @@ public class WipeTimer : BaseEntity
 		if (!info.forDisk && info.msg.landmine == null)
 		{
 			info.msg.landmine = Pool.Get<Landmine>();
-			info.msg.landmine.triggeredID = (ulong)GetTicksUntilWipe();
+			info.msg.landmine.triggeredID = (ulong)GetTicksUntilWipe(info.cachedTime.Now);
 		}
 	}
 
-	public TimeSpan GetTimeSpanUntilWipe()
+	public TimeSpan GetTimeSpanUntilWipe(DateTime? now = null)
 	{
-		DateTimeOffset dateTimeOffset = DateTimeOffset.UtcNow.AddDays(daysToAddTest).AddHours(hoursToAddTest);
+		DateTimeOffset dateTimeOffset = (now.HasValue ? ((DateTimeOffset)now.Value.ToUniversalTime()) : DateTimeOffset.UtcNow).AddDays(daysToAddTest).AddHours(hoursToAddTest);
 		return GetWipeTime(dateTimeOffset) - dateTimeOffset;
 	}
 
-	public long GetTicksUntilWipe()
+	public long GetTicksUntilWipe(DateTime now)
 	{
-		return GetTimeSpanUntilWipe().Ticks;
+		return GetTimeSpanUntilWipe(now).Ticks;
 	}
 
 	[ServerVar(Help = "(Generated) Prints the current wipe timer status including next wipe date, frequency, and time remaining")]

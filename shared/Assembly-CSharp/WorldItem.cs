@@ -226,8 +226,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void PickupTimer(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && item != null && allowPickup && CanOpenInSafeZone(msg.player))

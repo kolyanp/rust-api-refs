@@ -269,21 +269,25 @@ public class ResearchTable : StorageContainer
 		base.PlayerStoppedLooting(player);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void DoResearch(RPCMessage msg)
 	{
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
 		if (IsResearching())
 		{
 			return;
 		}
 		BasePlayer player = msg.player;
 		Item targetItem = GetTargetItem();
-		if (targetItem != null && Interface.CallHook("CanResearchItem", player, targetItem) == null && targetItem.amount <= 1 && IsItemResearchable(targetItem))
+		if (targetItem == null || Interface.CallHook("CanResearchItem", player, targetItem) != null || targetItem.amount > 1 || !IsItemResearchable(targetItem))
 		{
-			Interface.CallHook("OnItemResearch", this, targetItem, player);
+			return;
+		}
+		Interface.CallHook("OnItemResearch", this, targetItem, player);
+		if (!onlyOneUser || !((Object)(object)msg.player.inventory.loot.entitySource != (Object)(object)this))
+		{
 			targetItem.CollectedForCrafting(player);
 			researchFinishedTime = Time.realtimeSinceStartup + researchDuration;
 			Invoke(ResearchAttemptFinished, researchDuration);
@@ -377,7 +381,7 @@ public class ResearchTable : StorageContainer
 	{
 		base.Save(info);
 		info.msg.researchTable = Pool.Get<ResearchTable>();
-		info.msg.researchTable.researchTimeLeft = researchFinishedTime - Time.realtimeSinceStartup;
+		info.msg.researchTable.researchTimeLeft = researchFinishedTime - info.cachedTime.RealTimeSinceStartup;
 	}
 
 	public override void Load(LoadInfo info)

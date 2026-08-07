@@ -87,6 +87,18 @@ public class LUI : IDisposable
 			}
 		}
 
+		public void SetBlocksRaycast<T>(bool blocksRaycast) where T : LuiCompBase
+		{
+			if (luiComponents.TryGetValue<T>(LuiPool.GetLuiCompType(typeof(T)), out var value))
+			{
+				value.blocksRaycast = blocksRaycast;
+			}
+			else
+			{
+				Logger.Warn($"[LUI] You're trying to switch blocksRaycast of component '{typeof(T)}' but it isn't present. Ignoring.");
+			}
+		}
+
 		public void SetPlaceholderParentId<T>(string placeholderParentId) where T : LuiCompBase
 		{
 			if (luiComponents.TryGetValue<T>(LuiPool.GetLuiCompType(typeof(T)), out var value))
@@ -99,10 +111,8 @@ public class LUI : IDisposable
 			}
 		}
 
-		public LuiContainer SetText(string input, int fontSize = 0, string color = null, TextAnchor alignment = (TextAnchor)4, bool update = false)
+		public unsafe LuiContainer SetText(string input, int fontSize = 0, string color = null, TextAnchor alignment = (TextAnchor)4, bool update = false)
 		{
-			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiTextComp>(LuiCompType.Text, out var value))
 			{
 				value.text = input;
@@ -116,7 +126,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = GetAlign(alignment);
+					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
 				}
 			}
 			else
@@ -133,7 +143,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = GetAlign(alignment);
+					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
 				}
 				luiComponents.Add(value.type, value);
 			}
@@ -170,35 +180,31 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetTextAlign(TextAnchor align)
+		public unsafe LuiContainer SetTextAlign(TextAnchor align)
 		{
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiTextComp>(LuiCompType.Text, out var value))
 			{
-				value.align = GetAlign(align);
+				value.align = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetText();
-				value.align = GetAlign(align);
+				value.align = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public LuiContainer SetTextOverflow(VerticalWrapMode verticalOverflow)
+		public unsafe LuiContainer SetTextOverflow(VerticalWrapMode verticalOverflow)
 		{
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiTextComp>(LuiCompType.Text, out var value))
 			{
-				value.verticalOverflow = GetWrapMode(verticalOverflow);
+				value.verticalOverflow = ((object)(*(VerticalWrapMode*)(&verticalOverflow))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetText();
-				value.verticalOverflow = GetWrapMode(verticalOverflow);
+				value.verticalOverflow = ((object)(*(VerticalWrapMode*)(&verticalOverflow))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -234,33 +240,29 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetImageType(Type imageType)
+		public unsafe LuiContainer SetImageType(Type imageType)
 		{
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiImageComp>(LuiCompType.Image, out var value))
 			{
-				value.imageType = GetImageType(imageType);
+				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetImage();
-				value.imageType = GetImageType(imageType);
+				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public LuiContainer SetSprite(string sprite = null, string color = null, Type imageType = (Type)0)
+		public unsafe LuiContainer SetSprite(string sprite = null, string color = null, Type imageType = (Type)0)
 		{
-			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiImageComp>(LuiCompType.Image, out var value))
 			{
 				if (sprite != null)
 				{
 					value.sprite = sprite;
-					value.imageType = GetImageType(imageType);
+					value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
 				}
 				if (color != null)
 				{
@@ -273,7 +275,7 @@ public class LUI : IDisposable
 				if (sprite != null)
 				{
 					value.sprite = sprite;
-					value.imageType = GetImageType(imageType);
+					value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
 				}
 				if (color != null)
 				{
@@ -338,6 +340,21 @@ public class LUI : IDisposable
 			{
 				value = LuiPool.GetImage();
 				value.slice = sliceValue;
+				luiComponents.Add(value.type, value);
+			}
+			return this;
+		}
+
+		public LuiContainer SetPpuMultiplier(float ppuMultiplier)
+		{
+			if (luiComponents.TryGetValue<LuiImageComp>(LuiCompType.Image, out var value))
+			{
+				value.ppuMultiplier = ppuMultiplier;
+			}
+			else
+			{
+				value = LuiPool.GetImage();
+				value.ppuMultiplier = ppuMultiplier;
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -608,20 +625,18 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetButtonSprite(string sprite, Type imageType = (Type)0)
+		public unsafe LuiContainer SetButtonSprite(string sprite, Type imageType = (Type)0)
 		{
-			//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiButtonComp>(LuiCompType.Button, out var value))
 			{
 				value.sprite = sprite;
-				value.imageType = GetImageType(imageType);
+				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetButton();
 				value.sprite = sprite;
-				value.imageType = GetImageType(imageType);
+				value.imageType = ((object)(*(Type*)(&imageType))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -637,6 +652,21 @@ public class LUI : IDisposable
 			{
 				value = LuiPool.GetButton();
 				value.close = close;
+				luiComponents.Add(value.type, value);
+			}
+			return this;
+		}
+
+		public LuiContainer SetButtonInteractable(bool interactable)
+		{
+			if (luiComponents.TryGetValue<LuiButtonComp>(LuiCompType.Button, out var value))
+			{
+				value.interactable = interactable;
+			}
+			else
+			{
+				value = LuiPool.GetButton();
+				value.interactable = interactable;
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -665,10 +695,8 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetInput(string color = null, string text = null, int fontSize = 0, string command = null, int charLimit = 0, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedBold, TextAnchor alignment = (TextAnchor)4, bool update = false)
+		public unsafe LuiContainer SetInput(string color = null, string text = null, int fontSize = 0, string command = null, int charLimit = 0, CUI.Handler.FontTypes font = CUI.Handler.FontTypes.RobotoCondensedBold, TextAnchor alignment = (TextAnchor)4, bool update = false)
 		{
-			//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiInputComp>(LuiCompType.InputField, out var value))
 			{
 				if (color != null)
@@ -693,7 +721,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = GetAlign(alignment);
+					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
 					value.font = GetFont(font);
 				}
 			}
@@ -722,7 +750,7 @@ public class LUI : IDisposable
 				}
 				if (!update)
 				{
-					value.align = GetAlign(alignment);
+					value.align = ((object)(*(TextAnchor*)(&alignment))/*cast due to constrained. prefix*/).ToString();
 					value.font = GetFont(font);
 				}
 				luiComponents.Add(value.type, value);
@@ -792,18 +820,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetInputLineType(LineType lineType)
+		public unsafe LuiContainer SetInputLineType(LineType lineType)
 		{
-			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiInputComp>(LuiCompType.InputField, out var value))
 			{
-				value.lineType = GetLineType(lineType);
+				value.lineType = ((object)(*(LineType*)(&lineType))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetInput();
-				value.lineType = GetLineType(lineType);
+				value.lineType = ((object)(*(LineType*)(&lineType))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -819,6 +845,21 @@ public class LUI : IDisposable
 			{
 				value = LuiPool.GetInput();
 				value.placeholderId = placeholderId;
+				luiComponents.Add(value.type, value);
+			}
+			return this;
+		}
+
+		public LuiContainer SetInputInteractable(bool interactable)
+		{
+			if (luiComponents.TryGetValue<LuiInputComp>(LuiCompType.InputField, out var value))
+			{
+				value.interactable = interactable;
+			}
+			else
+			{
+				value = LuiPool.GetInput();
+				value.interactable = interactable;
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -994,12 +1035,12 @@ public class LUI : IDisposable
 		{
 			if (luiComponents.TryGetValue<LuiCountdownComp>(LuiCompType.Countdown, out var value))
 			{
-				value.timerFormat = GetTimerFormat(format);
+				value.timerFormat = format.ToString();
 			}
 			else
 			{
 				value = LuiPool.GetCountdown();
-				value.timerFormat = GetTimerFormat(format);
+				value.timerFormat = format.ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1020,18 +1061,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetHorizontalLayoutAlignment(TextAnchor anchor)
+		public unsafe LuiContainer SetHorizontalLayoutAlignment(TextAnchor anchor)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiHorizontalLayoutGroupComp>(LuiCompType.HorizontalLayoutGroup, out var value))
 			{
-				value.childAlignment = GetAlign(anchor);
+				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetHorizontalLayoutGroup();
-				value.childAlignment = GetAlign(anchor);
+				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1118,18 +1157,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetVerticalLayoutAlignment(TextAnchor anchor)
+		public unsafe LuiContainer SetVerticalLayoutAlignment(TextAnchor anchor)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiVerticalLayoutGroupComp>(LuiCompType.VerticalLayoutGroup, out var value))
 			{
-				value.childAlignment = GetAlign(anchor);
+				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetVerticalLayoutGroup();
-				value.childAlignment = GetAlign(anchor);
+				value.childAlignment = ((object)(*(TextAnchor*)(&anchor))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1239,69 +1276,61 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetStartCorner(Corner corner)
+		public unsafe LuiContainer SetStartCorner(Corner corner)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.startCorner = GetCorner(corner);
+				value.startCorner = ((object)(*(Corner*)(&corner))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.startCorner = GetCorner(corner);
+				value.startCorner = ((object)(*(Corner*)(&corner))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public LuiContainer SetStartAxis(Axis axis)
+		public unsafe LuiContainer SetStartAxis(Axis axis)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.startAxis = GetAxis(axis);
+				value.startAxis = ((object)(*(Axis*)(&axis))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.startAxis = GetAxis(axis);
+				value.startAxis = ((object)(*(Axis*)(&axis))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public LuiContainer SetChildAlign(TextAnchor align)
+		public unsafe LuiContainer SetChildAlign(TextAnchor align)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.childAlignment = GetAlign(align);
+				value.childAlignment = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.childAlignment = GetAlign(align);
+				value.childAlignment = ((object)(*(TextAnchor*)(&align))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
 		}
 
-		public LuiContainer SetContraint(Constraint constraint)
+		public unsafe LuiContainer SetContraint(Constraint constraint)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiGridLayoutGroupComp>(LuiCompType.GridLayoutGroup, out var value))
 			{
-				value.constraint = GetConstraint(constraint);
+				value.constraint = ((object)(*(Constraint*)(&constraint))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetGridLayoutGroup();
-				value.constraint = GetConstraint(constraint);
+				value.constraint = ((object)(*(Constraint*)(&constraint))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1337,22 +1366,18 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetFitMode(FitMode horizontalFit, FitMode verticalFit)
+		public unsafe LuiContainer SetFitMode(FitMode horizontalFit, FitMode verticalFit)
 		{
-			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-			//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiContentSizeFitterComp>(LuiCompType.ContentSizeFitter, out var value))
 			{
-				value.horizontalFit = GetFitMode(horizontalFit);
-				value.verticalFit = GetFitMode(verticalFit);
+				value.horizontalFit = ((object)(*(FitMode*)(&horizontalFit))/*cast due to constrained. prefix*/).ToString();
+				value.verticalFit = ((object)(*(FitMode*)(&verticalFit))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetContentSizeFitter();
-				value.horizontalFit = GetFitMode(horizontalFit);
-				value.verticalFit = GetFitMode(verticalFit);
+				value.horizontalFit = ((object)(*(FitMode*)(&horizontalFit))/*cast due to constrained. prefix*/).ToString();
+				value.verticalFit = ((object)(*(FitMode*)(&verticalFit))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1565,18 +1590,16 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetDraggableRPC(DraggablePositionSendType posSendType)
+		public unsafe LuiContainer SetDraggableRPC(DraggablePositionSendType posSendType)
 		{
-			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiDraggableComp>(LuiCompType.Draggable, out var value))
 			{
-				value.positionRPC = GetSendType(posSendType);
+				value.positionRPC = ((object)(*(DraggablePositionSendType*)(&posSendType))/*cast due to constrained. prefix*/).ToString();
 			}
 			else
 			{
 				value = LuiPool.GetDraggable();
-				value.positionRPC = GetSendType(posSendType);
+				value.positionRPC = ((object)(*(DraggablePositionSendType*)(&posSendType))/*cast due to constrained. prefix*/).ToString();
 				luiComponents.Add(value.type, value);
 			}
 			return this;
@@ -1613,17 +1636,15 @@ public class LUI : IDisposable
 			return this;
 		}
 
-		public LuiContainer SetScrollView(bool vertical, bool horizontal, MovementType movementType = (MovementType)2, float elasticity = 0f, bool inertia = false, float decelerationRate = 0f, float scrollSensitivity = 0f, LuiScrollbar verticalScrollOptions = default(LuiScrollbar), LuiScrollbar horizontalScrollOptions = default(LuiScrollbar), bool update = false)
+		public unsafe LuiContainer SetScrollView(bool vertical, bool horizontal, MovementType movementType = (MovementType)2, float elasticity = 0f, bool inertia = false, float decelerationRate = 0f, float scrollSensitivity = 0f, LuiScrollbar verticalScrollOptions = default(LuiScrollbar), LuiScrollbar horizontalScrollOptions = default(LuiScrollbar), bool update = false)
 		{
-			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 			if (luiComponents.TryGetValue<LuiScrollComp>(LuiCompType.ScrollView, out var value))
 			{
 				if (!update)
 				{
 					value.vertical = vertical;
 					value.horizontal = horizontal;
-					value.movementType = GetMovementType(movementType);
+					value.movementType = ((object)(*(MovementType*)(&movementType))/*cast due to constrained. prefix*/).ToString();
 					value.inertia = inertia;
 				}
 				if (elasticity != 0f)
@@ -1648,7 +1669,7 @@ public class LUI : IDisposable
 				{
 					value.vertical = vertical;
 					value.horizontal = horizontal;
-					value.movementType = GetMovementType(movementType);
+					value.movementType = ((object)(*(MovementType*)(&movementType))/*cast due to constrained. prefix*/).ToString();
 					value.inertia = inertia;
 				}
 				if (elasticity != 0f)
@@ -1734,6 +1755,71 @@ public class LUI : IDisposable
 			}
 			return this;
 		}
+
+		public LuiContainer SetCanvasGroup(float alpha = -1f, bool blocksRaycasts = true, bool interactable = true)
+		{
+			if (luiComponents.TryGetValue<LuiCanvasGroupComp>(LuiCompType.CanvasGroup, out var value))
+			{
+				if (alpha != -1f)
+				{
+					value.alpha = alpha;
+				}
+				value.blocksRaycasts = blocksRaycasts;
+				value.interactable = interactable;
+			}
+			else
+			{
+				value = LuiPool.GetCanvasGroup();
+				if (alpha != -1f)
+				{
+					value.alpha = alpha;
+				}
+				value.blocksRaycasts = blocksRaycasts;
+				value.interactable = interactable;
+				luiComponents.Add(value.type, value);
+			}
+			return this;
+		}
+
+		public LuiContainer SetMask(bool showMaskGraphic = true)
+		{
+			if (luiComponents.TryGetValue<LuiMaskComp>(LuiCompType.Mask, out var value))
+			{
+				value.showMaskGraphic = showMaskGraphic;
+			}
+			else
+			{
+				value = LuiPool.GetMask();
+				value.showMaskGraphic = showMaskGraphic;
+				luiComponents.Add(value.type, value);
+			}
+			return this;
+		}
+
+		public LuiContainer SetTooltip(string text, TooltipType? tooltipType = null, string offset = null, bool useCentre = false, DelayType? delay = null, PositionMode? position = null)
+		{
+			if (luiComponents.TryGetValue<LuiTooltipComp>(LuiCompType.Tooltip, out var value))
+			{
+				value.text = text;
+				value.tooltipType = tooltipType.ToString();
+				value.offset = offset;
+				value.useCentre = useCentre;
+				value.delay = delay.ToString();
+				value.position = position.ToString();
+			}
+			else
+			{
+				value = LuiPool.GetTooltip();
+				value.text = text;
+				value.tooltipType = tooltipType.ToString();
+				value.offset = offset;
+				value.useCentre = useCentre;
+				value.delay = delay.ToString();
+				value.position = position.ToString();
+				luiComponents.Add(value.type, value);
+			}
+			return this;
+		}
 	}
 
 	public readonly List<LuiContainer> elements = new List<LuiContainer>();
@@ -1745,6 +1831,8 @@ public class LUI : IDisposable
 	public string lastName = string.Empty;
 
 	public static readonly Vector2 defaultPivot = new Vector2(0.5f, 0.5f);
+
+	public static readonly Vector2 defaultFade = new Vector2(0f, 1f);
 
 	public static readonly Vector2 defaultCellSize = new Vector2(100f, 100f);
 
@@ -2436,6 +2524,83 @@ public class LUI : IDisposable
 		return luiContainer;
 	}
 
+	public LuiContainer CreateCanvasGroup(LuiContainer container, LuiPosition position, LuiOffset offset, float alpha = -1f, bool blocksRaycasts = true, bool interactable = true, string name = "")
+	{
+		return CreateCanvasGroup(container.name, position, offset, alpha, blocksRaycasts, interactable, name);
+	}
+
+	public LuiContainer CreateCanvasGroup(LuiContainer container, LuiOffset offset, float alpha = -1f, bool blocksRaycasts = true, bool interactable = true, string name = "")
+	{
+		return CreateCanvasGroup(container.name, LuiPosition.None, offset, alpha, blocksRaycasts, interactable, name);
+	}
+
+	public LuiContainer CreateCanvasGroup(string parent, LuiOffset offset, float alpha = -1f, bool blocksRaycasts = true, bool interactable = true, string name = "")
+	{
+		return CreateCanvasGroup(parent, LuiPosition.None, offset, alpha, blocksRaycasts, interactable, name);
+	}
+
+	public LuiContainer CreateCanvasGroup(string parent, LuiPosition position, LuiOffset offset, float alpha = -1f, bool blocksRaycasts = true, bool interactable = true, string name = "")
+	{
+		LuiContainer luiContainer = CreateEmptyContainer(parent, name);
+		luiContainer.SetAnchorAndOffset(position, offset);
+		luiContainer.SetCanvasGroup(alpha, blocksRaycasts, interactable);
+		elements.Add(luiContainer);
+		return luiContainer;
+	}
+
+	public LuiContainer CreateMask(LuiContainer container, LuiPosition position, LuiOffset offset, bool showMaskGraphic = true, string color = null, string name = "")
+	{
+		return CreateMask(container.name, position, offset, showMaskGraphic, color, name);
+	}
+
+	public LuiContainer CreateMask(LuiContainer container, LuiOffset offset, bool showMaskGraphic = true, string color = null, string name = "")
+	{
+		return CreateMask(container.name, LuiPosition.None, offset, showMaskGraphic, color, name);
+	}
+
+	public LuiContainer CreateMask(string parent, LuiOffset offset, bool showMaskGraphic = true, string color = null, string name = "")
+	{
+		return CreateMask(parent, LuiPosition.None, offset, showMaskGraphic, color, name);
+	}
+
+	public LuiContainer CreateMask(string parent, LuiPosition position, LuiOffset offset, bool showMaskGraphic = true, string color = null, string name = "")
+	{
+		LuiContainer luiContainer = CreateEmptyContainer(parent, name);
+		luiContainer.SetAnchorAndOffset(position, offset);
+		if (color != null)
+		{
+			luiContainer.SetColor(color);
+		}
+		luiContainer.SetMask(showMaskGraphic);
+		elements.Add(luiContainer);
+		return luiContainer;
+	}
+
+	public LuiContainer CreateTooltip(LuiContainer container, LuiPosition position, LuiOffset offset, string text, TooltipType? tooltipType = null, string tooltipOffset = null, bool useCentre = false, DelayType? delay = null, PositionMode? positionMode = null, string name = "")
+	{
+		return CreateTooltip(container.name, position, offset, text, tooltipType, tooltipOffset, useCentre, delay, positionMode, name);
+	}
+
+	public LuiContainer CreateTooltip(LuiContainer container, LuiOffset offset, string text, TooltipType? tooltipType = null, string tooltipOffset = null, bool useCentre = false, DelayType? delay = null, PositionMode? positionMode = null, string name = "")
+	{
+		return CreateTooltip(container.name, LuiPosition.None, offset, text, tooltipType, tooltipOffset, useCentre, delay, positionMode, name);
+	}
+
+	public LuiContainer CreateTooltip(string parent, LuiOffset offset, string text, TooltipType? tooltipType = null, string tooltipOffset = null, bool useCentre = false, DelayType? delay = null, PositionMode? positionMode = null, string name = "")
+	{
+		return CreateTooltip(parent, LuiPosition.None, offset, text, tooltipType, tooltipOffset, useCentre, delay, positionMode, name);
+	}
+
+	public LuiContainer CreateTooltip(string parent, LuiPosition position, LuiOffset offset, string text, TooltipType? tooltipType = null, string tooltipOffset = null, bool useCentre = false, DelayType? delay = null, PositionMode? positionMode = null, string name = "")
+	{
+		LuiContainer luiContainer = CreateEmptyContainer(parent, name);
+		luiContainer.SetAnchorAndOffset(position, offset);
+		luiContainer.SetColor("0.0 0.0 0.0 0.0");
+		luiContainer.SetTooltip(text, tooltipType, tooltipOffset, useCentre, delay, positionMode);
+		elements.Add(luiContainer);
+		return luiContainer;
+	}
+
 	public byte[] GetUiBytes()
 	{
 		using LuiBuilderInstance luiBuilderInstance = new LuiBuilderInstance(this);
@@ -2532,170 +2697,6 @@ public class LUI : IDisposable
 			CUI.Handler.FontTypes.NoToEmoji => "_nonenglish/notoemoji-regular.ttf", 
 			CUI.Handler.FontTypes.PressStart => "pressstart2p-regular.ttf", 
 			_ => "robotocondensed-regular.ttf", 
-		};
-	}
-
-	public static string GetAlign(TextAnchor anchor)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected I4, but got Unknown
-		return (int)anchor switch
-		{
-			0 => "UpperLeft", 
-			1 => "UpperCenter", 
-			2 => "UpperRight", 
-			3 => "MiddleLeft", 
-			4 => "MiddleCenter", 
-			5 => "MiddleRight", 
-			6 => "LowerLeft", 
-			7 => "LowerCenter", 
-			8 => "LowerRight", 
-			_ => "UpperLeft", 
-		};
-	}
-
-	public static string GetImageType(Type imgType)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected I4, but got Unknown
-		return (int)imgType switch
-		{
-			0 => "Simple", 
-			1 => "Sliced", 
-			2 => "Tiled", 
-			3 => "Filled", 
-			_ => "Simple", 
-		};
-	}
-
-	public static string GetWrapMode(VerticalWrapMode mode)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0005: Invalid comparison between Unknown and I4
-		if ((int)mode != 0)
-		{
-			if ((int)mode == 1)
-			{
-				return "Overflow";
-			}
-			return "Truncate";
-		}
-		return "Truncate";
-	}
-
-	public static string GetLineType(LineType lineType)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected I4, but got Unknown
-		return (int)lineType switch
-		{
-			0 => "SingleLine", 
-			1 => "MultiLineSubmit", 
-			2 => "MultiLineNewline", 
-			_ => "SingleLine", 
-		};
-	}
-
-	public static string GetMovementType(MovementType movementType)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected I4, but got Unknown
-		return (int)movementType switch
-		{
-			0 => "Unrestricted", 
-			1 => "Elastic", 
-			2 => "Clamped", 
-			_ => "Unrestricted", 
-		};
-	}
-
-	public static string GetTimerFormat(TimerFormat format)
-	{
-		return format switch
-		{
-			TimerFormat.None => "None", 
-			TimerFormat.SecondsHundreth => "SecondsHundreth", 
-			TimerFormat.MinutesSeconds => "MinutesSeconds", 
-			TimerFormat.MinutesSecondsHundreth => "MinutesSecondsHundreth", 
-			TimerFormat.HoursMinutes => "HoursMinutes", 
-			TimerFormat.HoursMinutesSeconds => "HoursMinutesSeconds", 
-			TimerFormat.HoursMinutesSecondsMilliseconds => "HoursMinutesSecondsMilliseconds", 
-			TimerFormat.HoursMinutesSecondsTenths => "HoursMinutesSecondsTenths", 
-			TimerFormat.DaysHoursMinutes => "DaysHoursMinutes", 
-			TimerFormat.DaysHoursMinutesSeconds => "DaysHoursMinutesSeconds", 
-			TimerFormat.Custom => "Custom", 
-			_ => "None", 
-		};
-	}
-
-	public static string GetCorner(Corner corner)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected I4, but got Unknown
-		return (int)corner switch
-		{
-			0 => "UpperLeft", 
-			1 => "UpperRight", 
-			2 => "LowerLeft", 
-			3 => "LowerRight", 
-			_ => "UpperLeft", 
-		};
-	}
-
-	public static string GetAxis(Axis axis)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0005: Invalid comparison between Unknown and I4
-		if ((int)axis != 0)
-		{
-			if ((int)axis == 1)
-			{
-				return "Vertical";
-			}
-			return "Vertical";
-		}
-		return "Horizontal";
-	}
-
-	public static string GetConstraint(Constraint constraint)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected I4, but got Unknown
-		return (int)constraint switch
-		{
-			0 => "Flexible", 
-			1 => "FixedColumnCount", 
-			2 => "FixedRowCount", 
-			_ => "FixedRowCount", 
-		};
-	}
-
-	public static string GetFitMode(FitMode mode)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Expected I4, but got Unknown
-		return (int)mode switch
-		{
-			0 => "Unconstrained", 
-			1 => "MinSize", 
-			2 => "PreferredSize", 
-			_ => "Unconstrained", 
-		};
-	}
-
-	public static string GetSendType(DraggablePositionSendType type)
-	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0016: Expected I4, but got Unknown
-		return (int)type switch
-		{
-			0 => "NormalizedScreen", 
-			1 => "NormalizedParent", 
-			2 => "Relative", 
-			3 => "RelativeAnchor", 
-			_ => "NormalizedScreen", 
 		};
 	}
 }

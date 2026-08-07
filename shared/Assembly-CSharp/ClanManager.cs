@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using ConVar;
 using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.CompilerServices;
+using Development.Attributes;
 using Facepunch;
+using Facepunch.Rust;
 using JetBrains.Annotations;
 using Network;
 using ProtoBuf;
@@ -32,18 +34,20 @@ public class ClanManager : BaseEntity
 
 		private int _003CrequestId_003E5__2;
 
+		private IClan _003Cclan_003E5__3;
+
 		private ValueTaskAwaiter<ClanValueResult<IClan>> _003C_003Eu__1;
 
 		private ValueTaskAwaiter<ClanResult> _003C_003Eu__2;
 
 		private void MoveNext()
 		{
-			//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0186: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -54,7 +58,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_00f6;
+					goto IL_00d5;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -62,13 +66,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_018d;
+					goto IL_0177;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					long num2 = msg.read.Int64();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(num2).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -78,20 +82,31 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_AcceptInvitation_003Ed__14>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_00f6;
+						goto IL_00d5;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_018d:
+				IL_0177:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result));
-				goto end_IL_000e;
-				IL_00f6:
-				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out var clan))
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result);
+				try
 				{
-					valueTaskAwaiter2 = clan.AcceptInvite((ulong)msg.player.userID).GetAwaiter();
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+					Analytics.Azure.OnClanMemberAdded(msg.player.userID, _003Cclan_003E5__3);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
+				goto end_IL_000e;
+				IL_00d5:
+				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__3))
+				{
+					valueTaskAwaiter2 = _003Cclan_003E5__3.AcceptInvite((ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
 					{
 						num = (_003C_003E1__state = 1);
@@ -99,17 +114,19 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_AcceptInvitation_003Ed__14>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_018d;
+					goto IL_0177;
 				}
 				end_IL_000e:;
 			}
 			catch (Exception exception)
 			{
 				_003C_003E1__state = -2;
+				_003Cclan_003E5__3 = null;
 				((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
 				return;
 			}
 			_003C_003E1__state = -2;
+			_003Cclan_003E5__3 = null;
 			((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).SetResult();
 		}
 
@@ -152,12 +169,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+			//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0193: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -168,7 +185,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_00f6;
+					goto IL_00d5;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -176,13 +193,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01a2;
+					goto IL_0184;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					long num2 = msg.read.Int64();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(num2).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -192,16 +209,26 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CancelInvitation_003Ed__15>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_00f6;
+						goto IL_00d5;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_01a2:
+				IL_0184:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_00f6:
+				IL_00d5:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out var clan))
 				{
@@ -213,7 +240,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CancelInvitation_003Ed__15>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01a2;
+					goto IL_0184;
 				}
 				end_IL_000e:;
 			}
@@ -270,12 +297,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+			//IL_019f: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -286,7 +313,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_010a;
+					goto IL_00e9;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -294,13 +321,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01b2;
+					goto IL_0191;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CsteamId_003E5__3 = msg.read.UInt64();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -310,16 +337,26 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CancelInvite_003Ed__13>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_010a;
+						goto IL_00e9;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_01b2:
+				IL_0191:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_010a:
+				IL_00e9:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
 				{
@@ -331,7 +368,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CancelInvite_003Ed__13>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01b2;
+					goto IL_0191;
 				}
 				end_IL_000e:;
 			}
@@ -384,13 +421,13 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0118: Unknown result type (might be due to invalid IL or missing references)
-			//IL_011d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+			//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0131: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0144: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0070: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -401,7 +438,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0116;
+					goto IL_012a;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
@@ -417,16 +454,39 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CreateClan_003Ed__1>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_0116;
+						goto IL_012a;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error)));
+					ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error));
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val2)?.Dispose();
+						}
+					}
 				}
 				goto end_IL_000e;
-				IL_0116:
+				IL_012a:
 				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out var clan))
 				{
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)1, clan));
+					ClanActionResult val3 = BuildActionResult(_003CrequestId_003E5__2, (ClanResult)1, clan);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val3);
+						Analytics.Azure.OnClanCreated(msg.player.userID, clan);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val3)?.Dispose();
+						}
+					}
 				}
 				end_IL_000e:;
 			}
@@ -483,22 +543,22 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0264: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0172: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_026b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+			//IL_020f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0214: Unknown result type (might be due to invalid IL or missing references)
 			//IL_021c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0221: Unknown result type (might be due to invalid IL or missing references)
-			//IL_023f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_028e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0295: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -509,7 +569,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0170;
+					goto IL_0163;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -517,17 +577,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_021a;
+					goto IL_020d;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					string text = msg.read.String(128);
-					if (!msg.player.CanModifyClan())
-					{
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
-					}
-					else
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						ClanValidatorResult val = ClanValidator.ValidateRoleName(text);
 						if (((ClanValidatorResult)(ref val)).Success)
@@ -544,19 +600,26 @@ public class ClanManager : BaseEntity
 								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_CreateRole_003Ed__19>(ref valueTaskAwaiter, ref this);
 								return;
 							}
-							goto IL_0170;
+							goto IL_0163;
 						}
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error)));
+						ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error));
+						try
+						{
+							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+						}
+						finally
+						{
+							if (num < 0)
+							{
+								((IDisposable)val2)?.Dispose();
+							}
+						}
 					}
 				}
 				goto end_IL_000e;
-				IL_021a:
-				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
-				goto end_IL_000e;
-				IL_0170:
-				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
+				IL_0163:
+				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__4))
 				{
 					valueTaskAwaiter2 = _003Cclan_003E5__4.CreateRole(_003Crole_003E5__3, (ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
@@ -566,7 +629,22 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_CreateRole_003Ed__19>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_021a;
+					goto IL_020d;
+				}
+				goto end_IL_000e;
+				IL_020d:
+				ClanResult result2 = valueTaskAwaiter2.GetResult();
+				ClanActionResult val3 = BuildActionResult(_003CrequestId_003E5__2, result2, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val3);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val3)?.Dispose();
+					}
 				}
 				end_IL_000e:;
 			}
@@ -627,12 +705,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+			//IL_019f: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -643,7 +721,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_010a;
+					goto IL_00e9;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -651,13 +729,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01b2;
+					goto IL_0191;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CroleId_003E5__3 = msg.read.Int32();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -667,16 +745,26 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_DeleteRole_003Ed__21>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_010a;
+						goto IL_00e9;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_01b2:
+				IL_0191:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_010a:
+				IL_00e9:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
 				{
@@ -688,7 +776,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_DeleteRole_003Ed__21>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01b2;
+					goto IL_0191;
 				}
 				end_IL_000e:;
 			}
@@ -745,9 +833,9 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -758,7 +846,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_00b2;
+					goto IL_00b5;
 				}
 				ValueTaskAwaiter valueTaskAwaiter2;
 				if (num == 1)
@@ -766,7 +854,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter);
 					num = (_003C_003E1__state = -1);
-					goto IL_013f;
+					goto IL_0142;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
@@ -779,10 +867,10 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_GetClan_003Ed__2>(ref valueTaskAwaiter, ref this);
 						return;
 					}
-					goto IL_00b2;
+					goto IL_00b5;
 				}
 				goto end_IL_000e;
-				IL_00b2:
+				IL_00b5:
 				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__3))
 				{
@@ -794,12 +882,23 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter, _003CServer_GetClan_003Ed__2>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_013f;
+					goto IL_0142;
 				}
 				goto end_IL_000e;
-				IL_013f:
+				IL_0142:
 				valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)1, _003Cclan_003E5__3, includeLogo: true));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, (ClanResult)1, _003Cclan_003E5__3, includeLogo: true);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				end_IL_000e:;
 			}
 			catch (Exception exception)
@@ -851,10 +950,10 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -865,7 +964,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<List<ClanInvitation>>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_00b0;
+					goto IL_00b3;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
@@ -878,16 +977,38 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<List<ClanInvitation>>>, _003CServer_GetInvitations_003Ed__5>(ref valueTaskAwaiter, ref this);
 						return;
 					}
-					goto IL_00b0;
+					goto IL_00b3;
 				}
 				goto end_IL_000e;
-				IL_00b0:
+				IL_00b3:
 				ClanValueResult<List<ClanInvitation>> result = valueTaskAwaiter.GetResult();
 				if (result.IsSuccess)
 				{
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanInvitations", msg.player), ClanInvitationExtensions.ToProto(result.Value));
+					ClanInvitations val = ClanInvitationExtensions.ToProto(result.Value);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanInvitations", msg.player), val);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val)?.Dispose();
+						}
+					}
 				}
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result.Result));
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result.Result);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
+				}
 				end_IL_000e:;
 			}
 			catch (Exception exception)
@@ -939,11 +1060,11 @@ public class ClanManager : BaseEntity
 		{
 			//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-			//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -971,7 +1092,7 @@ public class ClanManager : BaseEntity
 						}
 						goto IL_00bd;
 					}
-					goto IL_00f4;
+					goto IL_00f5;
 				}
 				goto end_IL_000e;
 				IL_00bd:
@@ -985,14 +1106,36 @@ public class ClanManager : BaseEntity
 				{
 					clanManager._leaderboardCache = null;
 				}
-				goto IL_00f4;
-				IL_00f4:
+				goto IL_00f5;
+				IL_00f5:
 				if (clanManager._leaderboardCache != null)
 				{
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanLeaderboard", msg.player), ClanLeaderboardExtensions.ToProto(clanManager._leaderboardCache));
+					ClanLeaderboard val = ClanLeaderboardExtensions.ToProto(clanManager._leaderboardCache);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanLeaderboard", msg.player), val);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val)?.Dispose();
+						}
+					}
 				}
 				ClanResult result2 = (ClanResult)(clanManager._leaderboardCache != null);
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result2));
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
+				}
 				end_IL_000e:;
 			}
 			catch (Exception exception)
@@ -1053,7 +1196,7 @@ public class ClanManager : BaseEntity
 			//IL_0160: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1107,9 +1250,31 @@ public class ClanManager : BaseEntity
 				ClanValueResult<ClanLogs> result2 = valueTaskAwaiter2.GetResult();
 				if (result2.IsSuccess)
 				{
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanLogs", msg.player), ClanLogExtensions.ToProto(result2.Value));
+					ClanLog val = ClanLogExtensions.ToProto(result2.Value);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanLogs", msg.player), val);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val)?.Dispose();
+						}
+					}
 				}
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result2.Result, _003Cclan_003E5__3));
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2.Result, _003Cclan_003E5__3);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
+				}
 				end_IL_000e:;
 			}
 			catch (Exception exception)
@@ -1172,7 +1337,7 @@ public class ClanManager : BaseEntity
 			//IL_0160: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
 			//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1226,9 +1391,31 @@ public class ClanManager : BaseEntity
 				ClanValueResult<ClanScoreEvents> result2 = valueTaskAwaiter2.GetResult();
 				if (result2.IsSuccess)
 				{
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanScoreEvents", msg.player), ClanLogExtensions.ToProto(result2.Value));
+					ClanScoreEvents val = ClanLogExtensions.ToProto(result2.Value);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveClanScoreEvents", msg.player), val);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val)?.Dispose();
+						}
+					}
 				}
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result2.Result, _003Cclan_003E5__3));
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2.Result, _003Cclan_003E5__3);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
+				}
 				end_IL_000e:;
 			}
 			catch (Exception exception)
@@ -1286,12 +1473,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0198: Unknown result type (might be due to invalid IL or missing references)
+			//IL_019f: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1302,7 +1489,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_010a;
+					goto IL_00e9;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -1310,13 +1497,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01b2;
+					goto IL_0191;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CsteamId_003E5__3 = msg.read.UInt64();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -1326,16 +1513,26 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_Invite_003Ed__12>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_010a;
+						goto IL_00e9;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_01b2:
+				IL_0191:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_010a:
+				IL_00e9:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
 				{
@@ -1347,7 +1544,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_Invite_003Ed__12>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01b2;
+					goto IL_0191;
 				}
 				end_IL_000e:;
 			}
@@ -1406,12 +1603,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-			//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1422,7 +1619,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0127;
+					goto IL_013b;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -1430,7 +1627,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01cf;
+					goto IL_01e3;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
@@ -1446,16 +1643,39 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_Kick_003Ed__16>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_0127;
+						goto IL_013b;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
+					ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val)?.Dispose();
+						}
+					}
 				}
 				goto end_IL_000e;
-				IL_01cf:
+				IL_01e3:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+					Analytics.Azure.OnClanMemberRemoved(_003CsteamId_003E5__3, msg.player.userID, _003Cclan_003E5__4);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_0127:
+				IL_013b:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
 				{
@@ -1467,7 +1687,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_Kick_003Ed__16>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01cf;
+					goto IL_01e3;
 				}
 				end_IL_000e:;
 			}
@@ -1526,13 +1746,13 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0150: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-			//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0215: Unknown result type (might be due to invalid IL or missing references)
+			//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
@@ -1545,7 +1765,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0149;
+					goto IL_013c;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -1553,17 +1773,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01f1;
+					goto IL_01e4;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CnewColor_003E5__3 = msg.read.Color32();
-					if (!msg.player.CanModifyClan())
-					{
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
-					}
-					else
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						if (_003CnewColor_003E5__3.a == byte.MaxValue)
 						{
@@ -1575,19 +1791,26 @@ public class ClanManager : BaseEntity
 								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetColor_003Ed__10>(ref valueTaskAwaiter, ref this);
 								return;
 							}
-							goto IL_0149;
+							goto IL_013c;
 						}
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)12));
+						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, (ClanResult)12);
+						try
+						{
+							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+						}
+						finally
+						{
+							if (num < 0)
+							{
+								((IDisposable)val)?.Dispose();
+							}
+						}
 					}
 				}
 				goto end_IL_000e;
-				IL_01f1:
-				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
-				goto end_IL_000e;
-				IL_0149:
-				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
+				IL_013c:
+				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__4))
 				{
 					valueTaskAwaiter2 = _003Cclan_003E5__4.SetColor(_003CnewColor_003E5__3, (ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
@@ -1597,7 +1820,22 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetColor_003Ed__10>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01f1;
+					goto IL_01e4;
+				}
+				goto end_IL_000e;
+				IL_01e4:
+				ClanResult result2 = valueTaskAwaiter2.GetResult();
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
 				}
 				end_IL_000e:;
 			}
@@ -1656,12 +1894,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-			//IL_015b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_016e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0203: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0220: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1672,7 +1910,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0154;
+					goto IL_0147;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -1680,17 +1918,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01fc;
+					goto IL_01ef;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CnewLogo_003E5__3 = msg.read.BytesWithSize();
-					if (!msg.player.CanModifyClan())
-					{
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
-					}
-					else
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						if (ImageProcessing.IsValidPNG(_003CnewLogo_003E5__3, 512, 512))
 						{
@@ -1702,19 +1936,26 @@ public class ClanManager : BaseEntity
 								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetLogo_003Ed__9>(ref valueTaskAwaiter, ref this);
 								return;
 							}
-							goto IL_0154;
+							goto IL_0147;
 						}
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)11));
+						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, (ClanResult)11);
+						try
+						{
+							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+						}
+						finally
+						{
+							if (num < 0)
+							{
+								((IDisposable)val)?.Dispose();
+							}
+						}
 					}
 				}
 				goto end_IL_000e;
-				IL_01fc:
-				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4, includeLogo: true));
-				goto end_IL_000e;
-				IL_0154:
-				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
+				IL_0147:
+				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__4))
 				{
 					valueTaskAwaiter2 = _003Cclan_003E5__4.SetLogo(_003CnewLogo_003E5__3, (ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
@@ -1724,7 +1965,22 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetLogo_003Ed__9>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01fc;
+					goto IL_01ef;
+				}
+				goto end_IL_000e;
+				IL_01ef:
+				ClanResult result2 = valueTaskAwaiter2.GetResult();
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2, _003Cclan_003E5__4, includeLogo: true);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
 				}
 				end_IL_000e:;
 			}
@@ -1787,20 +2043,20 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0292: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0166: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0217: Unknown result type (might be due to invalid IL or missing references)
 			//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0224: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0242: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0255: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0258: Invalid comparison between Unknown and I4
-			//IL_02bc: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02c3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_024c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_024f: Invalid comparison between Unknown and I4
+			//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+			//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1811,7 +2067,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_015f;
+					goto IL_0152;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -1819,17 +2075,13 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_021d;
+					goto IL_0210;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					string text = msg.read.StringMultiLine(4096);
-					if (!msg.player.CanModifyClan())
-					{
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
-					}
-					else
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						_003CvalidatedMotd_003E5__3 = ClanValidator.ValidateMotd(text);
 						if (((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Success)
@@ -1842,23 +2094,26 @@ public class ClanManager : BaseEntity
 								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetMotd_003Ed__11>(ref valueTaskAwaiter, ref this);
 								return;
 							}
-							goto IL_015f;
+							goto IL_0152;
 						}
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Error)));
+						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Error));
+						try
+						{
+							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+						}
+						finally
+						{
+							if (num < 0)
+							{
+								((IDisposable)val)?.Dispose();
+							}
+						}
 					}
 				}
 				goto end_IL_000e;
-				IL_021d:
-				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
-				if ((int)result == 1)
-				{
-					ClanPushNotifications.SendClanAnnouncement(_003Cclan_003E5__4, _003CpreviousTimestamp_003E5__5, msg.player.userID);
-				}
-				goto end_IL_000e;
-				IL_015f:
-				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
+				IL_0152:
+				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__4))
 				{
 					_003CpreviousTimestamp_003E5__5 = _003Cclan_003E5__4.MotdTimestamp;
 					valueTaskAwaiter2 = _003Cclan_003E5__4.SetMotd(((ClanValidatorResult)(ref _003CvalidatedMotd_003E5__3)).Value, (ulong)msg.player.userID).GetAwaiter();
@@ -1869,7 +2124,26 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetMotd_003Ed__11>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_021d;
+					goto IL_0210;
+				}
+				goto end_IL_000e;
+				IL_0210:
+				ClanResult result2 = valueTaskAwaiter2.GetResult();
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2, _003Cclan_003E5__4);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+					if ((int)result2 == 1)
+					{
+						ClanPushNotifications.SendClanAnnouncement(_003Cclan_003E5__4, _003CpreviousTimestamp_003E5__5, msg.player.userID);
+					}
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
 				}
 				end_IL_000e:;
 			}
@@ -1932,18 +2206,18 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0272: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-			//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_018f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0279: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+			//IL_021d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0222: Unknown result type (might be due to invalid IL or missing references)
 			//IL_022a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_022f: Unknown result type (might be due to invalid IL or missing references)
-			//IL_024d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_029c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_02a3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -1954,7 +2228,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0175;
+					goto IL_0168;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -1962,18 +2236,14 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0228;
+					goto IL_021b;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CsteamId_003E5__3 = msg.read.UInt64();
 					string text = msg.read.StringMultiLine(1024);
-					if (!msg.player.CanModifyClan())
-					{
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
-					}
-					else
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						_003CvalidatedNotes_003E5__4 = ClanValidator.ValidatePlayerNote(text);
 						if (((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Success)
@@ -1986,19 +2256,26 @@ public class ClanManager : BaseEntity
 								((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetPlayerNotes_003Ed__18>(ref valueTaskAwaiter, ref this);
 								return;
 							}
-							goto IL_0175;
+							goto IL_0168;
 						}
-						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Error)));
+						ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Error));
+						try
+						{
+							clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+						}
+						finally
+						{
+							if (num < 0)
+							{
+								((IDisposable)val)?.Dispose();
+							}
+						}
 					}
 				}
 				goto end_IL_000e;
-				IL_0228:
-				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__5));
-				goto end_IL_000e;
-				IL_0175:
-				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
-				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__5))
+				IL_0168:
+				ClanValueResult<IClan> result = valueTaskAwaiter.GetResult();
+				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result, out _003Cclan_003E5__5))
 				{
 					valueTaskAwaiter2 = _003Cclan_003E5__5.SetPlayerNotes(_003CsteamId_003E5__3, ((ClanValidatorResult)(ref _003CvalidatedNotes_003E5__4)).Value, (ulong)msg.player.userID).GetAwaiter();
 					if (!valueTaskAwaiter2.IsCompleted)
@@ -2008,7 +2285,22 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetPlayerNotes_003Ed__18>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_0228;
+					goto IL_021b;
+				}
+				goto end_IL_000e;
+				IL_021b:
+				ClanResult result2 = valueTaskAwaiter2.GetResult();
+				ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, result2, _003Cclan_003E5__5);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val2)?.Dispose();
+					}
 				}
 				end_IL_000e:;
 			}
@@ -2071,12 +2363,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0127: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01af: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -2087,7 +2379,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0120;
+					goto IL_00ff;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -2095,14 +2387,14 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01ce;
+					goto IL_01ad;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CsteamId_003E5__3 = msg.read.UInt64();
 					_003CnewRoleId_003E5__4 = msg.read.Int32();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -2112,16 +2404,26 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SetPlayerRole_003Ed__17>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_0120;
+						goto IL_00ff;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_01ce:
+				IL_01ad:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__5));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__5);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_0120:
+				IL_00ff:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__5))
 				{
@@ -2133,7 +2435,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SetPlayerRole_003Ed__17>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01ce;
+					goto IL_01ad;
 				}
 				end_IL_000e:;
 			}
@@ -2194,12 +2496,12 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0127: Unknown result type (might be due to invalid IL or missing references)
-			//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01af: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
+			//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
@@ -2210,7 +2512,7 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter = _003C_003Eu__1;
 					_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 					num = (_003C_003E1__state = -1);
-					goto IL_0120;
+					goto IL_00ff;
 				}
 				ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 				if (num == 1)
@@ -2218,14 +2520,14 @@ public class ClanManager : BaseEntity
 					valueTaskAwaiter2 = _003C_003Eu__2;
 					_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 					num = (_003C_003E1__state = -1);
-					goto IL_01ce;
+					goto IL_01ad;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
 					_003CroleIdA_003E5__3 = msg.read.Int32();
 					_003CroleIdB_003E5__4 = msg.read.Int32();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						valueTaskAwaiter = clanManager.Backend.Get(msg.player.clanId).GetAwaiter();
 						if (!valueTaskAwaiter.IsCompleted)
@@ -2235,16 +2537,26 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_SwapRoles_003Ed__22>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_0120;
+						goto IL_00ff;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_01ce:
+				IL_01ad:
 				ClanResult result = valueTaskAwaiter2.GetResult();
-				clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__5));
+				ClanActionResult val = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__5);
+				try
+				{
+					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val);
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
 				goto end_IL_000e;
-				IL_0120:
+				IL_00ff:
 				ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 				if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__5))
 				{
@@ -2256,7 +2568,7 @@ public class ClanManager : BaseEntity
 						((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_SwapRoles_003Ed__22>(ref valueTaskAwaiter2, ref this);
 						return;
 					}
-					goto IL_01ce;
+					goto IL_01ad;
 				}
 				end_IL_000e:;
 			}
@@ -2315,37 +2627,36 @@ public class ClanManager : BaseEntity
 
 		private void MoveNext()
 		{
-			//IL_0178: Unknown result type (might be due to invalid IL or missing references)
-			//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-			//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0225: Unknown result type (might be due to invalid IL or missing references)
-			//IL_022a: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0248: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0168: Unknown result type (might be due to invalid IL or missing references)
+			//IL_016d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_019f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0215: Unknown result type (might be due to invalid IL or missing references)
+			//IL_021a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0222: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
 			int num = _003C_003E1__state;
 			ClanManager clanManager = _003C_003E4__this;
 			try
 			{
 				if ((uint)num <= 1u)
 				{
-					goto IL_0096;
+					goto IL_0072;
 				}
 				if (Clan.enabled && clanManager.Backend != null)
 				{
 					_003CrequestId_003E5__2 = msg.read.Int32();
-					if (msg.player.CanModifyClan())
+					if (clanManager.ValidateCanModifyClan(msg.player, _003CrequestId_003E5__2))
 					{
 						_003Crole_003E5__3 = msg.read.Proto<Role>((Role)null);
-						goto IL_0096;
+						goto IL_0072;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, (ClanResult)20));
 				}
 				goto end_IL_000e;
-				IL_0096:
+				IL_0072:
 				try
 				{
 					ValueTaskAwaiter<ClanValueResult<IClan>> valueTaskAwaiter;
@@ -2354,7 +2665,7 @@ public class ClanManager : BaseEntity
 						valueTaskAwaiter = _003C_003Eu__1;
 						_003C_003Eu__1 = default(ValueTaskAwaiter<ClanValueResult<IClan>>);
 						num = (_003C_003E1__state = -1);
-						goto IL_0176;
+						goto IL_0166;
 					}
 					ValueTaskAwaiter<ClanResult> valueTaskAwaiter2;
 					if (num == 1)
@@ -2362,7 +2673,7 @@ public class ClanManager : BaseEntity
 						valueTaskAwaiter2 = _003C_003Eu__2;
 						_003C_003Eu__2 = default(ValueTaskAwaiter<ClanResult>);
 						num = (_003C_003E1__state = -1);
-						goto IL_0223;
+						goto IL_0213;
 					}
 					ClanValidatorResult val = ClanValidator.ValidateRoleName(_003Crole_003E5__3.name);
 					if (((ClanValidatorResult)(ref val)).Success)
@@ -2376,15 +2687,37 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanValueResult<IClan>>, _003CServer_UpdateRole_003Ed__20>(ref valueTaskAwaiter, ref this);
 							return;
 						}
-						goto IL_0176;
+						goto IL_0166;
 					}
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error)));
-					goto end_IL_0096;
-					IL_0223:
+					ClanActionResult val2 = BuildActionResult(_003CrequestId_003E5__2, ClanValidator.ToClanResult(((ClanValidatorResult)(ref val)).Error));
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val2);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val2)?.Dispose();
+						}
+					}
+					goto end_IL_0072;
+					IL_0213:
 					ClanResult result = valueTaskAwaiter2.GetResult();
-					clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4));
-					goto end_IL_0096;
-					IL_0176:
+					ClanActionResult val3 = BuildActionResult(_003CrequestId_003E5__2, result, _003Cclan_003E5__4);
+					try
+					{
+						clanManager.ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", msg.player), val3);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)val3)?.Dispose();
+						}
+					}
+					goto end_IL_0072;
+					IL_0166:
 					ClanValueResult<IClan> result2 = valueTaskAwaiter.GetResult();
 					if (clanManager.CheckClanResult(_003CrequestId_003E5__2, msg.player, result2, out _003Cclan_003E5__4))
 					{
@@ -2396,9 +2729,9 @@ public class ClanManager : BaseEntity
 							((AsyncUniTaskVoidMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<ValueTaskAwaiter<ClanResult>, _003CServer_UpdateRole_003Ed__20>(ref valueTaskAwaiter2, ref this);
 							return;
 						}
-						goto IL_0223;
+						goto IL_0213;
 					}
-					end_IL_0096:;
+					end_IL_0072:;
 				}
 				finally
 				{
@@ -3271,9 +3604,9 @@ public class ClanManager : BaseEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_CreateClan_003Ed__1))]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[AsyncStateMachine(typeof(_003CServer_CreateClan_003Ed__1))]
 	public UniTaskVoid Server_CreateClan(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3305,9 +3638,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetClan_003Ed__3._003C_003Et__builder)).Task;
 	}
 
+	[AsyncStateMachine(typeof(_003CServer_GetLogs_003Ed__3))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
-	[AsyncStateMachine(typeof(_003CServer_GetLogs_003Ed__3))]
 	public UniTaskVoid Server_GetLogs(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3322,9 +3655,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetLogs_003Ed__4._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_GetScoreEvents_003Ed__4))]
+	[RPC_Server]
 	public UniTaskVoid Server_GetScoreEvents(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3340,8 +3673,8 @@ public class ClanManager : BaseEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_GetInvitations_003Ed__5))]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_GetInvitations(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3356,8 +3689,8 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetInvitations_003Ed__6._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_GetLeaderboard_003Ed__8))]
 	public UniTaskVoid Server_GetLeaderboard(RPCMessage msg)
 	{
@@ -3373,8 +3706,8 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetLeaderboard_003Ed__9._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_SetLogo_003Ed__9))]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_SetLogo_003Ed__9))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetLogo(RPCMessage msg)
 	{
@@ -3391,8 +3724,8 @@ public class ClanManager : BaseEntity
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SetColor_003Ed__10))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public UniTaskVoid Server_SetColor(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3424,9 +3757,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetMotd_003Ed__12._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_Invite_003Ed__12))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_Invite_003Ed__12))]
 	public UniTaskVoid Server_Invite(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3441,9 +3774,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_Invite_003Ed__13._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_CancelInvite_003Ed__13))]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_CancelInvite(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3458,9 +3791,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CancelInvite_003Ed__14._003C_003Et__builder)).Task;
 	}
 
+	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
-	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
 	public UniTaskVoid Server_AcceptInvitation(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3475,9 +3808,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_AcceptInvitation_003Ed__15._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_CancelInvitation_003Ed__15))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_CancelInvitation_003Ed__15))]
 	public UniTaskVoid Server_CancelInvitation(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3492,9 +3825,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CancelInvitation_003Ed__16._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_Kick_003Ed__16))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_Kick_003Ed__16))]
 	public UniTaskVoid Server_Kick(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3509,8 +3842,8 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_Kick_003Ed__17._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_SetPlayerRole_003Ed__17))]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_SetPlayerRole_003Ed__17))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetPlayerRole(RPCMessage msg)
 	{
@@ -3526,9 +3859,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetPlayerRole_003Ed__18._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_SetPlayerNotes_003Ed__18))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_SetPlayerNotes_003Ed__18))]
 	public UniTaskVoid Server_SetPlayerNotes(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3543,9 +3876,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetPlayerNotes_003Ed__19._003C_003Et__builder)).Task;
 	}
 
+	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_CreateRole_003Ed__19))]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	public UniTaskVoid Server_CreateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3561,8 +3894,8 @@ public class ClanManager : BaseEntity
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_UpdateRole_003Ed__20))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public UniTaskVoid Server_UpdateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3577,9 +3910,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_UpdateRole_003Ed__21._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_DeleteRole_003Ed__21))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_DeleteRole_003Ed__21))]
 	public UniTaskVoid Server_DeleteRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3594,9 +3927,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_DeleteRole_003Ed__22._003C_003Et__builder)).Task;
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_SwapRoles_003Ed__22))]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SwapRoles(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3613,18 +3946,27 @@ public class ClanManager : BaseEntity
 
 	private bool CheckClanResult(int requestId, BasePlayer player, ClanValueResult<IClan> result, out IClan clan)
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		if (result.IsSuccess)
 		{
 			clan = result.Value;
 			return true;
 		}
-		ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", player), BuildActionResult(requestId, result.Result));
-		clan = null;
-		return false;
+		ClanActionResult val = BuildActionResult(requestId, result.Result);
+		try
+		{
+			ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", player), val);
+			clan = null;
+			return false;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static ClanActionResult BuildActionResult(int requestId, ClanResult result)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -3637,6 +3979,7 @@ public class ClanManager : BaseEntity
 		return obj;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static ClanActionResult BuildActionResult(int requestId, ClanResult result, [NotNull] IClan clan, bool includeLogo = false)
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
@@ -3652,6 +3995,24 @@ public class ClanManager : BaseEntity
 			val.clanInfo.logo = null;
 		}
 		return val;
+	}
+
+	private bool ValidateCanModifyClan(BasePlayer player, int requestId)
+	{
+		if (!player.CanModifyClan())
+		{
+			ClanActionResult val = BuildActionResult(requestId, (ClanResult)20);
+			try
+			{
+				ClientRPC(RpcTarget.Player("Client_ReceiveActionResult", player), val);
+				return false;
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+		}
+		return true;
 	}
 
 	[RPC_Server]
@@ -3673,8 +4034,10 @@ public class ClanManager : BaseEntity
 
 	public void AddScore(IClan clan, ClanScoreEvent entry)
 	{
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		Assert.IsNotNull<IClan>(clan, "clan != null");
 		ValueTask<ClanResult> task = clan.AddScoreEvent(entry);
 		if (task.IsCompletedSuccessfully)
@@ -3701,10 +4064,15 @@ public class ClanManager : BaseEntity
 		{
 			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0002: Invalid comparison between Unknown and I4
+			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 			if ((int)result != 1)
 			{
 				Debug.LogWarning((object)$"Failed to add score event to clan {clan.ClanId}: {result}");
+			}
+			else
+			{
+				Analytics.Azure.OnClanScoreEvent(clan, entry);
 			}
 		}
 	}
@@ -3965,7 +4333,7 @@ public class ClanManager : BaseEntity
 			}
 			throw new NotSupportedException("Clan backend '" + type + "' is not supported");
 		}
-		return (IClanBackend)(object)new LocalClanBackend(ConVar.Server.rootFolder, 286, Clan.maxMemberCount);
+		return (IClanBackend)(object)new LocalClanBackend(ConVar.Server.rootFolder, 287, Clan.maxMemberCount);
 	}
 
 	public override void InitShared()

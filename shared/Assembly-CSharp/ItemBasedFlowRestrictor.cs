@@ -7,9 +7,14 @@ using ProtoBuf;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
+public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInventory.ICanMoveFrom
 {
-	public ItemDefinition passthroughItem;
+	public const Flags HasPassthrough = Flags.Reserved1;
+
+	public const Flags Sparks = Flags.Reserved2;
+
+	[Header("Item Based Flow Restrictor")]
+	public ItemDefinition[] validPassthroughItems;
 
 	public ItemContainer.ContentsType allowedContents = ItemContainer.ContentsType.Generic;
 
@@ -19,17 +24,26 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
 
 	public string lootPanelName = "generic";
 
-	public const Flags HasPassthrough = Flags.Reserved1;
-
-	public const Flags Sparks = Flags.Reserved2;
-
+	[Header("Item Decay/Destroying")]
 	public float passthroughItemConditionLossPerSec = 1f;
 
+	public int destroyPassthroughItemEveryXSeconds;
+
+	[Header("Conditional Locking")]
+	public bool lockInventoryWhenItemPresent;
+
+	public bool lockOnlyWithPower = true;
+
+	[Header("Sounds")]
 	public SoundDefinition openSound;
 
 	public SoundDefinition closeSound;
 
 	public ItemContainer inventory;
+
+	private int lastDestroyedItemTimer;
+
+	private static readonly Phrase PullLockedError = new Phrase("error.pull_locked", "Item is locked in!");
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -92,9 +106,9 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
 		{
 			flagsUpdateScope.Set(Flags.On, b: false);
 		}
-		if (inventory != null)
+		if (inventory != null && inventory.TryGetItemAtSlot(0, out var item))
 		{
-			inventory.GetSlot(0)?.Drop(((Component)debugOrigin).transform.position + ((Component)this).transform.forward * 0.5f, GetInheritedDropVelocity() + ((Component)this).transform.forward * 2f);
+			item.Drop(((Component)debugOrigin).transform.position + ((Component)this).transform.forward * 0.5f, GetInheritedDropVelocity() + ((Component)this).transform.forward * 2f);
 		}
 	}
 
@@ -118,36 +132,102 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
 
 	public virtual bool HasPassthroughItem()
 	{
-		if (inventory.itemList.Count <= 0)
+		if (inventory == null || inventory.itemList.Count <= 0)
 		{
 			return false;
 		}
-		Item slot = inventory.GetSlot(0);
-		if (slot == null)
+		if (!inventory.TryGetItemAtSlot(0, out var item))
 		{
 			return false;
 		}
-		if (passthroughItemConditionLossPerSec > 0f && slot.hasCondition && slot.conditionNormalized <= 0f)
+		if (!IsValidPassthroughItem(item))
 		{
 			return false;
 		}
-		if ((Object)(object)slot.info == (Object)(object)passthroughItem)
+		if (passthroughItemConditionLossPerSec > 0f && item.hasCondition && item.conditionNormalized <= 0f)
 		{
-			return true;
+			return false;
+		}
+		return true;
+	}
+
+	public bool IsValidPassthroughItem(Item item)
+	{
+		return IsValidPassthroughItem(item.info);
+	}
+
+	public bool IsValidPassthroughItem(ItemDefinition itemDefinition)
+	{
+		ItemDefinition[] array = validPassthroughItems;
+		foreach (ItemDefinition itemDefinition2 in array)
+		{
+			if ((Object)(object)itemDefinition == (Object)(object)itemDefinition2)
+			{
+				return true;
+			}
 		}
 		return false;
 	}
 
-	public virtual void TickPassthroughItem()
+	public virtual bool GetPassthroughItem(out Item item)
 	{
-		if (inventory.itemList.Count > 0 && HasFlag(Flags.On))
+		item = null;
+		if (inventory == null || inventory.itemList.Count <= 0)
 		{
-			Item slot = inventory.GetSlot(0);
-			if (slot != null && slot.hasCondition)
+			return false;
+		}
+		if (!inventory.TryGetItemAtSlot(0, out item))
+		{
+			return false;
+		}
+		if (!IsValidPassthroughItem(item))
+		{
+			return false;
+		}
+		if (passthroughItemConditionLossPerSec > 0f && item.hasCondition && item.conditionNormalized <= 0f)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public virtual void TickPassthroughItemDecay()
+	{
+		if (inventory != null && inventory.itemList.Count > 0 && ShouldDestroyOrDecayItem() && HasFlag(Flags.On))
+		{
+			DecayPassthroughItem(passthroughItemConditionLossPerSec);
+		}
+	}
+
+	public void DecayPassthroughItem(float amount)
+	{
+		if (passthroughItemConditionLossPerSec > 0f && inventory.TryGetItemAtSlot(0, out var item) && item.hasCondition)
+		{
+			item.LoseCondition(amount);
+		}
+	}
+
+	public void TickDestroyPassthroughItem()
+	{
+		if (!IsOn() || !HasFlag(Flags.Reserved1) || destroyPassthroughItemEveryXSeconds <= 0 || !ShouldDestroyOrDecayItem())
+		{
+			return;
+		}
+		lastDestroyedItemTimer++;
+		if (lastDestroyedItemTimer >= destroyPassthroughItemEveryXSeconds)
+		{
+			lastDestroyedItemTimer = 0;
+			if (inventory.TryGetItemAtSlot(0, out var item))
 			{
-				slot.LoseCondition(1f);
+				item.UseItem();
+				OnItemAddedOrRemoved(item, added: false);
 			}
 		}
+	}
+
+	protected virtual bool ShouldDestroyOrDecayItem()
+	{
+		return true;
 	}
 
 	public override void ServerInit()
@@ -157,7 +237,11 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
 			CreateInventory(giveUID: true);
 			OnInventoryFirstCreated(inventory);
 		}
-		InvokeRandomized(TickPassthroughItem, 1f, 1f, 0.015f);
+		InvokeRandomized(TickPassthroughItemDecay, 1f, 1f, 0.015f);
+		if (destroyPassthroughItemEveryXSeconds > 0)
+		{
+			InvokeRepeating(TickDestroyPassthroughItem, 1f, 1f);
+		}
 		base.ServerInit();
 	}
 
@@ -179,7 +263,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
 		inventory = Pool.Get<ItemContainer>();
 		inventory.entityOwner = this;
 		inventory.allowedContents = ((allowedContents == (ItemContainer.ContentsType)0) ? ItemContainer.ContentsType.Generic : allowedContents);
-		inventory.SetOnlyAllowedItem(passthroughItem);
+		inventory.SetOnlyAllowedItems(validPassthroughItems);
 		inventory.maxStackSize = maxStackSize;
 		inventory.ServerInitialize(null, numSlots);
 		if (giveUID)
@@ -240,26 +324,27 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds
 	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
-		if (inventory == null)
+		if (inventory != null)
 		{
-			return;
-		}
-		BasePlayer player = rpc.player;
-		if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && player.inventory.loot.StartLootingEntity(this))
-		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			BasePlayer player = rpc.player;
+			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && player.inventory.loot.StartLootingEntity(this))
 			{
-				flagsUpdateScope.Set(Flags.Open, b: true);
+				SetFlagLocal(Flags.Open, b: true);
+				player.inventory.loot.AddContainer(inventory);
+				player.inventory.loot.SendImmediate();
+				player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), lootPanelName);
+				SendNetworkUpdate();
 			}
-			player.inventory.loot.AddContainer(inventory);
-			player.inventory.loot.SendImmediate();
-			player.ClientRPC(RpcTarget.Player("RPC_OpenLootPanel", player), lootPanelName);
-			SendNetworkUpdate();
 		}
 	}
 
 	public void PlayerStoppedLooting(BasePlayer player)
 	{
 		Interface.CallHook("OnLootEntityEnd", player, this);
+	}
+
+	public PlayerInventory.CanMoveFromResponse CanMoveFrom(BasePlayer player, Item item)
+	{
+		return new PlayerInventory.CanMoveFromResponse(!lockInventoryWhenItemPresent || (lockOnlyWithPower && !IsPowered()) || !HasPassthroughItem(), PullLockedError);
 	}
 }

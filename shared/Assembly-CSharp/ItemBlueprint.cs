@@ -26,8 +26,8 @@ public class ItemBlueprint : MonoBehaviour
 
 		public int amount = 1;
 
-		[Range(0f, 1f)]
 		[Tooltip("Chance (0-1) this surplus item is created when crafted at a workbench with the surplus upgrade.")]
+		[Range(0f, 1f)]
 		public float chance = 0.1f;
 	}
 
@@ -50,8 +50,8 @@ public class ItemBlueprint : MonoBehaviour
 	[Header("Workbench")]
 	public int workbenchLevelRequired;
 
-	[Tooltip("Items that may be produced as surplus when crafted at a workbench with the surplus upgrade installed. Leave null/empty for no surplus.")]
 	[Header("Surplus")]
+	[Tooltip("Items that may be produced as surplus when crafted at a workbench with the surplus upgrade installed. Leave null/empty for no surplus.")]
 	public List<SurplusEntry> surplusItems;
 
 	[Header("Scrap")]
@@ -59,8 +59,8 @@ public class ItemBlueprint : MonoBehaviour
 
 	public int scrapFromRecycle;
 
-	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
 	[Header("Unlocking")]
+	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
 	public bool NeedsSteamItem;
 
 	public ItemDefinition RequireUnlockedItem;

@@ -28,6 +28,8 @@ public class CeilingLight : IOEntity
 
 	public static Grid<CeilingLight> FarmLightGrid = new Grid<CeilingLight>(32, 8096f);
 
+	public override bool ValidateMeleeColliderAntihack => false;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("CeilingLight.OnRpcMessage"))

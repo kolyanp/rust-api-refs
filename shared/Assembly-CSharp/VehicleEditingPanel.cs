@@ -26,8 +26,8 @@ public class VehicleEditingPanel : LootPanel
 	[SerializeField]
 	private float disabledAlpha = 0.25f;
 
-	[SerializeField]
 	[Header("Edit Vehicle")]
+	[SerializeField]
 	private CanvasGroup editGroup;
 
 	[SerializeField]
@@ -50,6 +50,9 @@ public class VehicleEditingPanel : LootPanel
 
 	[SerializeField]
 	private GameObject liquidButton;
+
+	[SerializeField]
+	private GameObject crudeExtractButton;
 
 	[SerializeField]
 	private Color gotColor;

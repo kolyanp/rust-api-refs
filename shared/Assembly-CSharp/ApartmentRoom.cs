@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using ProtoBuf;
 using UnityEngine;
@@ -85,8 +86,8 @@ public class ApartmentRoom : BaseEntity
 	[NonSerialized]
 	public List<BaseEntity> Furniture = new List<BaseEntity>();
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<FurnitureSpawn> furnitureSpawns = new List<FurnitureSpawn>();
 
 	private TriggerSafeZoneOverride safeZoneOverrideTrigger;
@@ -347,10 +348,18 @@ public class ApartmentRoom : BaseEntity
 		return apartmentUpkeepTerminal.inventory.GetAmount(scrapItemDef.itemid, onlyUsableAmounts: false);
 	}
 
-	private float GetDailyUpkeepCost()
+	public float GetDailyUpkeepCost()
 	{
-		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
 		float num = 0f;
 		foreach (BaseEntity item in Furniture)
 		{
@@ -367,10 +376,11 @@ public class ApartmentRoom : BaseEntity
 			}
 		}
 		ApartmentBuilding apartmentBuilding = Building.Get(serverside: true);
+		Vector3 val = (BaseNetworkable.UseParallelSaves ? Facepunch.Extend.TransformEx.Unsafe.GetPosMT(apartmentBuilding.TransformHandle) : ((Component)apartmentBuilding).transform.position);
 		foreach (ulong owner in owners)
 		{
 			BasePlayer basePlayer = BasePlayer.FindByID(owner);
-			if ((Object)(object)basePlayer == (Object)null || basePlayer.IsDestroyed || Vector3.Distance(((Component)basePlayer).transform.position, ((Component)apartmentBuilding).transform.position) > 200f)
+			if ((Object)(object)basePlayer == (Object)null || basePlayer.IsDestroyed || Vector3.Distance(BaseNetworkable.UseParallelSaves ? Facepunch.Extend.TransformEx.Unsafe.GetPosMT(basePlayer.TransformHandle) : ((Component)basePlayer).transform.position, val) > 200f)
 			{
 				continue;
 			}
@@ -462,6 +472,10 @@ public class ApartmentRoom : BaseEntity
 			return false;
 		}
 		if (owners.Contains(user))
+		{
+			return true;
+		}
+		if (base.isServer && ApartmentCommands.adminapartmentbypass && BasePlayer.TryFindByID(user, out var basePlayer) && basePlayer.IsAdmin)
 		{
 			return true;
 		}
@@ -635,19 +649,22 @@ public class ApartmentRoom : BaseEntity
 
 	private void AddApartmentLockToEntity(BaseEntity entity)
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		ApartmentLock apartmentLock = entity.GetSlot(Slot.Lock) as ApartmentLock;
-		if ((Object)(object)apartmentLock == (Object)null)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		if (!(entity is Door) || !((Object)(object)FrontDoor != (Object)(object)entity))
 		{
-			apartmentLock = GameManager.server.CreateEntity("assets/prefabs/apartment/apartment_lock.prefab") as ApartmentLock;
-			apartmentLock.SetParent(entity, entity.GetSlotAnchorName(Slot.Lock));
-			apartmentLock.Spawn();
-			apartmentLock.SetFlagLocal(Flags.Locked, b: true);
-			apartmentLock.Room = this;
-			entity.SetSlot(Slot.Lock, apartmentLock);
+			ApartmentLock apartmentLock = entity.GetSlot(Slot.Lock) as ApartmentLock;
+			if ((Object)(object)apartmentLock == (Object)null)
+			{
+				apartmentLock = GameManager.server.CreateEntity("assets/prefabs/apartment/apartment_lock.prefab") as ApartmentLock;
+				apartmentLock.SetParent(entity, entity.GetSlotAnchorName(Slot.Lock));
+				apartmentLock.Spawn();
+				apartmentLock.SetFlagLocal(Flags.Locked, b: true);
+				apartmentLock.Room = this;
+				entity.SetSlot(Slot.Lock, apartmentLock);
+			}
 		}
 	}
 
@@ -871,8 +888,8 @@ public class ApartmentRoom : BaseEntity
 
 	public void OnPlayerEnterCombatZone(BasePlayer player)
 	{
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		if (ApartmentCommands.apartmentinvisibleblocker && !CanBypassInvisibleBarrier(player) && IsCurrentlyRented() && !IsBreakInActive())
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		if (ApartmentCommands.apartmentinvisibleblocker && !CanBypassInvisibleBarrier(player) && IsCurrentlyRented() && !IsBreakInActive() && (!ApartmentCommands.adminapartmentnoclip || !player.IsAdmin || !player.IsFlying))
 		{
 			if ((Object)(object)invisibleBarrierEjectLocation != (Object)null)
 			{

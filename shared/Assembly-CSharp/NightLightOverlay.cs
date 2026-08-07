@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.PostProcessing;
 
 public class NightLightOverlay : MonoBehaviour
 {
 	public PostProcessVolume postProcessVolume;
+
+	public Volume rrpVolume;
 
 	public float VisionCareExtraDistance = 20f;
 

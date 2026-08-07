@@ -13,6 +13,8 @@ public class Shield : HeldEntity
 
 	public float DeployDelay = 1f;
 
+	public float ShieldOnBackToggleCooldown = 3f;
+
 	public ProtectionProperties Protection;
 
 	[Range(0f, 1f)]
@@ -35,6 +37,8 @@ public class Shield : HeldEntity
 	public GameObjectRef MeleeLocalPlayerImpactFxPrefab;
 
 	public GameObjectRef RangedLocalPlayerImpactFxPrefab;
+
+	public ShieldAnimationSubSystem ShieldAnimSystem;
 
 	private float lastBlockTime;
 
@@ -60,6 +64,10 @@ public class Shield : HeldEntity
 	private TimeSince lastLocalPlayerUpdateTick;
 
 	private HeldEntity tickingHeldEntity;
+
+	private bool lastAppliedShieldOnBack;
+
+	private TimeSince timeSinceShieldOnBackChanged;
 
 	public override bool IsShield => true;
 
@@ -319,30 +327,44 @@ public class Shield : HeldEntity
 	public override void ServerTick(BasePlayer byPlayer)
 	{
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerTick(byPlayer);
-		if (!IsDisabled() && byPlayer.modelState != null)
+		if (IsDisabled())
+		{
+			return;
+		}
+		bool flag = byPlayer.WantsShieldOnBack();
+		if (flag != lastAppliedShieldOnBack && TimeSince.op_Implicit(timeSinceShieldOnBackChanged) > ShieldOnBackToggleCooldown)
+		{
+			lastAppliedShieldOnBack = flag;
+			timeSinceShieldOnBackChanged = TimeSince.op_Implicit(0f);
+			byPlayer.GetHeldEntity()?.UpdateShieldState(bHeld: true);
+		}
+		if (byPlayer.modelState != null)
 		{
 			Vector3 val = byPlayer.modelState.localShieldPos;
 			if (Vector3Ex.IsNaNOrInfinity(val))

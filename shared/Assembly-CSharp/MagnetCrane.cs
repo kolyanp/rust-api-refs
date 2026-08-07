@@ -513,7 +513,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 		info.msg.crane.arm1 = extensionArmState;
 		info.msg.crane.arm2 = raiseArmState;
 		info.msg.crane.yaw = yawState;
-		info.msg.crane.time = GetNetworkTime();
+		info.msg.crane.time = GetNetworkTime(in info.cachedTime);
 		byte num = (byte)((carPhysics.TankThrottleLeft + 1f) * 7f);
 		byte b = (byte)((carPhysics.TankThrottleRight + 1f) * 7f);
 		byte treadInput = (byte)(num + (b << 4));

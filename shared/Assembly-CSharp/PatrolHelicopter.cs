@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -187,6 +188,8 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 
 	private const float networkUpdateRate = 0.25f;
 
+	private TransformHandle rotorPivotHandle;
+
 	private BaseEntity mapMarkerInstance;
 
 	private BaseEntity fleeMapMarkerInstance;
@@ -329,17 +332,18 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.helicopter = Pool.Get<Helicopter>();
-		Helicopter helicopter = info.msg.helicopter;
-		Quaternion localRotation = rotorPivot.transform.localRotation;
-		helicopter.tiltRot = ((Quaternion)(ref localRotation)).eulerAngles;
+		Quaternion val = ((!BaseNetworkable.UseParallelSaves) ? rotorPivot.transform.localRotation : Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in rotorPivotHandle));
+		info.msg.helicopter.tiltRot = ((Quaternion)(ref val)).eulerAngles;
 		info.msg.helicopter.spotlightVec = spotlightTarget;
 		info.msg.helicopter.weakspothealths = Pool.Get<List<float>>();
 		for (int i = 0; i < weakspots.Length; i++)
@@ -350,6 +354,8 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 
 	public override void ServerInit()
 	{
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		myAI = ((Component)this).GetComponent<PatrolHelicopterAI>();
@@ -362,6 +368,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 		}
 		CreateMapMarker();
 		SeekerTarget.SetSeekerTarget(this, SeekerTarget.SeekerStrength.MEDIUM);
+		rotorPivotHandle = rotorPivot.transformHandle;
 	}
 
 	public override void DestroyShared()

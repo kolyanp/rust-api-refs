@@ -921,13 +921,14 @@ public class NexusFerry : BaseEntity
 		base.ServerInit();
 		if (!Application.isLoadingSave)
 		{
-			if (!NexusServer.Started)
+			bool flag = false;
+			if (!NexusServer.Started && !flag)
 			{
 				Debug.LogError((object)"NexusFerry will not work without being connected to a nexus - destroying.");
 				Kill();
 				return;
 			}
-			if (string.IsNullOrWhiteSpace(_ownerZone) || _schedule == null || _schedule.Count <= 1 || !_schedule.Contains(_ownerZone))
+			if ((string.IsNullOrWhiteSpace(_ownerZone) || _schedule == null || _schedule.Count <= 1 || !_schedule.Contains(_ownerZone)) && !flag)
 			{
 				Debug.LogError((object)"NexusFerry has not been initialized (you can't spawn them manually) - destroying.");
 				Kill();

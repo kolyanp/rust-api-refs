@@ -1,6 +1,7 @@
 using System;
 using ConVar;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -31,6 +32,8 @@ public class SpinnerWheel : Signage
 	private Sound spinSound;
 
 	private SoundModulation.Modulator spinSoundGain;
+
+	private TransformHandle wheelHandle;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -119,17 +122,26 @@ public class SpinnerWheel : Signage
 		return true;
 	}
 
+	public override void ServerInit()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		base.ServerInit();
+		wheelHandle = ((Component)wheel).transformHandle;
+	}
+
 	public override void Save(SaveInfo info)
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.spinnerWheel = Pool.Get<SpinnerWheel>();
-		SpinnerWheel spinnerWheel = info.msg.spinnerWheel;
-		Quaternion localRotation = wheel.localRotation;
-		spinnerWheel.spin = ((Quaternion)(ref localRotation)).eulerAngles;
+		Quaternion val = ((!BaseNetworkable.UseParallelSaves) ? wheel.localRotation : Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in wheelHandle));
+		info.msg.spinnerWheel.spin = ((Quaternion)(ref val)).eulerAngles;
 	}
 
 	public override void Load(LoadInfo info)

@@ -50,15 +50,15 @@ public class MLRS : BaseMountable
 
 	public static readonly Phrase RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
 
-	[Header("MLRS Components")]
 	[SerializeField]
+	[Header("MLRS Components")]
 	private GameObjectRef rocketStoragePrefab;
 
 	[SerializeField]
 	private GameObjectRef dashboardStoragePrefab;
 
-	[SerializeField]
 	[Header("MLRS Rotation")]
+	[SerializeField]
 	private Transform hRotator;
 
 	[SerializeField]
@@ -77,13 +77,13 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	private Transform hydraulics;
 
-	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	[Header("MLRS Weaponry")]
+	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	[SerializeField]
 	public float minRange = 200f;
 
-	[SerializeField]
 	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
+	[SerializeField]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -716,8 +716,8 @@ public class MLRS : BaseMountable
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -728,8 +728,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Fire_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -739,8 +739,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -758,8 +758,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open_Dashboard(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

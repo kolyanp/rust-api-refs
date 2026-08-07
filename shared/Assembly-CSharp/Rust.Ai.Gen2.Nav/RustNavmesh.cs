@@ -29,9 +29,17 @@ public class RustNavmesh : IDisposable
 
 	public IntPtr NavMeshHandle = IntPtr.Zero;
 
+	private float cachedMaxBorderMeters;
+
+	private double builtStartTime;
+
+	private int numBuiltTiles;
+
 	private Vector2Int tileNum;
 
 	private BackgroundTileBuilder tileBuilder;
+
+	public bool EmitTileChangeEvents;
 
 	private static readonly int HeaderSize = Marshal.SizeOf<NavMeshSetHeader>();
 
@@ -50,12 +58,12 @@ public class RustNavmesh : IDisposable
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
 		if (AI.useUnityNavmesh)
 		{
 			return;
@@ -79,9 +87,25 @@ public class RustNavmesh : IDisposable
 		{
 			BuildParams = buildParamsOverride.Value;
 		}
+		else
+		{
+			BuildParams = RustNavigation.Instance.BuildParams;
+		}
 		if (buildParamsHiResOverride.HasValue)
 		{
 			BuildParamsHiRes = buildParamsHiResOverride.Value;
+		}
+		else
+		{
+			BuildParamsHiRes = RustNavigation.Instance.BuildParamsHiRes;
+		}
+		cachedMaxBorderMeters = Mathf.Max(BorderMeters(in BuildParams), BorderMeters(in BuildParamsHiRes));
+		float num = BuildParams.tileSize * BuildParams.cellSize;
+		float num2 = BuildParamsHiRes.tileSize * BuildParamsHiRes.cellSize;
+		if (Mathf.Abs(num - num2) > 0.001f)
+		{
+			RustNavigation.LogError($"Tile world size mismatch: lo {num:F6} hi {num2:F6}");
+			return;
 		}
 		NavMeshHandle = RecastWrapper.CreateEmptyNavMesh(in BuildParams, ((Bounds)(ref CurrentNavmeshBounds)).min, ((Bounds)(ref CurrentNavmeshBounds)).max);
 		if (NavMeshHandle == IntPtr.Zero)
@@ -105,6 +129,7 @@ public class RustNavmesh : IDisposable
 			return;
 		}
 		RustNavigation.Log($"Queueing {((Vector2Int)(ref tileNum)).x * ((Vector2Int)(ref tileNum)).y} tiles for building...");
+		builtStartTime = Time.realtimeSinceStartupAsDouble;
 		for (int k = 0; k < ((Vector2Int)(ref tileNum)).y; k++)
 		{
 			for (int l = 0; l < ((Vector2Int)(ref tileNum)).x; l++)
@@ -114,16 +139,68 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
+	public bool IsBuilt()
+	{
+		if (NavMeshHandle == IntPtr.Zero)
+		{
+			return false;
+		}
+		return numBuiltTiles == tiles.Length;
+	}
+
+	private void MarkTileAsBuilt(Tile tile)
+	{
+		if (tile == null)
+		{
+			return;
+		}
+		if (EmitTileChangeEvents)
+		{
+			RustNavigation.NotifyDefaultNavmeshTileChanged(tile.tx, tile.ty);
+		}
+		if (!tile.wasBuiltOnce)
+		{
+			numBuiltTiles++;
+			tile.wasBuiltOnce = true;
+			if (IsBuilt())
+			{
+				double num = Time.realtimeSinceStartupAsDouble - builtStartTime;
+				RustNavigation.Log($"Navmesh is now fully built in {num:F2} seconds.");
+			}
+		}
+	}
+
+	public void FailTile(int tx, int ty)
+	{
+		if (tiles != null)
+		{
+			Tile tile = tiles[Mathx.FlattenArrayCoord(tx, ty, ((Vector2Int)(ref tileNum)).x)];
+			if (tile.tileBytes != IntPtr.Zero && NavMeshHandle != IntPtr.Zero)
+			{
+				RecastWrapper.RemoveTileFromNavMesh(NavMeshHandle, tx, ty);
+			}
+			tile.tileBytes = IntPtr.Zero;
+			tile.dataSize = 0;
+			MarkTileAsBuilt(tile);
+		}
+	}
+
 	public bool AddTile(int tx, int ty, IntPtr tileData, int dataSize)
 	{
+		if (tiles == null)
+		{
+			return false;
+		}
 		if (!RecastWrapper.AddPrebuiltTileToNavMesh(NavMeshHandle, tx, ty, tileData, dataSize))
 		{
 			tileData = IntPtr.Zero;
+			FailTile(tx, ty);
 			return false;
 		}
-		Tile obj = tiles[Mathx.FlattenArrayCoord(tx, ty, ((Vector2Int)(ref tileNum)).x)];
-		obj.tileBytes = tileData;
-		obj.dataSize = dataSize;
+		Tile tile = tiles[Mathx.FlattenArrayCoord(tx, ty, ((Vector2Int)(ref tileNum)).x)];
+		tile.tileBytes = tileData;
+		tile.dataSize = dataSize;
+		MarkTileAsBuilt(tile);
 		return true;
 	}
 
@@ -192,36 +269,6 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
-	public NavMeshBuildParams GetBuildParamsForTile(int tx, int ty)
-	{
-		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		Bounds bounds = rcCalcTileBounds(new Vector2Int(tx, ty));
-		PooledList<Collider> val = Pool.Get<PooledList<Collider>>();
-		try
-		{
-			GamePhysics.OverlapBounds(bounds, (List<Collider>)(object)val, 538968064, (QueryTriggerInteraction)2);
-			foreach (Collider item in (List<Collider>)(object)val)
-			{
-				if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)GameObjectEx.ToBaseEntity(item), out BuildingBlock castedUnityObject) && castedUnityObject.isServer)
-				{
-					return BuildParamsHiRes;
-				}
-				if ((Object)(object)ConstructionErrors.GetPreventBuildingMonumentTag(item) != (Object)null)
-				{
-					return BuildParamsHiRes;
-				}
-			}
-			return BuildParams;
-		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
-		}
-	}
-
 	public Vector2Int rcCalcTileCoordFromPos(Vector3 pos)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -275,33 +322,40 @@ public class RustNavmesh : IDisposable
 		return new Bounds((val + val2) * 0.5f, val2 - val);
 	}
 
+	private static float BorderMeters(in NavMeshBuildParams p)
+	{
+		return (float)(Mathf.CeilToInt(p.agentRadius / p.cellSize) + 3) * p.cellSize;
+	}
+
 	public Bounds rcExpandTileBounds(Bounds tileBounds)
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		int num = Mathf.CeilToInt(BuildParams.agentRadius / BuildParams.cellSize) + 3;
-		((Bounds)(ref tileBounds)).min = ((Bounds)(ref tileBounds)).min - new Vector3(BuildParams.cellSize, 0f, BuildParams.cellSize) * (float)num;
-		((Bounds)(ref tileBounds)).max = ((Bounds)(ref tileBounds)).max + new Vector3(BuildParams.cellSize, 0f, BuildParams.cellSize) * (float)num;
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		Vector3 val = default(Vector3);
+		((Vector3)(ref val))._002Ector(cachedMaxBorderMeters, 0f, cachedMaxBorderMeters);
+		((Bounds)(ref tileBounds)).min = ((Bounds)(ref tileBounds)).min - val;
+		((Bounds)(ref tileBounds)).max = ((Bounds)(ref tileBounds)).max + val;
 		return tileBounds;
 	}
 
 	public bool GetTilePolysInternal(int tx, int ty, List<Vector3> polys)
 	{
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavmesh.GetTilePolysInternal"))
 		{
-			for (int i = 0; i < TilePolysBuffer.Length; i++)
+			using (TimeWarning.New("ClearBuffer"))
 			{
-				TilePolysBuffer[i] = Vector3.zero;
+				for (int i = 0; i < TilePolysBuffer.Length; i++)
+				{
+					TilePolysBuffer[i] = Vector3.zero;
+				}
 			}
 			if (!IsValid())
 			{
@@ -311,9 +365,12 @@ public class RustNavmesh : IDisposable
 			{
 				return false;
 			}
-			for (int j = 0; j < outPolyCount * 6; j++)
+			using (TimeWarning.New("ApplyPolys"))
 			{
-				polys.Add(TilePolysBuffer[j]);
+				for (int j = 0; j < outPolyCount * 6; j++)
+				{
+					polys.Add(TilePolysBuffer[j]);
+				}
 			}
 			return true;
 		}
@@ -338,22 +395,31 @@ public class RustNavmesh : IDisposable
 
 	public bool SamplePosition(Vector3 position, out NavMeshHit hit, Vector3 extents)
 	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		ulong nearestPolyRef;
+		return SamplePositionPoly(position, out hit, extents, out nearestPolyRef);
+	}
+
+	public bool SamplePositionPoly(Vector3 position, out NavMeshHit hit, Vector3 extents, out ulong nearestPolyRef)
+	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavmesh.SamplePosition"))
 		{
 			hit = default(NavMeshHit);
+			nearestPolyRef = 0uL;
 			if (!IsValid())
 			{
 				RustNavigation.LogError("NavMesh has not been built yet.");
 				return false;
 			}
-			if (!RecastWrapper.SamplePosition(NavMeshHandle, in position, in extents, out var nearestPosition))
+			if (!RecastWrapper.SamplePosition(NavMeshHandle, in position, in extents, out var nearestPosition, out nearestPolyRef))
 			{
 				return false;
 			}
@@ -396,13 +462,14 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
-	public bool Move(Vector3 startPos, Vector3 endPos, out Vector3 movedPos)
+	public bool Move(ulong startRef, Vector3 startPos, Vector3 endPos, out ulong endRef, out Vector3 movedPos)
 	{
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavmesh.Move"))
 		{
 			movedPos = startPos;
+			endRef = startRef;
 			if (!RustNavigation.EnsureNewNavmesh())
 			{
 				return false;
@@ -412,7 +479,7 @@ public class RustNavmesh : IDisposable
 				RustNavigation.LogError("NavMesh has not been built yet.");
 				return false;
 			}
-			return RecastWrapper.Move(NavMeshHandle, in startPos, in endPos, out movedPos);
+			return RecastWrapper.Move(NavMeshHandle, startRef, in startPos, in endPos, out endRef, out movedPos);
 		}
 	}
 
@@ -444,10 +511,10 @@ public class RustNavmesh : IDisposable
 
 	public unsafe bool Save(BinaryWriter writer)
 	{
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavmesh.Save"))
 		{
 			if (!RustNavigation.EnsureNewNavmesh())
@@ -466,7 +533,7 @@ public class RustNavmesh : IDisposable
 				Tile[] array = tiles;
 				foreach (Tile tile in array)
 				{
-					if (tile?.tileBytes != IntPtr.Zero && tile != null && tile.dataSize > 0)
+					if (tile != null && tile.tileBytes != IntPtr.Zero && tile.dataSize > 0)
 					{
 						num++;
 					}
@@ -483,24 +550,24 @@ public class RustNavmesh : IDisposable
 				};
 				Span<byte> span = stackalloc byte[HeaderSize];
 				MemoryMarshal.Write(span, in value);
-				writer.Write(span);
+				writer.BaseStream.Write(span);
+				Span<byte> span2 = stackalloc byte[TileHeaderSize];
 				int num2 = 0;
 				array = tiles;
 				foreach (Tile tile2 in array)
 				{
-					if (!(tile2.tileBytes == IntPtr.Zero) && tile2.dataSize > 0)
+					if (tile2 != null && !(tile2.tileBytes == IntPtr.Zero) && tile2.dataSize > 0)
 					{
+						NavMeshTileHeader value2 = new NavMeshTileHeader
+						{
+							tx = tile2.tx,
+							ty = tile2.ty,
+							dataSize = tile2.dataSize
+						};
 						try
 						{
-							NavMeshTileHeader value2 = new NavMeshTileHeader
-							{
-								tx = tile2.tx,
-								ty = tile2.ty,
-								dataSize = tile2.dataSize
-							};
-							Span<byte> span2 = stackalloc byte[TileHeaderSize];
 							MemoryMarshal.Write(span2, in value2);
-							writer.Write(span2);
+							writer.BaseStream.Write(span2);
 							writer.BaseStream.Write(new ReadOnlySpan<byte>((void*)tile2.tileBytes, tile2.dataSize));
 							num2++;
 						}
@@ -543,11 +610,25 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
+	private static bool ReadExactly(Stream stream, Span<byte> buffer)
+	{
+		int num;
+		for (int i = 0; i < buffer.Length; i += num)
+		{
+			num = stream.Read(buffer.Slice(i));
+			if (num <= 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public unsafe static RustNavmesh Load(BinaryReader reader, BackgroundTileBuilder tileBuilder, bool synchronous = false)
 	{
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavmesh.Load"))
 		{
 			if (!RustNavigation.EnsureNewNavmesh())
@@ -555,16 +636,17 @@ public class RustNavmesh : IDisposable
 				return null;
 			}
 			long timestamp = Stopwatch.GetTimestamp();
+			Stream baseStream = reader.BaseStream;
 			RustNavmesh rustNavmesh = null;
 			try
 			{
-				if (reader.BaseStream.Length < HeaderSize)
+				if (baseStream.Length < HeaderSize)
 				{
 					RustNavigation.LogError("File too small to contain valid header");
 					return null;
 				}
 				Span<byte> span = stackalloc byte[HeaderSize];
-				if (reader.Read(span) != HeaderSize)
+				if (!ReadExactly(baseStream, span))
 				{
 					RustNavigation.LogError("Failed to read navmesh header");
 					return null;
@@ -580,35 +662,36 @@ public class RustNavmesh : IDisposable
 					RustNavigation.LogError($"Unsupported file version. Expected: {1}, got: {navMeshSetHeader.version}");
 					return null;
 				}
-				if (navMeshSetHeader.numTiles < 0 || navMeshSetHeader.numTiles > 10000)
-				{
-					RustNavigation.LogError($"Invalid tile count: {navMeshSetHeader.numTiles}");
-					return null;
-				}
 				Vector2Int val = navMeshSetHeader.tileNum;
 				if (((Vector2Int)(ref val)).x <= 0 || ((Vector2Int)(ref val)).y <= 0)
 				{
 					RustNavigation.LogError($"Invalid tile dimensions: {((Vector2Int)(ref val)).x}x{((Vector2Int)(ref val)).y}");
 					return null;
 				}
+				if (navMeshSetHeader.numTiles < 0 || navMeshSetHeader.numTiles > ((Vector2Int)(ref val)).x * ((Vector2Int)(ref val)).y)
+				{
+					RustNavigation.LogError($"Invalid tile count: {navMeshSetHeader.numTiles}");
+					return null;
+				}
 				rustNavmesh = new RustNavmesh(tileBuilder, navMeshSetHeader.buildParams, navMeshSetHeader.buildParamsHiRes, navMeshSetHeader.currentNavmeshBounds, shouldBuild: false);
 				if (!rustNavmesh.IsValid())
 				{
 					RustNavigation.LogError("Failed to initialize navmesh");
+					rustNavmesh.Dispose();
 					return null;
 				}
 				int num = 0;
 				int numTiles = navMeshSetHeader.numTiles;
+				Span<byte> span2 = stackalloc byte[TileHeaderSize];
 				for (int i = 0; i < navMeshSetHeader.numTiles; i++)
 				{
-					if (reader.BaseStream.Position + TileHeaderSize > reader.BaseStream.Length)
+					if (baseStream.Position + TileHeaderSize > baseStream.Length)
 					{
 						RustNavigation.LogError($"Unexpected end of file while reading tile {i} header");
 						rustNavmesh.Dispose();
 						return null;
 					}
-					Span<byte> span2 = stackalloc byte[TileHeaderSize];
-					if (reader.Read(span2) != TileHeaderSize)
+					if (!ReadExactly(baseStream, span2))
 					{
 						RustNavigation.LogError($"Unexpected end of file while reading tile {i} header");
 						rustNavmesh.Dispose();
@@ -633,7 +716,7 @@ public class RustNavmesh : IDisposable
 						rustNavmesh.Dispose();
 						return null;
 					}
-					if (reader.BaseStream.Position + navMeshTileHeader.dataSize > reader.BaseStream.Length)
+					if (baseStream.Position + navMeshTileHeader.dataSize > baseStream.Length)
 					{
 						RustNavigation.LogError($"Unexpected end of file while reading tile {navMeshTileHeader.tx},{navMeshTileHeader.ty} data");
 						rustNavmesh.Dispose();
@@ -650,7 +733,7 @@ public class RustNavmesh : IDisposable
 							return null;
 						}
 						Span<byte> buffer = new Span<byte>((void*)intPtr, navMeshTileHeader.dataSize);
-						if (reader.Read(buffer) != navMeshTileHeader.dataSize)
+						if (!ReadExactly(baseStream, buffer))
 						{
 							RustNavigation.LogError($"Unexpected end of file while reading tile {navMeshTileHeader.tx},{navMeshTileHeader.ty} data");
 							rustNavmesh.Dispose();
@@ -681,26 +764,88 @@ public class RustNavmesh : IDisposable
 					rustNavmesh.Dispose();
 					return null;
 				}
+				if (baseStream.Position + 4 > baseStream.Length)
+				{
+					RustNavigation.LogError("Unexpected end of file while reading pending tile count");
+					rustNavmesh.Dispose();
+					return null;
+				}
 				int num2 = reader.ReadInt32();
+				if (num2 < 0)
+				{
+					RustNavigation.LogError($"Invalid pending tile count: {num2}");
+					rustNavmesh.Dispose();
+					return null;
+				}
+				if (baseStream.Position + (long)num2 * 4L * 2 > baseStream.Length)
+				{
+					RustNavigation.LogError($"File too small to contain {num2} pending tile entries");
+					rustNavmesh.Dispose();
+					return null;
+				}
 				if (num2 > 0)
 				{
 					RustNavigation.Log($"Queueing {num2} pending tiles for building...");
 				}
 				for (int j = 0; j < num2; j++)
 				{
-					int tx = reader.ReadInt32();
-					int ty = reader.ReadInt32();
-					tileBuilder.EnqueueOnMainThread(rustNavmesh, tx, ty, synchronous);
+					int num3 = reader.ReadInt32();
+					int num4 = reader.ReadInt32();
+					if (num3 < 0 || num4 < 0 || num3 >= ((Vector2Int)(ref val)).x || num4 >= ((Vector2Int)(ref val)).y)
+					{
+						RustNavigation.LogError(string.Format("Invalid pending tile coordinates: {0},{1} (max: {2},{3})", new object[4]
+						{
+							num3,
+							num4,
+							((Vector2Int)(ref val)).x - 1,
+							((Vector2Int)(ref val)).y - 1
+						}));
+						rustNavmesh.Dispose();
+						return null;
+					}
+					tileBuilder.EnqueueOnMainThread(rustNavmesh, num3, num4, synchronous);
 				}
-				if (reader.BaseStream.Position != reader.BaseStream.Length)
+				PooledList<(int, int)> val2 = Pool.Get<PooledList<(int, int)>>();
+				try
 				{
-					RustNavigation.LogWarning($"File contains {reader.BaseStream.Length - reader.BaseStream.Position} bytes of trailing data");
-					rustNavmesh.Dispose();
-					return null;
+					tileBuilder.GetPendingTilesForNavmeshOnMainThread(rustNavmesh, (List<(int tx, int ty)>)(object)val2);
+					PooledHashSet<(int, int)> val3 = Pool.Get<PooledHashSet<(int, int)>>();
+					try
+					{
+						foreach (var item in (List<(int, int)>)(object)val2)
+						{
+							((HashSet<(int, int)>)(object)val3).Add(item);
+						}
+						for (int k = 0; k < ((Vector2Int)(ref val)).y; k++)
+						{
+							for (int l = 0; l < ((Vector2Int)(ref val)).x; l++)
+							{
+								Tile tile = rustNavmesh.GetTile(l, k);
+								if ((tile == null || !(tile.tileBytes != IntPtr.Zero) || tile.dataSize <= 0) && !((HashSet<(int, int)>)(object)val3).Contains((l, k)))
+								{
+									rustNavmesh.FailTile(l, k);
+								}
+							}
+						}
+						if (baseStream.Position != baseStream.Length)
+						{
+							RustNavigation.LogWarning($"File contains {baseStream.Length - baseStream.Position} bytes of trailing data");
+							rustNavmesh.Dispose();
+							return null;
+						}
+						double num5 = (double)(Stopwatch.GetTimestamp() - timestamp) * 1000.0 / (double)Stopwatch.Frequency;
+						RustNavigation.Log($"Successfully loaded navmesh with {num} tiles in {num5} ms");
+						return rustNavmesh;
+					}
+					finally
+					{
+						((IDisposable)val3)?.Dispose();
+					}
 				}
-				double num3 = (double)(Stopwatch.GetTimestamp() - timestamp) * 1000.0 / (double)Stopwatch.Frequency;
-				RustNavigation.Log($"Successfully loaded navmesh with {num} tiles in {num3} ms");
-				return rustNavmesh;
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
 			}
 			catch (Exception ex2)
 			{
@@ -711,21 +856,41 @@ public class RustNavmesh : IDisposable
 		}
 	}
 
-	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds, Matrix4x4? transform = null)
+	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds, Matrix4x4? transform = null, Vector3? sectionPivot = null, Vector3 sectionSign = default(Vector3))
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
 			return false;
@@ -748,32 +913,66 @@ public class RustNavmesh : IDisposable
 					try
 					{
 						GetTilePolysInternal(((Vector2Int)(ref current)).x, ((Vector2Int)(ref current)).y, (List<Vector3>)(object)val3);
-						((List<Vector3>)(object)val2).AddRange((IEnumerable<Vector3>)val3);
+						if (!sectionPivot.HasValue)
+						{
+							((List<Vector3>)(object)val2).AddRange((IEnumerable<Vector3>)val3);
+							continue;
+						}
+						Vector3 value = sectionPivot.Value;
+						for (int i = 0; i < ((List<Vector3>)(object)val3).Count; i += 6)
+						{
+							Vector3 val4 = Vector3.zero;
+							int num = 0;
+							for (int j = 0; j < 6; j++)
+							{
+								Vector3 val5 = ((List<Vector3>)(object)val3)[i + j];
+								if (val5 == Vector3.zero)
+								{
+									break;
+								}
+								val4 += val5;
+								num++;
+							}
+							if (num == 0)
+							{
+								continue;
+							}
+							Vector3 val6 = val4 / (float)num;
+							float num2 = ((val6.x >= value.x) ? 1f : (-1f));
+							float num3 = ((val6.z >= value.z) ? 1f : (-1f));
+							if (num2 == sectionSign.x && num3 == sectionSign.z)
+							{
+								for (int k = 0; k < 6; k++)
+								{
+									((List<Vector3>)(object)val2).Add(((List<Vector3>)(object)val3)[i + k]);
+								}
+							}
+						}
 					}
 					finally
 					{
 						((IDisposable)val3)?.Dispose();
 					}
 				}
-				for (int i = 0; i < ((List<Vector3>)(object)val2).Count; i += 6)
+				for (int l = 0; l < ((List<Vector3>)(object)val2).Count; l += 6)
 				{
-					VectorList val4 = Pool.Get<VectorList>();
-					val4.vectorPoints = Pool.Get<List<Vector3>>();
-					for (int j = 0; j < 6; j++)
+					VectorList val7 = Pool.Get<VectorList>();
+					val7.vectorPoints = Pool.Get<List<Vector3>>();
+					for (int m = 0; m < 6; m++)
 					{
-						Vector3 val5 = ((List<Vector3>)(object)val2)[i + j];
-						if (val5 == Vector3.zero)
+						Vector3 val8 = ((List<Vector3>)(object)val2)[l + m];
+						if (val8 == Vector3.zero)
 						{
 							break;
 						}
 						if (transform.HasValue)
 						{
-							Matrix4x4 value = transform.Value;
-							val5 = ((Matrix4x4)(ref value)).MultiplyPoint3x4(val5);
+							Matrix4x4 value2 = transform.Value;
+							val8 = ((Matrix4x4)(ref value2)).MultiplyPoint3x4(val8);
 						}
-						val4.vectorPoints.Add(val5);
+						val7.vectorPoints.Add(val8);
 					}
-					navMeshData.polygons.Add(val4);
+					navMeshData.polygons.Add(val7);
 				}
 				return true;
 			}
@@ -785,6 +984,61 @@ public class RustNavmesh : IDisposable
 		finally
 		{
 			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	public bool FillDebugDrawProtoForTile(NavMeshData navMeshData, int tx, int ty, Matrix4x4? transform = null)
+	{
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("RustNavmesh.FillDebugDrawProtoForTile"))
+		{
+			if (!RustNavigation.EnsureNewNavmesh())
+			{
+				return false;
+			}
+			if (!IsValid())
+			{
+				return false;
+			}
+			PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+			try
+			{
+				GetTilePolysInternal(tx, ty, (List<Vector3>)(object)val);
+				for (int i = 0; i < ((List<Vector3>)(object)val).Count; i += 6)
+				{
+					VectorList val2 = Pool.Get<VectorList>();
+					val2.vectorPoints = Pool.Get<List<Vector3>>();
+					for (int j = 0; j < 6; j++)
+					{
+						Vector3 val3 = ((List<Vector3>)(object)val)[i + j];
+						if (val3 == Vector3.zero)
+						{
+							break;
+						}
+						if (transform.HasValue)
+						{
+							Matrix4x4 value = transform.Value;
+							val3 = ((Matrix4x4)(ref value)).MultiplyPoint3x4(val3);
+						}
+						val2.vectorPoints.Add(val3);
+					}
+					navMeshData.polygons.Add(val2);
+				}
+				return true;
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
 		}
 	}
 

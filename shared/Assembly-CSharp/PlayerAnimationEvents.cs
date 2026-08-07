@@ -9,4 +9,6 @@ public class PlayerAnimationEvents : MonoBehaviour
 	public const string EventFunctionName = "Event";
 
 	public const string ClearEventName = "clear_holdtype";
+
+	public const string DartThrowEventName = "ThrowDart";
 }

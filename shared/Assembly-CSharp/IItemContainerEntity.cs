@@ -16,6 +16,8 @@ public interface IItemContainerEntity : IIdealSlotEntity, ILootableEntity, IInve
 		public Dictionary<ContainerSet, List<Item>> storageDict;
 	}
 
+	string PrefabName { get; }
+
 	ItemContainer inventory { get; }
 
 	Transform Transform { get; }

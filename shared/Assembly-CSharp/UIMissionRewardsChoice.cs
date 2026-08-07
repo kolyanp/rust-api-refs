@@ -5,15 +5,40 @@ using UnityEngine;
 
 public class UIMissionRewardsChoice : MonoBehaviour
 {
-	public VirtualItemIcon[] RewardIcons;
+	public GameObject HeaderRoot;
 
-	public UIMissionNonItemReward[] NonItemRewards;
+	public GameObject ItemRewardsRoot;
+
+	public GameObject MysteryRewardImageRoot;
 
 	public GameObject CompleteMissionRoot;
 
 	public RustText CompleteMissionText;
 
-	public void SetChildrenActiveState(bool isActive)
+	public VirtualItemIcon[] RewardIcons;
+
+	public UIMissionNonItemReward[] NonItemRewards;
+
+	public void SetAllChildElementsActive(bool isActive)
+	{
+		SetHeaderActive(isActive);
+		SetItemRewardsRootActive(isActive);
+		SetRewardIconsActive(isActive);
+		SetMysteryRewardRootActive(isActive);
+		SetCompleteMissionActive(isActive);
+	}
+
+	public void SetHeaderActive(bool isActive)
+	{
+		HeaderRoot.SetActive(isActive);
+	}
+
+	public void SetItemRewardsRootActive(bool isActive)
+	{
+		ItemRewardsRoot.SetActive(isActive);
+	}
+
+	public void SetRewardIconsActive(bool isActive)
 	{
 		VirtualItemIcon[] rewardIcons = RewardIcons;
 		for (int i = 0; i < rewardIcons.Length; i++)
@@ -25,6 +50,15 @@ public class UIMissionRewardsChoice : MonoBehaviour
 		{
 			ComponentExtensions.SetActive<UIMissionNonItemReward>(nonItemRewards[i], isActive);
 		}
+	}
+
+	public void SetMysteryRewardRootActive(bool isActive)
+	{
+		MysteryRewardImageRoot.SetActive(isActive);
+	}
+
+	public void SetCompleteMissionActive(bool isActive)
+	{
 		CompleteMissionRoot.SetActive(isActive);
 	}
 

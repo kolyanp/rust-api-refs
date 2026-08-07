@@ -51,8 +51,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 
 	private static readonly Action<TrainEngine> _decreaseThrottleCallback = DecreaseThrottle;
 
-	[SerializeField]
 	[Header("Train Engine")]
+	[SerializeField]
 	public Transform leftHandLever;
 
 	[SerializeField]
@@ -152,8 +152,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private ParticleSystemContainer[] sparks;
 
-	[SerializeField]
 	[FormerlySerializedAs("brakeSparkLights")]
+	[SerializeField]
 	private Light[] sparkLights;
 
 	[SerializeField]
@@ -614,7 +614,7 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	public override void InitShared()
 	{
 		base.InitShared();
-		EntityFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
+		IFuelSystem fuelSystem = new EntityFuelSystem(base.isServer, fuelStoragePrefab, children);
 		engineController = new VehicleEngineController<TrainEngine>(this, fuelSystem, base.isServer, engineStartupTime);
 		if (base.isServer)
 		{

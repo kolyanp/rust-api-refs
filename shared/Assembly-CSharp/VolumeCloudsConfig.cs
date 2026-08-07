@@ -5,8 +5,8 @@ public class VolumeCloudsConfig : ScriptableObject
 {
 	public VolumeCloudsWeatherLayerConfig WeatherLayer = new VolumeCloudsWeatherLayerConfig();
 
-	[Header("Detail")]
 	[Range(0f, 1f)]
+	[Header("Detail")]
 	public float Billows = 1f;
 
 	[Range(0f, 3f)]
@@ -35,8 +35,8 @@ public class VolumeCloudsConfig : ScriptableObject
 
 	public float CurlNoiseStrength = 50f;
 
-	[Header("Density")]
 	[Range(0f, 1f)]
+	[Header("Density")]
 	public float DensityScale = 0.05f;
 
 	[Range(0f, 1f)]

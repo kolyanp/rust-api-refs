@@ -1,5 +1,6 @@
 using System;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using ProtoBuf;
 using UnityEngine;
@@ -39,6 +40,14 @@ public class AttackHelicopterTurret : StorageContainer
 
 	public float lastSentY;
 
+	private TransformHandle turretHorHandle;
+
+	private TransformHandle turretVerHandle;
+
+	private int cachedClipAmmo;
+
+	private int cachedInventoryAmmo;
+
 	public bool HasOwner => (Object)(object)owner != (Object)null;
 
 	public GunStatus GunState { get; set; }
@@ -46,6 +55,10 @@ public class AttackHelicopterTurret : StorageContainer
 	public float GunXAngle => turretVertical.localEulerAngles.x;
 
 	public float GunYAngle => turretHorizontal.localEulerAngles.y;
+
+	public int ClipAmmo => cachedClipAmmo;
+
+	public int InventoryAmmo => cachedInventoryAmmo;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -128,28 +141,50 @@ public class AttackHelicopterTurret : StorageContainer
 
 	public override void ServerInit()
 	{
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
 		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
 		InvokeRandomized(RefreshGunState, 0f, 0.25f, 0.05f);
+		turretHorHandle = ((Component)turretHorizontal).transformHandle;
+		turretVerHandle = ((Component)turretVertical).transformHandle;
+		UpdateAmmoAmounts();
 	}
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		if (HasOwner)
 		{
 			info.msg.attackHeliTurret = Pool.Get<AttackHeliTurret>();
-			GetAmmoAmounts(out var clip, out var available);
-			info.msg.attackHeliTurret.clipAmmo = clip;
-			info.msg.attackHeliTurret.totalAmmo = available;
+			info.msg.attackHeliTurret.clipAmmo = cachedClipAmmo;
+			info.msg.attackHeliTurret.totalAmmo = cachedInventoryAmmo;
 			info.msg.attackHeliTurret.gunState = (int)GunState;
-			info.msg.attackHeliTurret.xRot = turretVertical.localEulerAngles.x;
-			info.msg.attackHeliTurret.yRot = turretHorizontal.localEulerAngles.y;
+			if (BaseNetworkable.UseParallelSaves)
+			{
+				Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in turretVerHandle);
+				Quaternion localRotMT2 = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in turretHorHandle);
+				info.msg.attackHeliTurret.xRot = ((Quaternion)(ref localRotMT)).eulerAngles.x;
+				info.msg.attackHeliTurret.yRot = ((Quaternion)(ref localRotMT2)).eulerAngles.y;
+			}
+			else
+			{
+				info.msg.attackHeliTurret.xRot = turretVertical.localEulerAngles.x;
+				info.msg.attackHeliTurret.yRot = turretHorizontal.localEulerAngles.y;
+			}
 			info.msg.attackHeliTurret.heldEntityID = attachedHeldEntity.uid;
 		}
 	}
@@ -215,26 +250,26 @@ public class AttackHelicopterTurret : StorageContainer
 
 	public bool InputTick(AttackHelicopter.GunnerInputState input)
 	{
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
 		if (!owner.GunnerIsInGunnerView)
 		{
 			return false;
@@ -242,7 +277,11 @@ public class AttackHelicopterTurret : StorageContainer
 		bool result = false;
 		if (input.reload)
 		{
-			TryReload();
+			BaseProjectile baseProjectile = GetAttachedHeldEntity() as BaseProjectile;
+			if ((Object)(object)baseProjectile != (Object)null)
+			{
+				TryReload(baseProjectile);
+			}
 		}
 		else if (input.fire1)
 		{
@@ -308,6 +347,12 @@ public class AttackHelicopterTurret : StorageContainer
 			}
 			Invoke(UpdateAttachedWeapon, 0.5f);
 		}
+		UpdateAmmoAmounts();
+	}
+
+	public void UpdateAmmoAmounts()
+	{
+		GetAmmoAmounts(out cachedClipAmmo, out cachedInventoryAmmo);
 	}
 
 	public void UpdateAttachedWeapon()
@@ -343,14 +388,14 @@ public class AttackHelicopterTurret : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	public bool TryReload()
+	private bool TryReload(BaseProjectile gun)
 	{
-		BaseProjectile baseProjectile = GetAttachedHeldEntity() as BaseProjectile;
-		if ((Object)(object)baseProjectile == (Object)null)
+		bool num = gun.ServerTryReload(base.inventory);
+		if (num)
 		{
-			return false;
+			UpdateAmmoAmounts();
 		}
-		return baseProjectile.ServerTryReload(base.inventory);
+		return num;
 	}
 
 	public bool TryFireWeapon()
@@ -368,7 +413,7 @@ public class AttackHelicopterTurret : StorageContainer
 		{
 			if (baseProjectile.primaryMagazine.contents <= 0)
 			{
-				baseProjectile.ServerTryReload(base.inventory);
+				TryReload(baseProjectile);
 				return false;
 			}
 			if (baseProjectile.NextAttackTime > Time.time)
@@ -385,8 +430,8 @@ public class AttackHelicopterTurret : StorageContainer
 			}
 		}
 		heldEntity.ServerUse();
-		GetAmmoAmounts(out var clip, out var available);
-		ClientRPC(RpcTarget.NetworkGroup("RPCAmmo"), (short)clip, (short)available);
+		UpdateAmmoAmounts();
+		ClientRPC(RpcTarget.NetworkGroup("RPCAmmo"), (short)cachedClipAmmo, (short)cachedInventoryAmmo);
 		return true;
 	}
 
@@ -406,8 +451,8 @@ public class AttackHelicopterTurret : StorageContainer
 				}
 				else
 				{
-					GetAmmoAmounts(out var clip, out var available);
-					if (clip == 0 && available == 0)
+					UpdateAmmoAmounts();
+					if (cachedClipAmmo == 0 && cachedInventoryAmmo == 0)
 					{
 						gunStatus = GunStatus.NoAmmo;
 					}

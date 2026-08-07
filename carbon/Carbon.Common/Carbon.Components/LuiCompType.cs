@@ -19,5 +19,8 @@ public enum LuiCompType
 	Draggable,
 	Slot,
 	NeedsKeyboard,
-	ScrollView
+	ScrollView,
+	CanvasGroup,
+	Mask,
+	Tooltip
 }

@@ -371,16 +371,24 @@ public class DecayEntity : BaseCombatEntity
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		if (DebugGetPrivilege)
 		{
 			if (slowPath)
@@ -412,18 +420,18 @@ public class DecayEntity : BaseCombatEntity
 		{
 			return;
 		}
-		List<ItemAmount> list = BuildCost();
-		if (list == null)
+		EntityBuildCost entityBuildCost = BuildCost();
+		if (entityBuildCost.Items == null)
 		{
 			return;
 		}
-		foreach (ItemAmount item in list)
+		foreach (ItemAmount item in entityBuildCost.Items)
 		{
 			if (item.itemDef.category != ItemCategory.Resources)
 			{
 				continue;
 			}
-			float num2 = item.amount * num;
+			float num2 = item.amount * num / (float)Mathf.Max(entityBuildCost.CraftAmount, 1);
 			bool flag = false;
 			foreach (ItemAmount itemAmount in itemAmounts)
 			{
@@ -514,32 +522,43 @@ public class DecayEntity : BaseCombatEntity
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		float num = float.MaxValue;
-		BuildingBlock result = null;
+		BuildingBlock buildingBlock = null;
 		Vector3 position = PivotPoint();
 		List<BuildingBlock> list = Pool.Get<List<BuildingBlock>>();
-		Vis.Entities(position, 1.5f, list, 136314880, (QueryTriggerInteraction)2);
+		Upkeep upkeep = PrefabAttribute.server.Find<Upkeep>(prefabID);
+		bool flag = upkeep != null && upkeep.highWall;
+		Vis.Entities(position, flag ? 16f : 1.5f, list, 136314880, (QueryTriggerInteraction)2);
 		for (int i = 0; i < list.Count; i++)
 		{
-			BuildingBlock buildingBlock = list[i];
-			if (buildingBlock.isServer == base.isServer)
+			BuildingBlock buildingBlock2 = list[i];
+			if (flag)
 			{
-				float num2 = buildingBlock.SqrDistance(position);
-				if (!buildingBlock.grounded)
+				if ((Object)(object)buildingBlock == (Object)null)
 				{
-					num2 += 1f;
+					buildingBlock = buildingBlock2;
 				}
-				if (num2 < num)
+				if (buildingBlock2.IsOlderThan(buildingBlock))
 				{
-					num = num2;
-					result = buildingBlock;
+					buildingBlock = buildingBlock2;
 				}
+				continue;
+			}
+			float num2 = buildingBlock2.SqrDistance(position);
+			if (!buildingBlock2.grounded)
+			{
+				num2 += 1f;
+			}
+			if (num2 < num)
+			{
+				num = num2;
+				buildingBlock = buildingBlock2;
 			}
 		}
 		Pool.FreeUnmanaged<BuildingBlock>(ref list);
-		return result;
+		return buildingBlock;
 	}
 
 	public void ResetUpkeepTime()
@@ -577,7 +596,7 @@ public class DecayEntity : BaseCombatEntity
 		return decay.GetDecayDelay(this);
 	}
 
-	public virtual void DecayTick()
+	public virtual void DecayTick(bool force = false)
 	{
 		if (!(decay == null))
 		{
@@ -587,7 +606,7 @@ public class DecayEntity : BaseCombatEntity
 				num = ConVar.Decay.tick;
 			}
 			float num2 = Time.time - lastDecayTick;
-			if (!(num2 < num))
+			if (!(num2 < num) || force)
 			{
 				OnDecay(decay, num2);
 			}
@@ -608,6 +627,10 @@ public class DecayEntity : BaseCombatEntity
 			if (upkeepTimer > 0f)
 			{
 				BuildingPrivlidge buildingPrivilege = GetBuildingPrivilege();
+				if (upkeep != null && upkeep.highWall && ((Object)(object)buildingPrivilege == (Object)null || buildingPrivilege.buildingID != buildingID))
+				{
+					AttachToBuilding(null);
+				}
 				if ((Object)(object)buildingPrivilege != (Object)null)
 				{
 					upkeepTimer -= buildingPrivilege.PurchaseUpkeepTime(this, Mathf.Max(upkeepTimer, 600f));

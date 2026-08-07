@@ -121,4 +121,9 @@ public class ItemModWorkbenchUpgrade : ItemMod
 	public virtual void GetBonusItems(Workbench workbench, BasePlayer crafter, ItemCraftTask task, Item craftedItem, Item upgradeItem, List<Item> bonusItems)
 	{
 	}
+
+	public virtual bool TryGiveBonusItem(Workbench workbench, BasePlayer crafter, Item upgradeItem, Item bonusItem)
+	{
+		return false;
+	}
 }

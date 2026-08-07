@@ -109,25 +109,20 @@ public class OxideTypeRef : BaseOxidePatch
 
 	public static void ProcessTypeRef(TypeReference type, ReferenceImporter importer)
 	{
-		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Expected O, but got Unknown
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Expected O, but got Unknown
 		if (type == null)
 		{
 			return;
 		}
 		IResolutionScope scope = type.Scope;
 		TypeReference val = (TypeReference)(object)((scope is TypeReference) ? scope : null);
-		if (val != null)
+		if (val != null && val.FullName == "Oxide.Plugins.Timer" && type.Name == "Timer")
 		{
-			string fullName = val.FullName;
-			bool flag = ((fullName == "Oxide.Plugins.Timers" || fullName == "Oxide.Plugins.Timer") ? true : false);
-			if (flag && type.Name == "TimerInstance")
-			{
-				type.Name = Utf8String.op_Implicit("Timer");
-				type.Namespace = Utf8String.op_Implicit("Oxide.Plugins");
-				type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Common).ImportWith(importer);
-				return;
-			}
+			type.Name = Utf8String.op_Implicit("Timer");
+			type.Namespace = Utf8String.op_Implicit("Oxide.Plugins");
+			type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Common).ImportWith(importer);
+			return;
 		}
 		IResolutionScope scope2 = type.Scope;
 		AssemblyReference val2 = (AssemblyReference)(object)((scope2 is AssemblyReference) ? scope2 : null);
@@ -181,17 +176,12 @@ public class OxideTypeRef : BaseOxidePatch
 				else
 				{
 					string fullName = type.FullName;
-					if ((fullName == "Oxide.Core.Libraries.Timer" || fullName == "Oxide.Plugins.PluginTimers") ? true : false)
-					{
-						type.Name = Utf8String.op_Implicit("Timers");
-						type.Namespace = Utf8String.op_Implicit("Oxide.Plugins");
-					}
-					else
+					if ((!(fullName == "Oxide.Core.Libraries.Timer") && !(fullName == "Oxide.Plugins.PluginTimers")) || 1 == 0)
 					{
 						if (type.FullName == "Oxide.Core.Plugins.HookMethodAttribute")
 						{
 							type.Namespace = Utf8String.op_Implicit(string.Empty);
-							goto IL_033c;
+							goto IL_0302;
 						}
 						fullName = type.FullName;
 						if ((fullName == "Oxide.Plugins.CSharpPlugin" || fullName == "Oxide.Core.Plugins.CSPlugin") ? true : false)
@@ -210,8 +200,8 @@ public class OxideTypeRef : BaseOxidePatch
 			}
 			type.Namespace = Utf8String.op_Implicit(string.Empty);
 		}
-		goto IL_033c;
-		IL_033c:
+		goto IL_0302;
+		IL_0302:
 		type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.SDK).ImportWith(importer);
 	}
 }

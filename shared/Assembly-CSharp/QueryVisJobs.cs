@@ -62,10 +62,12 @@ public static class QueryVisJobs
 		public void Execute(int index, TransformAccess transform)
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-			bool flag = ((TransformAccess)(ref transform)).position.y >= waterLevelHeight;
-			bool flag2 = ((TransformAccess)(ref transform)).position.y < waterLevelHeight;
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			bool flag = ((TransformAccess)(ref transform)).position.y - 0.5f >= waterLevelHeight;
+			bool flag2 = ((TransformAccess)(ref transform)).position.y + 0.5f < waterLevelHeight;
 			blockedByWaterLevel[index] = (flag2 && cameraAboveWater) || (flag && !cameraAboveWater);
 		}
 	}
+
+	public const float WaterLevelForgiveness = 0.5f;
 }

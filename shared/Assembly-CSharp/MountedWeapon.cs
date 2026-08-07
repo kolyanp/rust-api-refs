@@ -39,8 +39,8 @@ public class MountedWeapon : StorageContainer
 
 	private static readonly int Up = Animator.StringToHash("up");
 
-	[Header("Mounted Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon")]
 	private Transform _eyes;
 
 	[SerializeField]
@@ -55,12 +55,12 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[SerializeField]
 	[ItemSelector]
+	[SerializeField]
 	private ItemDefinition _ammoItem;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Weapon")]
+	[SerializeField]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -132,8 +132,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Viewmodel")]
+	[SerializeField]
 	private bool _useViewmodel;
 
 	[SerializeField]
@@ -1425,10 +1425,10 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(100uL)]
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
+	[RPC_Server.CallsPerSecond(100uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

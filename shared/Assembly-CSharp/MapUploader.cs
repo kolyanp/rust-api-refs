@@ -22,6 +22,8 @@ public static class MapUploader
 
 	public static string ImageUrl { get; private set; }
 
+	private static string SeedlessMapFileName => World.Name.Replace(" ", "").ToLower() + "." + World.Size + "." + World.Timestamp + "." + 287 + ".map";
+
 	public static async Task UploadMap()
 	{
 		if (IsUploaded)
@@ -49,7 +51,7 @@ public static class MapUploader
 		try
 		{
 			using FileStream fs = File.OpenRead(fullPath);
-			string text = await UploadMapImpl(fs, mapFileName);
+			string text = await UploadMapImpl(fs, SeedlessMapFileName);
 			if (text != null)
 			{
 				OriginalName = World.Name;
@@ -141,10 +143,9 @@ public static class MapUploader
 			Debug.Log((object)"[Rust.MapCache-Images] Image was already uploaded!");
 			return;
 		}
-		string mapFileName = World.MapFileName;
 		try
 		{
-			string text = await UploadMapImageImpl(image, mapFileName);
+			string text = await UploadMapImageImpl(image, SeedlessMapFileName);
 			if (text != null)
 			{
 				ImageUrl = text;

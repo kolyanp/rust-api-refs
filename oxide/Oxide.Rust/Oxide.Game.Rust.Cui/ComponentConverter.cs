@@ -55,6 +55,15 @@ public class ComponentConverter : JsonConverter
 		case "UnityEngine.UI.LayoutElement":
 			typeFromHandle = typeof(CuiLayoutElementComponent);
 			break;
+		case "UnityEngine.UI.CanvasGroup":
+			typeFromHandle = typeof(CuiCanvasGroupComponent);
+			break;
+		case "UnityEngine.UI.Mask":
+			typeFromHandle = typeof(CuiMaskComponent);
+			break;
+		case "Tooltip":
+			typeFromHandle = typeof(CuiTooltipComponent);
+			break;
 		case "Draggable":
 			typeFromHandle = typeof(CuiDraggableComponent);
 			break;

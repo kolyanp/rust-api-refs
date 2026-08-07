@@ -9,6 +9,25 @@ namespace ConVar;
 [Factory("console")]
 public class Console : ConsoleSystem
 {
+	private static int consolehistorysizeValue = 50;
+
+	[ServerVar(Help = "Maximum number of console history entries")]
+	public static int consolehistorysize
+	{
+		get
+		{
+			return consolehistorysizeValue;
+		}
+		set
+		{
+			consolehistorysizeValue = Mathf.Max(value, 0);
+			if ((Object)(object)SingletonComponent<ServerConsole>.Instance != (Object)null && SingletonComponent<ServerConsole>.Instance.input != null)
+			{
+				SingletonComponent<ServerConsole>.Instance.input.TrimHistory(consolehistorysizeValue);
+			}
+		}
+	}
+
 	[ServerVar]
 	[Help("Return the last x lines of the console. Default is 200")]
 	public static IEnumerable<Output.Entry> tail(Arg arg)

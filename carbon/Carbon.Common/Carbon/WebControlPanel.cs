@@ -877,7 +877,7 @@ public static class WebControlPanel
 
 		private int connectedSeconds = player.secondsConnected;
 
-		private float violationLevel = player.violationLevel;
+		private float violationLevel = player.ViolationLevel;
 
 		private int currentLevel = 0;
 
@@ -1107,7 +1107,7 @@ public static class WebControlPanel
 				NetworkOut = (int)((Net.sv != null) ? ((BaseNetwork)Net.sv).GetStat((Connection)null, (StatTypeLong)1) : 0),
 				Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 				SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(CultureInfo.CurrentCulture),
-				Version = 2631,
+				Version = 2632,
 				Protocol = Protocol.printable
 			};
 		}

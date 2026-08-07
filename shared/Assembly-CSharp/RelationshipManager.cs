@@ -1093,8 +1093,8 @@ public class RelationshipManager : BaseEntity
 		return playerRelationships;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void SERVER_SendFreshContacts(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1232,8 +1232,9 @@ public class RelationshipManager : BaseEntity
 			{
 				Database?.Close();
 				Database = null;
+				string path = $"{ConVar.Server.rootFolder}/relationship.{287}.db";
 				Database = new RelationshipManagerDB();
-				Database.Open($"{ConVar.Server.rootFolder}/relationship.{286}.db");
+				Database.Open(path);
 				Database.Initialize();
 			}
 			catch (Exception ex)

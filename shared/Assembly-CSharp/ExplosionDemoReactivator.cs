@@ -6,7 +6,7 @@ public class ExplosionDemoReactivator : MonoBehaviour
 
 	private void Start()
 	{
-		((MonoBehaviour)this).InvokeRepeating("Reactivate", 0f, TimeDelayToReactivate);
+		SingletonComponent<InvokeHandler>.Instance.InvokeRepeating(Reactivate, 0f, TimeDelayToReactivate);
 	}
 
 	private void Reactivate()

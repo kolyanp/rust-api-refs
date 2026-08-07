@@ -44,8 +44,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	private ItemDefinition itemToConsume;
 
-	[Header("Line Generation Settings")]
 	[SerializeField]
+	[Header("Line Generation Settings")]
 	protected BulbSettings[] bulbSettings;
 
 	[SerializeField]
@@ -291,8 +291,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_StartDeploying(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

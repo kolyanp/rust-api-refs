@@ -30,6 +30,8 @@ public class ConstructableEntity : StorageContainer
 
 	private int currentState;
 
+	public override bool ValidateMeleeColliderAntihack => false;
+
 	private void SetState(int index)
 	{
 		if (index < 0 || index >= states.Length)

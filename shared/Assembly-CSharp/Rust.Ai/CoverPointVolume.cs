@@ -179,7 +179,7 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 				_coverPointBlockers.AddRange(componentsInChildren2);
 			}
 		}
-		if (CoverPoints.Count != 0 || !RustNavMesh.SamplePosition(((Component)this).transform.position, out var hitNS, ((Component)this).transform.localScale.y * cover_point_sample_step_height, -1))
+		if (CoverPoints.Count != 0 || !RustNavMeshHelpers.SamplePosition(((Component)this).transform.position, out var hitNS, ((Component)this).transform.localScale.y * cover_point_sample_step_height, -1))
 		{
 			return;
 		}

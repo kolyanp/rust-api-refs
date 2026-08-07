@@ -4,6 +4,7 @@ using System.Diagnostics;
 using ConVar;
 using Rust;
 using Rust.Ai;
+using Rust.Ai.Gen2.Nav;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -45,13 +46,23 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	private int agentTypeId;
 
+	private IndependantNavmesh independantNavmesh;
+
 	public bool IsBuilding
 	{
 		get
 		{
-			if (!HasBuildOperationStarted || BuildingOperation != null)
+			if (AI.useUnityNavmesh)
 			{
+				if (HasBuildOperationStarted)
+				{
+					return BuildingOperation != null;
+				}
 				return true;
+			}
+			if ((Object)(object)independantNavmesh != (Object)null)
+			{
+				return independantNavmesh.IsBuilt();
 			}
 			return false;
 		}
@@ -75,16 +86,19 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	private void OnEnable()
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Expected O, but got Unknown
-		NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(NavMeshAgentTypeIndex);
-		agentTypeId = ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
-		NavMeshData = new NavMeshData(agentTypeId);
-		sources = new List<NavMeshBuildSource>();
-		defaultArea = NavMesh.GetAreaFromName(DefaultAreaName);
-		InvokeRepeating(FinishBuildingNavmesh, 0f, 1f);
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Expected O, but got Unknown
+		if (AI.useUnityNavmesh)
+		{
+			NavMeshBuildSettings settingsByIndex = NavMesh.GetSettingsByIndex(NavMeshAgentTypeIndex);
+			agentTypeId = ((NavMeshBuildSettings)(ref settingsByIndex)).agentTypeID;
+			NavMeshData = new NavMeshData(agentTypeId);
+			sources = new List<NavMeshBuildSource>();
+			defaultArea = NavMesh.GetAreaFromName(DefaultAreaName);
+			InvokeRepeating(FinishBuildingNavmesh, 0f, 1f);
+		}
 		Instances.Add(this);
 	}
 
@@ -92,8 +106,11 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 	{
 		if (!Application.isQuitting)
 		{
-			CancelInvoke(FinishBuildingNavmesh);
-			((NavMeshDataInstance)(ref NavMeshDataInstance)).Remove();
+			if (AI.useUnityNavmesh)
+			{
+				CancelInvoke(FinishBuildingNavmesh);
+				((NavMeshDataInstance)(ref NavMeshDataInstance)).Remove();
+			}
 			Instances.Remove(this);
 		}
 	}
@@ -101,10 +118,11 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 	[ContextMenu("Update Monument Nav Mesh")]
 	public void UpdateNavMeshAsync()
 	{
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		RustNavigation.EnsureUnityNavmesh();
 		if (!HasBuildOperationStarted && !AiManager.nav_disable && AI.npc_enable)
 		{
 			float realtimeSinceStartup = Time.realtimeSinceStartup;
@@ -127,6 +145,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	public void NotifyInformationZonesOfCompletion()
 	{
+		RustNavigation.EnsureUnityNavmesh();
 		foreach (AIInformationZone zone in AIInformationZone.zones)
 		{
 			zone.NavmeshBuildingComplete();
@@ -135,14 +154,15 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	public void SourcesCollected()
 	{
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		RustNavigation.EnsureUnityNavmesh();
 		int count = sources.Count;
 		NavMeshTools.Log("Source count Pre cull : " + sources.Count);
 		Vector3 val = default(Vector3);
@@ -169,63 +189,80 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	public IEnumerator UpdateNavMeshAndWait(IEnumerable<GameObject> roots)
 	{
-		if (HasBuildOperationStarted || AiManager.nav_disable || !AI.npc_enable)
+		if (AiManager.nav_disable || !AI.npc_enable)
 		{
 			yield break;
 		}
-		HasBuildOperationStarted = false;
-		((Bounds)(ref Bounds)).center = ((Component)this).transform.position;
-		((Bounds)(ref Bounds)).size = new Vector3(1000000f, 100000f, 100000f);
-		IEnumerator enumerator = NavMeshTools.CollectSourcesAsync(roots, ((LayerMask)(ref LayerMask)).value, NavMeshCollectGeometry, defaultArea, sources, AppendModifierVolumes, UpdateNavMeshAsync);
-		if (AiManager.nav_wait)
+		if (AI.useUnityNavmesh)
 		{
-			yield return enumerator;
-			int lastPct = 0;
-			while (!HasBuildOperationStarted)
+			if (HasBuildOperationStarted)
 			{
-				yield return CoroutineEx.waitForSecondsRealtime(0.25f);
+				yield break;
 			}
-			while (BuildingOperation != null)
+			HasBuildOperationStarted = false;
+			((Bounds)(ref Bounds)).center = ((Component)this).transform.position;
+			((Bounds)(ref Bounds)).size = new Vector3(1000000f, 100000f, 100000f);
+			IEnumerator enumerator = NavMeshTools.CollectSourcesAsync(roots, ((LayerMask)(ref LayerMask)).value, NavMeshCollectGeometry, defaultArea, sources, AppendModifierVolumes, UpdateNavMeshAsync);
+			if (AiManager.nav_wait)
 			{
-				int num = (int)(BuildingOperation.progress * 100f);
-				if (lastPct != num)
+				yield return enumerator;
+				int lastPct = 0;
+				while (!HasBuildOperationStarted)
 				{
-					NavMeshTools.Log($"{num}%");
-					lastPct = num;
+					yield return CoroutineEx.waitForSecondsRealtime(0.25f);
 				}
-				yield return CoroutineEx.waitForSecondsRealtime(0.25f);
-				FinishBuildingNavmesh();
+				while (BuildingOperation != null)
+				{
+					int num = (int)(BuildingOperation.progress * 100f);
+					if (lastPct != num)
+					{
+						NavMeshTools.Log($"{num}%");
+						lastPct = num;
+					}
+					yield return CoroutineEx.waitForSecondsRealtime(0.25f);
+					FinishBuildingNavmesh();
+				}
+			}
+			else
+			{
+				((MonoBehaviour)this).StartCoroutine(enumerator);
+				NavMeshTools.Log("nav_wait is false, so we're not waiting for the navmesh to finish generating. This might cause your server to sputter while it's generating.");
 			}
 		}
 		else
 		{
-			((MonoBehaviour)this).StartCoroutine(enumerator);
-			NavMeshTools.Log("nav_wait is false, so we're not waiting for the navmesh to finish generating. This might cause your server to sputter while it's generating.");
+			if (!((Component)this).TryGetComponent<IndependantNavmesh>(ref independantNavmesh))
+			{
+				independantNavmesh = ((Component)this).gameObject.AddComponent<IndependantNavmesh>();
+			}
+			independantNavmesh.size = ((Bounds)(ref Bounds)).size;
+			RustNavigation.Instance.AddNavmesh(independantNavmesh);
 		}
 	}
 
 	private void AppendModifierVolumes(List<NavMeshBuildSource> sources)
 	{
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		RustNavigation.EnsureUnityNavmesh();
 		Vector3 size = default(Vector3);
 		foreach (NavMeshModifierVolume activeModifier in NavMeshModifierVolume.activeModifiers)
 		{
@@ -249,8 +286,9 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	public void FinishBuildingNavmesh()
 	{
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		RustNavigation.EnsureUnityNavmesh();
 		if (BuildingOperation != null && BuildingOperation.isDone)
 		{
 			if (!((NavMeshDataInstance)(ref NavMeshDataInstance)).valid)

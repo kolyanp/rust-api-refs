@@ -23,6 +23,9 @@ public class UI_SteamInventory : UI_Page
 	public GameObject loadingOverlay;
 
 	[SerializeField]
+	private GameObject noConnectionOverlay;
+
+	[SerializeField]
 	private UI_StoreTakeover takeovers;
 
 	[SerializeField]
@@ -30,6 +33,10 @@ public class UI_SteamInventory : UI_Page
 
 	[SerializeField]
 	private RustInput searchBar;
+
+	private static readonly Phrase inventoryRetryPhrase = new Phrase("inventory.retry", "Retry");
+
+	private static readonly Phrase inventoryConnectionIssuePhrase = new Phrase("inventory.connection_issue", "Your Steam inventory failed to load. Steam might be down?");
 
 	public static UI_SteamInventoryCrafting Crafting => Instance?.crafting;
 }

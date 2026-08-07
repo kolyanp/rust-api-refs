@@ -19,21 +19,21 @@ using UnityEngine;
 
 namespace ConVar;
 
-[Factory("debug")]
 [ResetStaticFields]
+[Factory("debug")]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
 
-	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
+	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	public static bool checktriggers = false;
 
 	[ServerVar(Help = "(Generated) When enabled, validates that trigger colliders are correctly parented to their entities during physics updates; helps catch mis-parenting bugs")]
 	public static bool checkparentingtriggers = true;
 
-	[ClientVar(Saved = false, Help = "Shows some debug info for dismount attempts.")]
 	[ServerVar]
+	[ClientVar(Saved = false, Help = "Shows some debug info for dismount attempts.")]
 	public static bool DebugDismounts = false;
 
 	[ClientVar(ClientAdmin = true, Saved = false, Help = "Duration in seconds to keep ddraw for dismount attempts visible")]
@@ -64,8 +64,8 @@ public class Debugging : ConsoleSystem
 	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
-	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	public static bool log
 	{
 		get
@@ -133,8 +133,8 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(text, (ConsoleColor)color);
 	}
 
-	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
+	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0), 0f, 1f);
@@ -1028,6 +1028,150 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
+	[ServerVar(Help = "fillTankerModule <item> - Fills the tanker module(s) of the modular car you're looking at with the given liquid (e.g. water, water.salt, crude.oil)")]
+	public static void fillTankerModule(Arg arg)
+	{
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("Must be called from a player.");
+			return;
+		}
+		string text = arg.GetString(0);
+		if (string.IsNullOrEmpty(text))
+		{
+			arg.ReplyWith("Please provide a liquid item shortname (e.g. water, water.salt, crude.oil).");
+			return;
+		}
+		ItemDefinition itemDefinition = ItemManager.FindItemDefinition(text);
+		if ((Object)(object)itemDefinition == (Object)null)
+		{
+			arg.ReplyWith("Could not find an item with shortname '" + text + "'.");
+			return;
+		}
+		BaseModularVehicle lookedAtModularCar = GetLookedAtModularCar(basePlayer);
+		if ((Object)(object)lookedAtModularCar == (Object)null)
+		{
+			arg.ReplyWith("Not looking at a modular car.");
+			return;
+		}
+		int num = 0;
+		int num2 = 0;
+		foreach (BaseVehicleModule attachedModuleEntity in lookedAtModularCar.AttachedModuleEntities)
+		{
+			if (!(attachedModuleEntity is VehicleModuleStorage vehicleModuleStorage) || !(vehicleModuleStorage.GetContainer() is LiquidContainer { inventory: { } inventory } liquidContainer))
+			{
+				continue;
+			}
+			int amount = ((inventory.maxStackSize > 0) ? inventory.maxStackSize : itemDefinition.stackable);
+			Item item = liquidContainer.GetLiquidItem();
+			if (item != null && (Object)(object)item.info != (Object)(object)itemDefinition)
+			{
+				item.Remove();
+				item = null;
+			}
+			if (item != null)
+			{
+				item.amount = amount;
+				item.MarkDirty();
+			}
+			else
+			{
+				inventory.AddItem(itemDefinition, amount, 0uL, ItemContainer.LimitStack.All);
+			}
+			Item liquidItem = liquidContainer.GetLiquidItem();
+			if (liquidItem != null && (Object)(object)liquidItem.info == (Object)(object)itemDefinition)
+			{
+				if ((Object)(object)itemDefinition == (Object)(object)VehicleModuleStorage.CrudeItem)
+				{
+					liquidItem.LockUnlock(bNewState: true);
+				}
+				num++;
+			}
+			else
+			{
+				num2++;
+			}
+		}
+		if (num == 0 && num2 == 0)
+		{
+			arg.ReplyWith("That car (" + lookedAtModularCar.ShortPrefabName + ") has no tanker (liquid storage) module.");
+		}
+		else if (num == 0)
+		{
+			arg.ReplyWith("The tanker module(s) on " + lookedAtModularCar.ShortPrefabName + " would not accept '" + itemDefinition.shortname + "'.");
+		}
+		else
+		{
+			string text2 = $"Filled {num} tanker module(s) on {lookedAtModularCar.ShortPrefabName} with {itemDefinition.shortname}.";
+			if (num2 > 0)
+			{
+				text2 += $" ({num2} module(s) rejected the item.)";
+			}
+			arg.ReplyWith(text2);
+		}
+	}
+
+	[ServerVar(Help = "emptyTankerModule - Clears the contents of the tanker module(s) of the modular car you're looking at")]
+	public static void emptyTankerModule(Arg arg)
+	{
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("Must be called from a player.");
+			return;
+		}
+		BaseModularVehicle lookedAtModularCar = GetLookedAtModularCar(basePlayer);
+		if ((Object)(object)lookedAtModularCar == (Object)null)
+		{
+			arg.ReplyWith("Not looking at a modular car.");
+			return;
+		}
+		int num = 0;
+		int num2 = 0;
+		foreach (BaseVehicleModule attachedModuleEntity in lookedAtModularCar.AttachedModuleEntities)
+		{
+			if (attachedModuleEntity is VehicleModuleStorage vehicleModuleStorage && vehicleModuleStorage.GetContainer() is LiquidContainer liquidContainer)
+			{
+				num2++;
+				Item liquidItem = liquidContainer.GetLiquidItem();
+				if (liquidItem != null)
+				{
+					liquidItem.LockUnlock(bNewState: false);
+					liquidItem.Remove();
+					num++;
+				}
+			}
+		}
+		if (num2 == 0)
+		{
+			arg.ReplyWith("That car (" + lookedAtModularCar.ShortPrefabName + ") has no tanker (liquid storage) module.");
+		}
+		else
+		{
+			arg.ReplyWith((num > 0) ? $"Emptied {num} tanker module(s) on {lookedAtModularCar.ShortPrefabName}." : ("The tanker module(s) on " + lookedAtModularCar.ShortPrefabName + " were already empty."));
+		}
+	}
+
+	private static BaseModularVehicle GetLookedAtModularCar(BasePlayer player)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		BaseNetworkable baseNetworkable = GamePhysics.TraceRealmEntity(GamePhysics.Realm.Server, player.eyes.HeadRay(), 0f, 12f, 1218652417, (QueryTriggerInteraction)0);
+		while ((Object)(object)baseNetworkable != (Object)null)
+		{
+			if (baseNetworkable is BaseModularVehicle result)
+			{
+				return result;
+			}
+			if (baseNetworkable is BaseVehicleModule baseVehicleModule && (Object)(object)baseVehicleModule.Vehicle != (Object)null)
+			{
+				return baseVehicleModule.Vehicle;
+			}
+			baseNetworkable = baseNetworkable.GetParentEntity();
+		}
+		return null;
+	}
+
 	[ServerVar(Help = "fillmounts <radius> - Spawns and mounts a player on every mount point in radius")]
 	public static void fillmounts(Arg arg)
 	{
@@ -1224,8 +1368,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
+	[ServerVar]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -1761,7 +1905,9 @@ public class Debugging : ConsoleSystem
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = ArgEx.Player(arg);
 		if ((Object)(object)basePlayer == (Object)null || (!basePlayer.IsAdmin && !basePlayer.IsDeveloper))
 		{
@@ -1815,8 +1961,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) Prints a table of all ObjectWorkQueue instances showing name, total items processed, current queue length, and cumulative execution time")]
+	[ClientVar(ClientAdmin = true)]
 	public static void printqueues(Arg arg)
 	{
 		bool flag = arg.HasArg("--json");
@@ -1849,8 +1995,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
 	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
+	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
 	public static void testerror(Arg arg)
 	{
 		Debug.LogError((object)"Test error message");

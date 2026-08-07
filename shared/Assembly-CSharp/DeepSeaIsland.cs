@@ -1,6 +1,5 @@
 using System.Collections;
 using ConVar;
-using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 public class DeepSeaIsland : BaseEntity, IDeepSeaSpawner
@@ -117,16 +116,7 @@ public class DeepSeaIsland : BaseEntity, IDeepSeaSpawner
 
 	public IEnumerator UpdateNavMesh()
 	{
-		if (AI.useUnityNavmesh)
-		{
-			yield return ((MonoBehaviour)this).StartCoroutine(monumentNavMesh.UpdateNavMeshAndWait());
-			yield break;
-		}
-		IndependantNavmesh componentInChildren = ((Component)this).GetComponentInChildren<IndependantNavmesh>();
-		if ((Object)(object)componentInChildren != (Object)null && !componentInChildren.buildOnEnable)
-		{
-			RustNavigation.Instance.AddNavmesh(componentInChildren);
-		}
+		yield return ((MonoBehaviour)this).StartCoroutine(monumentNavMesh.UpdateNavMeshAndWait());
 	}
 
 	public override void AdminKill()
@@ -136,6 +126,7 @@ public class DeepSeaIsland : BaseEntity, IDeepSeaSpawner
 	public override void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
 		base.PreProcess(preProcess, rootObj, name, serverside, clientside, bundling);
+		meshTerrain = ((Component)this).GetComponentInChildren<MeshTerrainRoot>();
 		if (!clientside)
 		{
 			GetAllSpawnGroups();

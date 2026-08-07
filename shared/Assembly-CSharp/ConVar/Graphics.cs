@@ -157,61 +157,6 @@ public class Graphics : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Saved = true, Help = "(Generated) Global shader LOD level 1-6; lower values disable expensive shader features (e.g. parallax, specular) for better performance on low-end hardware")]
-	public static int shaderlod
-	{
-		get
-		{
-			int globalMaximumLOD = Shader.globalMaximumLOD;
-			if (globalMaximumLOD >= 100 && globalMaximumLOD <= 199)
-			{
-				return 1;
-			}
-			if (globalMaximumLOD >= 200 && globalMaximumLOD <= 299)
-			{
-				return 2;
-			}
-			if (globalMaximumLOD >= 300 && globalMaximumLOD <= 399)
-			{
-				return 3;
-			}
-			if (globalMaximumLOD >= 400 && globalMaximumLOD <= 499)
-			{
-				return 4;
-			}
-			if (globalMaximumLOD >= 500 && globalMaximumLOD <= 599)
-			{
-				return 5;
-			}
-			_ = 600;
-			return 6;
-		}
-		set
-		{
-			switch (Mathf.Clamp(value, 1, 6))
-			{
-			case 1:
-				Shader.globalMaximumLOD = 100;
-				break;
-			case 2:
-				Shader.globalMaximumLOD = 200;
-				break;
-			case 3:
-				Shader.globalMaximumLOD = 300;
-				break;
-			case 4:
-				Shader.globalMaximumLOD = 400;
-				break;
-			case 5:
-				Shader.globalMaximumLOD = 500;
-				break;
-			case 6:
-				Shader.globalMaximumLOD = 600;
-				break;
-			}
-		}
-	}
-
 	[ClientVar(Saved = true, Help = "(Generated) UI scale multiplier clamped between 0.5 and 1.0; lower values shrink all UI elements to fit more on screen")]
 	public static float uiscale
 	{

@@ -36,6 +36,8 @@ public class FireBall : BaseEntity, ISplashable
 
 	public bool ignoreNPC;
 
+	private readonly float siegeWeaponDamageScale = 0.2f;
+
 	private Vector3 lastPos = Vector3.zero;
 
 	private float deathTime;
@@ -187,18 +189,18 @@ public class FireBall : BaseEntity, ISplashable
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
 		List<BaseCombatEntity> list = Pool.Get<List<BaseCombatEntity>>();
 		Vector3 position = ((Component)this).transform.position + new Vector3(0f, radius * 0.75f, 0f);
-		Vis.Entities(position, radius, list, LayerMask.op_Implicit(AttackLayers), (QueryTriggerInteraction)1);
+		Vis.Entities(position, radius, list, LayerMask.op_Implicit(AttackLayers) | 0x8000, (QueryTriggerInteraction)1);
 		HitInfo hitInfo = new HitInfo();
 		hitInfo.DoHitEffects = true;
 		hitInfo.DidHit = true;
@@ -207,15 +209,20 @@ public class FireBall : BaseEntity, ISplashable
 		hitInfo.PointStart = ((Component)this).transform.position;
 		foreach (BaseCombatEntity item in list)
 		{
-			if (!((Object)(object)item == (Object)null) && item.isServer && item.IsAlive() && (!ignoreNPC || !item.IsNpc) && item.IsVisible(position))
+			if (!((Object)(object)item == (Object)null) && item.isServer && item.IsAlive() && (!ignoreNPC || !item.IsNpc) && (!(item is BaseVehicle) || item is BaseSiegeWeapon) && item.IsVisible(position))
 			{
 				if (item is BasePlayer)
 				{
 					Effect.server.Run("assets/bundled/prefabs/fx/impacts/additive/fire.prefab", item, 0u, new Vector3(0f, 1f, 0f), Vector3.up);
 				}
+				float num = damagePerSecond * tickRate;
+				if (item is BaseSiegeWeapon || item is BallistaGun)
+				{
+					num *= siegeWeaponDamageScale;
+				}
 				hitInfo.PointEnd = ((Component)item).transform.position;
 				hitInfo.HitPositionWorld = ((Component)item).transform.position;
-				hitInfo.damageTypes.Set(DamageType.Heat, damagePerSecond * tickRate);
+				hitInfo.damageTypes.Set(DamageType.Heat, num);
 				Interface.CallHook("OnFireBallDamage", this, item, hitInfo);
 				item.OnAttacked(hitInfo);
 			}

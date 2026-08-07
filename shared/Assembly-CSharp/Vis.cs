@@ -60,16 +60,13 @@ public static class Vis
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		Buffer(position, radius, layerMask, triggerInteraction);
+		T item = default(T);
 		for (int i = 0; i < colCount; i++)
 		{
 			Collider val = colBuffer[i];
-			if (!((Object)(object)val == (Object)null) && val.enabled)
+			if (!((Object)(object)val == (Object)null) && val.enabled && ((Component)val).TryGetComponent<T>(ref item))
 			{
-				T component = ((Component)val).GetComponent<T>();
-				if (!((Object)(object)component == (Object)null))
-				{
-					list.Add(component);
-				}
+				list.Add(item);
 			}
 		}
 	}

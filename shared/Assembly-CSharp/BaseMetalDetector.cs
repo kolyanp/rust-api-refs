@@ -276,9 +276,9 @@ public class BaseMetalDetector : HeldEntity
 		inRangeValidSources.Clear();
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	private void RPC_RequestFlag(RPCMessage rpc)
 	{
@@ -300,9 +300,9 @@ public class BaseMetalDetector : HeldEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(6uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(6uL)]
+	[RPC_Server]
 	public void SV_SetSweetspotScanning(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null || (Object)(object)msg.player != (Object)(object)GetOwnerPlayer())

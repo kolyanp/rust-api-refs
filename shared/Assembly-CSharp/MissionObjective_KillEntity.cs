@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rust/Missions/OBJECTIVES/Kill")]
@@ -22,7 +23,7 @@ public class MissionObjective_KillEntity : MissionObjective
 
 	public Enum mustBeInBiome = (Enum)(-1);
 
-	private readonly ListHashSet<uint> targetPrefabIDs = new ListHashSet<uint>();
+	private readonly HashSet<uint> targetPrefabIDs = new HashSet<uint>();
 
 	private bool isInitialized;
 
@@ -40,10 +41,11 @@ public class MissionObjective_KillEntity : MissionObjective
 		BaseEntityRef[] array = targetEntities;
 		foreach (BaseEntityRef baseEntityRef in array)
 		{
-			if (baseEntityRef.isValid)
+			if (!baseEntityRef.isValid)
 			{
-				targetPrefabIDs.TryAdd(baseEntityRef.Get().prefabID);
+				break;
 			}
+			targetPrefabIDs.Add(baseEntityRef.Get().prefabID);
 		}
 		isInitialized = true;
 	}
@@ -132,23 +134,15 @@ public class MissionObjective_KillEntity : MissionObjective
 		{
 			return;
 		}
-		if ((int)mustBeInBiome != -1 && !TerrainMeta.IsInBiome(payload.WorldPosition, mustBeInBiome))
+		if (((int)mustBeInBiome == -1 || TerrainMeta.IsInBiome(payload.WorldPosition, mustBeInBiome)) && targetPrefabIDs.Contains(uintIdentifier))
 		{
-			return;
-		}
-		for (int i = 0; i < targetPrefabIDs.Count; i++)
-		{
-			if (targetPrefabIDs[i] == uintIdentifier)
+			instance.objectiveStatuses[index].progressCurrent += intIdentifier;
+			if (instance.objectiveStatuses[index].progressCurrent >= (float)numToKill)
 			{
-				instance.objectiveStatuses[index].progressCurrent += intIdentifier;
-				if (instance.objectiveStatuses[index].progressCurrent >= (float)numToKill)
-				{
-					CompleteObjective(index, instance, playerFor);
-				}
-				playerFor.DeregisterPingedEntitiesOfType(BasePlayer.PingType.Hostile);
-				playerFor.MissionsDirty(saveImmediately: true);
-				break;
+				CompleteObjective(index, instance, playerFor);
 			}
+			playerFor.DeregisterPingedEntitiesOfType(BasePlayer.PingType.Hostile);
+			playerFor.MissionsDirty(saveImmediately: true);
 		}
 	}
 

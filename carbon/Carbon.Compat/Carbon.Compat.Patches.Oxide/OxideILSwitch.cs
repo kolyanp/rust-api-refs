@@ -235,7 +235,7 @@ public class OxideILSwitch : BaseOxidePatch
 							{
 								IMemberRefParent parent6 = val15.Parent;
 								TypeReference val17 = (TypeReference)(object)((parent6 is TypeReference) ? parent6 : null);
-								if (val17 != null && val17.FullName == "Oxide.Plugins.Timers")
+								if (val17 != null && val17.FullName == "Oxide.Core.Libraries.Timer")
 								{
 									IList<TypeSignature> parameterTypes = ((MethodSignatureBase)val16).ParameterTypes;
 									if (parameterTypes[parameterTypes.Count - 1].FullName == "Oxide.Core.Plugins.Plugin" && ((AssemblyDescriptor)((ITypeDescriptor)(object)val17).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name)
@@ -272,7 +272,7 @@ public class OxideILSwitch : BaseOxidePatch
 							{
 								IMemberRefParent parent7 = val19.Parent;
 								TypeReference val20 = (TypeReference)(object)((parent7 is TypeReference) ? parent7 : null);
-								if (val20 != null && val19.Name == "GetLibrary" && val20.FullName == "Oxide.Core.OxideMod" && val18.Signature.TypeArguments.Count == 1 && val18.Signature.TypeArguments[0].FullName == "Oxide.Plugins.Timers" && ((AssemblyDescriptor)((ITypeDescriptor)(object)val20).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name)
+								if (val20 != null && val19.Name == "GetLibrary" && val20.FullName == "Oxide.Core.OxideMod" && val18.Signature.TypeArguments.Count == 1 && val18.Signature.TypeArguments[0].FullName == "Oxide.Core.Libraries.Timer" && ((AssemblyDescriptor)((ITypeDescriptor)(object)val20).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name)
 								{
 									val2.OpCode = CilOpCodes.Pop;
 									val2.Operand = null;

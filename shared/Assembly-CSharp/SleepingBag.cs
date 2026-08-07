@@ -54,6 +54,8 @@ public class SleepingBag : DecayEntity
 	[NonSerialized]
 	public ulong deployerUserID;
 
+	public bool CountsTowardsBagLimit = true;
+
 	public GameObject renameDialog;
 
 	public GameObject assignDialog;
@@ -109,6 +111,10 @@ public class SleepingBag : DecayEntity
 	public static ListHashSet<SleepingBag> sleepingBags = new ListHashSet<SleepingBag>();
 
 	private static Dictionary<ulong, List<SleepingBag>> bagsPerPlayer = new Dictionary<ulong, List<SleepingBag>>();
+
+	public bool showOnCompass { get; private set; }
+
+	public bool favourite { get; private set; }
 
 	public virtual float unlockSeconds
 	{
@@ -286,6 +292,43 @@ public class SleepingBag : DecayEntity
 				}
 				return true;
 			}
+			if (rpc == 4053585860u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - RPC_ShowOnCompass"));
+				}
+				using (TimeWarning.New("RPC_ShowOnCompass"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.IsVisible.Test(4053585860u, "RPC_ShowOnCompass", this, player, 3f))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							RPCMessage msg6 = new RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							RPC_ShowOnCompass(msg6);
+						}
+					}
+					catch (Exception ex5)
+					{
+						Debug.LogException(ex5);
+						player.Kick("RPC Error in RPC_ShowOnCompass");
+					}
+				}
+				return true;
+			}
 		}
 		return base.OnRpcMessage(player, rpc, msg);
 	}
@@ -420,7 +463,7 @@ public class SleepingBag : DecayEntity
 		{
 			foreach (SleepingBag item in value)
 			{
-				if ((Object)(object)item != (Object)(object)ignore)
+				if ((Object)(object)item != (Object)(object)ignore && item.CountsTowardsBagLimit)
 				{
 					num2++;
 					if (num2 > num)
@@ -702,7 +745,15 @@ public class SleepingBag : DecayEntity
 		{
 			return 0;
 		}
-		return value.Count;
+		int num = value.Count;
+		foreach (SleepingBag item in value)
+		{
+			if (!item.CountsTowardsBagLimit)
+			{
+				num--;
+			}
+		}
+		return num;
 	}
 
 	public static bool TrySpawnPlayer(BasePlayer player, NetworkableId sleepingBag, out string errorMessage)
@@ -992,11 +1043,14 @@ public class SleepingBag : DecayEntity
 			if (info.forDisk)
 			{
 				info.msg.sleepingBag.deployerID = deployerUserID;
+				info.msg.sleepingBag.showOnCompass = showOnCompass;
+				info.msg.sleepingBag.favourite = favourite;
 			}
 			else
 			{
 				info.msg.sleepingBag.clientAssigned = deployerUserID == info.forConnection.userid;
 				info.msg.sleepingBag.isAssigned = deployerUserID != 0;
+				info.msg.sleepingBag.showOnCompass = showOnCompass && deployerUserID == info.forConnection.userid;
 			}
 			if (!UseTeamLabels)
 			{
@@ -1193,8 +1247,8 @@ public class SleepingBag : DecayEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_MakeBed(RPCMessage msg)
 	{
 		if (!canBePublic || !IsPublic() || !msg.player.CanInteract())
@@ -1228,12 +1282,79 @@ public class SleepingBag : DecayEntity
 	{
 		ulong num = deployerUserID;
 		deployerUserID = user;
+		showOnCompass = false;
+		favourite = false;
 		OnBagChangedOwnership(this, num);
 		NotifyPlayer(num);
 		NotifyPlayer(deployerUserID);
 		if (sendNetworkUpdate)
 		{
 			SendNetworkUpdate();
+		}
+	}
+
+	public void SetShownOnCompass(bool show)
+	{
+		if (show == showOnCompass)
+		{
+			return;
+		}
+		if (show && deployerUserID != 0L && bagsPerPlayer.TryGetValue(deployerUserID, out var value))
+		{
+			foreach (SleepingBag item in value)
+			{
+				if (!((Object)(object)item == (Object)null) && !((Object)(object)item == (Object)(object)this) && item.showOnCompass)
+				{
+					item.showOnCompass = false;
+					item.SendNetworkUpdate();
+				}
+			}
+		}
+		showOnCompass = show;
+		SendNetworkUpdate();
+		NotifyPlayer(deployerUserID);
+	}
+
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	public void RPC_ShowOnCompass(RPCMessage msg)
+	{
+		if (msg.player.CanInteract() && deployerUserID == (ulong)msg.player.userID)
+		{
+			bool shownOnCompass = msg.read.Bit();
+			SetShownOnCompass(shownOnCompass);
+		}
+	}
+
+	public void SetFavourite(bool value)
+	{
+		if (value != favourite)
+		{
+			favourite = value;
+		}
+	}
+
+	public static bool SetBagFavourite(ulong userID, NetworkableId sleepingBag, bool favourite)
+	{
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<SleepingBag> val = FindForPlayer(userID);
+		try
+		{
+			foreach (SleepingBag item in (List<SleepingBag>)(object)val)
+			{
+				if (item.net.ID == sleepingBag && item.deployerUserID == userID)
+				{
+					item.SetFavourite(favourite);
+					BasePlayer.FindByID(userID)?.SendRespawnOptions();
+					return true;
+				}
+			}
+			return false;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
 		}
 	}
 
@@ -1324,6 +1445,8 @@ public class SleepingBag : DecayEntity
 			if (base.isServer)
 			{
 				deployerUserID = info.msg.sleepingBag.deployerID;
+				showOnCompass = info.msg.sleepingBag.showOnCompass;
+				favourite = info.msg.sleepingBag.favourite;
 			}
 		}
 	}

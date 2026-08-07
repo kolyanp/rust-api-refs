@@ -14,11 +14,34 @@ public class WaterBody : MonoBehaviour
 		DeepSea = 0x10
 	}
 
+	private static readonly int PID_Color = Shader.PropertyToID("_Color");
+
+	private static readonly int PID_SpecColor = Shader.PropertyToID("_SpecColor");
+
+	private static readonly int PID_NormalStrength = Shader.PropertyToID("_NormalStrength");
+
+	private static readonly int PID_Smoothness = Shader.PropertyToID("_Smoothness");
+
+	private static readonly int PID_WaterColor = Shader.PropertyToID("_WaterColor");
+
+	private static readonly int PID_ColorExtinction = Shader.PropertyToID("_ColorExtinction");
+
+	private static readonly int PID_ScatterCoefficient = Shader.PropertyToID("_ScatterCoefficient");
+
+	private static readonly int PID_SubSurfaceColour = Shader.PropertyToID("_SubSurfaceColour");
+
 	public WaterBodyType Type = WaterBodyType.Lake;
 
 	public Renderer Renderer;
 
 	public Collider[] Triggers;
+
+	public WaterMaterialBlend MaterialBlend;
+
+	public bool WantBlendFactorOverride;
+
+	[Range(0f, 1f)]
+	public float BlendFactorOverride;
 
 	public bool IsOcean;
 

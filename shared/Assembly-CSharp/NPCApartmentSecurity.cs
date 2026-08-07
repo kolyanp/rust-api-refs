@@ -63,11 +63,11 @@ public class NPCApartmentSecurity : NPCTalking
 		{
 			return;
 		}
-		ItemDefinition masterKeyDef = ApartmentDoor.MasterKeyDef;
-		if (!((Object)(object)masterKeyDef == (Object)null))
+		ItemDefinition masterKey = ItemManager.Items.MasterKey;
+		if (!((Object)(object)masterKey == (Object)null))
 		{
 			player.inventory.Take(null, itemDefinition.itemid, masterkeyprice);
-			Item item = ItemManager.Create(masterKeyDef, 1, 0uL, isServerSide: true, 0uL);
+			Item item = ItemManager.Create(masterKey, 1, 0uL, isServerSide: true, 0uL);
 			if (item != null)
 			{
 				item.AddItemOwnership(player, ItemOwnershipPhrases.VendorSale);

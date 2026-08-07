@@ -174,7 +174,11 @@ public class WaterRendererPostFogPass : RustRenderPass
 			val4 = RustRenderPipelineUtils.TextureDescSetSize(SSRTextureDesc, x, y, -1);
 			activeColorTexture = renderGraph.CreateTexture(ref val4);
 			passData4.ssrReflectionHandle = (waterRendererFrameData.ssrReflectionTex = ((RenderGraphBuilder)(ref val3)).WriteTexture(ref activeColorTexture));
-			((RenderGraphBuilder)(ref val3)).SetRenderFunc<PassData>((BaseRenderFunc<PassData, RenderGraphContext>)ExecutePass);
+			((RenderGraphBuilder)(ref val3)).SetRenderFunc<PassData>((BaseRenderFunc<PassData, RenderGraphContext>)delegate(PassData pd, RenderGraphContext ctx)
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				ExecutePass(pd, ctx);
+			});
 		}
 		finally
 		{

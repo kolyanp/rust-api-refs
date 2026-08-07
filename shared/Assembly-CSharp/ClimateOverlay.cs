@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.PostProcessing;
 
 public class ClimateOverlay : MonoBehaviour
@@ -7,6 +8,8 @@ public class ClimateOverlay : MonoBehaviour
 	public float blendingSpeed = 1f;
 
 	public PostProcessVolume[] biomeVolumes;
+
+	public Volume[] rrpBiomeVolumes;
 
 	public const int biomeCount = 6;
 

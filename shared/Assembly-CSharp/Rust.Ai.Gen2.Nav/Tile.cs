@@ -12,6 +12,8 @@ public class Tile
 
 	public int dataSize;
 
+	public bool wasBuiltOnce;
+
 	public Tile(int tx, int ty)
 	{
 		this.tx = tx;

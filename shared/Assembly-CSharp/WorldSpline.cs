@@ -222,6 +222,28 @@ public class WorldSpline : MonoBehaviour
 		return Vector3.Scale(((Component)this).transform.rotation * data.GetTangentCubicHermite(distance), ((Component)this).transform.localScale);
 	}
 
+	public Vector3 GetClosestPointWorld(Vector3 worldPoint, out float distanceOnSpline)
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		WorldSplineData data = GetData();
+		Vector3 localPoint = ((Component)this).transform.InverseTransformPoint(worldPoint);
+		distanceOnSpline = data.GetClosestDistance(localPoint);
+		return ((Component)this).transform.TransformPoint(data.GetPointCubicHermite(distanceOnSpline));
+	}
+
+	public Vector3 GetClosestPointWorld(Vector3 worldPoint)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
+		float distanceOnSpline;
+		return GetClosestPointWorld(worldPoint, out distanceOnSpline);
+	}
+
 	public Vector3 GetPointCubicHermiteWorld(float distance)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)

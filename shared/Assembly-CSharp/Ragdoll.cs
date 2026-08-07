@@ -10,8 +10,8 @@ using UnityEngine;
 
 public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 {
-	[Tooltip("If true, ragdoll physics are simulated on the server instead of the client")]
 	[Header("Ragdoll")]
+	[Tooltip("If true, ragdoll physics are simulated on the server instead of the client")]
 	public bool simOnServer;
 
 	public float lerpToServerSimTime = 0.5f;
@@ -55,16 +55,16 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[ReadOnly]
 	private List<Collider> colliders = new List<Collider>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private int[] boneIndex;
 
 	[SerializeField]
 	[ReadOnly]
 	private Vector3[] genericBonePos;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] genericBoneRot;
 
 	[SerializeField]
@@ -75,6 +75,8 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	private const float MAX_JOINT_DIST = 2f;
 
 	private bool wasSyncingJoints = true;
+
+	private TransformHandle[] rbTransformHandles = Array.Empty<TransformHandle>();
 
 	protected bool IsClient => false;
 
@@ -96,20 +98,18 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 
 	private void SetUpPhysics(bool isServer)
 	{
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
 		if (isSetUp)
 		{
 			return;
@@ -135,7 +135,6 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		foreach (Rigidbody rigidbody in rigidbodies)
 		{
 			SetCollisionMode(rigidbody, isServer);
-			rigidbody.excludeLayers = LayerMask.op_Implicit(LayerMask.op_Implicit(rigidbody.excludeLayers) | 0x1200);
 			rigidbody.angularDamping = 1f;
 			rigidbody.linearDamping = 1f;
 			rigidbody.detectCollisions = true;
@@ -347,6 +346,8 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 
 	public virtual void ServerInit()
 	{
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		if (simOnServer)
 		{
 			RemoveRootBoneOffset();
@@ -357,6 +358,14 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 			MoveRigidbodiesToRoot();
 		}
 		SetUpPhysics(isServer: true);
+		if (!CollectionEx.IsEmpty(rbTransforms))
+		{
+			rbTransformHandles = (TransformHandle[])(object)new TransformHandle[rbTransforms.Count];
+			for (int i = 0; i < rbTransforms.Count; i++)
+			{
+				rbTransformHandles[i] = ((Component)rbTransforms[i]).transformHandle;
+			}
+		}
 	}
 
 	public override void SaveComponent(BaseNetworkable.SaveInfo info)
@@ -364,7 +373,7 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		if (simOnServer)
 		{
 			info.msg.ragdoll = Pool.Get<Ragdoll>();
-			SetRagdollMessageVals(info.msg.ragdoll);
+			SetRagdollMessageVals(info.msg.ragdoll, in info.cachedTime);
 		}
 	}
 
@@ -389,7 +398,12 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		Ragdoll val = Pool.Get<Ragdoll>();
 		try
 		{
-			SetRagdollMessageVals(val);
+			BaseNetworkable.ThreadSafeTime time = new BaseNetworkable.ThreadSafeTime
+			{
+				Time = Time.time,
+				FixedTime = Time.fixedTime
+			};
+			SetRagdollMessageVals(val, in time);
 			base.baseEntity.ClientRPC(RpcTarget.NetworkGroup("RPCSyncJoints"), val);
 		}
 		finally
@@ -416,20 +430,43 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 		return result;
 	}
 
-	private void SetRagdollMessageVals(Ragdoll ragdollMsg)
+	private void SetRagdollMessageVals(Ragdoll ragdollMsg, in BaseNetworkable.ThreadSafeTime time)
 	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		List<int> list = Pool.Get<List<int>>();
 		List<int> list2 = Pool.Get<List<int>>();
-		foreach (Transform rbTransform in rbTransforms)
+		if (BaseNetworkable.UseParallelSaves)
 		{
-			int item = Compression.PackVector3ToInt(rbTransform.localPosition, -2f, 2f);
-			int item2 = Compression.PackVector3ToInt(rbTransform.localEulerAngles, -360f, 360f);
-			list.Add(item);
-			list2.Add(item2);
+			TransformHandle[] array = rbTransformHandles;
+			for (int i = 0; i < array.Length; i++)
+			{
+				TransformHandle handle = array[i];
+				Vector3 localPosMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalPosMT(in handle);
+				Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in handle);
+				int item = Compression.PackVector3ToInt(localPosMT, -2f, 2f);
+				int item2 = Compression.PackVector3ToInt(((Quaternion)(ref localRotMT)).eulerAngles, -360f, 360f);
+				list.Add(item);
+				list2.Add(item2);
+			}
 		}
-		ragdollMsg.time = base.baseEntity.GetNetworkTime();
+		else
+		{
+			foreach (Transform rbTransform in rbTransforms)
+			{
+				int item3 = Compression.PackVector3ToInt(rbTransform.localPosition, -2f, 2f);
+				int item4 = Compression.PackVector3ToInt(rbTransform.localEulerAngles, -360f, 360f);
+				list.Add(item3);
+				list2.Add(item4);
+			}
+		}
+		ragdollMsg.time = base.baseEntity.GetNetworkTime(in time);
 		ragdollMsg.positions = list;
 		ragdollMsg.rotations = list2;
 	}

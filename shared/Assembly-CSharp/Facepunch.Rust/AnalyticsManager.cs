@@ -199,7 +199,7 @@ public class AnalyticsManager
 	{
 		private int writtenCount;
 
-		protected override bool ShouldCompress => false;
+		protected override bool ShouldCompress => true;
 
 		protected override void StartImpl(AnalyticsTable table, ref Utf8ValueStringBuilder builder)
 		{
@@ -381,7 +381,7 @@ public class AnalyticsManager
 			}
 		}
 
-		public bool IsCompressed => false;
+		public bool IsCompressed => true;
 
 		public long BytesUploaded => bytesUploaded;
 
@@ -451,6 +451,7 @@ public class AnalyticsManager
 					try
 					{
 						((HttpContent)content).Headers.ContentType = JsonContentType;
+						((HttpContent)content).Headers.ContentEncoding.Add("gzip");
 						if (!string.IsNullOrEmpty(Analytics.AnalyticsSecret))
 						{
 							((HttpHeaders)((HttpContent)content).Headers).Add(Analytics.AnalyticsHeader, Analytics.AnalyticsSecret);
@@ -943,6 +944,7 @@ public class AnalyticsManager
 						{
 							break;
 						}
+						Thread.Sleep(10);
 					}
 				}
 				if (Volatile.Read(in wantsStatsReset))

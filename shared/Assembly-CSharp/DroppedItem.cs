@@ -653,31 +653,34 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	public override void PostInitShared()
 	{
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		base.PostInitShared();
 		GameObject val = null;
-		if (item != null && item.GetWorldModel().isValid)
+		if (0 == 0)
 		{
-			val = base.gameManager.CreatePrefab(item.GetWorldModel().resourcePath, ((Component)this).transform);
-			val.transform.localScale = item.GetWorldModel().Get().transform.localScale;
-		}
-		else
-		{
-			val = base.gameManager.CreatePrefab(itemModel.resourcePath, ((Component)this).transform);
-		}
-		val.transform.localPosition = Vector3.zero;
-		val.transform.localRotation = Quaternion.identity;
-		TransformEx.SetLayerRecursive(val, ((Component)this).gameObject.layer);
-		childCollider = val.GetComponentInChildren<Collider>();
-		if (Object.op_Implicit((Object)(object)childCollider))
-		{
-			if (HasParent())
+			if (item != null && item.GetWorldModel().isValid)
 			{
-				OnParented();
+				val = base.gameManager.CreatePrefab(item.GetWorldModel().resourcePath, ((Component)this).transform);
+				val.transform.localScale = item.GetWorldModel().Get().transform.localScale;
 			}
-			originalLayer = ((Component)childCollider).gameObject.layer;
+			else
+			{
+				val = base.gameManager.CreatePrefab(itemModel.resourcePath, ((Component)this).transform);
+			}
+			val.transform.localPosition = Vector3.zero;
+			val.transform.localRotation = Quaternion.identity;
+			TransformEx.SetLayerRecursive(val, ((Component)this).gameObject.layer);
+			childCollider = val.GetComponentInChildren<Collider>();
+			if (Object.op_Implicit((Object)(object)childCollider))
+			{
+				if (HasParent())
+				{
+					OnParented();
+				}
+				originalLayer = ((Component)childCollider).gameObject.layer;
+			}
 		}
 		if (base.isServer)
 		{
@@ -705,7 +708,10 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 				component2.rigidBody = rB;
 			}
 		}
-		val.SetActive(true);
+		if (0 == 0)
+		{
+			val.SetActive(true);
+		}
 	}
 
 	public override void OnFlagsChanged(Flags old, Flags next)

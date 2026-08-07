@@ -28,6 +28,8 @@ public class LuiButtonComp : LuiCompBase
 
 	public float fadeDuration = -1f;
 
+	public bool interactable = true;
+
 	public LuiButtonComp()
 	{
 		type = LuiCompType.Button;

@@ -613,7 +613,16 @@ public class NPCVendingMachine : VendingMachine
 		{
 			currencyPerTransaction = ent.randomDetails.GetRandomPrice();
 		}
-		AddItemForSale(ent.sellItem.itemid, ent.sellItemAmount, ent.currencyItem.itemid, currencyPerTransaction, GetBPState(ent.sellItemAsBP, ent.currencyAsBP), ent.initialStock);
+		AddItemForSale(ent.sellItem.itemid, ent.sellItemAmount, ent.currencyItem.itemid, currencyPerTransaction, GetBPState(ent.sellItemAsBP, ent.currencyAsBP), ent.maxStock);
+	}
+
+	private int GetMaxStock(int orderMaxStock)
+	{
+		if (orderMaxStock < 0)
+		{
+			return StartingStock;
+		}
+		return orderMaxStock;
 	}
 
 	public override void InstallDefaultSellOrders()
@@ -640,7 +649,7 @@ public class NPCVendingMachine : VendingMachine
 			}
 			int num = 0;
 			num = ((!entry.sellItemAsBP) ? Mathf.FloorToInt((float)(base.inventory.GetAmount(entry.sellItem.itemid, onlyUsableAmounts: false) / entry.sellItemAmount)) : Mathf.FloorToInt((float)(base.inventory.GetAmount(base.blueprintBaseDef.itemid, entry.sellItem.itemid, onlyUsableAmounts: false) / entry.sellItemAmount)));
-			int num2 = Mathf.Min(StartingStock - num, entry.refillAmount) * entry.sellItemAmount;
+			int num2 = Mathf.Min(GetMaxStock(entry.maxStock) - num, entry.refillAmount) * entry.sellItemAmount;
 			if (num2 > 0)
 			{
 				transactionActive = true;
@@ -669,18 +678,14 @@ public class NPCVendingMachine : VendingMachine
 		sellOrders.sellOrders.Clear();
 	}
 
-	public void AddItemForSale(int itemID, int amountToSell, int currencyID, int currencyPerTransaction, byte bpState, int initialStockOverride)
+	public void AddItemForSale(int itemID, int amountToSell, int currencyID, int currencyPerTransaction, byte bpState, int maxStock)
 	{
 		AddSellOrder(itemID, amountToSell, currencyID, currencyPerTransaction, bpState, 0uL, 0uL);
 		transactionActive = true;
-		int num = StartingStock;
-		if (initialStockOverride >= 0)
-		{
-			num = Mathf.Min(initialStockOverride, StartingStock);
-		}
+		int maxStock2 = GetMaxStock(maxStock);
 		if (bpState == 1 || bpState == 3)
 		{
-			for (int i = 0; i < num; i++)
+			for (int i = 0; i < maxStock2; i++)
 			{
 				Item item = ItemManager.CreateByItemID(base.blueprintBaseDef.itemid, 1, 0uL, 0uL);
 				item.blueprintTarget = itemID;
@@ -689,7 +694,7 @@ public class NPCVendingMachine : VendingMachine
 		}
 		else
 		{
-			base.inventory.AddItem(ItemManager.FindItemDefinition(itemID), amountToSell * num, 0uL);
+			base.inventory.AddItem(ItemManager.FindItemDefinition(itemID), amountToSell * maxStock2, 0uL);
 		}
 		transactionActive = false;
 		RefreshSellOrderStockLevel();

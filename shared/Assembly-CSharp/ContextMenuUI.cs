@@ -8,6 +8,7 @@ public static class ContextMenuUI
 		Gesture,
 		Pet,
 		Ping,
-		ItemMod
+		ItemMod,
+		Custom
 	}
 }

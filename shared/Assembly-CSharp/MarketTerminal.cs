@@ -168,10 +168,8 @@ public class MarketTerminal : StorageContainer
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		if (pendingOrders == null)
 		{
 			pendingOrders = Pool.Get<List<PendingOrder>>();
@@ -193,7 +191,7 @@ public class MarketTerminal : StorageContainer
 		}
 		PendingOrder val = Pool.Get<PendingOrder>();
 		val.vendingMachineId = vendingMachine.net.ID;
-		val.timeUntilExpiry = TimeUntil.op_Implicit((float)orderTimeout);
+		val.timeUntilExpiry = orderTimeout;
 		val.droneId = droneId;
 		pendingOrders.Add(val);
 		CheckForExpiredOrders();
@@ -222,10 +220,7 @@ public class MarketTerminal : StorageContainer
 
 	private void CheckForExpiredOrders()
 	{
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		if (pendingOrders != null && pendingOrders.Count > 0)
 		{
 			bool flag = false;
@@ -233,7 +228,7 @@ public class MarketTerminal : StorageContainer
 			for (int i = 0; i < pendingOrders.Count; i++)
 			{
 				PendingOrder val = pendingOrders[i];
-				if (TimeUntil.op_Implicit(val.timeUntilExpiry) <= 0f)
+				if (val.timeUntilExpiry <= 0f)
 				{
 					if (new EntityRef<DeliveryDrone>(val.droneId).TryGet(serverside: true, out var entity))
 					{
@@ -248,9 +243,9 @@ public class MarketTerminal : StorageContainer
 					i--;
 					flag = true;
 				}
-				else if (!num.HasValue || TimeUntil.op_Implicit(val.timeUntilExpiry) < num.Value)
+				else if (!num.HasValue || val.timeUntilExpiry < num.Value)
 				{
-					num = TimeUntil.op_Implicit(val.timeUntilExpiry);
+					num = val.timeUntilExpiry;
 				}
 			}
 			if (flag)
@@ -312,9 +307,9 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	public void Server_TryOpenMarket(RPCMessage msg)
 	{
 		if (!CanPlayerInteract(msg.player))
@@ -339,9 +334,9 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(10uL)]
 	public void Server_Purchase(RPCMessage msg)
 	{
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -451,15 +446,13 @@ public class MarketTerminal : StorageContainer
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.marketTerminal = Pool.Get<MarketTerminal>();
 		info.msg.marketTerminal.customerSteamId = _customerSteamId;
 		info.msg.marketTerminal.customerName = _customerName;
-		info.msg.marketTerminal.timeUntilExpiry = _timeUntilCustomerExpiry;
+		info.msg.marketTerminal.timeUntilExpiry = ((TimeUntil)(ref _timeUntilCustomerExpiry)).LeftFrom(info.cachedTime.Time);
 		info.msg.marketTerminal.marketplaceId = _marketplace.uid;
 		if (!info.forDisk)
 		{
@@ -667,9 +660,9 @@ public class MarketTerminal : StorageContainer
 
 	public override void Load(LoadInfo info)
 	{
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (info.msg.marketTerminal == null)
 		{
@@ -677,7 +670,7 @@ public class MarketTerminal : StorageContainer
 		}
 		_customerSteamId = info.msg.marketTerminal.customerSteamId;
 		_customerName = info.msg.marketTerminal.customerName;
-		_timeUntilCustomerExpiry = info.msg.marketTerminal.timeUntilExpiry;
+		_timeUntilCustomerExpiry = TimeUntil.op_Implicit(info.msg.marketTerminal.timeUntilExpiry);
 		_marketplace = new EntityRef<Marketplace>(info.msg.marketTerminal.marketplaceId);
 		if (info.msg.marketTerminal.deliveryFeeCurrency != 0)
 		{

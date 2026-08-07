@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading;
 using ConVar;
 using Facepunch;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,6 +12,62 @@ namespace Rust.Ai.Gen2.Nav;
 
 public class BackgroundTileBuilder : IDisposable
 {
+	private static class TileScratch
+	{
+		[ThreadStatic]
+		private static RawBuffer<Vector3> _vertices;
+
+		[ThreadStatic]
+		private static RawBuffer<int> _triangles;
+
+		[ThreadStatic]
+		private static RawBuffer<int> _indices;
+
+		private static readonly List<IDisposable> _all = new List<IDisposable>();
+
+		public static RawBuffer<Vector3> Vertices => _vertices ?? (_vertices = Track(new RawBuffer<Vector3>()));
+
+		public static RawBuffer<int> Triangles => _triangles ?? (_triangles = Track(new RawBuffer<int>()));
+
+		public static RawBuffer<int> Indices => _indices ?? (_indices = Track(new RawBuffer<int>()));
+
+		private static T Track<T>(T b) where T : IDisposable
+		{
+			lock (_all)
+			{
+				_all.Add(b);
+				return b;
+			}
+		}
+
+		public static void DisposeAll()
+		{
+			lock (_all)
+			{
+				foreach (IDisposable item in _all)
+				{
+					item.Dispose();
+				}
+				_all.Clear();
+			}
+			_vertices = null;
+			_triangles = null;
+			_indices = null;
+		}
+	}
+
+	private sealed class TileCancellation
+	{
+		private volatile bool cancelled;
+
+		public bool IsCancellationRequested => cancelled;
+
+		public void Cancel()
+		{
+			cancelled = true;
+		}
+	}
+
 	private struct TileCollectRequest(int tx, int ty, RustNavmesh navmesh)
 	{
 		public readonly int tx = tx;
@@ -21,12 +76,10 @@ public class BackgroundTileBuilder : IDisposable
 
 		public RustNavmesh navmesh = navmesh;
 
-		public CancellationTokenSource tokenSource = new CancellationTokenSource();
-
-		public CancellationToken token = tokenSource.Token;
+		public TileCancellation cancellation = new TileCancellation();
 	}
 
-	private struct TileBuildRequest(in TileCollectRequest collectRequest, List<ThreadSafeNavMeshBuildSource> sources)
+	private struct TileBuildRequest(in TileCollectRequest collectRequest, List<ThreadSafeNavMeshBuildSource> sources, NavMeshBuildParams buildParams)
 	{
 		public readonly int tx = collectRequest.tx;
 
@@ -34,13 +87,11 @@ public class BackgroundTileBuilder : IDisposable
 
 		public RustNavmesh navmesh = collectRequest.navmesh;
 
-		public NavMeshBuildParams buildParams = navmesh.GetBuildParamsForTile(tx, ty);
+		public NavMeshBuildParams buildParams = buildParams;
 
 		public List<ThreadSafeNavMeshBuildSource> sources = sources;
 
-		public CancellationTokenSource tokenSource = collectRequest.tokenSource;
-
-		public CancellationToken token = collectRequest.token;
+		public TileCancellation cancellation = collectRequest.cancellation;
 	}
 
 	private struct TileBuildResult
@@ -52,6 +103,7 @@ public class BackgroundTileBuilder : IDisposable
 			NoGeometry,
 			UnknownError,
 			ExtractGeometryError,
+			SpanHeightError,
 			CreateHeightFieldError,
 			CreateCompactHeightFieldError,
 			CreatePolymeshError,
@@ -72,7 +124,7 @@ public class BackgroundTileBuilder : IDisposable
 
 		public ResultCode resultCode;
 
-		public CancellationTokenSource tokenSource;
+		public TileCancellation cancellation;
 
 		public TileBuildResult(in TileBuildRequest request, IntPtr tileBytes, int dataSize)
 		{
@@ -82,7 +134,7 @@ public class BackgroundTileBuilder : IDisposable
 			this.tileBytes = tileBytes;
 			this.dataSize = dataSize;
 			resultCode = ResultCode.Success;
-			tokenSource = request.tokenSource;
+			cancellation = request.cancellation;
 		}
 
 		public TileBuildResult(in TileBuildRequest request, ResultCode resultCode)
@@ -93,7 +145,7 @@ public class BackgroundTileBuilder : IDisposable
 			tileBytes = IntPtr.Zero;
 			dataSize = 0;
 			this.resultCode = resultCode;
-			tokenSource = request.tokenSource;
+			cancellation = request.cancellation;
 		}
 	}
 
@@ -145,7 +197,7 @@ public class BackgroundTileBuilder : IDisposable
 
 	private Stopwatch stopwatch = new Stopwatch();
 
-	private readonly Dictionary<(RustNavmesh navmesh, int tx, int ty), CancellationTokenSource> tileCancellations = new Dictionary<(RustNavmesh, int, int), CancellationTokenSource>();
+	private readonly Dictionary<(RustNavmesh navmesh, int tx, int ty), TileCancellation> tileCancellations = new Dictionary<(RustNavmesh, int, int), TileCancellation>();
 
 	private readonly Queue<TileCollectRequest> collectMainThreadWorkQueue = new Queue<TileCollectRequest>();
 
@@ -156,6 +208,93 @@ public class BackgroundTileBuilder : IDisposable
 	private Thread[] workers;
 
 	private CancellationTokenSource globalInterrupt;
+
+	public unsafe static void ExtractTerrainGeometry(Vector3 topLeftCorner, int tileSize, RawBuffer<Vector3> vertices, RawBuffer<int> triangles)
+	{
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		int num = tileSize + 1;
+		int num2 = num * num;
+		RawBuffer<int> indices = TileScratch.Indices;
+		indices.Clear();
+		int* ptr = indices.AppendUninitialized(num2);
+		vertices.EnsureCapacity(vertices.Count + num2);
+		triangles.EnsureCapacity(triangles.Count + tileSize * tileSize * 6);
+		Vector3 val = default(Vector3);
+		((Vector3)(ref val))._002Ector(topLeftCorner.x, 0f, topLeftCorner.z);
+		TerrainHeightMap heightMap = TerrainMeta.HeightMap;
+		TerrainAlphaMap alphaMap = TerrainMeta.AlphaMap;
+		float num3 = val.x + (float)tileSize * 0.5f;
+		float num4 = val.z + (float)tileSize * 0.5f;
+		bool deepSea = DeepSeaManager.IsInsideDeepSea(new Vector3(num3, 0f, num4));
+		TerrainHeightMap.HeightSampler heightSampler = heightMap.CreateSampler(deepSea);
+		TerrainAlphaMap.AlphaSampler alphaSampler = alphaMap.CreateSampler();
+		int num5 = 0;
+		for (int i = 0; i <= tileSize; i++)
+		{
+			float num6 = val.z + (float)i;
+			heightSampler.BeginRow(num6);
+			alphaSampler.BeginRow(num6);
+			int num7 = 0;
+			while (num7 <= tileSize)
+			{
+				float num8 = val.x + (float)num7;
+				float num9 = heightSampler.SampleRow(num8);
+				if (num9 < -1f)
+				{
+					ptr[num5] = -1;
+				}
+				else if (alphaSampler.SampleRow(num8) < 0.1f)
+				{
+					ptr[num5] = -1;
+				}
+				else
+				{
+					ptr[num5] = vertices.Count;
+					vertices.Add(new Vector3(num8, num9, num6));
+				}
+				num7++;
+				num5++;
+			}
+		}
+		int num10 = 0;
+		int num11 = 0;
+		while (num11 < tileSize)
+		{
+			int num12 = 0;
+			while (num12 < tileSize)
+			{
+				int num13 = ptr[num10];
+				int num14 = ptr[num10 + tileSize + 1];
+				int num15 = ptr[num10 + 1];
+				int num16 = ptr[num10 + 1];
+				int num17 = ptr[num10 + tileSize + 1];
+				int num18 = ptr[num10 + tileSize + 2];
+				if (num13 != -1 && num14 != -1 && num15 != -1)
+				{
+					triangles.Add(num13);
+					triangles.Add(num14);
+					triangles.Add(num15);
+				}
+				if (num16 != -1 && num17 != -1 && num18 != -1)
+				{
+					triangles.Add(num16);
+					triangles.Add(num17);
+					triangles.Add(num18);
+				}
+				num12++;
+				num10++;
+			}
+			num11++;
+			num10++;
+		}
+	}
 
 	public BackgroundTileBuilder()
 	{
@@ -175,7 +314,7 @@ public class BackgroundTileBuilder : IDisposable
 
 	public void GetPendingTilesOnMainThread(List<(RustNavmesh navmesh, int tx, int ty)> pendingTiles)
 	{
-		foreach (KeyValuePair<(RustNavmesh, int, int), CancellationTokenSource> tileCancellation in tileCancellations)
+		foreach (KeyValuePair<(RustNavmesh, int, int), TileCancellation> tileCancellation in tileCancellations)
 		{
 			pendingTiles.Add(tileCancellation.Key);
 		}
@@ -183,7 +322,7 @@ public class BackgroundTileBuilder : IDisposable
 
 	public void GetPendingTilesForNavmeshOnMainThread(RustNavmesh navmesh, List<(int tx, int ty)> pendingTiles)
 	{
-		foreach (KeyValuePair<(RustNavmesh, int, int), CancellationTokenSource> tileCancellation in tileCancellations)
+		foreach (KeyValuePair<(RustNavmesh, int, int), TileCancellation> tileCancellation in tileCancellations)
 		{
 			if (tileCancellation.Key.Item1 == navmesh)
 			{
@@ -194,7 +333,7 @@ public class BackgroundTileBuilder : IDisposable
 
 	public void CancelPendingTilesForOnMainThread(RustNavmesh navmesh)
 	{
-		foreach (KeyValuePair<(RustNavmesh, int, int), CancellationTokenSource> tileCancellation in tileCancellations)
+		foreach (KeyValuePair<(RustNavmesh, int, int), TileCancellation> tileCancellation in tileCancellations)
 		{
 			if (tileCancellation.Key.Item1 == navmesh)
 			{
@@ -218,17 +357,30 @@ public class BackgroundTileBuilder : IDisposable
 		{
 			Debug.LogException(ex);
 		}
+		bool flag = true;
 		Thread[] array = workers;
 		foreach (Thread thread in array)
 		{
 			try
 			{
-				thread.Join(1000);
+				if (!thread.Join(1000))
+				{
+					flag = false;
+				}
 			}
 			catch (Exception ex2)
 			{
 				Debug.LogException(ex2);
+				flag = false;
 			}
+		}
+		if (flag)
+		{
+			TileScratch.DisposeAll();
+		}
+		else
+		{
+			RustNavigation.LogError("RustNav: workers did not join in time, leaking tile scratch buffers deliberately");
 		}
 		CleanupRemainingWorkItemsOnMainThread();
 		globalInterrupt.Dispose();
@@ -244,119 +396,139 @@ public class BackgroundTileBuilder : IDisposable
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0184: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0288: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0264: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
 		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavigation.DoInitialWorkOnMainThread"))
 		{
 			Bounds tileBounds = collectRequest.navmesh.rcCalcTileBounds(new Vector2Int(collectRequest.tx, collectRequest.ty));
 			tileBounds = collectRequest.navmesh.rcExpandTileBounds(tileBounds);
-			int layerMask = 2195713;
+			int layerMask = 1612808449;
 			int areaFromName = NavMesh.GetAreaFromName("Walkable");
 			List<ThreadSafeNavMeshBuildSource> list = Pool.Get<List<ThreadSafeNavMeshBuildSource>>();
 			PooledList<Collider> val = Pool.Get<PooledList<Collider>>();
 			try
 			{
-				GamePhysics.OverlapBounds(tileBounds, (List<Collider>)(object)val, layerMask, (QueryTriggerInteraction)1);
+				GamePhysics.OverlapBounds(tileBounds, (List<Collider>)(object)val, layerMask, (QueryTriggerInteraction)2);
+				bool flag = false;
 				foreach (Collider item2 in (List<Collider>)(object)val)
 				{
-					BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item2, allowDestroyed: true);
-					if ((Object)(object)baseEntity != (Object)null && (baseEntity.isClient || baseEntity.IsDestroyed))
+					try
 					{
-						continue;
-					}
-					ThreadSafeNavMeshBuildSource item = new ThreadSafeNavMeshBuildSource
-					{
-						shape = (NavMeshBuildSourceShape)0,
-						sourceObjectID = 0,
-						transform = ((Component)item2).transform.localToWorldMatrix,
-						size = Vector3.zero,
-						area = areaFromName
-					};
-					BoxCollider castedUnityObject2;
-					SphereCollider castedUnityObject3;
-					if (BaseNetworkableEx.Is<MeshCollider>((Object)(object)item2, out MeshCollider castedUnityObject))
-					{
-						item.shape = (NavMeshBuildSourceShape)0;
-						item.sourceObjectID = ((Object)castedUnityObject.sharedMesh).GetInstanceID();
-						MeshCache.Get(castedUnityObject.sharedMesh);
-					}
-					else if (BaseNetworkableEx.Is<BoxCollider>((Object)(object)item2, out castedUnityObject2))
-					{
-						item.shape = (NavMeshBuildSourceShape)2;
-						item.size = castedUnityObject2.size;
-						item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject2.center);
-					}
-					else if (BaseNetworkableEx.Is<SphereCollider>((Object)(object)item2, out castedUnityObject3))
-					{
-						item.shape = (NavMeshBuildSourceShape)2;
-						item.size = Vector3.one * castedUnityObject3.radius * 2f;
-						item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject3.center);
-					}
-					else
-					{
-						if (!BaseNetworkableEx.Is<CapsuleCollider>((Object)(object)item2, out CapsuleCollider castedUnityObject4))
+						BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item2, allowDestroyed: true);
+						if ((Object)(object)baseEntity != (Object)null && (baseEntity.isClient || baseEntity.IsDestroyed))
+						{
+							continue;
+						}
+						ThreadSafeNavMeshBuildSource item = new ThreadSafeNavMeshBuildSource
+						{
+							shape = (NavMeshBuildSourceShape)0,
+							sourceObjectID = 0,
+							transform = ((Component)item2).transform.localToWorldMatrix,
+							size = Vector3.zero,
+							area = areaFromName
+						};
+						if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)baseEntity, out BuildingBlock _))
+						{
+							flag = true;
+						}
+						else if ((Object)(object)ConstructionErrors.GetPreventBuildingMonumentTag(item2) != (Object)null)
+						{
+							flag = true;
+						}
+						if ((BaseNetworkableEx.Is<TreeEntity>((Object)(object)baseEntity, out TreeEntity castedUnityObject2) && !castedUnityObject2.IncludeInNavmesh) || item2.isTrigger)
+						{
+							continue;
+						}
+						if (BaseNetworkableEx.Is<MeshCollider>((Object)(object)item2, out MeshCollider castedUnityObject3))
+						{
+							item.shape = (NavMeshBuildSourceShape)0;
+							item.sourceObjectID = ((Object)castedUnityObject3.sharedMesh).GetInstanceID();
+							MeshCache.Get(castedUnityObject3.sharedMesh);
+							goto IL_02dc;
+						}
+						if (BaseNetworkableEx.Is<BoxCollider>((Object)(object)item2, out BoxCollider castedUnityObject4))
+						{
+							item.shape = (NavMeshBuildSourceShape)2;
+							item.size = castedUnityObject4.size;
+							item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject4.center);
+							goto IL_02dc;
+						}
+						if (BaseNetworkableEx.Is<SphereCollider>((Object)(object)item2, out SphereCollider castedUnityObject5))
+						{
+							item.shape = (NavMeshBuildSourceShape)2;
+							item.size = Vector3.one * castedUnityObject5.radius * 2f;
+							item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject5.center);
+							goto IL_02dc;
+						}
+						if (!BaseNetworkableEx.Is<CapsuleCollider>((Object)(object)item2, out CapsuleCollider castedUnityObject6))
 						{
 							continue;
 						}
 						item.shape = (NavMeshBuildSourceShape)2;
-						float num = castedUnityObject4.radius * 2f;
-						if (castedUnityObject4.direction == 0)
+						float num = castedUnityObject6.radius * 2f;
+						if (castedUnityObject6.direction == 0)
 						{
-							item.size = new Vector3(castedUnityObject4.height, num, num);
+							item.size = new Vector3(castedUnityObject6.height, num, num);
 						}
-						else if (castedUnityObject4.direction == 1)
+						else if (castedUnityObject6.direction == 1)
 						{
-							item.size = new Vector3(num, castedUnityObject4.height, num);
+							item.size = new Vector3(num, castedUnityObject6.height, num);
 						}
-						else if (castedUnityObject4.direction == 2)
+						else if (castedUnityObject6.direction == 2)
 						{
-							item.size = new Vector3(num, num, castedUnityObject4.height);
+							item.size = new Vector3(num, num, castedUnityObject6.height);
 						}
 						else
 						{
-							item.size = new Vector3(num, castedUnityObject4.height, num);
+							item.size = new Vector3(num, castedUnityObject6.height, num);
 						}
-						item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject4.center);
+						item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject6.center);
+						goto IL_02dc;
+						IL_02dc:
+						list.Add(item);
 					}
-					list.Add(item);
+					finally
+					{
+					}
 				}
-				return new TileBuildRequest(in collectRequest, list);
+				NavMeshBuildParams buildParams = (flag ? collectRequest.navmesh.BuildParamsHiRes : collectRequest.navmesh.BuildParams);
+				return new TileBuildRequest(in collectRequest, list, buildParams);
 			}
 			finally
 			{
@@ -365,57 +537,56 @@ public class BackgroundTileBuilder : IDisposable
 		}
 	}
 
-	private unsafe TileBuildResult DoWorkFromBackgroundThread(ref TileBuildRequest buildRequest, CancellationToken globalInterruptToken)
+	private TileBuildResult DoWorkFromBackgroundThread(ref TileBuildRequest buildRequest, CancellationToken globalInterruptToken)
 	{
-		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Invalid comparison between Unknown and I4
-		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Invalid comparison between Unknown and I4
-		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0427: Unknown result type (might be due to invalid IL or missing references)
-		//IL_042c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0431: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0450: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0469: Unknown result type (might be due to invalid IL or missing references)
-		//IL_046e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0474: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0479: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Invalid comparison between Unknown and I4
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0131: Invalid comparison between Unknown and I4
+		//IL_03cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0443: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0294: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037f: Unknown result type (might be due to invalid IL or missing references)
-		if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0347: Unknown result type (might be due to invalid IL or missing references)
+		if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 		{
 			return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 		}
-		FPNativeList<Vector3> fPNativeList = Pool.Get<FPNativeList<Vector3>>();
-		FPNativeList<int> fPNativeList2 = Pool.Get<FPNativeList<int>>();
+		RawBuffer<Vector3> vertices = TileScratch.Vertices;
+		RawBuffer<int> triangles = TileScratch.Triangles;
+		vertices.Clear();
+		triangles.Clear();
 		IntPtr intPtr = IntPtr.Zero;
 		IntPtr intPtr2 = IntPtr.Zero;
 		IntPtr intPtr3 = IntPtr.Zero;
@@ -426,39 +597,15 @@ public class BackgroundTileBuilder : IDisposable
 			{
 				Bounds tileBounds = buildRequest.navmesh.rcCalcTileBounds(new Vector2Int(buildRequest.tx, buildRequest.ty));
 				tileBounds = buildRequest.navmesh.rcExpandTileBounds(tileBounds);
-				PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
-				try
-				{
-					PooledList<int> val2 = Pool.Get<PooledList<int>>();
-					try
-					{
-						TileExtractor.ExtractTerrainGeometry2(Vector3Ex.WithY(((Bounds)(ref tileBounds)).center - ((Bounds)(ref tileBounds)).extents, 0f), Mathf.CeilToInt(((Bounds)(ref tileBounds)).size.x), (List<Vector3>)(object)val, (List<int>)(object)val2);
-						foreach (int item in (List<int>)(object)val2)
-						{
-							fPNativeList2.Add(fPNativeList.Count + item);
-						}
-						foreach (Vector3 item2 in (List<Vector3>)(object)val)
-						{
-							fPNativeList.Add(item2);
-						}
-					}
-					finally
-					{
-						((IDisposable)val2)?.Dispose();
-					}
-				}
-				finally
-				{
-					((IDisposable)val)?.Dispose();
-				}
+				ExtractTerrainGeometry(Vector3Ex.WithY(((Bounds)(ref tileBounds)).center - ((Bounds)(ref tileBounds)).extents, 0f), Mathf.CeilToInt(((Bounds)(ref tileBounds)).size.x), vertices, triangles);
 			}
-			if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+			if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
 			foreach (ThreadSafeNavMeshBuildSource source in buildRequest.sources)
 			{
-				if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+				if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 				{
 					break;
 				}
@@ -468,25 +615,69 @@ public class BackgroundTileBuilder : IDisposable
 				}
 				if ((int)source.shape == 2)
 				{
+					PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+					try
+					{
+						PooledList<int> val2 = Pool.Get<PooledList<int>>();
+						try
+						{
+							TileExtractor.CreateBoxMesh((List<Vector3>)(object)val, (List<int>)(object)val2, Vector3.zero, source.size);
+							Matrix4x4 transform = source.transform;
+							for (int i = 0; i < ((List<Vector3>)(object)val).Count; i++)
+							{
+								((List<Vector3>)(object)val)[i] = ((Matrix4x4)(ref transform)).MultiplyPoint3x4(((List<Vector3>)(object)val)[i]);
+							}
+							int count = vertices.Count;
+							triangles.EnsureCapacity(triangles.Count + ((List<int>)(object)val2).Count);
+							foreach (int item in (List<int>)(object)val2)
+							{
+								triangles.Add(count + item);
+							}
+							vertices.EnsureCapacity(vertices.Count + ((List<Vector3>)(object)val).Count);
+							foreach (Vector3 item2 in (List<Vector3>)(object)val)
+							{
+								vertices.Add(item2);
+							}
+						}
+						finally
+						{
+							((IDisposable)val2)?.Dispose();
+						}
+					}
+					finally
+					{
+						((IDisposable)val)?.Dispose();
+					}
+				}
+				else
+				{
+					if (source.sourceObjectID == 0 || !MeshCache.TryGet(source.sourceObjectID, out var data))
+					{
+						continue;
+					}
 					PooledList<Vector3> val3 = Pool.Get<PooledList<Vector3>>();
 					try
 					{
 						PooledList<int> val4 = Pool.Get<PooledList<int>>();
 						try
 						{
-							TileExtractor.CreateBoxMesh((List<Vector3>)(object)val3, (List<int>)(object)val4, Vector3.zero, source.size);
-							Matrix4x4 transform = source.transform;
-							for (int i = 0; i < ((List<Vector3>)(object)val3).Count; i++)
+							((List<Vector3>)(object)val3).AddRange((IEnumerable<Vector3>)data.vertices);
+							((List<int>)(object)val4).AddRange((IEnumerable<int>)data.triangles);
+							Matrix4x4 transform2 = source.transform;
+							for (int j = 0; j < ((List<Vector3>)(object)val3).Count; j++)
 							{
-								((List<Vector3>)(object)val3)[i] = ((Matrix4x4)(ref transform)).MultiplyPoint3x4(((List<Vector3>)(object)val3)[i]);
+								((List<Vector3>)(object)val3)[j] = ((Matrix4x4)(ref transform2)).MultiplyPoint3x4(((List<Vector3>)(object)val3)[j]);
 							}
+							int count2 = vertices.Count;
+							triangles.EnsureCapacity(triangles.Count + ((List<int>)(object)val4).Count);
 							foreach (int item3 in (List<int>)(object)val4)
 							{
-								fPNativeList2.Add(fPNativeList.Count + item3);
+								triangles.Add(count2 + item3);
 							}
+							vertices.EnsureCapacity(vertices.Count + ((List<Vector3>)(object)val3).Count);
 							foreach (Vector3 item4 in (List<Vector3>)(object)val3)
 							{
-								fPNativeList.Add(item4);
+								vertices.Add(item4);
 							}
 						}
 						finally
@@ -499,60 +690,54 @@ public class BackgroundTileBuilder : IDisposable
 						((IDisposable)val3)?.Dispose();
 					}
 				}
-				else
-				{
-					if (source.sourceObjectID == 0 || !MeshCache.TryGet(source.sourceObjectID, out var data))
-					{
-						continue;
-					}
-					PooledList<Vector3> val5 = Pool.Get<PooledList<Vector3>>();
-					try
-					{
-						PooledList<int> val6 = Pool.Get<PooledList<int>>();
-						try
-						{
-							((List<Vector3>)(object)val5).AddRange((IEnumerable<Vector3>)data.vertices);
-							((List<int>)(object)val6).AddRange((IEnumerable<int>)data.triangles);
-							Matrix4x4 transform2 = source.transform;
-							for (int j = 0; j < ((List<Vector3>)(object)val5).Count; j++)
-							{
-								((List<Vector3>)(object)val5)[j] = ((Matrix4x4)(ref transform2)).MultiplyPoint3x4(((List<Vector3>)(object)val5)[j]);
-							}
-							foreach (int item5 in (List<int>)(object)val6)
-							{
-								fPNativeList2.Add(fPNativeList.Count + item5);
-							}
-							foreach (Vector3 item6 in (List<Vector3>)(object)val5)
-							{
-								fPNativeList.Add(item6);
-							}
-						}
-						finally
-						{
-							((IDisposable)val6)?.Dispose();
-						}
-					}
-					finally
-					{
-						((IDisposable)val5)?.Dispose();
-					}
-				}
 			}
-			if (fPNativeList.Count == 0 || fPNativeList2.Count == 0)
+			if (vertices.Count == 0 || triangles.Count == 0)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.NoGeometry);
 			}
-			if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+			float num = float.MaxValue;
+			float num2 = float.MinValue;
+			for (int k = 0; k < vertices.Count; k++)
+			{
+				float y = vertices[k].y;
+				if (y < num)
+				{
+					num = y;
+				}
+				if (y > num2)
+				{
+					num2 = y;
+				}
+			}
+			if (!(num <= num2))
+			{
+				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.NoGeometry);
+			}
+			float cellHeight = buildRequest.buildParams.cellHeight;
+			float num3 = cellHeight * 2f;
+			num -= num3;
+			num2 += num3;
+			float y2 = ((Bounds)(ref buildRequest.navmesh.CurrentNavmeshBounds)).min.y;
+			num = y2 + Mathf.Floor((num - y2) / cellHeight) * cellHeight;
+			if (Mathf.CeilToInt((num2 - num) / cellHeight) > 8191)
+			{
+				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.SpanHeightError);
+			}
+			if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
-			Bounds val7 = buildRequest.navmesh.rcCalcTileBounds(new Vector2Int(buildRequest.tx, buildRequest.ty));
-			intPtr = RecastWrapper.CreateHeightFieldRaw(in buildRequest.buildParams, (IntPtr)NativeArrayUnsafeUtility.GetUnsafePtr<Vector3>(fPNativeList.Array), fPNativeList.Count, (IntPtr)NativeArrayUnsafeUtility.GetUnsafePtr<int>(fPNativeList2.Array), fPNativeList2.Count / 3, ((Bounds)(ref val7)).min, ((Bounds)(ref val7)).max);
+			Bounds val5 = buildRequest.navmesh.rcCalcTileBounds(new Vector2Int(buildRequest.tx, buildRequest.ty));
+			Vector3 bmin = default(Vector3);
+			((Vector3)(ref bmin))._002Ector(((Bounds)(ref val5)).min.x, num, ((Bounds)(ref val5)).min.z);
+			Vector3 bmax = default(Vector3);
+			((Vector3)(ref bmax))._002Ector(((Bounds)(ref val5)).max.x, num2, ((Bounds)(ref val5)).max.z);
+			intPtr = RecastWrapper.CreateHeightFieldRaw(in buildRequest.buildParams, vertices.Ptr, vertices.Count, triangles.Ptr, triangles.Count / 3, in bmin, in bmax);
 			if (intPtr == IntPtr.Zero)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.CreateHeightFieldError);
 			}
-			if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+			if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
@@ -561,7 +746,7 @@ public class BackgroundTileBuilder : IDisposable
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.CreateCompactHeightFieldError);
 			}
-			if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+			if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
@@ -570,7 +755,7 @@ public class BackgroundTileBuilder : IDisposable
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.CreatePolymeshError);
 			}
-			if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+			if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
@@ -582,7 +767,7 @@ public class BackgroundTileBuilder : IDisposable
 					return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.CreateDetailPolymeshError);
 				}
 			}
-			if (globalInterruptToken.IsCancellationRequested || buildRequest.token.IsCancellationRequested)
+			if (globalInterruptToken.IsCancellationRequested || buildRequest.cancellation.IsCancellationRequested)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
@@ -601,8 +786,6 @@ public class BackgroundTileBuilder : IDisposable
 		}
 		finally
 		{
-			Pool.Free<FPNativeList<Vector3>>(ref fPNativeList);
-			Pool.Free<FPNativeList<int>>(ref fPNativeList2);
 			if (intPtr != IntPtr.Zero)
 			{
 				RecastWrapper.FreeHeightField(intPtr);
@@ -638,17 +821,15 @@ public class BackgroundTileBuilder : IDisposable
 		while ((MAX_BUILD_QUEUE <= 0 || backgroundWorkQueue.Count < MAX_BUILD_QUEUE) && collectMainThreadWorkQueue.TryDequeue(out collectRequest))
 		{
 			(RustNavmesh, int, int) key = (collectRequest.navmesh, collectRequest.tx, collectRequest.ty);
-			CancellationTokenSource value;
-			bool flag = tileCancellations.TryGetValue(key, out value) && value == collectRequest.tokenSource;
-			bool isCancellationRequested = collectRequest.tokenSource.IsCancellationRequested;
+			TileCancellation value;
+			bool flag = tileCancellations.TryGetValue(key, out value) && value == collectRequest.cancellation;
+			bool isCancellationRequested = collectRequest.cancellation.IsCancellationRequested;
 			if (!flag || isCancellationRequested)
 			{
 				if (flag)
 				{
 					tileCancellations.Remove(key);
 				}
-				collectRequest.tokenSource.Dispose();
-				collectRequest.tokenSource = null;
 				continue;
 			}
 			TileBuildRequest item = DoInitialWorkOnMainThread(in collectRequest);
@@ -665,11 +846,10 @@ public class BackgroundTileBuilder : IDisposable
 	private bool AddSingleBuiltTileOnMainThread(ref TileBuildResult buildResult)
 	{
 		(RustNavmesh, int, int) key = (buildResult.navmesh, buildResult.tx, buildResult.ty);
-		CancellationTokenSource value;
-		bool num = tileCancellations.TryGetValue(key, out value) && value == buildResult.tokenSource;
-		bool isCancellationRequested = buildResult.tokenSource.IsCancellationRequested;
-		buildResult.tokenSource.Dispose();
-		buildResult.tokenSource = null;
+		TileCancellation value;
+		bool num = tileCancellations.TryGetValue(key, out value) && value == buildResult.cancellation;
+		bool isCancellationRequested = buildResult.cancellation.IsCancellationRequested;
+		buildResult.cancellation = null;
 		if (num)
 		{
 			tileCancellations.Remove(key);
@@ -685,6 +865,7 @@ public class BackgroundTileBuilder : IDisposable
 			{
 				RustNavigation.LogError($"Failed to build navmesh tile {buildResult.tx},{buildResult.ty}, error code {buildResult.resultCode}");
 			}
+			buildResult.navmesh.FailTile(buildResult.tx, buildResult.ty);
 			return false;
 		}
 		buildResult.navmesh.AddTile(buildResult.tx, buildResult.ty, buildResult.tileBytes, buildResult.dataSize);
@@ -698,7 +879,6 @@ public class BackgroundTileBuilder : IDisposable
 		while (backgroundWorkQueue.TryTake(out item))
 		{
 			Pool.FreeUnmanaged<ThreadSafeNavMeshBuildSource>(ref item.sources);
-			item.tokenSource.Dispose();
 		}
 		TileBuildResult result;
 		while (finalMainthreadWorkBag.TryTake(out result))
@@ -708,7 +888,6 @@ public class BackgroundTileBuilder : IDisposable
 				RecastWrapper.FreeTileData(result.tileBytes);
 				result.tileBytes = IntPtr.Zero;
 			}
-			result.tokenSource.Dispose();
 		}
 	}
 
@@ -717,11 +896,10 @@ public class BackgroundTileBuilder : IDisposable
 		CancellationToken token = globalInterrupt.Token;
 		while (true)
 		{
+			TileBuildRequest buildRequest;
 			try
 			{
-				TileBuildRequest buildRequest = backgroundWorkQueue.Take(token);
-				TileBuildResult item = DoWorkFromBackgroundThread(ref buildRequest, token);
-				finalMainthreadWorkBag.Add(item);
+				buildRequest = backgroundWorkQueue.Take(token);
 			}
 			catch (OperationCanceledException)
 			{
@@ -734,6 +912,24 @@ public class BackgroundTileBuilder : IDisposable
 			catch (Exception ex3)
 			{
 				Debug.LogException(ex3);
+				continue;
+			}
+			try
+			{
+				TileBuildResult item = DoWorkFromBackgroundThread(ref buildRequest, token);
+				finalMainthreadWorkBag.Add(item);
+			}
+			catch (Exception ex4)
+			{
+				Debug.LogException(ex4);
+				try
+				{
+					finalMainthreadWorkBag.Add(new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.UnknownError));
+				}
+				catch (Exception ex5)
+				{
+					Debug.LogException(ex5);
+				}
 			}
 		}
 	}
@@ -748,7 +944,7 @@ public class BackgroundTileBuilder : IDisposable
 				value.Cancel();
 			}
 			TileCollectRequest collectRequest = new TileCollectRequest(tx, ty, navmesh);
-			tileCancellations[key] = collectRequest.tokenSource;
+			tileCancellations[key] = collectRequest.cancellation;
 			if (synchronous)
 			{
 				TileBuildRequest buildRequest = DoInitialWorkOnMainThread(in collectRequest);

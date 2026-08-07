@@ -35,9 +35,14 @@ public class CuiImageComponent : ICuiComponent, ICuiColor, ICuiEnableable, ICuiG
 	[JsonProperty("skinid")]
 	public ulong SkinId { get; set; }
 
+	[JsonProperty("ppuMultiplier")]
+	public float PixelsPerUnitMultiplier { get; set; }
+
 	public float FadeIn { get; set; }
 
 	public string PlaceholderParentId { get; set; }
+
+	public bool? BlocksRaycast { get; set; }
 
 	public bool? Enabled { get; set; }
 }

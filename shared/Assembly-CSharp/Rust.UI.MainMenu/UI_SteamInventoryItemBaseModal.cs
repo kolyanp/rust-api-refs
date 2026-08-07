@@ -11,8 +11,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	protected GameObject staticIconGroup;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected HttpImage iconImage;
 
 	[SerializeField]

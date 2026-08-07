@@ -148,8 +148,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	[Tooltip("If true, this item will support item ownership even if it's stacksize is >1")]
 	public bool supportsStackableOwnership;
 
-	[Tooltip("How rare this item is and how much it costs to research")]
 	[Header("Spawn Tables")]
+	[Tooltip("How rare this item is and how much it costs to research")]
 	public Rarity rarity;
 
 	public Rarity despawnRarity;
@@ -276,6 +276,10 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 
 	public ItemModCookable ItemModCookable { get; set; }
 
+	public ItemModEntity ItemModEntity { get; private set; }
+
+	public bool HasItemModEntity { get; private set; }
+
 	public ItemModSpriteConfig ItemModSpriteConfig { get; private set; }
 
 	public bool isHoldable { get; private set; }
@@ -303,6 +307,19 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	public bool Hidden()
 	{
 		return hidden;
+	}
+
+	public bool MatchesItemId(int itemid, bool redirectAllowed)
+	{
+		if (this.itemid == itemid)
+		{
+			return true;
+		}
+		if (redirectAllowed && (Object)(object)isRedirectOf != (Object)null)
+		{
+			return isRedirectOf.itemid == itemid;
+		}
+		return false;
 	}
 
 	public void InvalidateWorkshopSkinCache()
@@ -464,6 +481,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		ItemModWearable = ((Component)this).GetComponent<ItemModWearable>();
 		ItemModBurnable = ((Component)this).GetComponent<ItemModBurnable>();
 		ItemModCookable = ((Component)this).GetComponent<ItemModCookable>();
+		ItemModEntity = ((Component)this).GetComponent<ItemModEntity>();
+		HasItemModEntity = (Object)(object)ItemModEntity != (Object)null;
 		ItemModSpriteConfig = ((Component)this).GetComponent<ItemModSpriteConfig>();
 		isHoldable = (Object)(object)((Component)this).GetComponent<ItemModEntity>() != (Object)null;
 		isUsable = (Object)(object)((Component)this).GetComponent<ItemModEntity>() != (Object)null || (Object)(object)((Component)this).GetComponent<ItemModConsume>() != (Object)null;

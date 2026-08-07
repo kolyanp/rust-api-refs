@@ -408,7 +408,7 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 				{
 					num4 = -2f;
 				}
-				else if (RustNavMesh.CalculatePath(((Component)aIMovePoint).transform.position, ((Component)coverPoint).transform.position, areaMask, pathCache) && (int)pathCache.status == 0)
+				else if (RustNavMeshHelpers.CalculatePath(((Component)aIMovePoint).transform.position, ((Component)coverPoint).transform.position, areaMask, pathCache) && (int)pathCache.status == 0)
 				{
 					int count = pathCache.corners.Count;
 					if (count > 1)

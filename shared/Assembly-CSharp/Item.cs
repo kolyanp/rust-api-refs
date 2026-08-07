@@ -1926,7 +1926,7 @@ public class Item : IPooled
 		int num = info.stackable;
 		if (parent != null && parent.maxStackSize > 0)
 		{
-			num = Mathf.Min(parent.maxStackSize, num);
+			num = ((!parent.allowItemsToIncreaseToMaxStackSize) ? Mathf.Min(parent.maxStackSize, num) : Mathf.Max(parent.maxStackSize, num));
 		}
 		object obj = Interface.CallHook("OnMaxStackable", this);
 		if (obj is int)

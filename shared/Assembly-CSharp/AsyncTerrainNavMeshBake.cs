@@ -26,6 +26,8 @@ public class AsyncTerrainNavMeshBake : CustomYieldInstruction
 
 	private Action worker;
 
+	private const float cutoffAlpha = 0.1f;
+
 	public override bool keepWaiting => worker != null;
 
 	public bool isDone => worker == null;

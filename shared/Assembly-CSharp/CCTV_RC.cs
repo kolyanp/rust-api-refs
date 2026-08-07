@@ -79,6 +79,8 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public RealTimeSinceEx timeSinceLastServerTick;
 
+	private bool isOnCargoShip;
+
 	[ServerVar(Saved = true)]
 	public static float inputBudgetMs = 0.05f;
 
@@ -153,6 +155,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 			{
 				((PersistentObjectWorkQueue<CCTV_RC>)WorkQueue).Add(this);
 			}
+			isOnCargoShip = (Object)(object)((Component)this).GetComponentInParent<CargoShip>() != (Object)null;
 		}
 	}
 
@@ -173,7 +176,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public override bool ShouldInheritNetworkGroup()
 	{
-		if ((Object)(object)((Component)this).GetComponentInParent<CargoShip>() != (Object)null)
+		if (isOnCargoShip)
 		{
 			return false;
 		}

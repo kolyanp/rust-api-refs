@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
 namespace ConVar;
 
 [Factory("decay")]
@@ -139,6 +143,45 @@ public class Decay : ConsoleSystem
 
 	[ServerVar(Help = "Doors in the 4th upkeep bracket will cost this value per day to maintain")]
 	public static float bracket_3_doorfraction = 0.333f;
+
+	[ReplicatedVar(Help = "Upkeep scale for external walls and gates")]
+	public static float high_wall_upkeep = 0.2f;
+
+	[ServerVar(Help = "drawnearbybuildings <duration> <radius>, shows building ID of entities")]
+	public static void drawnearbybuildings(Arg arg)
+	{
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("This command can only be run by a player");
+			return;
+		}
+		arg.GetFloat(0, 15f);
+		float radius = arg.GetFloat(1, 30f);
+		List<DecayEntity> list = new List<DecayEntity>();
+		global::Vis.Entities(((Component)basePlayer).transform.position, radius, list, -1, (QueryTriggerInteraction)2);
+		foreach (DecayEntity item in list)
+		{
+			if (item.isServer)
+			{
+				basePlayer.SendConsoleCommand(DDrawCommand.Text(((Component)item).transform.position, 10f, Color.red, item.buildingID.ToString()));
+			}
+		}
+	}
+
+	[ServerVar(Help = "Call the decay tick on every single entity on the server (for testing decay works)")]
+	public static void forcedecaytick(Arg arg)
+	{
+		foreach (DecayEntity item in BaseNetworkable.serverEntities.OfType<DecayEntity>())
+		{
+			item.DecayTick(force: true);
+		}
+	}
 
 	public static float GetCostMultiplier(BuildingGrade.Enum grade)
 	{

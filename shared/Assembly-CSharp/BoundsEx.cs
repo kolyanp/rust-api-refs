@@ -208,6 +208,87 @@ public static class BoundsEx
 		return Mathf.Min(num, Mathf.Min(num2, Mathf.Min(num3, num4)));
 	}
 
+	public static Vector3 ClosestPointOnSurface(this Bounds b, Vector3 point)
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Bounds)(ref b)).Contains(point))
+		{
+			return ((Bounds)(ref b)).ClosestPoint(point);
+		}
+		Vector3 min = ((Bounds)(ref b)).min;
+		Vector3 max = ((Bounds)(ref b)).max;
+		float num = point.x - min.x;
+		Vector3 result = default(Vector3);
+		((Vector3)(ref result))._002Ector(min.x, point.y, point.z);
+		float num2 = max.x - point.x;
+		if (num2 < num)
+		{
+			num = num2;
+			((Vector3)(ref result))._002Ector(max.x, point.y, point.z);
+		}
+		num2 = point.y - min.y;
+		if (num2 < num)
+		{
+			num = num2;
+			((Vector3)(ref result))._002Ector(point.x, min.y, point.z);
+		}
+		num2 = max.y - point.y;
+		if (num2 < num)
+		{
+			num = num2;
+			((Vector3)(ref result))._002Ector(point.x, max.y, point.z);
+		}
+		num2 = point.z - min.z;
+		if (num2 < num)
+		{
+			num = num2;
+			((Vector3)(ref result))._002Ector(point.x, point.y, min.z);
+		}
+		num2 = max.z - point.z;
+		if (num2 < num)
+		{
+			((Vector3)(ref result))._002Ector(point.x, point.y, max.z);
+		}
+		return result;
+	}
+
 	public static float MaxExtent(this Bounds b)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)

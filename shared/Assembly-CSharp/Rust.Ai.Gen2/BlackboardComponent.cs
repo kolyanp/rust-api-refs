@@ -16,7 +16,7 @@ public class BlackboardComponent : EntityComponent<BaseEntity>, IServerComponent
 	public override void InitShared()
 	{
 		base.InitShared();
-		((MonoBehaviour)this).InvokeRepeating("CleanExpiredFacts", Random.value, 1f);
+		SingletonComponent<InvokeHandler>.Instance.InvokeRepeating(CleanExpiredFacts, Random.value, 1f);
 	}
 
 	public void Add(string value, float duration = 30f)

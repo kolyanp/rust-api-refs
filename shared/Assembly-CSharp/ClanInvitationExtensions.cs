@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 
 public static class ClanInvitationExtensions
 {
+	[PoolAnalyzerGetWrapper]
 	public static ClanInvitations ToProto(this List<ClanInvitation> invitations)
 	{
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
@@ -19,6 +21,7 @@ public static class ClanInvitationExtensions
 		return obj;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public static Invitation ToProto(this ClanInvitation invitation)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

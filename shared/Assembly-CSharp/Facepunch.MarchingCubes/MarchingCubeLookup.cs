@@ -460,4 +460,10 @@ public static class MarchingCubeLookup
 		1, 2, 3, 0, 5, 6, 7, 4, 4, 5,
 		6, 7
 	};
+
+	public static readonly int[] axisFromEdge = new int[12]
+	{
+		0, 2, 0, 2, 0, 2, 0, 2, 1, 1,
+		1, 1
+	};
 }

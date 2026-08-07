@@ -91,6 +91,8 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 
 	private uint birdCycleIndex;
 
+	public virtual bool IncludeInNavmesh => false;
+
 	private Action actionCreateNewHotspotMarker
 	{
 		get

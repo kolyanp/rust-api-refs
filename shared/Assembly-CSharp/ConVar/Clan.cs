@@ -53,6 +53,21 @@ public class Clan : ConsoleSystem
 	[ServerVar(Help = "How much score players earn for swiping a red keycard")]
 	public static int scoreForSwipingRedKeycard = 5;
 
+	[ServerVar(Help = "How much score players earn for inserting a heavy fuse into powerplant")]
+	public static int scoreForInsertHeavyFuseInPowerPlant = 5;
+
+	[ServerVar(Help = "How much score players earn for looting a crashed satellite's crates")]
+	public static int scoreForLootingSatellite = 10;
+
+	[ServerVar(Help = "How much score players earn for running the water treatment plant, per consumed item")]
+	public static int scoreForEnablingWaterTreatmentPlant = 3;
+
+	[ServerVar(Help = "How much score players earn for launching a satellite")]
+	public static int scoreForLaunchingSatellite = 25;
+
+	[ServerVar(Help = "How much score players earn for starting the oil rig fuel switch")]
+	public static int scoreForStartingOilRigFuelSwitch = 5;
+
 	[ServerVar(Help = "Prints info about a clan given its ID")]
 	public static void Info(Arg arg)
 	{
@@ -189,8 +204,8 @@ public class Clan : ConsoleSystem
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Expected I4, but got Unknown
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Expected I4, but got Unknown
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
 		return (eventType - -1) switch
 		{
 			1 => 1, 
@@ -206,6 +221,11 @@ public class Clan : ConsoleSystem
 			11 => scoreForLootingEliteCrate, 
 			12 => scoreForDestroyingPatrolHeli, 
 			13 => scoreForSwipingRedKeycard, 
+			14 => scoreForInsertHeavyFuseInPowerPlant, 
+			15 => scoreForLootingSatellite, 
+			16 => scoreForEnablingWaterTreatmentPlant, 
+			17 => scoreForLaunchingSatellite, 
+			18 => scoreForStartingOilRigFuelSwitch, 
 			0 => 0, 
 			_ => Unknown(eventType), 
 		};

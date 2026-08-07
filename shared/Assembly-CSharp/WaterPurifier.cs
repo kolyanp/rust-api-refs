@@ -35,7 +35,8 @@ public class WaterPurifier : LiquidContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (!Application.isLoadingSave)
+		bool flag = false;
+		if (!Application.isLoadingSave && !flag)
 		{
 			SpawnStorageEnt(load: false);
 		}

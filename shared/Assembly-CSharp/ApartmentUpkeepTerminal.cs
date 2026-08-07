@@ -22,6 +22,19 @@ public class ApartmentUpkeepTerminal : StorageContainer
 		}
 	}
 
+	public override void OnItemAddedOrRemoved(Item item, bool added)
+	{
+		base.OnItemAddedOrRemoved(item, added);
+		if (base.inventory != null && (Object)(object)Apartment != (Object)null)
+		{
+			base.inventory.maxStackSize = Mathf.RoundToInt(Apartment.GetDailyUpkeepCost() * 3f);
+		}
+		if ((Object)(object)Apartment != (Object)null)
+		{
+			Apartment.SendNetworkUpdate();
+		}
+	}
+
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);

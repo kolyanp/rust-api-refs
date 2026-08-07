@@ -7,4 +7,6 @@ public class IngameMenuBackground : MonoBehaviour
 	public Canvas canvas;
 
 	public CanvasGroup canvasGroup;
+
+	public UIBackgroundBlur blurRRP;
 }

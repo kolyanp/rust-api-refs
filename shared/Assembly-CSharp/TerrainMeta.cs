@@ -132,6 +132,8 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 
 	public static TerrainTexturing Texturing { get; private set; }
 
+	public static TerrainHoleRenderer HoleRenderer { get; private set; }
+
 	public static Vector3 MarginSize => Size * 3f;
 
 	public static void SetReflectionProbeUsage(ReflectionProbeUsage value)
@@ -553,15 +555,15 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
 		if (configOverride != null)
 		{
 			config = configOverride;
@@ -594,6 +596,7 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		DistanceMap = ((Component)this).gameObject.GetComponent<TerrainDistanceMap>();
 		PlacementMap = ((Component)this).gameObject.GetComponent<TerrainPlacementMap>();
 		Texturing = ((Component)this).gameObject.GetComponent<TerrainTexturing>();
+		HoleRenderer = ((Component)this).gameObject.GetComponent<TerrainHoleRenderer>();
 		TerrainRenderer = terrainRenderer;
 		if (Object.op_Implicit((Object)(object)terrainRenderer.terrain))
 		{

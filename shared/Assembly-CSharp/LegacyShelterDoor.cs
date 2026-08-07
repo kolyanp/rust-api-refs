@@ -12,7 +12,7 @@ public class LegacyShelterDoor : Door
 		this.shelter = shelter;
 	}
 
-	public override void DecayTick()
+	public override void DecayTick(bool force = false)
 	{
 	}
 

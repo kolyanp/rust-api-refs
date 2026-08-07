@@ -92,7 +92,15 @@ public class TerrainConfig : BaseScriptableObject
 
 	public Material GeoClipmapMaterial;
 
+	public Material GeoClipmapMaterialHoles;
+
 	public ComputeShader GeoClipCompute;
+
+	public Material holeMaskMat;
+
+	public Material holeMapMat;
+
+	public HoleShapeAsset[] HoleShapeAssets;
 
 	public Texture[] AlbedoArrays = (Texture[])(object)new Texture[3];
 

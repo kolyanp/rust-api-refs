@@ -1,4 +1,5 @@
 using Facepunch;
+using Facepunch.Extend;
 using ProtoBuf;
 using UnityEngine;
 
@@ -106,11 +107,18 @@ public class DeepSeaPortal : BaseEntity
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		info.msg.deepSeaPortal = Pool.Get<DeepSeaPortal>();
-		info.msg.deepSeaPortal.triggerSize = ((Component)this).transform.localScale;
+		Vector3 triggerSize = ((!BaseNetworkable.UseParallelSaves) ? ((Component)this).transform.localScale : Facepunch.Extend.TransformEx.Unsafe.GetLocalScaleMT(base.TransformHandle));
+		info.msg.deepSeaPortal.triggerSize = triggerSize;
 		info.msg.deepSeaPortal.portalMode = (int)PortalMode;
 	}
 

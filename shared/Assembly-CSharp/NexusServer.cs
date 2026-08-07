@@ -856,8 +856,8 @@ public static class NexusServer
 			int valueOrDefault = (World.Config?.JsonString?.GetHashCode()).GetValueOrDefault();
 			string key = string.Format("{0}##{1}##{2}##{3}##{4}##{5}##{6}##{7}##{8}", new object[9]
 			{
-				2631,
-				286,
+				2632,
+				287,
 				World.Name,
 				World.Size,
 				World.Seed,
@@ -893,7 +893,7 @@ public static class NexusServer
 		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
-			if (packet.protocol != 286)
+			if (packet.protocol != 287)
 			{
 				Debug.LogWarning((object)"Received a nexus message with wrong protocol, ignoring");
 				return;
@@ -938,7 +938,7 @@ public static class NexusServer
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		Packet val = Pool.Get<Packet>();
-		val.protocol = 286u;
+		val.protocol = 287u;
 		val.sourceZone = ZoneClient.Zone.ZoneId;
 		val.request = request;
 		return SendPacket(id, val, toZoneKey, ttl);
@@ -949,7 +949,7 @@ public static class NexusServer
 		try
 		{
 			Packet val = Pool.Get<Packet>();
-			val.protocol = 286u;
+			val.protocol = 287u;
 			val.sourceZone = ZoneClient.Zone.ZoneId;
 			val.response = response;
 			await SendPacket(Uuid.Generate(), val, toZoneKey, ttl);
@@ -1574,15 +1574,16 @@ public static class NexusServer
 		Pool.FreeUnmanaged<BaseNetworkable>(ref pendingEntities);
 		Entity AddEntity(BaseNetworkable entity)
 		{
-			//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-			//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-			//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 			BaseNetworkable.SaveInfo info = new BaseNetworkable.SaveInfo
 			{
 				forDisk = true,
 				forTransfer = true,
-				msg = Pool.Get<Entity>()
+				msg = Pool.Get<Entity>(),
+				cachedTime = BaseNetworkable.ThreadSafeTime.TakeSnapshot()
 			};
 			entity.Save(info);
 			if (entity == rootEntity && info.msg.parent != null)
@@ -1814,7 +1815,7 @@ public static class NexusServer
 		try
 		{
 			_database = new NexusDB();
-			_database.Open($"{ConVar.Server.rootFolder}/nexus.{286}.db");
+			_database.Open($"{ConVar.Server.rootFolder}/nexus.{287}.db");
 			_database.Initialize();
 		}
 		catch (Exception ex)

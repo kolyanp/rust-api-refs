@@ -442,7 +442,7 @@ public class OxideMod
 		{
 			return Community.Runtime.Core.webrequest as T;
 		}
-		if (typeFromHandle == typeof(Timers))
+		if (typeFromHandle == typeof(Oxide.Core.Libraries.Timer))
 		{
 			return Community.Runtime.Core.timer as T;
 		}

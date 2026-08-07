@@ -48,8 +48,8 @@ public sealed class Bloom : PostProcessEffectSettings
 		value = 0f
 	};
 
-	[ColorUsage(false, true)]
 	[Tooltip("Global tint of the bloom filter.")]
+	[ColorUsage(false, true)]
 	public ColorParameter color = new ColorParameter
 	{
 		value = Color.white

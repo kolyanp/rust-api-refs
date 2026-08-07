@@ -1,12 +1,10 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CommandBufferManager))]
 public class DeployGuideCamera : SingletonComponent<DeployGuideCamera>
 {
-	public DeployGuideMaterial GoodMaterial;
+	public DeployGuideRendererResources Resources;
 
-	public DeployGuideMaterial BadMaterial;
-
-	public DeployGuideMaterial NeutralMaterial;
+	private DeployGuideRendererInternalResources _internResources = new DeployGuideRendererInternalResources();
 }

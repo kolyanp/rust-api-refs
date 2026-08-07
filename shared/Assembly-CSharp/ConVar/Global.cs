@@ -23,12 +23,12 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
-	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
+	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	public static bool forceUnloadBundles = true;
 
 	[ServerVar(Help = "(Generated) When true, the server network position is updated to match the debug camera world position while spectating; useful for testing position-dependent server logic from the spectator view")]
@@ -38,13 +38,13 @@ public class Global : ConsoleSystem
 
 	public static readonly string UndergroundFlag = "--underground";
 
-	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
+	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	public static int perf = 0;
 
 	private static bool _god = false;
 
-	private static bool _godforceoffoverlay = false;
+	private static bool _forceOffAdminStatusOverlay = false;
 
 	[ServerVar(ClientAdmin = true, ServerAdmin = true, Help = "When enabled a player wearing a gingerbread suit will gib like the gingerbread NPC's")]
 	[ClientVar]
@@ -76,8 +76,8 @@ public class Global : ConsoleSystem
 	[ClientVar(Saved = true, Help = "Displays any emoji rendering errors in the console")]
 	public static bool showEmojiErrors = false;
 
-	[ClientVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	[ServerVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
+	[ClientVar(Help = "(Generated) Developer mode level: 0 = off, 1 = developer overlays and convar unlocks, higher values enable increasingly verbose debug logging")]
 	public static int developer
 	{
 		get
@@ -124,16 +124,16 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientInfo = true, Saved = true, Help = "Media: Forces the global.god overlay to never show if enabled")]
-	public static bool godforceoffoverlay
+	[ClientVar(ClientInfo = true, Saved = true, Help = "Media: Forcefully disables all status overlays (god, creative, invis)")]
+	public static bool forceOffAdminStatusOverlay
 	{
 		get
 		{
-			return _godforceoffoverlay;
+			return _forceOffAdminStatusOverlay;
 		}
 		set
 		{
-			_godforceoffoverlay = value;
+			_forceOffAdminStatusOverlay = value;
 		}
 	}
 
@@ -214,8 +214,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	[ServerVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
+	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	public static void textures(Arg args)
 	{
 		Texture[] array = Object.FindObjectsByType<Texture>((FindObjectsSortMode)0);
@@ -229,8 +229,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ServerVar(Help = "(Generated) Prints the count of enabled versus disabled Collider components currently in the scene")]
 	[ClientVar(Help = "(Generated) Prints the count of enabled versus disabled Collider components currently in the scene")]
+	[ServerVar(Help = "(Generated) Prints the count of enabled versus disabled Collider components currently in the scene")]
 	public static void colliders(Arg args)
 	{
 		int num = (from x in Object.FindObjectsByType<Collider>((FindObjectsSortMode)0)
@@ -611,6 +611,33 @@ public class Global : ConsoleSystem
 	}
 
 	[ServerUserVar]
+	public static void respawn_sleepingbag_favourite(Arg args)
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(args);
+		if (Object.op_Implicit((Object)(object)basePlayer))
+		{
+			NetworkableId entityID = ArgEx.GetEntityID(args, 0);
+			if (!((NetworkableId)(ref entityID)).IsValid)
+			{
+				args.ReplyWith("Missing sleeping bag ID");
+				return;
+			}
+			if (!basePlayer.IsDead())
+			{
+				args.ReplyWith("Can only modify while dead");
+				return;
+			}
+			bool favourite = args.GetInt(1) != 0;
+			SleepingBag.SetBagFavourite(basePlayer.userID, entityID, favourite);
+		}
+	}
+
+	[ServerUserVar]
 	public static void status_sv(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -761,8 +788,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Teleport to the current closest entity matching the first argument name. Add second int argument to teleport to the nth closest entity (teleport2nearest horse 2 will teleport to the 3rd closest horse)")]
+	[ServerVar]
 	public static void teleport2nearest(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -1092,6 +1119,25 @@ public class Global : ConsoleSystem
 		basePlayer.Teleport(worldPosition);
 	}
 
+	[ServerVar(Help = "(Generated) Teleports the calling admin to the currently locked-in satellite crash site. Does nothing if no satellite is descending.")]
+	public static void teleport2satellitecrashsite(Arg arg)
+	{
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if (!((Object)(object)basePlayer == (Object)null))
+		{
+			SatelliteControlComputer activeDescending = SatelliteControlComputer.ActiveDescending;
+			if ((Object)(object)activeDescending == (Object)null || activeDescending.IsDestroyed)
+			{
+				arg.ReplyWith("No locked-in satellite crash site");
+			}
+			else
+			{
+				TeleportToTopOfBase(basePlayer, activeDescending.LockedCrashPosition);
+			}
+		}
+	}
+
 	[ServerVar(Help = "(Generated) Teleports the calling admin to the target location of their currently active mission objective")]
 	public static void teleport2mission(Arg arg)
 	{
@@ -1256,8 +1302,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	[ClientVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
+	[ServerVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	public static void free(Arg args)
 	{
 		Pool.clear_prefabs(args);
@@ -1523,8 +1569,8 @@ public class Global : ConsoleSystem
 		Pool.FreeUnmanaged<DroppedItem>(ref list);
 	}
 
-	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
+	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	public static string printAllScenesInBuild(Arg args)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

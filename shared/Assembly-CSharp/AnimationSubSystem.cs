@@ -16,15 +16,15 @@ public abstract class AnimationSubSystem : MonoBehaviour, IClientComponent
 
 	public const int TotalPriorityLevels = 3;
 
-	[Tooltip("Used for debugging, should describe what this system does")]
 	[SubSystemVariable]
 	[SerializeField]
+	[Tooltip("Used for debugging, should describe what this system does")]
 	private string SubSystemName = string.Empty;
 
+	[SubSystemVariable]
 	[SerializeField]
 	[Tooltip("Controls what part of the body this system modifies, if none full body mask will be used")]
-	[SubSystemVariable]
-	private AvatarMask Mask;
+	protected AvatarMask Mask;
 
 	[SerializeField]
 	protected float FadeInTime = 0.25f;

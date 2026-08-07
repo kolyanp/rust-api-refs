@@ -30,6 +30,8 @@ public class LuiInputComp : LuiCompBase
 
 	public bool autofocus;
 
+	public bool interactable = true;
+
 	public LuiInputComp()
 	{
 		type = LuiCompType.InputField;

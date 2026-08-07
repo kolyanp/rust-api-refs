@@ -118,7 +118,6 @@ public class InvisibleVendingMachine : NPCVendingMachine
 	{
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
 		if ((Object)(object)vmoManifest != (Object)null && info.msg.vendingMachine != null)
 		{
@@ -126,7 +125,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		}
 		info.msg.npcVendingMachine = Pool.Get<NPCVendingMachine>();
 		info.msg.npcVendingMachine.attachedNpc = cachedShopKeeper.uid;
-		info.msg.npcVendingMachine.nextRefresh = TimeUntil.op_Implicit(nextOrderRefresh);
+		info.msg.npcVendingMachine.nextRefresh = ((TimeUntil)(ref nextOrderRefresh)).LeftFrom(info.cachedTime.Time);
 	}
 
 	public override void ServerInit()

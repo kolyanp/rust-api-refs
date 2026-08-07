@@ -181,6 +181,15 @@ public class GameManifest : ScriptableObject
 			return null;
 		}
 		Object val = FileSystem.Load<Object>(text, true);
+		if (val == (Object)null)
+		{
+			FileSystemBackend backend = FileSystem.Backend;
+			AssetBundleBackend val2 = (AssetBundleBackend)(object)((backend is AssetBundleBackend) ? backend : null);
+			if (val2 != null && val2.IsWaitingForAssetScene(text))
+			{
+				return null;
+			}
+		}
 		guidToObject.Add(guid, val);
 		return val;
 	}

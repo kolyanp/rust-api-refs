@@ -35,6 +35,8 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 
 	private NativeArray<byte> _outputData;
 
+	private NativeArray<int> _emptyTopology;
+
 	private JobHandle? _pendingJob;
 
 	private int _sampleCount;
@@ -78,6 +80,8 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
 		_raycastCommands = new NativeArray<RaycastCommand>(10000, (Allocator)4, (NativeArrayOptions)1);
 		_raycastHits = new NativeArray<RaycastHit>(10000, (Allocator)4, (NativeArrayOptions)0);
 		_colliderIds = new NativeArray<int>(512, (Allocator)4, (NativeArrayOptions)0);
@@ -88,6 +92,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		_foundColliders = new NativeArray<int>(10000, (Allocator)4, (NativeArrayOptions)0);
 		_outputDataLength = new NativeArray<int>(1, (Allocator)4, (NativeArrayOptions)0);
 		_outputData = new NativeArray<byte>(40000, (Allocator)4, (NativeArrayOptions)0);
+		_emptyTopology = new NativeArray<int>(1, (Allocator)4, (NativeArrayOptions)1);
 	}
 
 	~CameraRenderTask()
@@ -114,6 +119,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		_foundColliders.Dispose();
 		_outputDataLength.Dispose();
 		_outputData.Dispose();
+		_emptyTopology.Dispose();
 	}
 
 	public void Reset()
@@ -136,89 +142,107 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		_sampleCount = 0;
 	}
 
-	public int Start(int width, int height, float verticalFov, float nearPlane, float farPlane, int layerMask, Transform cameraTransform, int sampleCount, int sampleOffset, Dictionary<int, (byte MaterialIndex, int Age)> knownColliders)
+	public int Start(int width, int height, float verticalFov, float nearPlane, float farPlane, int layerMask, in Matrix4x4 transf, int sampleCount, int sampleOffset, Dictionary<int, (byte MaterialIndex, int Age)> knownColliders)
 	{
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0215: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0272: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0277: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0300: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0305: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0321: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0326: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0333: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0340: Unknown result type (might be due to invalid IL or missing references)
-		//IL_034a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0350: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0352: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0357: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0360: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0366: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0306: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0325: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_034f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0354: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0368: Unknown result type (might be due to invalid IL or missing references)
 		//IL_036d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0378: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0381: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0394: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03c5: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)cameraTransform == (Object)null)
-		{
-			throw new ArgumentNullException("cameraTransform");
-		}
+		//IL_03c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0410: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0415: Unknown result type (might be due to invalid IL or missing references)
+		//IL_041d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0422: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0439: Unknown result type (might be due to invalid IL or missing references)
+		//IL_043f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0446: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0450: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0456: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0458: Unknown result type (might be due to invalid IL or missing references)
+		//IL_045d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0468: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0476: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0484: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_048e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0490: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0495: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b5: Unknown result type (might be due to invalid IL or missing references)
 		if (sampleCount <= 0 || sampleCount > 10000)
 		{
 			throw new ArgumentOutOfRangeException("sampleCount");
@@ -256,14 +280,16 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			colliderMaterials = _colliderMaterials.GetSubArray(0, _colliderLength),
 			colliderHits = _colliderHits.GetSubArray(0, _colliderLength)
 		};
+		Vector3 position = ((Matrix4x4)(ref transf)).GetPosition();
+		Quaternion rotation = ((Matrix4x4)(ref transf)).rotation;
 		RaycastRaySetupJob raycastRaySetupJob = new RaycastRaySetupJob
 		{
 			res = new float2((float)width, (float)height),
 			halfRes = new float2((float)width / 2f, (float)height / 2f),
 			aspectRatio = (float)width / (float)height,
 			worldHeight = 2f * Mathf.Tan(MathF.PI / 360f * verticalFov),
-			cameraPos = float3.op_Implicit(cameraTransform.position),
-			cameraRot = quaternion.op_Implicit(cameraTransform.rotation),
+			cameraPos = float3.op_Implicit(position),
+			cameraRot = quaternion.op_Implicit(rotation),
 			nearPlane = nearPlane,
 			farPlane = farPlane,
 			layerMask = layerMask,
@@ -271,10 +297,24 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			sampleOffset = sampleOffset % samplePositions.Length,
 			raycastCommands = _raycastCommands.GetSubArray(0, sampleCount)
 		};
+		float oceanLevel = WaterSystem.OceanLevel;
+		TerrainTopologyMap topologyMap = TerrainMeta.TopologyMap;
+		bool num2 = (Object)(object)topologyMap != (Object)null;
+		TerrainTopologyMap.TopologyQueryStructure topologyQueryStructure = (num2 ? topologyMap.GetQueryStructure() : default(TerrainTopologyMap.TopologyQueryStructure));
+		bool flag = num2 && topologyQueryStructure.source.IsCreated && position.y > oceanLevel;
+		Vector3 val = rotation * Vector3.forward;
 		RaycastRayProcessingJob raycastRayProcessingJob = new RaycastRayProcessingJob
 		{
-			cameraForward = float3.op_Implicit(-cameraTransform.forward),
+			cameraForward = float3.op_Implicit(-val),
 			farPlane = farPlane,
+			oceanEnabled = flag,
+			oceanLevel = oceanLevel,
+			oceanTopologyMask = 384,
+			topologyRes = ((!flag) ? 1 : topologyQueryStructure.res),
+			topologyOrigin = new float2(TerrainMeta.Position.x, TerrainMeta.Position.z),
+			topologyOneOverSize = new float2(TerrainMeta.OneOverSize.x, TerrainMeta.OneOverSize.z),
+			topology = (flag ? topologyQueryStructure.source : _emptyTopology.AsReadOnly()),
+			raycastCommands = _raycastCommands.GetSubArray(0, sampleCount),
 			raycastHits = _raycastHits.GetSubArray(0, sampleCount),
 			colliderIds = _colliderIds.GetSubArray(0, _colliderLength),
 			colliderMaterials = _colliderMaterials.GetSubArray(0, _colliderLength),
@@ -294,13 +334,13 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 			dataLength = _outputDataLength,
 			data = _outputData
 		};
-		JobHandle val = IJobExtensions.Schedule<RaycastBufferSetupJob>(raycastBufferSetupJob, default(JobHandle));
-		JobHandle val2 = IJobParallelForExtensions.Schedule<RaycastRaySetupJob>(raycastRaySetupJob, sampleCount, 100, default(JobHandle));
-		JobHandle val3 = RaycastCommand.ScheduleBatch(_raycastCommands.GetSubArray(0, sampleCount), _raycastHits.GetSubArray(0, sampleCount), 100, val2);
-		JobHandle val4 = IJobParallelForExtensions.Schedule<RaycastRayProcessingJob>(raycastRayProcessingJob, sampleCount, 100, JobHandle.CombineDependencies(val, val3));
-		JobHandle val5 = IJobExtensions.Schedule<RaycastColliderProcessingJob>(raycastColliderProcessingJob, val4);
-		JobHandle val6 = IJobExtensions.Schedule<RaycastOutputCompressJob>(obj, val4);
-		_pendingJob = JobHandle.CombineDependencies(val6, val5);
+		JobHandle val2 = IJobExtensions.Schedule<RaycastBufferSetupJob>(raycastBufferSetupJob, default(JobHandle));
+		JobHandle val3 = IJobParallelForExtensions.Schedule<RaycastRaySetupJob>(raycastRaySetupJob, sampleCount, 100, default(JobHandle));
+		JobHandle val4 = RaycastCommand.ScheduleBatch(_raycastCommands.GetSubArray(0, sampleCount), _raycastHits.GetSubArray(0, sampleCount), 100, val3);
+		JobHandle val5 = IJobParallelForExtensions.Schedule<RaycastRayProcessingJob>(raycastRayProcessingJob, sampleCount, 100, JobHandle.CombineDependencies(val2, val4));
+		JobHandle val6 = IJobExtensions.Schedule<RaycastColliderProcessingJob>(raycastColliderProcessingJob, val5);
+		JobHandle val7 = IJobExtensions.Schedule<RaycastOutputCompressJob>(obj, val5);
+		_pendingJob = JobHandle.CombineDependencies(val7, val6);
 		return sampleOffset + sampleCount;
 	}
 

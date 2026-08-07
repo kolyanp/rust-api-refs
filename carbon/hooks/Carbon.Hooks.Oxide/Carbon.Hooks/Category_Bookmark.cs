@@ -13,7 +13,7 @@ public class Category_Bookmark
 	public class Bookmark_ComputerStation
 	{
 		[Patch("OnBookmarkControl", "OnBookmarkControl", "ComputerStation", "BeginControllingBookmark", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("039a996823ad47069bad7000fc9f3e52")]
+		[Identifier("d14e6b4561514c79a067a993ff90b92b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -22,7 +22,7 @@ public class Category_Bookmark
 		[Return(typeof(void))]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_039a996823ad47069bad7000fc9f3e52 : Patch
+		public class Bookmark_ComputerStation_d14e6b4561514c79a067a993ff90b92b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -58,7 +58,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkAdd", "OnBookmarkAdd", "ComputerStation", "AddBookmark", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1ae5cfee8b81400fbffa6e5aa9fdd409")]
+		[Identifier("7e1c6012307f4c009137b4abd9bf8f32")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -66,7 +66,7 @@ public class Category_Bookmark
 		[Return(typeof(void))]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_1ae5cfee8b81400fbffa6e5aa9fdd409 : Patch
+		public class Bookmark_ComputerStation_7e1c6012307f4c009137b4abd9bf8f32 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -100,7 +100,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarksSendControl", "OnBookmarksSendControl", "ComputerStation", "SendControlBookmarks", new string[] { "BasePlayer" })]
-		[Identifier("58fed8a74b8444e8b909593c0827ac87")]
+		[Identifier("9408ac480b0b407785f3aec61cb1b00a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -108,7 +108,7 @@ public class Category_Bookmark
 		[Return(typeof(void))]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_58fed8a74b8444e8b909593c0827ac87 : Patch
+		public class Bookmark_ComputerStation_9408ac480b0b407785f3aec61cb1b00a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -142,7 +142,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkControlEnd", "OnBookmarkControlEnd", "ComputerStation", "StopControl", new string[] { "BasePlayer" })]
-		[Identifier("e9ed9eb2e8b84f12ab7990614df2ce97")]
+		[Identifier("a7a020bc30114775a168cb394f4a17d6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
 		[Parameter("ply", "BasePlayer", false)]
@@ -150,7 +150,7 @@ public class Category_Bookmark
 		[Return(typeof(void))]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_e9ed9eb2e8b84f12ab7990614df2ce97 : Patch
+		public class Bookmark_ComputerStation_a7a020bc30114775a168cb394f4a17d6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -184,7 +184,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkInput", "OnBookmarkInput", "ComputerStation", "PlayerServerInput", new string[] { "InputState", "BasePlayer" })]
-		[Identifier("ad1748b29fad434185e2808b34566ee8")]
+		[Identifier("75638f294811430191d5a80fffb6a2ff")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -192,7 +192,7 @@ public class Category_Bookmark
 		[Return(typeof(void))]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_ad1748b29fad434185e2808b34566ee8 : Patch
+		public class Bookmark_ComputerStation_75638f294811430191d5a80fffb6a2ff : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -226,7 +226,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkControlStarted", "OnBookmarkControlStarted", "ComputerStation", "BeginControllingBookmark", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1353cf7fbaf4403c8c1d63ef5163d5c5")]
+		[Identifier("a505bd938e6045159988624ba0ba4f3c")]
 		[Dependencies(new string[] { "OnBookmarkControl" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
@@ -235,7 +235,7 @@ public class Category_Bookmark
 		[Parameter("local2", "IRemoteControllable", false)]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_1353cf7fbaf4403c8c1d63ef5163d5c5 : Patch
+		public class Bookmark_ComputerStation_a505bd938e6045159988624ba0ba4f3c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -267,7 +267,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkControlEnded", "OnBookmarkControlEnded", "ComputerStation", "StopControl", new string[] { "BasePlayer" })]
-		[Identifier("1b32fbaa6d6d471f90e05e1251af1f15")]
+		[Identifier("53fcd6b21d104b2796fd9517dca48e1f")]
 		[Dependencies(new string[] { "OnBookmarkControlEnd" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
@@ -275,7 +275,7 @@ public class Category_Bookmark
 		[Parameter("local0", "BaseEntity", false)]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_1b32fbaa6d6d471f90e05e1251af1f15 : Patch
+		public class Bookmark_ComputerStation_53fcd6b21d104b2796fd9517dca48e1f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -305,7 +305,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkControlEnded", "OnBookmarkControlEnded [2]", "ComputerStation", "BeginControllingBookmark", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5dcf86322b584a1e939f3a6c8c7e6085")]
+		[Identifier("1a9397f5244640319220cf0a302960fc")]
 		[Dependencies(new string[] { "OnBookmarkControlStarted" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
@@ -313,7 +313,7 @@ public class Category_Bookmark
 		[Parameter("local6", "IRemoteControllable", false)]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_5dcf86322b584a1e939f3a6c8c7e6085 : Patch
+		public class Bookmark_ComputerStation_1a9397f5244640319220cf0a302960fc : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -343,7 +343,7 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkDelete", "OnBookmarkDelete", "ComputerStation", "RemoveBookmark", new string[] { "System.String", "BasePlayer" })]
-		[Identifier("bcd3cc723c944e1988f035c8c8091b4f")]
+		[Identifier("e12cfa70ec384c5cae8479ca9d954b13")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ComputerStation", false)]
 		[Parameter("mountedPlayer", "BasePlayer", false)]
@@ -351,7 +351,7 @@ public class Category_Bookmark
 		[Return(typeof(void))]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_bcd3cc723c944e1988f035c8c8091b4f : Patch
+		public class Bookmark_ComputerStation_e12cfa70ec384c5cae8479ca9d954b13 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -385,12 +385,12 @@ public class Category_Bookmark
 		}
 
 		[Patch("OnBookmarkControlEnded [2] [patch]", "OnBookmarkControlEnded [2] [patch]", "ComputerStation", "BeginControllingBookmark", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("2ee4e0faaac34e178bf7bf3efc972459")]
+		[Identifier("eb2ee31b628e49398acfb7af31bb4f37")]
 		[Dependencies(new string[] { "OnBookmarkControlEnded [2]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Bookmark")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Bookmark_ComputerStation_2ee4e0faaac34e178bf7bf3efc972459 : Patch
+		public class Bookmark_ComputerStation_eb2ee31b628e49398acfb7af31bb4f37 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -11,8 +11,8 @@ public struct FillJobUnsafe<T> : IJob where T : unmanaged
 	[WriteOnly]
 	public NativeArray<T> Values;
 
-	[NativeDisableUnsafePtrRestriction]
 	[ReadOnly]
+	[NativeDisableUnsafePtrRestriction]
 	public T Value;
 
 	public void Execute()

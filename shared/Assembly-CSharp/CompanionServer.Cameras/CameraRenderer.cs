@@ -22,11 +22,11 @@ public class CameraRenderer : IPooled
 	[ServerVar(Help = "(Generated) Maximum number of raycasts per frame used for companion server camera depth sampling")]
 	public static int maxRaysPerFrame = 100000;
 
-	[ServerVar(Help = "(Generated) Width in pixels of the companion server camera render output; default 160")]
-	public static int width = 160;
+	[ServerVar(Help = "(Generated) Width in pixels of the companion server camera render output; default 320")]
+	public static int width = 320;
 
-	[ServerVar(Help = "(Generated) Height in pixels of the companion server camera render output; default 90")]
-	public static int height = 90;
+	[ServerVar(Help = "(Generated) Height in pixels of the companion server camera render output; default 180")]
+	public static int height = 180;
 
 	[ServerVar(Help = "(Generated) Vertical field of view in degrees for companion server camera renders; default 65")]
 	public static float verticalFov = 65f;
@@ -46,6 +46,9 @@ public class CameraRenderer : IPooled
 	[ServerVar(Help = "(Generated) Number of raycast samples taken per companion server camera render pass for depth reconstruction")]
 	public static int samplesPerRender = 3000;
 
+	[ServerVar(Help = "(Generated) Maximum per-axis camera rotation jitter, in sample cells, applied to each companion server camera render so a stationary camera still returns a natural scatter of ray samples instead of a rigid grid; 0 disables")]
+	public static float rayJitter = 0.5f;
+
 	[ServerVar(Help = "(Generated) Maximum age in frames for a known collider entity entry in the companion server camera cache before it is evicted")]
 	public static int entityMaxAge = 5;
 
@@ -61,8 +64,6 @@ public class CameraRenderer : IPooled
 	[ServerVar(Help = "Enable developer-specific permissions for camera access (less restricted)")]
 	public static bool developerPermissions = true;
 
-	private static readonly Dictionary<NetworkableId, NetworkableId> _entityIdMap = new Dictionary<NetworkableId, NetworkableId>();
-
 	private readonly Dictionary<int, (byte MaterialIndex, int Age)> _knownColliders = new Dictionary<int, (byte, int)>();
 
 	private readonly Dictionary<int, BaseEntity> _colliderToEntity = new Dictionary<int, BaseEntity>();
@@ -70,6 +71,10 @@ public class CameraRenderer : IPooled
 	private double _lastRenderTimestamp;
 
 	private float _fieldOfView;
+
+	private Matrix4x4 _renderTransform;
+
+	private Quaternion _renderRotation;
 
 	private int _sampleOffset;
 
@@ -82,6 +87,8 @@ public class CameraRenderer : IPooled
 	private ulong? _cachedViewerSteamId;
 
 	private BasePlayer _cachedViewer;
+
+	private ulong _entityIdOffset;
 
 	public CameraRendererState state;
 
@@ -105,10 +112,16 @@ public class CameraRenderer : IPooled
 
 	public void Reset()
 	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
 		_knownColliders.Clear();
 		_colliderToEntity.Clear();
 		_lastRenderTimestamp = 0.0;
 		_fieldOfView = 0f;
+		_renderTransform = Matrix4x4.identity;
+		_renderRotation = Quaternion.identity;
 		_sampleOffset = 0;
 		_nextSampleOffset = 0;
 		_sampleCount = 0;
@@ -139,6 +152,7 @@ public class CameraRenderer : IPooled
 		{
 			throw new ArgumentException("RemoteControllable's entity is null or invalid", "rc");
 		}
+		_entityIdOffset = (ulong)Random.Range(1, 100000);
 		state = CameraRendererState.WaitingToRender;
 	}
 
@@ -157,6 +171,21 @@ public class CameraRenderer : IPooled
 
 	public void Render(int maxSampleCount)
 	{
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
 		CameraRendererManager instance = SingletonComponent<CameraRendererManager>.Instance;
 		if ((Object)(object)instance == (Object)null)
 		{
@@ -172,8 +201,7 @@ public class CameraRenderer : IPooled
 			state = CameraRendererState.Invalid;
 			return;
 		}
-		Transform eyes = rc.GetEyes();
-		if ((Object)(object)eyes == (Object)null)
+		if ((Object)(object)rc.GetEyes() == (Object)null)
 		{
 			state = CameraRendererState.Invalid;
 			return;
@@ -183,55 +211,72 @@ public class CameraRenderer : IPooled
 			Debug.LogError((object)"CameraRenderer: Trying to render but a task is already allocated?", (Object)(object)entity);
 			instance.ReturnTask(ref _task);
 		}
+		Matrix4x4 transf = rc.GetEyesMatrix();
 		_fieldOfView = verticalFov / Mathf.Clamp(rc.GetFovScale(), 1f, 8f);
+		_renderRotation = ((Matrix4x4)(ref transf)).rotation;
+		if (rayJitter > 0f)
+		{
+			float num = 2f * Mathf.Tan(MathF.PI / 360f * _fieldOfView);
+			float num2 = 57.29578f * num / (float)height;
+			float num3 = Random.Range(0f - rayJitter, rayJitter) * num2;
+			float num4 = Random.Range(0f - rayJitter, rayJitter) * num2;
+			Quaternion val = ((Matrix4x4)(ref transf)).rotation * Quaternion.Euler(num3, num4, 0f);
+			transf = Matrix4x4.TRS(((Matrix4x4)(ref transf)).GetPosition(), val, Vector3.one);
+		}
+		_renderTransform = transf;
 		_sampleCount = Mathf.Clamp(samplesPerRender, 1, Mathf.Min(width * height, maxSampleCount));
 		_task = instance.BorrowTask();
-		_nextSampleOffset = _task.Start(width, height, _fieldOfView, nearPlane, farPlane, layerMask, eyes, _sampleCount, _sampleOffset, _knownColliders);
+		_nextSampleOffset = _task.Start(width, height, _fieldOfView, nearPlane, farPlane, layerMask, in transf, _sampleCount, _sampleOffset, _knownColliders);
 		state = CameraRendererState.Rendering;
 	}
 
 	public void CompleteRender()
 	{
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0312: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0314: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
-		//IL_045d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0477: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0371: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0376: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0393: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0395: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0215: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0330: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0332: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0334: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0496: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0390: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03b2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03b4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03bd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03e6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0405: Unknown result type (might be due to invalid IL or missing references)
+		//IL_040a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_040f: Unknown result type (might be due to invalid IL or missing references)
 		CameraRendererManager instance = SingletonComponent<CameraRendererManager>.Instance;
 		if ((Object)(object)instance == (Object)null)
 		{
@@ -259,93 +304,100 @@ public class CameraRenderer : IPooled
 				state = CameraRendererState.Invalid;
 				return;
 			}
-			Transform eyes = rc.GetEyes();
-			if ((Object)(object)eyes == (Object)null)
+			if (!((Object)(object)rc.GetEyes() == (Object)null))
 			{
+				int num = _sampleCount * 4;
+				byte[] array = Shared.ArrayPool.Rent(num);
+				List<int> hitColliderIds = Pool.Get<List<int>>();
+				List<int> foundColliderIds = Pool.Get<List<int>>();
+				int count = _task.ExtractRayData(array, hitColliderIds, foundColliderIds);
 				instance.ReturnTask(ref _task);
-				state = CameraRendererState.Invalid;
-				return;
+				UpdateCollidersMap(foundColliderIds);
+				Pool.FreeUnmanaged<int>(ref hitColliderIds);
+				Pool.FreeUnmanaged<int>(ref foundColliderIds);
+				ulong num2 = rc.ControllingViewerId?.SteamId ?? 0;
+				if (num2 == 0L)
+				{
+					_cachedViewerSteamId = null;
+					_cachedViewer = null;
+				}
+				else if (num2 != _cachedViewerSteamId)
+				{
+					_cachedViewerSteamId = num2;
+					_cachedViewer = BasePlayer.FindByID(num2) ?? BasePlayer.FindSleeping(num2);
+				}
+				float distance = (_cachedViewer.IsValid() ? Mathf.Clamp01(Vector3.Distance(((Component)_cachedViewer).transform.position, ((Component)entity).transform.position) / rc.MaxRange) : 0f);
+				Matrix4x4 renderTransform = _renderTransform;
+				Vector3 position = ((Matrix4x4)(ref renderTransform)).GetPosition();
+				Quaternion rotation = ((Matrix4x4)(ref renderTransform)).rotation;
+				Matrix4x4 inverse = ((Matrix4x4)(ref renderTransform)).inverse;
+				NetworkableId iD = entity.net.ID;
+				AppBroadcast val = Pool.Get<AppBroadcast>();
+				try
+				{
+					val.cameraRays = Pool.Get<AppCameraRays>();
+					val.cameraRays.verticalFov = _fieldOfView;
+					val.cameraRays.sampleOffset = _sampleOffset;
+					val.cameraRays.rayData = new ArraySegment<byte>(array, 0, count);
+					val.cameraRays.distance = distance;
+					val.cameraRays.entities = Pool.Get<List<Entity>>();
+					val.cameraRays.timeOfDay = (((Object)(object)TOD_Sky.Instance != (Object)null) ? TOD_Sky.Instance.LerpValue : 1f);
+					val.cameraRays.cameraPosition = position;
+					val.cameraRays.cameraRotation = ((Quaternion)(ref _renderRotation)).eulerAngles * (MathF.PI / 180f);
+					val.cameraRays.sampleRotation = ((Quaternion)(ref rotation)).eulerAngles * (MathF.PI / 180f);
+					foreach (BaseEntity value in _colliderToEntity.Values)
+					{
+						if (!value.IsValid())
+						{
+							continue;
+						}
+						Vector3 position2 = ((Component)value).transform.position;
+						float num3 = Vector3.Distance(position2, position);
+						if (num3 > (float)entityMaxDistance)
+						{
+							continue;
+						}
+						string name = null;
+						if (value is BasePlayer basePlayer)
+						{
+							if (num3 > (float)playerMaxDistance)
+							{
+								continue;
+							}
+							if (num3 <= (float)playerNameMaxDistance)
+							{
+								name = basePlayer.displayName;
+							}
+						}
+						Entity val2 = Pool.Get<Entity>();
+						val2.type = (EntityType)((value is TreeEntity) ? 1 : 2);
+						val2.entityId = ObscureEntityId(value.net.ID);
+						val2.position = ((Matrix4x4)(ref inverse)).MultiplyPoint3x4(position2);
+						Quaternion val3 = Quaternion.Inverse(((Component)value).transform.rotation) * rotation;
+						val2.rotation = ((Quaternion)(ref val3)).eulerAngles * (MathF.PI / 180f);
+						val2.size = Vector3.Scale(((Bounds)(ref value.bounds)).size, ((Component)value).transform.localScale);
+						val2.name = name;
+						val.cameraRays.entities.Add(val2);
+					}
+					val.cameraRays.entities.Sort((Entity x, Entity y) => x.entityId.Value.CompareTo(y.entityId.Value));
+					Server.Broadcast(new CameraTarget(iD), val);
+					_sampleOffset = _nextSampleOffset;
+					if (!Server.HasAnySubscribers(new CameraTarget(iD)))
+					{
+						state = CameraRendererState.Invalid;
+						return;
+					}
+					_lastRenderTimestamp = TimeEx.realtimeSinceStartup;
+					state = CameraRendererState.WaitingToRender;
+					return;
+				}
+				finally
+				{
+					((IDisposable)val)?.Dispose();
+				}
 			}
-			int num = _sampleCount * 4;
-			byte[] array = Shared.ArrayPool.Rent(num);
-			List<int> hitColliderIds = Pool.Get<List<int>>();
-			List<int> foundColliderIds = Pool.Get<List<int>>();
-			int count = _task.ExtractRayData(array, hitColliderIds, foundColliderIds);
 			instance.ReturnTask(ref _task);
-			UpdateCollidersMap(foundColliderIds);
-			Pool.FreeUnmanaged<int>(ref hitColliderIds);
-			Pool.FreeUnmanaged<int>(ref foundColliderIds);
-			ulong num2 = rc.ControllingViewerId?.SteamId ?? 0;
-			if (num2 == 0L)
-			{
-				_cachedViewerSteamId = null;
-				_cachedViewer = null;
-			}
-			else if (num2 != _cachedViewerSteamId)
-			{
-				_cachedViewerSteamId = num2;
-				_cachedViewer = BasePlayer.FindByID(num2) ?? BasePlayer.FindSleeping(num2);
-			}
-			float distance = (_cachedViewer.IsValid() ? Mathf.Clamp01(Vector3.Distance(((Component)_cachedViewer).transform.position, ((Component)entity).transform.position) / rc.MaxRange) : 0f);
-			Vector3 position = eyes.position;
-			Quaternion rotation = eyes.rotation;
-			Matrix4x4 worldToLocalMatrix = eyes.worldToLocalMatrix;
-			NetworkableId iD = entity.net.ID;
-			_entityIdMap.Clear();
-			AppBroadcast val = Pool.Get<AppBroadcast>();
-			val.cameraRays = Pool.Get<AppCameraRays>();
-			val.cameraRays.verticalFov = _fieldOfView;
-			val.cameraRays.sampleOffset = _sampleOffset;
-			val.cameraRays.rayData = new ArraySegment<byte>(array, 0, count);
-			val.cameraRays.distance = distance;
-			val.cameraRays.entities = Pool.Get<List<Entity>>();
-			val.cameraRays.timeOfDay = (((Object)(object)TOD_Sky.Instance != (Object)null) ? TOD_Sky.Instance.LerpValue : 1f);
-			val.cameraRays.cameraPosition = position;
-			val.cameraRays.cameraRotation = ((Quaternion)(ref rotation)).eulerAngles * (MathF.PI / 180f);
-			foreach (BaseEntity value in _colliderToEntity.Values)
-			{
-				if (!value.IsValid())
-				{
-					continue;
-				}
-				Vector3 position2 = ((Component)value).transform.position;
-				float num3 = Vector3.Distance(position2, position);
-				if (num3 > (float)entityMaxDistance)
-				{
-					continue;
-				}
-				string name = null;
-				if (value is BasePlayer basePlayer)
-				{
-					if (num3 > (float)playerMaxDistance)
-					{
-						continue;
-					}
-					if (num3 <= (float)playerNameMaxDistance)
-					{
-						name = basePlayer.displayName;
-					}
-				}
-				Entity val2 = Pool.Get<Entity>();
-				val2.entityId = RandomizeEntityId(value.net.ID);
-				val2.type = (EntityType)((value is TreeEntity) ? 1 : 2);
-				val2.position = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint3x4(position2);
-				Quaternion val3 = Quaternion.Inverse(((Component)value).transform.rotation) * rotation;
-				val2.rotation = ((Quaternion)(ref val3)).eulerAngles * (MathF.PI / 180f);
-				val2.size = Vector3.Scale(((Bounds)(ref value.bounds)).size, ((Component)value).transform.localScale);
-				val2.name = name;
-				val.cameraRays.entities.Add(val2);
-			}
-			val.cameraRays.entities.Sort((Entity x, Entity y) => x.entityId.Value.CompareTo(y.entityId.Value));
-			Server.Broadcast(new CameraTarget(iD), val);
-			_sampleOffset = _nextSampleOffset;
-			if (!Server.HasAnySubscribers(new CameraTarget(iD)))
-			{
-				state = CameraRendererState.Invalid;
-				return;
-			}
-			_lastRenderTimestamp = TimeEx.realtimeSinceStartup;
-			state = CameraRendererState.WaitingToRender;
+			state = CameraRendererState.Invalid;
 		}
 	}
 
@@ -407,26 +459,11 @@ public class CameraRenderer : IPooled
 		}
 	}
 
-	private static NetworkableId RandomizeEntityId(NetworkableId realId)
+	private NetworkableId ObscureEntityId(NetworkableId realId)
 	{
-		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		if (_entityIdMap.TryGetValue(realId, out var value))
-		{
-			return value;
-		}
-		NetworkableId val = default(NetworkableId);
-		do
-		{
-			((NetworkableId)(ref val))._002Ector((ulong)Random.Range(0, 2500));
-		}
-		while (_entityIdMap.ContainsKey(val));
-		_entityIdMap.Add(realId, val);
-		return val;
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		return new NetworkableId(realId.Value + _entityIdOffset);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

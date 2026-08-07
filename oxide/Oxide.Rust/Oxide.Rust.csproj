@@ -33,6 +33,7 @@
       <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.Network.dll</HintPath>
     </Reference>
     <Reference Include="Rust.Platform.Common" />
+    <Reference Include="BoomlagoonJSON" />
     <Reference Include="Oxide.References">
       <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Oxide.References.dll</HintPath>
     </Reference>
@@ -49,6 +50,5 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass" />
     <Reference Include="Facepunch.Unity" />
-    <Reference Include="BoomlagoonJSON" />
   </ItemGroup>
 </Project>

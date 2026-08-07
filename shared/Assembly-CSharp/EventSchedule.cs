@@ -22,9 +22,9 @@ public class EventSchedule : BaseMonoBehaviour
 
 	public static HashSet<EventSchedule> enabledEvents = new HashSet<EventSchedule>();
 
-	public float hoursRemaining;
+	protected float hoursRemaining;
 
-	public long lastRun;
+	protected long lastRun;
 
 	[ServerVar(Name = "triggerevent", Help = "(Generated) Triggers a named event schedule by partial name match; registered as eventschedule.triggerevent; lists available events if name is invalid or ambiguous")]
 	public static void TriggerEvent(ConsoleSystem.Arg arg)
@@ -114,7 +114,7 @@ public class EventSchedule : BaseMonoBehaviour
 		}
 	}
 
-	private void Trigger()
+	public void Trigger()
 	{
 		hoursRemaining = Random.Range(minimumHoursBetween, maxmumHoursBetween);
 		TriggeredEvent[] components = ((Component)this).GetComponents<TriggeredEvent>();
@@ -128,7 +128,7 @@ public class EventSchedule : BaseMonoBehaviour
 		}
 	}
 
-	private void CountHours()
+	protected virtual void CountHours()
 	{
 		if (Object.op_Implicit((Object)(object)TOD_Sky.Instance))
 		{

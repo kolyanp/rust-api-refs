@@ -116,17 +116,24 @@ public class ClanChangeTracker : IClanChangeSink
 
 	private void HandleClanChanged(in ClanChangedEvent data)
 	{
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Invalid comparison between Unknown and I4
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Invalid comparison between Unknown and I4
 		IClan clan = default(IClan);
 		if (_clanManager.Backend.TryGet(data.ClanId, ref clan))
 		{
 			_clanManager.SendClanChanged(clan);
 			AppBroadcast val = Pool.Get<AppBroadcast>();
-			val.clanChanged = Pool.Get<AppClanChanged>();
-			val.clanChanged.clanInfo = ClanInfoExtensions.ToProto(clan);
-			CompanionServer.Server.Broadcast(new ClanTarget(data.ClanId), val);
+			try
+			{
+				val.clanChanged = Pool.Get<AppClanChanged>();
+				val.clanChanged.clanInfo = ClanInfoExtensions.ToProto(clan);
+				CompanionServer.Server.Broadcast(new ClanTarget(data.ClanId), val);
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
 		}
 		if ((data.DataSources & 0x10) == 16)
 		{
@@ -178,14 +185,21 @@ public class ClanChangeTracker : IClanChangeSink
 			ConsoleNetwork.SendClientCommand(connections, "chat.add2", 5, data.Message.SteamId, data.Message.Message, data.Message.Name, nameColor, 1f);
 		}
 		AppBroadcast val = Pool.Get<AppBroadcast>();
-		val.clanMessage = Pool.Get<AppNewClanMessage>();
-		val.clanMessage.clanId = data.ClanId;
-		val.clanMessage.message = Pool.Get<AppClanMessage>();
-		val.clanMessage.message.steamId = data.Message.SteamId;
-		val.clanMessage.message.name = data.Message.Name;
-		val.clanMessage.message.message = data.Message.Message;
-		val.clanMessage.message.time = data.Message.Time;
-		CompanionServer.Server.Broadcast(new ClanTarget(data.ClanId), val);
+		try
+		{
+			val.clanMessage = Pool.Get<AppNewClanMessage>();
+			val.clanMessage.clanId = data.ClanId;
+			val.clanMessage.message = Pool.Get<AppClanMessage>();
+			val.clanMessage.message.steamId = data.Message.SteamId;
+			val.clanMessage.message.name = data.Message.Name;
+			val.clanMessage.message.message = data.Message.Message;
+			val.clanMessage.message.time = data.Message.Time;
+			CompanionServer.Server.Broadcast(new ClanTarget(data.ClanId), val);
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 
 	public void ClanChanged(long clanId, ClanDataSource dataSources)

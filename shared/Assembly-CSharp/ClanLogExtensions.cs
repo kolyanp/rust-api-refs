@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 
 public static class ClanLogExtensions
 {
+	[PoolAnalyzerGetWrapper]
 	public static ClanLog ToProto(this ClanLogs clanLogs)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

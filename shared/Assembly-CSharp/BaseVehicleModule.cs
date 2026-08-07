@@ -40,18 +40,18 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public VisualGroup visualGroup;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private VehicleLight[] lights;
 
 	public LODLevel[] lodRenderers;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<ConditionalObject> conditionals;
 
-	[Header("Trigger Parent")]
 	[SerializeField]
+	[Header("Trigger Parent")]
 	private TriggerParent[] triggerParents;
 
 	[Header("Sliding Components")]
@@ -229,8 +229,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	{
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Use(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

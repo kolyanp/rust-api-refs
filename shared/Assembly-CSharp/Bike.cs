@@ -1,6 +1,7 @@
 using System;
 using ConVar;
 using Facepunch;
+using Facepunch.Extend;
 using Network;
 using ProtoBuf;
 using Rust;
@@ -43,14 +44,16 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	private TimeSince timeSinceLastBunnyhop;
 
+	private TransformHandle sidecarPhysicsHingeHandle;
+
 	private bool shouldBypassClippingChecks;
 
 	public static Phrase sprintPhrase = new Phrase("sprint", "Sprint");
 
 	public static Phrase boostPhrase = new Phrase("boost", "Boost");
 
-	[Header("Bike")]
 	[SerializeField]
+	[Header("Bike")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -85,20 +88,20 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[SerializeField]
 	private float pitchStabD = 0.005f;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float twoWheelRollStabP = 100f;
 
 	[SerializeField]
 	[Range(0f, 1f)]
 	private float twoWheelRollStabD = 10f;
 
-	[SerializeField]
 	[Range(1f, 500f)]
+	[SerializeField]
 	private float manyWheelStabP = 40f;
 
-	[SerializeField]
 	[Range(1f, 100f)]
+	[SerializeField]
 	private float manyWheelStabD = 10f;
 
 	[SerializeField]
@@ -142,8 +145,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public PoweredBy poweredBy;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	public float percentFood = 0.5f;
 
 	[SerializeField]
@@ -209,8 +212,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[SerializeField]
 	private GameObject fxHeavyDamageInstLight;
 
-	[SerializeField]
 	[Header("Sidecar")]
+	[SerializeField]
 	private Rigidbody sidecarRigidBody;
 
 	[SerializeField]
@@ -439,9 +442,17 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	{
 		get
 		{
-			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 			if (base.isServer)
 			{
+				if (BaseNetworkable.UseParallelSaves)
+				{
+					Quaternion localRotMT = Facepunch.Extend.TransformEx.Unsafe.GetLocalRotMT(in sidecarPhysicsHingeHandle);
+					return ((Quaternion)(ref localRotMT)).eulerAngles.z;
+				}
 				return sidecarPhysicsHinge.localEulerAngles.z;
 			}
 			return 0f;
@@ -511,6 +522,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		timeSinceLastUsed = TimeSince.op_Implicit(0f);
 		rigidBody.centerOfMass = centreOfMassTransform.localPosition;
@@ -520,6 +533,10 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		SprintPercentRemaining = 1f;
 		InvokeRandomized(UpdateClients, 0f, 0.1f, 0.01f);
 		InvokeRandomized(BikeDecay, Random.Range(30f, 60f), 60f, 6f);
+		if ((Object)(object)sidecarPhysicsHinge != (Object)null)
+		{
+			sidecarPhysicsHingeHandle = ((Component)sidecarPhysicsHinge).transformHandle;
+		}
 	}
 
 	public override void OnCollision(Collision collision, BaseEntity hitEntity)
@@ -911,7 +928,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 		if (hasSidecar)
 		{
 			info.msg.bike.sidecarAngle = SidecarAngle;
-			info.msg.bike.time = GetNetworkTime();
+			info.msg.bike.time = GetNetworkTime(in info.cachedTime);
 		}
 	}
 

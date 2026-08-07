@@ -248,7 +248,7 @@ public class Chainsaw : BaseMelee
 
 	public bool Flags_IsHittingSomething()
 	{
-		return HasAny(Flags.Reserved6 | Flags.Reserved7 | Flags.Reserved8);
+		return HasAnyFlag(Flags.Reserved6 | Flags.Reserved7 | Flags.Reserved8);
 	}
 
 	protected override void OnReceivedSignalServer(Signal signal, string arg)
@@ -355,8 +355,8 @@ public class Chainsaw : BaseMelee
 		GetItem()?.MarkDirty();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void DoReload(RPCMessage msg)
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
@@ -462,8 +462,8 @@ public class Chainsaw : BaseMelee
 		SetEngineStatus(status: false, FlagsUpdateMode.SendNetworkUpdate_Flags);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void Server_SetAttacking(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();

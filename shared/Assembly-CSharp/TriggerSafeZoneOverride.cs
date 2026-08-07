@@ -46,7 +46,7 @@ public class TriggerSafeZoneOverride : TriggerBase, IServerComponent
 	internal override void OnEntityEnter(BaseEntity ent)
 	{
 		base.OnEntityEnter(ent);
-		if ((Object)(object)Apartment != (Object)null && Apartment.isServer && ent is BasePlayer { IsBot: false } basePlayer)
+		if ((Object)(object)Apartment != (Object)null && Apartment.isServer && ent is BasePlayer { IsBot: false, isServer: not false } basePlayer)
 		{
 			Apartment.OnPlayerEnterCombatZone(basePlayer);
 		}

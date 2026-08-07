@@ -730,8 +730,8 @@ public class BaseMission : BaseScriptableObject
 		[FormerlySerializedAs("targetMission")]
 		public BaseMission mission;
 
-		[FormerlySerializedAs("targetMissionDesiredStatus")]
 		[FilteredEnum(0, 4)]
+		[FormerlySerializedAs("targetMissionDesiredStatus")]
 		public MissionStatus desiredStatus;
 
 		public uint missionID
@@ -1042,6 +1042,8 @@ public class BaseMission : BaseScriptableObject
 	public List<RewardsList> defaultRewardChoices = new List<RewardsList>();
 
 	public List<EraSpecificRewards> eraSpecificRewardChoices = new List<EraSpecificRewards>();
+
+	public bool hideRewardsPreview;
 
 	[ServerVar(Help = "How long per frame (ms) to spend processing updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
 	public static float missionValidStateWorkQueueBudget = 0.1f;

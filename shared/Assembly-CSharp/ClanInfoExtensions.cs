@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Development.Attributes;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
 
 public static class ClanInfoExtensions
 {
+	[PoolAnalyzerGetWrapper]
 	public static ClanInfo ToProto(this IClan clan)
 	{
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
@@ -51,6 +53,7 @@ public static class ClanInfoExtensions
 		return val;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static Role ToProto(this ClanRole role)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
@@ -104,6 +107,7 @@ public static class ClanInfoExtensions
 		};
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static Member ToProto(this ClanMember member)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -123,6 +127,7 @@ public static class ClanInfoExtensions
 		return obj;
 	}
 
+	[PoolAnalyzerGetWrapper]
 	private static Invite ToProto(this ClanInvite invite)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
