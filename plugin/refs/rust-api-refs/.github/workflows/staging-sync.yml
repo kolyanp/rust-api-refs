@@ -1,0 +1,238 @@
+name: Staging API Compatibility Check
+
+# Monitors Oxide dev/pre-release builds and Carbon edge builds that appear
+# 3-7 days before the official Facepunch monthly patch (first Thursday).
+# Decompiles them into staging-refs/ so pre_patch.py and check_api.sh
+# --staging can run their API compatibility checks ahead of patch day.
+
+on:
+  schedule:
+    # Once per day at 06:00 UTC.
+    # Oxide dev and Carbon edge builds trickle in during the week before
+    # the monthly patch; daily polling is fast enough and cheap.
+    # The fast-probe step exits in ~20 s when nothing changed.
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  staging-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Fast probe ────────────────────────────────────────────────────────
+      # Checks release metadata only — no DLL downloads yet.
+      # Exits early when neither Oxide pre-release nor Carbon edge asset
+      # timestamp have moved, avoiding the ~10-15 min .NET + ILSpy setup.
+      - name: Probe for staging/edge releases
+        id: probe
+        run: |
+          # ── Oxide: pick the latest pre-release (dev/staging build) ───────
+          # During non-patch weeks there may be no pre-releases; OXIDE_DEV
+          # will be empty in that case and OXIDE_NEW stays false.
+          OXIDE_DEV=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/OxideMod/Oxide.Rust/releases?per_page=20" \
+            | python3 -c "
+          import sys, json
+          releases = json.load(sys.stdin)
+          pre = [r for r in releases if r.get('prerelease')]
+          print(pre[0]['tag_name'] if pre else '')
+          " 2>/dev/null || echo "")
+
+          OXIDE_PREV=$(grep '^staging_oxide_version:' .staging-hashes 2>/dev/null \
+            | cut -d: -f2- | xargs || echo "")
+
+          # ── Carbon: edge_build tag (parallel to production_build) ────────
+          CARBON_EDGE=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/CarbonCommunity/Carbon/releases/tags/edge_build" \
+            | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          assets = [a for a in d.get('assets', []) if 'Carbon.Windows.Release.zip' in a['name']]
+          print(assets[0]['updated_at'] if assets else '')
+          " 2>/dev/null || echo "")
+
+          CARBON_PREV=$(grep '^staging_carbon_updated:' .staging-hashes 2>/dev/null \
+            | cut -d: -f2- | xargs || echo "")
+
+          echo "oxide_tag=$OXIDE_DEV"          >> $GITHUB_OUTPUT
+          echo "oxide_prev=$OXIDE_PREV"        >> $GITHUB_OUTPUT
+          echo "carbon_updated=$CARBON_EDGE"   >> $GITHUB_OUTPUT
+          echo "carbon_prev=$CARBON_PREV"      >> $GITHUB_OUTPUT
+
+          OXIDE_NEW=false
+          CARBON_NEW=false
+          [ -n "$OXIDE_DEV"    ] && [ "$OXIDE_DEV"    != "$OXIDE_PREV"    ] && OXIDE_NEW=true
+          [ -n "$CARBON_EDGE"  ] && [ "$CARBON_EDGE"  != "$CARBON_PREV"   ] && CARBON_NEW=true
+
+          echo "oxide_new=$OXIDE_NEW"    >> $GITHUB_OUTPUT
+          echo "carbon_new=$CARBON_NEW"  >> $GITHUB_OUTPUT
+
+          if [ "$OXIDE_NEW" = "false" ] && [ "$CARBON_NEW" = "false" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "=== No staging changes — skipping (Oxide ${OXIDE_DEV:-none}, Carbon edge ${CARBON_EDGE:-none}) ==="
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "=== Staging changes detected ==="
+            [ "$OXIDE_NEW"  = "true" ] && echo "  Oxide dev:   $OXIDE_PREV → $OXIDE_DEV"
+            [ "$CARBON_NEW" = "true" ] && echo "  Carbon edge: $CARBON_PREV → $CARBON_EDGE"
+          fi
+
+      # ── Everything below only runs when something actually changed ────────
+
+      - name: Setup .NET
+        if: steps.probe.outputs.changed == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Install ILSpy CLI
+        if: steps.probe.outputs.changed == 'true'
+        run: dotnet tool install -g ilspycmd
+
+      # ── Oxide dev build ───────────────────────────────────────────────────
+
+      - name: Download Oxide dev build
+        if: steps.probe.outputs.changed == 'true' && steps.probe.outputs.oxide_new == 'true'
+        id: oxide-download
+        run: |
+          TAG="${{ steps.probe.outputs.oxide_tag }}"
+          echo "=== Downloading Oxide dev build $TAG ==="
+
+          RELEASE_JSON=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/OxideMod/Oxide.Rust/releases/tags/$TAG")
+
+          ZIP_URL=$(echo "$RELEASE_JSON" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          # Prefer the Managed/game zip (contains Assembly-CSharp + Oxide DLLs)
+          assets = [a for a in d.get('assets', [])
+                    if a['name'].endswith('.zip') and 'Rust' in a['name']]
+          print(assets[0]['browser_download_url'] if assets else '')
+          " 2>/dev/null || echo "")
+
+          if [ -z "$ZIP_URL" ]; then
+            echo "oxide_zip=" >> $GITHUB_OUTPUT
+            echo "WARNING: No zip asset found for Oxide dev $TAG — skipping Oxide staging decompile."
+            exit 0
+          fi
+
+          echo "Downloading: $ZIP_URL"
+          curl -fL --retry 3 --retry-delay 10 -o /tmp/oxide-staging.zip "$ZIP_URL"
+          echo "oxide_zip=/tmp/oxide-staging.zip" >> $GITHUB_OUTPUT
+
+      - name: Decompile Oxide dev build into staging-refs/
+        if: >-
+          steps.probe.outputs.changed == 'true' &&
+          steps.probe.outputs.oxide_new == 'true' &&
+          steps.oxide-download.outputs.oxide_zip != ''
+        run: |
+          mkdir -p staging-refs
+          cd staging-refs
+          bash ../scripts/sync-oxide.sh "${{ steps.oxide-download.outputs.oxide_zip }}"
+
+      # ── Carbon edge build ─────────────────────────────────────────────────
+
+      - name: Download Carbon edge build
+        if: steps.probe.outputs.changed == 'true' && steps.probe.outputs.carbon_new == 'true'
+        id: carbon-download
+        run: |
+          echo "=== Downloading Carbon edge build ==="
+
+          CARBON_JSON=$(curl -sf \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/CarbonCommunity/Carbon/releases/tags/edge_build")
+
+          ZIP_URL=$(echo "$CARBON_JSON" | python3 -c "
+          import sys, json
+          d = json.load(sys.stdin)
+          assets = [a for a in d.get('assets', []) if 'Carbon.Windows.Release.zip' in a['name']]
+          print(assets[0]['browser_download_url'] if assets else '')
+          " 2>/dev/null || echo "")
+
+          if [ -z "$ZIP_URL" ]; then
+            echo "carbon_zip=" >> $GITHUB_OUTPUT
+            echo "WARNING: No Carbon.Windows.Release.zip found for edge_build — skipping Carbon staging decompile."
+            exit 0
+          fi
+
+          echo "Downloading: $ZIP_URL"
+          curl -fL --retry 3 --retry-delay 10 -o /tmp/carbon-staging.zip "$ZIP_URL"
+          echo "carbon_zip=/tmp/carbon-staging.zip" >> $GITHUB_OUTPUT
+
+      - name: Decompile Carbon edge build into staging-refs/
+        if: >-
+          steps.probe.outputs.changed == 'true' &&
+          steps.probe.outputs.carbon_new == 'true' &&
+          steps.carbon-download.outputs.carbon_zip != ''
+        run: |
+          mkdir -p staging-refs
+          cd staging-refs
+          bash ../scripts/sync-carbon.sh "${{ steps.carbon-download.outputs.carbon_zip }}"
+
+      # ── Update hash markers ───────────────────────────────────────────────
+
+      - name: Update .staging-hashes
+        if: steps.probe.outputs.changed == 'true'
+        run: |
+          python3 - << 'EOF'
+          import os
+
+          path = '.staging-hashes'
+          existing = open(path).read() if os.path.exists(path) else ''
+          lines = [l for l in existing.splitlines()
+                   if not l.startswith('staging_oxide_version:')
+                   and not l.startswith('staging_carbon_updated:')]
+
+          oxide_tag      = '${{ steps.probe.outputs.oxide_tag }}'
+          carbon_updated = '${{ steps.probe.outputs.carbon_updated }}'
+          oxide_new      = '${{ steps.probe.outputs.oxide_new }}'
+          carbon_new     = '${{ steps.probe.outputs.carbon_new }}'
+
+          if oxide_new == 'true' and oxide_tag:
+              lines.append(f'staging_oxide_version:{oxide_tag}')
+          else:
+              # Preserve whatever was there before
+              for l in existing.splitlines():
+                  if l.startswith('staging_oxide_version:'):
+                      lines.append(l)
+                      break
+
+          if carbon_new == 'true' and carbon_updated:
+              lines.append(f'staging_carbon_updated:{carbon_updated}')
+          else:
+              for l in existing.splitlines():
+                  if l.startswith('staging_carbon_updated:'):
+                      lines.append(l)
+                      break
+
+          open(path, 'w').write('\n'.join(lines) + '\n')
+          print('Updated .staging-hashes')
+          EOF
+
+      # ── Commit ────────────────────────────────────────────────────────────
+
+      - name: Commit staging-refs/
+        if: steps.probe.outputs.changed == 'true'
+        run: |
+          git config user.name  "rust-api-bot"
+          git config user.email "bot@rustforge.cloud"
+          git add staging-refs/ .staging-hashes
+          if git diff --staged --quiet; then
+            echo "Nothing new to commit (DLLs unchanged despite version bump — hashes matched)."
+          else
+            MSG="staging: Oxide ${{ steps.probe.outputs.oxide_tag }}"
+            [ "${{ steps.probe.outputs.carbon_new }}" = "true" ] \
+              && MSG="$MSG / Carbon edge $(date +%Y-%m-%d)"
+            git commit -m "$MSG"
+            git pull --rebase origin main
+            git push
+          fi
