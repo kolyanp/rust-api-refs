@@ -11,5 +11,5 @@ public interface ICuiGraphic
 	string PlaceholderParentId { get; set; }
 
 	[JsonProperty("blocksRaycast")]
-	bool BlocksRaycast { get; set; }
+	bool? BlocksRaycast { get; set; }
 }

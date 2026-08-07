@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Newtonsoft.Json;
 
 namespace Oxide.Game.Rust.Cui;
@@ -27,6 +26,5 @@ public class CuiRectTransform
 	public string SetParent { get; set; }
 
 	[JsonProperty("setTransformIndex")]
-	[DefaultValue(-1)]
-	public int SetTransformIndex { get; set; } = -1;
+	public int SetTransformIndex { get; set; }
 }

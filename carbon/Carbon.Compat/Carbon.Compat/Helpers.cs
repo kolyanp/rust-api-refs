@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using AsmResolver;
 using AsmResolver.DotNet;
@@ -9,12 +10,27 @@ using AsmResolver.DotNet.Signatures;
 using AsmResolver.DotNet.Signatures.Types;
 using AsmResolver.PE.DotNet.Cil;
 using AsmResolver.PE.DotNet.Metadata.Tables.Rows;
+using Carbon.Base;
 using HarmonyLib;
 
 namespace Carbon.Compat;
 
 public static class Helpers
 {
+	private static Assembly _newtonsoft;
+
+	private static Assembly Newtonsoft
+	{
+		get
+		{
+			if ((object)_newtonsoft == null)
+			{
+				_newtonsoft = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault((Assembly assembly) => assembly.GetName().Name == "Newtonsoft.Json");
+			}
+			return _newtonsoft;
+		}
+	}
+
 	public static bool IsOxideASM(AssemblyReference aref)
 	{
 		if (((AssemblyDescriptor)aref).Name.StartsWith("Oxide."))
@@ -22,6 +38,41 @@ public static class Helpers
 			return !((AssemblyDescriptor)aref).Name.ToLower().StartsWith("oxide.ext.");
 		}
 		return false;
+	}
+
+	public static bool TryGetLoadedIdentity(Utf8String name, Assembly[] loaded, out AssemblyName identity)
+	{
+		identity = null;
+		foreach (Assembly assembly in loaded)
+		{
+			AssemblyName name2 = assembly.GetName();
+			if (!(Utf8String.op_Implicit(name2.Name) != name) && (identity == null || name2.Version > identity.Version))
+			{
+				identity = name2;
+			}
+		}
+		return identity != null;
+	}
+
+	public static IResolutionScope GetNewtonsoftScope(TypeReference type, ReferenceImporter importer)
+	{
+		if (Newtonsoft == null || Newtonsoft.GetType(type.FullName) != null)
+		{
+			return (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Newtonsoft).ImportWith(importer);
+		}
+		if (typeof(BaseHookable).Assembly.GetType(type.FullName) == null)
+		{
+			Logger.Warn($"Oxide type '{type.FullName}' is missing from Newtonsoft.Json {Newtonsoft.GetName().Version} and Carbon has no equivalent for it");
+		}
+		return (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Common).ImportWith(importer);
+	}
+
+	public static void AlignIdentityWith(this AssemblyReference reference, AssemblyName identity)
+	{
+		((AssemblyDescriptor)reference).Version = identity.Version;
+		byte[] publicKeyToken = identity.GetPublicKeyToken();
+		((AssemblyDescriptor)reference).HasPublicKey = false;
+		reference.PublicKeyOrToken = ((publicKeyToken != null && publicKeyToken.Length > 0) ? publicKeyToken : null);
 	}
 
 	public static bool StartsWith(this Utf8String str, string value)

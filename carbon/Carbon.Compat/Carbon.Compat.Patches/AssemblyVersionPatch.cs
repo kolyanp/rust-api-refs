@@ -13,14 +13,10 @@ public class AssemblyVersionPatch : IAssemblyPatch
 		Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 		foreach (AssemblyReference assemblyReference in assembly.AssemblyReferences)
 		{
-			Assembly[] array = assemblies;
-			foreach (Assembly assembly2 in array)
+			Utf8String culture = ((AssemblyDescriptor)assemblyReference).Culture;
+			if (string.IsNullOrEmpty((culture != null) ? culture.Value : null) && Helpers.TryGetLoadedIdentity(((AssemblyDescriptor)assemblyReference).Name, assemblies, out var identity))
 			{
-				AssemblyName name = assembly2.GetName();
-				if (Utf8String.op_Implicit(name.Name) == ((AssemblyDescriptor)assemblyReference).Name)
-				{
-					((AssemblyDescriptor)assemblyReference).Version = name.Version;
-				}
+				assemblyReference.AlignIdentityWith(identity);
 			}
 		}
 	}

@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine;
@@ -63,8 +62,7 @@ public class CuiInputFieldComponent : ICuiComponent, ICuiColor, ICuiEnableable, 
 	public string PlaceholderParentId { get; set; }
 
 	[JsonProperty("blocksRaycast")]
-	[DefaultValue(true)]
-	public bool BlocksRaycast { get; set; } = true;
+	public bool? BlocksRaycast { get; set; }
 
 	[JsonProperty("enabled")]
 	public bool? Enabled { get; set; }

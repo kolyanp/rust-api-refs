@@ -676,19 +676,19 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 
 	private unsafe void _drawUI(BasePlayer player)
 	{
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
 		CUI val = default(CUI);
 		((CUI)(ref val))._002Ector(Handler);
 		try
 		{
-			CuiElementContainer val2 = ((CUI)(ref val)).CreateContainer("vanishui", "0 0 0 0", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, false, false, (ClientPanels)5, "vanishui", true, 0f, true);
+			CuiElementContainer val2 = ((CUI)(ref val)).CreateContainer("vanishui", "0 0 0 0", 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, false, false, (ClientPanels)5, "vanishui", true, 0f, (bool?)null);
 			if (!string.IsNullOrEmpty(base.ConfigInstance.InvisibleText))
 			{
 				float[] invisibleTextAnchorX = base.ConfigInstance.InvisibleTextAnchorX;
 				float[] invisibleTextAnchorY = base.ConfigInstance.InvisibleTextAnchorY;
-				((CUI)(ref val)).CreateText(val2, "vanishui", base.ConfigInstance.InvisibleTextColor, base.ConfigInstance.InvisibleText, base.ConfigInstance.InvisibleTextSize, invisibleTextAnchorX[0], invisibleTextAnchorX[1], invisibleTextAnchorY[0], invisibleTextAnchorY[1], 0f, 0f, 0f, 0f, base.ConfigInstance.InvisibleTextAnchor, (FontTypes)1, (VerticalWrapMode)1, 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, true);
+				((CUI)(ref val)).CreateText(val2, "vanishui", base.ConfigInstance.InvisibleTextColor, base.ConfigInstance.InvisibleText, base.ConfigInstance.InvisibleTextSize, invisibleTextAnchorX[0], invisibleTextAnchorX[1], invisibleTextAnchorY[0], invisibleTextAnchorY[1], 0f, 0f, 0f, 0f, base.ConfigInstance.InvisibleTextAnchor, (FontTypes)1, (VerticalWrapMode)1, 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, (bool?)null);
 			}
 			if (!string.IsNullOrEmpty(base.ConfigInstance.InvisibleIconUrl))
 			{
@@ -696,7 +696,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				float[] invisibleIconMaxAnchor = base.ConfigInstance.InvisibleIconMaxAnchor;
 				float[] invisibleIconMinOffset = base.ConfigInstance.InvisibleIconMinOffset;
 				float[] invisibleIconMaxOffset = base.ConfigInstance.InvisibleIconMaxOffset;
-				((CUI)(ref val)).CreateClientImage(val2, "vanishui", base.ConfigInstance.InvisibleIconUrl, base.ConfigInstance.InvisibleIconColor, (string)null, invisibleIconMinAnchor[0], invisibleIconMaxAnchor[0], invisibleIconMinAnchor[1], invisibleIconMaxAnchor[1], invisibleIconMinOffset[0], invisibleIconMaxOffset[0], invisibleIconMinOffset[1], invisibleIconMaxOffset[1], 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, true);
+				((CUI)(ref val)).CreateClientImage(val2, "vanishui", base.ConfigInstance.InvisibleIconUrl, base.ConfigInstance.InvisibleIconColor, (string)null, invisibleIconMinAnchor[0], invisibleIconMaxAnchor[0], invisibleIconMinAnchor[1], invisibleIconMaxAnchor[1], invisibleIconMinOffset[0], invisibleIconMaxOffset[0], invisibleIconMinOffset[1], invisibleIconMaxOffset[1], 0f, 0f, false, false, (string)null, (string)null, false, (string)null, (string)null, false, true, 0f, (bool?)null);
 			}
 			((CUI)(ref val)).Send(val2, player);
 		}

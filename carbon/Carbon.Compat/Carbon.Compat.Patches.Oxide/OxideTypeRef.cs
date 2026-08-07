@@ -141,7 +141,7 @@ public class OxideTypeRef : BaseOxidePatch
 		}
 		if (type.Namespace.StartsWith("Newtonsoft.Json"))
 		{
-			type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.Newtonsoft).ImportWith(importer);
+			type.Scope = Helpers.GetNewtonsoftScope(type, importer);
 			return;
 		}
 		if (type.Namespace.StartsWith("ProtoBuf"))
@@ -181,7 +181,7 @@ public class OxideTypeRef : BaseOxidePatch
 						if (type.FullName == "Oxide.Core.Plugins.HookMethodAttribute")
 						{
 							type.Namespace = Utf8String.op_Implicit(string.Empty);
-							goto IL_0302;
+							goto IL_02fe;
 						}
 						fullName = type.FullName;
 						if ((fullName == "Oxide.Plugins.CSharpPlugin" || fullName == "Oxide.Core.Plugins.CSPlugin") ? true : false)
@@ -200,8 +200,8 @@ public class OxideTypeRef : BaseOxidePatch
 			}
 			type.Namespace = Utf8String.op_Implicit(string.Empty);
 		}
-		goto IL_0302;
-		IL_0302:
+		goto IL_02fe;
+		IL_02fe:
 		type.Scope = (IResolutionScope)(object)((AssemblyDescriptor)CompatManager.SDK).ImportWith(importer);
 	}
 }
