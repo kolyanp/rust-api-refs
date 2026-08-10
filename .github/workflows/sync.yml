@@ -31,10 +31,15 @@ jobs:
       # timestamp have moved, saving ~10-15 min of .NET + ILSpy setup.
       - name: Probe for new releases
         id: probe
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Oxide: compare latest release tag
+          # Use authenticated requests to avoid the 60 req/h unauthenticated rate limit on
+          # shared GitHub Actions IPs (unauthenticated → 403 → job fails in ~5 s).
           OXIDE_TAG=$(curl -sf \
             -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
             https://api.github.com/repos/OxideMod/Oxide.Rust/releases/latest \
             | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
 
@@ -43,6 +48,7 @@ jobs:
           # Carbon: compare Windows release asset updated_at timestamp
           CARBON_UPDATED=$(curl -sf \
             -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
             "https://api.github.com/repos/CarbonCommunity/Carbon/releases/tags/production_build" \
             | python3 -c "
           import sys, json
@@ -191,3 +197,18 @@ jobs:
             git pull --rebase origin main
             git push
           fi
+
+      - name: Notify Discord on failure
+        if: failure()
+        env:
+          PLATFORM_DISCORD_WEBHOOK: ${{ secrets.PLATFORM_DISCORD_WEBHOOK }}
+        run: |
+          if [ -z "$PLATFORM_DISCORD_WEBHOOK" ]; then
+            echo "PLATFORM_DISCORD_WEBHOOK not set — skipping Discord notification."
+            exit 0
+          fi
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"embeds\":[{\"title\":\"❌ Sync Rust API References провалився\",\"description\":\"Автоматичний синк Oxide/Carbon refs впав.\\n[Відкрити лог]($RUN_URL)\",\"color\":15158332}]}" \
+            "$PLATFORM_DISCORD_WEBHOOK"
