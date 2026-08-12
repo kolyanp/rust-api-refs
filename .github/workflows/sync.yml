@@ -66,8 +66,8 @@ jobs:
 
           OXIDE_NEW=false
           CARBON_NEW=false
-          [ "$OXIDE_TAG" != "$OXIDE_PREV" ]      && OXIDE_NEW=true
-          [ "$CARBON_UPDATED" != "$CARBON_PREV" ] && CARBON_NEW=true
+          if [ "$OXIDE_TAG" != "$OXIDE_PREV" ]; then OXIDE_NEW=true; fi
+          if [ "$CARBON_UPDATED" != "$CARBON_PREV" ]; then CARBON_NEW=true; fi
 
           echo "oxide_new=$OXIDE_NEW"   >> $GITHUB_OUTPUT
           echo "carbon_new=$CARBON_NEW" >> $GITHUB_OUTPUT
@@ -78,8 +78,8 @@ jobs:
           else
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "=== Changes detected ==="
-            [ "$OXIDE_NEW"  = "true" ] && echo "  Oxide:  $OXIDE_PREV → $OXIDE_TAG"
-            [ "$CARBON_NEW" = "true" ] && echo "  Carbon: $CARBON_PREV → $CARBON_UPDATED"
+            if [ "$OXIDE_NEW"  = "true" ]; then echo "  Oxide:  $OXIDE_PREV → $OXIDE_TAG"; fi
+            if [ "$CARBON_NEW" = "true" ]; then echo "  Carbon: $CARBON_PREV → $CARBON_UPDATED"; fi
           fi
 
       # ── Everything below only runs when something actually changed ─────────
@@ -192,7 +192,7 @@ jobs:
             echo "Nothing new to commit (hashes matched — decompile skipped)."
           else
             MSG="sync: Oxide ${{ steps.probe.outputs.oxide_tag }}"
-            [ "${{ steps.probe.outputs.carbon_new }}" = "true" ] && MSG="$MSG / Carbon $(date +%Y-%m-%d)"
+            if [ "${{ steps.probe.outputs.carbon_new }}" = "true" ]; then MSG="$MSG / Carbon $(date +%Y-%m-%d)"; fi
             git commit -m "$MSG"
             git pull --rebase origin main
             git push
@@ -208,7 +208,12 @@ jobs:
             exit 0
           fi
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          curl -s -X POST \
+          HTTP_STATUS=$(curl -s -o /tmp/discord_resp.txt -w "%{http_code}" -X POST \
             -H "Content-Type: application/json" \
             -d "{\"embeds\":[{\"title\":\"❌ Sync Rust API References провалився\",\"description\":\"Автоматичний синк Oxide/Carbon refs впав.\\n[Відкрити лог]($RUN_URL)\",\"color\":15158332}]}" \
-            "$PLATFORM_DISCORD_WEBHOOK"
+            "$PLATFORM_DISCORD_WEBHOOK")
+          echo "Discord HTTP status: $HTTP_STATUS"
+          cat /tmp/discord_resp.txt || true
+          if [ "$HTTP_STATUS" != "204" ] && [ "$HTTP_STATUS" != "200" ]; then
+            echo "WARNING: Discord webhook returned $HTTP_STATUS — check PLATFORM_DISCORD_WEBHOOK secret"
+          fi
