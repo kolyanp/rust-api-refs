@@ -117,7 +117,14 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 
 	public GameObject GameObject => ((Component)this).gameObject;
 
-	public NetworkableId NetworkID => net.ID;
+	public NetworkableId NetworkID
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return net.ID;
+		}
+	}
 
 	public FileStorage.Type FileType => FileStorage.Type.png;
 
@@ -422,7 +429,7 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 				{
 					uint num3 = info.msg.sign.imageIds[i];
 					bool flag2 = num3 != textureIDs[i];
-					flag = flag || flag2;
+					flag |= flag2;
 					textureIDs[i] = num3;
 				}
 			}
@@ -524,8 +531,8 @@ public class Signage : IOEntity, ILOD, ISignage, IUGCBrowserEntity, IEaselPainta
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void UnLockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUnlockSign(msg.player))

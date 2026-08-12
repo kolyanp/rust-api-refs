@@ -27,17 +27,17 @@ public class DiggableEntityLoot : ScriptableObject
 		public ulong? UID;
 	}
 
-	public List<ItemEntry> Items = new List<ItemEntry>();
+	public List<ItemEntry> Items;
 
 	private List<ItemEntry> allowedItems;
 
 	private Era cachedEra;
 
 	[InspectorFlags]
-	public Enum Biomes = (Enum)(-1);
+	public Enum Biomes;
 
 	[InspectorFlags]
-	public Enum Topology = (Enum)(-1);
+	public Enum Topology;
 
 	public IList<ItemEntry> GetItems()
 	{
@@ -83,5 +83,15 @@ public class DiggableEntityLoot : ScriptableObject
 			return false;
 		}
 		return true;
+	}
+
+	public DiggableEntityLoot()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		Items = new List<ItemEntry>();
+		Biomes = (Enum)(-1);
+		Topology = (Enum)(-1);
+		((ScriptableObject)this)._002Ector();
 	}
 }

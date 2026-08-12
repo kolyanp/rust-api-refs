@@ -14,17 +14,17 @@ public class OrientableLight : SimpleLight
 
 	public Transform pitch;
 
-	public bool pivotAutoAdjust = true;
+	public bool pivotAutoAdjust;
 
 	[Space]
-	public Vector2 pitchClamp = new Vector2(-50f, 50f);
+	public Vector2 pitchClamp;
 
-	public Vector2 yawClamp = new Vector2(-50f, 50f);
+	public Vector2 yawClamp;
 
 	[Space]
-	public float serverLerpSpeed = 15f;
+	public float serverLerpSpeed;
 
-	public float clientLerpSpeed = 10f;
+	public float clientLerpSpeed;
 
 	[Space]
 	public GameObjectRef reorientEffect;
@@ -39,7 +39,7 @@ public class OrientableLight : SimpleLight
 
 	private float lastYawAmount;
 
-	public static Phrase TipPhrase = new Phrase("gametip_spotlight", "Use a hammer to adjust the spotlight direction");
+	public static Phrase TipPhrase;
 
 	private bool IsFacingDown => HasFlag(Flags.Reserved18);
 
@@ -175,9 +175,9 @@ public class OrientableLight : SimpleLight
 		ClientRPC(RpcTarget.Player("CLIENT_OnDeployed", deployedBy));
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_SetDir(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -274,5 +274,26 @@ public class OrientableLight : SimpleLight
 			pitchAmount = info.msg.rcEntity.aim.x;
 			yawAmount = info.msg.rcEntity.aim.y;
 		}
+	}
+
+	public OrientableLight()
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		pivotAutoAdjust = true;
+		pitchClamp = new Vector2(-50f, 50f);
+		yawClamp = new Vector2(-50f, 50f);
+		serverLerpSpeed = 15f;
+		clientLerpSpeed = 10f;
+		base._002Ector();
+	}
+
+	static OrientableLight()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		TipPhrase = new Phrase("gametip_spotlight", "Use a hammer to adjust the spotlight direction");
 	}
 }

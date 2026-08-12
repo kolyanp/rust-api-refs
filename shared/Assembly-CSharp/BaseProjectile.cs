@@ -99,29 +99,29 @@ public class BaseProjectile : AttackEntity
 	}
 
 	[Header("NPC Info")]
-	public float NoiseRadius = 100f;
+	public float NoiseRadius;
 
 	[Header("Projectile")]
-	public float damageScale = 1f;
+	public float damageScale;
 
-	public float distanceScale = 1f;
+	public float distanceScale;
 
-	public float projectileVelocityScale = 1f;
+	public float projectileVelocityScale;
 
 	public bool automatic;
 
-	public bool usableByTurret = true;
+	public bool usableByTurret;
 
 	[Tooltip("Final damage is scaled by this amount before being applied to a target when this weapon is mounted to a turret")]
-	public float turretDamageScale = 0.35f;
+	public float turretDamageScale;
 
 	public bool largeTurretWeapon;
 
-	public float turretReloadDurationOverride = -1f;
+	public float turretReloadDurationOverride;
 
 	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
-	public float maxAttackEffectDistance = 400f;
+	public float maxAttackEffectDistance;
 
 	public GameObjectRef attackFX;
 
@@ -134,9 +134,9 @@ public class BaseProjectile : AttackEntity
 	public Transform MuzzlePoint;
 
 	[Header("Reloading")]
-	public float reloadTime = 1f;
+	public float reloadTime;
 
-	public bool canUnloadAmmo = true;
+	public bool canUnloadAmmo;
 
 	public Magazine primaryMagazine;
 
@@ -153,35 +153,31 @@ public class BaseProjectile : AttackEntity
 	public bool sendReloadSignalFromServer;
 
 	[Header("Recoil")]
-	public float aimSway = 3f;
+	public float aimSway;
 
-	public float aimSwaySpeed = 1f;
+	public float aimSwaySpeed;
 
 	public RecoilProperties recoil;
 
 	[Header("Aim Cone")]
-	public AnimationCurve aimconeCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-	{
-		new Keyframe(0f, 1f),
-		new Keyframe(1f, 1f)
-	});
+	public AnimationCurve aimconeCurve;
 
 	public float aimCone;
 
-	public float hipAimCone = 1.8f;
+	public float hipAimCone;
 
 	public float aimconePenaltyPerShot;
 
 	public float aimConePenaltyMax;
 
-	public float aimconePenaltyRecoverTime = 0.1f;
+	public float aimconePenaltyRecoverTime;
 
-	public float aimconePenaltyRecoverDelay = 0.1f;
+	public float aimconePenaltyRecoverDelay;
 
-	public float stancePenaltyScale = 1f;
+	public float stancePenaltyScale;
 
 	[Header("Iconsights")]
-	public bool hasADS = true;
+	public bool hasADS;
 
 	public bool noAimingWhileCycling;
 
@@ -201,29 +197,29 @@ public class BaseProjectile : AttackEntity
 	[Header("Burst Information")]
 	public bool isBurstWeapon;
 
-	public bool canChangeFireModes = true;
+	public bool canChangeFireModes;
 
-	public bool defaultOn = true;
+	public bool defaultOn;
 
-	public float internalBurstRecoilScale = 0.8f;
+	public float internalBurstRecoilScale;
 
-	public float internalBurstFireRateScale = 0.8f;
+	public float internalBurstFireRateScale;
 
-	public float internalBurstAimConeScale = 0.8f;
+	public float internalBurstAimConeScale;
 
-	public float resetDuration = 0.3f;
+	public float resetDuration;
 
 	public int numShotsFired;
 
 	public const float maxDistance = 300f;
 
 	[NonSerialized]
-	private EncryptedValue<float> nextReloadTime = float.NegativeInfinity;
+	private EncryptedValue<float> nextReloadTime;
 
 	[NonSerialized]
-	private EncryptedValue<float> startReloadTime = float.NegativeInfinity;
+	private EncryptedValue<float> startReloadTime;
 
-	private float lastReloadTime = -10f;
+	private float lastReloadTime;
 
 	private bool modsChangedInitialized;
 
@@ -233,11 +229,11 @@ public class BaseProjectile : AttackEntity
 
 	private uint cachedModHash;
 
-	private float sightAimConeScale = 1f;
+	private float sightAimConeScale;
 
 	private float sightAimConeOffset;
 
-	private float hipAimConeScale = 1f;
+	private float hipAimConeScale;
 
 	private float hipAimConeOffset;
 
@@ -895,10 +891,8 @@ public class BaseProjectile : AttackEntity
 			SetAmmoCount(0);
 		}
 		bool flag2 = flag && ownerPlayer.IsNpc;
-		BaseEntity owner;
-		BaseNPC2 castedUnityObject;
-		bool flag3 = TryGetOwner(out owner) && BaseNetworkableEx.Is<BaseNPC2>((Object)(object)owner, out castedUnityObject);
-		bool flag4 = flag2 || flag3;
+		bool flag3 = TryGetOwner(out var owner) && BaseNetworkableEx.Is<BaseNPC2>((Object)(object)owner, out BaseNPC2 _);
+		bool flag4 = flag2 | flag3;
 		if (flag2 && (ownerPlayer.isMounted || (Object)(object)ownerPlayer.GetParentEntity() != (Object)null))
 		{
 			NPCPlayer nPCPlayer = ownerPlayer as NPCPlayer;
@@ -970,7 +964,7 @@ public class BaseProjectile : AttackEntity
 					continue;
 				}
 				BaseCombatEntity baseCombatEntity = entity as BaseCombatEntity;
-				if (((Object)(object)entity != (Object)null && entity.IsNpc && flag4 && (Object)(object)baseCombatEntity != (Object)null && baseCombatEntity.GetFaction() != BaseCombatEntity.Faction.Horror && !(entity is BasePet)) || !((Object)(object)entity != (Object)null) || (!((Object)(object)baseEntity == (Object)null) && !((Object)(object)entity == (Object)(object)baseEntity) && !entity.EqualNetID((BaseNetworkable)baseEntity)) || !entity.IsVisible(val, ((RaycastHit)(ref hit)).point, 300f))
+				if (((((Object)(object)entity != (Object)null && entity.IsNpc) & flag4) && (Object)(object)baseCombatEntity != (Object)null && baseCombatEntity.GetFaction() != BaseCombatEntity.Faction.Horror && !(entity is BasePet)) || !((Object)(object)entity != (Object)null) || (!((Object)(object)baseEntity == (Object)null) && !((Object)(object)entity == (Object)(object)baseEntity) && !entity.EqualNetID((BaseNetworkable)baseEntity)) || !entity.IsVisible(val, ((RaycastHit)(ref hit)).point, 300f))
 				{
 					continue;
 				}
@@ -1454,9 +1448,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1545,8 +1539,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1685,8 +1679,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
@@ -2062,5 +2056,49 @@ public class BaseProjectile : AttackEntity
 		{
 			primaryMagazine.Load(info.msg.baseProjectile.primaryMagazine);
 		}
+	}
+
+	public BaseProjectile()
+	{
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Expected O, but got Unknown
+		NoiseRadius = 100f;
+		damageScale = 1f;
+		distanceScale = 1f;
+		projectileVelocityScale = 1f;
+		usableByTurret = true;
+		turretDamageScale = 0.35f;
+		turretReloadDurationOverride = -1f;
+		maxAttackEffectDistance = 400f;
+		reloadTime = 1f;
+		canUnloadAmmo = true;
+		aimSway = 3f;
+		aimSwaySpeed = 1f;
+		aimconeCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+		{
+			new Keyframe(0f, 1f),
+			new Keyframe(1f, 1f)
+		});
+		hipAimCone = 1.8f;
+		aimconePenaltyRecoverTime = 0.1f;
+		aimconePenaltyRecoverDelay = 0.1f;
+		stancePenaltyScale = 1f;
+		hasADS = true;
+		canChangeFireModes = true;
+		defaultOn = true;
+		internalBurstRecoilScale = 0.8f;
+		internalBurstFireRateScale = 0.8f;
+		internalBurstAimConeScale = 0.8f;
+		resetDuration = 0.3f;
+		nextReloadTime = float.NegativeInfinity;
+		startReloadTime = float.NegativeInfinity;
+		lastReloadTime = -10f;
+		sightAimConeScale = 1f;
+		hipAimConeScale = 1f;
+		base._002Ector();
 	}
 }

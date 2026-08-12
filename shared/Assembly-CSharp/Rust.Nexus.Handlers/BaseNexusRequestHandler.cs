@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Facepunch;
 using Facepunch.Nexus;
 using Facepunch.Nexus.Models;
@@ -13,7 +14,22 @@ public abstract class BaseNexusRequestHandler<T> : INexusRequestHandler, IPooled
 
 	protected NexusZoneDetails FromZone { get; private set; }
 
-	protected Uuid RequestId { get; private set; }
+	protected Uuid RequestId
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CRequestId_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CRequestId_003Ek__BackingField = value;
+		}
+	}
 
 	protected T Request { get; private set; }
 

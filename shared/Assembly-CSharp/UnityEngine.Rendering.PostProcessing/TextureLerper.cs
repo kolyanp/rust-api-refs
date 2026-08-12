@@ -94,7 +94,7 @@ internal class TextureLerper
 		}
 		if ((Object)(object)val == (Object)null)
 		{
-			TextureDimension dimension = (TextureDimension)((d > 1 || force3D) ? 3 : 2);
+			TextureDimension dimension = (TextureDimension)(((d > 1) | force3D) ? 3 : 2);
 			val = new RenderTexture(w, h, 0, format)
 			{
 				dimension = dimension,

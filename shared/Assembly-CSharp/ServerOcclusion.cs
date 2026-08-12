@@ -225,7 +225,7 @@ public static class ServerOcclusion
 
 	public const int CacheVersion = 3;
 
-	public static int MaxY = 200;
+	public static int MaxY;
 
 	public static int ChunkCountX;
 
@@ -245,7 +245,7 @@ public static class ServerOcclusion
 
 	public static float AxisZ;
 
-	public static LimitDictionary<(int, int), bool> OcclusionCache = new LimitDictionary<(int, int), bool>(32768);
+	public static LimitDictionary<(int, int), bool> OcclusionCache;
 
 	public static NativeArray<NativeBitArray> OcclusionSubGridBlocked;
 
@@ -255,27 +255,15 @@ public static class ServerOcclusion
 
 	public const int OcclusionChunkResolution = 8;
 
-	public static Dictionary<Network.Visibility.Group, Group> Occludees = new Dictionary<Network.Visibility.Group, Group>();
+	public static Dictionary<Network.Visibility.Group, Group> Occludees;
 
-	public static readonly Vector3[] GridOffsets = (Vector3[])(object)new Vector3[2]
-	{
-		new Vector3(0f, 0f, 0f),
-		new Vector3(0f, 1f, 0f)
-	};
+	public static readonly Vector3[] GridOffsets;
 
-	public static readonly (int, int, int)[] neighbours = new(int, int, int)[6]
-	{
-		(1, 0, 0),
-		(-1, 0, 0),
-		(0, 1, 0),
-		(0, -1, 0),
-		(0, 0, 1),
-		(0, 0, -1)
-	};
+	public static readonly (int, int, int)[] neighbours;
 
-	public static bool OcclusionEnabled { get; set; } = true;
+	public static bool OcclusionEnabled { get; set; }
 
-	public static bool OcclusionIncludeRocks { get; set; } = true;
+	public static bool OcclusionIncludeRocks { get; set; }
 
 	public static float OcclusionPollRate => 2f;
 
@@ -346,12 +334,9 @@ public static class ServerOcclusion
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		int result;
-		int x2 = Math.DivRem(x, 8, out result);
-		int result2;
-		int y2 = Math.DivRem(y, 8, out result2);
-		int result3;
-		int z2 = Math.DivRem(z, 8, out result3);
+		int x2 = Math.DivRem(x, 8, out var result);
+		int y2 = Math.DivRem(y, 8, out var result2);
+		int z2 = Math.DivRem(z, 8, out var result3);
 		int gridIndex = GetGridIndex(x2, y2, z2);
 		NativeBitArray val = (NativeBitArray)(IsValidGrid(x2, y2, z2) ? OcclusionSubGridBlocked[gridIndex] : default(NativeBitArray));
 		int num = result3 * 8 * 8 + result2 * 8 + result;
@@ -990,7 +975,7 @@ public static class ServerOcclusion
 				val5 = OcclusionSubGridBlocked[j];
 				((NativeBitArray)(ref val5)).Dispose();
 			}
-			if (num || flag)
+			if (num | flag)
 			{
 				OcclusionSubGridBlocked[j] = new NativeBitArray(512, AllocatorHandle.op_Implicit((Allocator)4), (NativeArrayOptions)1);
 				cellsToCheck.Add(ref j);
@@ -1063,12 +1048,9 @@ public static class ServerOcclusion
 				}
 				if (flag)
 				{
-					int result;
-					int x = Math.DivRem(subGrid.x, 8, out result);
-					int result2;
-					int y = Math.DivRem(subGrid.y, 8, out result2);
-					int result3;
-					int z = Math.DivRem(subGrid.z, 8, out result3);
+					int x = Math.DivRem(subGrid.x, 8, out var result);
+					int y = Math.DivRem(subGrid.y, 8, out var result2);
+					int z = Math.DivRem(subGrid.z, 8, out var result3);
 					int gridIndex = GetGridIndex(x, y, z);
 					int num4 = result3 * 8 * 8 + result2 * 8 + result;
 					val3 = OcclusionSubGridBlocked[gridIndex];
@@ -1102,7 +1084,7 @@ public static class ServerOcclusion
 				{
 					RaycastHit val4 = hits[l * num + m];
 					int colliderInstanceID = ((RaycastHit)(ref val4)).colliderInstanceID;
-					flag2 = flag2 && colliderInstanceID != 0;
+					flag2 &= colliderInstanceID != 0;
 					if (!flag2)
 					{
 						break;
@@ -1131,12 +1113,9 @@ public static class ServerOcclusion
 				if (flag2)
 				{
 					SubGrid subGrid2 = subGridCells[l];
-					int result4;
-					int x2 = Math.DivRem(subGrid2.x, 8, out result4);
-					int result5;
-					int y2 = Math.DivRem(subGrid2.y, 8, out result5);
-					int result6;
-					int z2 = Math.DivRem(subGrid2.z, 8, out result6);
+					int x2 = Math.DivRem(subGrid2.x, 8, out var result4);
+					int y2 = Math.DivRem(subGrid2.y, 8, out var result5);
+					int z2 = Math.DivRem(subGrid2.z, 8, out var result6);
 					int gridIndex2 = GetGridIndex(x2, y2, z2);
 					int num7 = result6 * 8 * 8 + result5 * 8 + result4;
 					val3 = OcclusionSubGridBlocked[gridIndex2];
@@ -1147,5 +1126,32 @@ public static class ServerOcclusion
 		}
 		val.Dispose();
 		posi.Dispose();
+	}
+
+	static ServerOcclusion()
+	{
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		MaxY = 200;
+		OcclusionCache = new LimitDictionary<(int, int), bool>(32768);
+		OcclusionEnabled = true;
+		OcclusionIncludeRocks = true;
+		Occludees = new Dictionary<Network.Visibility.Group, Group>();
+		GridOffsets = (Vector3[])(object)new Vector3[2]
+		{
+			new Vector3(0f, 0f, 0f),
+			new Vector3(0f, 1f, 0f)
+		};
+		neighbours = new(int, int, int)[6]
+		{
+			(1, 0, 0),
+			(-1, 0, 0),
+			(0, 1, 0),
+			(0, -1, 0),
+			(0, 0, 1),
+			(0, 0, -1)
+		};
 	}
 }

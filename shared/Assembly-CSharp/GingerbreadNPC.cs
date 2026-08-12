@@ -31,7 +31,7 @@ public class GingerbreadNPC : HumanNPC, global::IClientBrainStateListener
 			{
 				return OverrideCorpseMale.resourcePath;
 			}
-			if (OverrideCorpseFemale.isValid && flag)
+			if (OverrideCorpseFemale.isValid & flag)
 			{
 				return OverrideCorpseFemale.resourcePath;
 			}

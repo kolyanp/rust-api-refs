@@ -44,11 +44,11 @@ public class SharpenAndVignetteRenderer : PostProcessEffectRenderer<SharpenAndVi
 		{
 			command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 0);
 		}
-		else if (value && value2)
+		else if (value & value2)
 		{
 			command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 1);
 		}
-		else if (!value && value2)
+		else if (!value & value2)
 		{
 			command.BlitFullscreenTriangle(context.source, context.destination, propertySheet, 2);
 		}

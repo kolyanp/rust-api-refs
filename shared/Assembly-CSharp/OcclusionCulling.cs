@@ -8,9 +8,9 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(Camera))]
 [ResetStaticFields]
-[RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
 public class OcclusionCulling : MonoBehaviour
 {
 	public class BufferSet
@@ -296,7 +296,7 @@ public class OcclusionCulling : MonoBehaviour
 		Dynamic = 1,
 		Static = 2,
 		Grid = 4,
-		All = 7
+		All = Dynamic | Static | Grid
 	}
 
 	[Serializable]
@@ -320,7 +320,15 @@ public class OcclusionCulling : MonoBehaviour
 
 		public DebugMask showMask;
 
-		public LayerMask layerFilter = LayerMask.op_Implicit(-1);
+		public LayerMask layerFilter;
+
+		public DebugSettings()
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			layerFilter = LayerMask.op_Implicit(-1);
+			base._002Ector();
+		}
 	}
 
 	public class HashedPoolValue
@@ -884,7 +892,14 @@ public class OcclusionCulling : MonoBehaviour
 
 	public static OcclusionCulling Instance => instance;
 
-	public static bool Supported => Enumerable.Contains(supportedDeviceTypes, SystemInfo.graphicsDeviceType);
+	public static bool Supported
+	{
+		get
+		{
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			return Enumerable.Contains(supportedDeviceTypes, SystemInfo.graphicsDeviceType);
+		}
+	}
 
 	public static bool Enabled
 	{
@@ -1291,8 +1306,7 @@ public class OcclusionCulling : MonoBehaviour
 		ulong num8 = (ulong)((num5 >= 0) ? num5 : (num5 + 1048575));
 		ulong num9 = (ulong)((num6 >= 0) ? num6 : (num6 + 1048575));
 		ulong key = (ulong)(num7 << 42) | (num8 << 21) | num9;
-		Cell value;
-		bool num10 = grid.TryGetValue(key, out value);
+		bool num10 = grid.TryGetValue(key, out var value);
 		if (!num10)
 		{
 			Vector3 val = new Vector3
@@ -1402,7 +1416,7 @@ public class OcclusionCulling : MonoBehaviour
 			int slot = occludeeState.slot;
 			OccludeeState.State value = states[slot];
 			bool flag = FrustumCull(frustumPlanes, value.sphereBounds);
-			bool flag2 = results[slot].r > 0 && flag;
+			bool flag2 = (results[slot].r > 0) & flag;
 			if (flag2 || frame < value.waitFrame)
 			{
 				value.waitTime = time + value.minTimeVisible;
@@ -1441,7 +1455,7 @@ public class OcclusionCulling : MonoBehaviour
 			}
 			OccludeeState.State state = states[num2];
 			bool flag = FrustumCull(frustumPlanes, state.sphereBounds);
-			bool flag2 = results[num2].r > 0 && flag;
+			bool flag2 = (results[num2].r > 0) & flag;
 			if (flag2 || frame < state.waitFrame)
 			{
 				state.waitTime = time + state.minTimeVisible;
@@ -1483,8 +1497,8 @@ public class OcclusionCulling : MonoBehaviour
 				continue;
 			}
 			bool flag = FrustumCull(frustumPlanes, cell.sphereBounds);
-			bool flag2 = gridSet.resultData[i].r > 0 && flag;
-			if (cell.isVisible || flag2)
+			bool flag2 = (gridSet.resultData[i].r > 0) & flag;
+			if (cell.isVisible | flag2)
 			{
 				int num = 0;
 				int num2 = 0;
@@ -1514,8 +1528,8 @@ public class OcclusionCulling : MonoBehaviour
 				continue;
 			}
 			bool flag = FrustumCull(frustumPlanes, cell.sphereBounds);
-			bool flag2 = gridSet.resultData[i].r > 0 && flag;
-			if (cell.isVisible || flag2)
+			bool flag2 = (gridSet.resultData[i].r > 0) & flag;
+			if (cell.isVisible | flag2)
 			{
 				int num = 0;
 				int num2 = 0;
@@ -1545,8 +1559,8 @@ public class OcclusionCulling : MonoBehaviour
 				continue;
 			}
 			bool flag = FrustumCull(frustumPlanes, cell.sphereBounds);
-			bool flag2 = gridSet.resultData[i].r > 0 && flag;
-			if (cell.isVisible || flag2)
+			bool flag2 = (gridSet.resultData[i].r > 0) & flag;
+			if (cell.isVisible | flag2)
 			{
 				int num = 0;
 				int num2 = 0;
@@ -1865,7 +1879,7 @@ public class OcclusionCulling : MonoBehaviour
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		int num = -1;
 		num = ((!isStatic) ? RegisterOccludee(center, radius, isVisible, minTimeVisible, isStatic, layer, onVisibilityChanged, dynamicOccludees, dynamicStates, dynamicRecycled, dynamicChanged, dynamicSet, dynamicVisibilityChanged) : RegisterOccludee(center, radius, isVisible, minTimeVisible, isStatic, layer, onVisibilityChanged, staticOccludees, staticStates, staticRecycled, staticChanged, staticSet, staticVisibilityChanged));
-		if (!(num < 0 || isStatic))
+		if (!((num < 0) | isStatic))
 		{
 			return num + 1048576;
 		}

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -9,6 +10,9 @@ public class MainCamera : RustCamera<MainCamera>
 	public static Transform mainCameraTransform;
 
 	public static Action PreCullCallback;
+
+	[CompilerGenerated]
+	private static Vector3 _003Cvelocity_003Ek__BackingField;
 
 	public static bool isValid
 	{
@@ -22,7 +26,22 @@ public class MainCamera : RustCamera<MainCamera>
 		}
 	}
 
-	public static Vector3 velocity { get; private set; }
+	public static Vector3 velocity
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cvelocity_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003Cvelocity_003Ek__BackingField = value;
+		}
+	}
 
 	public static Vector3 position
 	{
@@ -103,5 +122,14 @@ public class MainCamera : RustCamera<MainCamera>
 		}
 	}
 
-	public static Ray Ray => new Ray(position, forward);
+	public static Ray Ray
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			return new Ray(position, forward);
+		}
+	}
 }

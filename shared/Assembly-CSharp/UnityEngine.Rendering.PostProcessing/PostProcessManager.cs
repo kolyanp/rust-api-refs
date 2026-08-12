@@ -305,7 +305,7 @@ public sealed class PostProcessManager
 			}
 			m_SortedVolumes.Add(LayerMask.op_Implicit(mask), value);
 		}
-		if (m_SortNeeded.TryGetValue(LayerMask.op_Implicit(mask), out var value2) && value2)
+		if (m_SortNeeded.TryGetValue(LayerMask.op_Implicit(mask), out var value2) & value2)
 		{
 			m_SortNeeded[LayerMask.op_Implicit(mask)] = false;
 			SortByPriority(value);

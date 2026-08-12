@@ -3,141 +3,141 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Volume Clouds/Cloud Config")]
 public class VolumeCloudsConfig : ScriptableObject
 {
-	public VolumeCloudsWeatherLayerConfig WeatherLayer = new VolumeCloudsWeatherLayerConfig();
+	public VolumeCloudsWeatherLayerConfig WeatherLayer;
 
 	[Range(0f, 1f)]
 	[Header("Detail")]
-	public float Billows = 1f;
+	public float Billows;
 
 	[Range(0f, 3f)]
-	public float BillowsGamma = 2f;
+	public float BillowsGamma;
 
 	[Range(0f, 2f)]
-	public float BillowsFrequencyCurve = 0.45f;
+	public float BillowsFrequencyCurve;
 
 	[Range(0f, 1f)]
-	public float Wisps = 1f;
+	public float Wisps;
 
 	[Range(0f, 3f)]
-	public float WispsGamma = 2f;
+	public float WispsGamma;
 
 	[Range(0f, 2f)]
-	public float WispsFrequencyCurve = 1f;
+	public float WispsFrequencyCurve;
 
 	[Range(0f, 2f)]
-	public float DetailTypeDensityCurve = 0.25f;
+	public float DetailTypeDensityCurve;
 
 	[Range(0.001f, 1f)]
-	public float DetailTypeHeightTransition = 0.3f;
+	public float DetailTypeHeightTransition;
 
 	[Range(0f, 2f)]
-	public float CurlNoiseScale = 0.2f;
+	public float CurlNoiseScale;
 
-	public float CurlNoiseStrength = 50f;
+	public float CurlNoiseStrength;
 
 	[Range(0f, 1f)]
 	[Header("Density")]
-	public float DensityScale = 0.05f;
+	public float DensityScale;
 
 	[Range(0f, 1f)]
-	public float DensityCurve = 0.4f;
+	public float DensityCurve;
 
 	[Range(0f, 1f)]
-	public float WispsDensitySoftening = 0.3f;
+	public float WispsDensitySoftening;
 
 	[Header("Multiple Scattering")]
-	public float MSIntensity = 1f;
+	public float MSIntensity;
 
 	[Range(0f, 1f)]
-	public float MSAbsorption = 0.5f;
+	public float MSAbsorption;
 
 	[Range(0f, 2f)]
-	public float MSDepthFalloff = 1f;
+	public float MSDepthFalloff;
 
 	[Range(0f, 1f)]
-	public float MSMinDepth = 0.01f;
+	public float MSMinDepth;
 
 	[Header("Direct Scattering")]
 	public Gradient SunColorScale;
 
 	[Range(-1f, 1f)]
-	public float SunEccentricity1 = 0.6f;
+	public float SunEccentricity1;
 
 	[Range(-1f, 1f)]
-	public float SunEccentricity2 = 0.2f;
+	public float SunEccentricity2;
 
 	public Gradient MoonColorScale;
 
 	[Range(-1f, 1f)]
-	public float MoonEccentricity1 = 0.9f;
+	public float MoonEccentricity1;
 
 	[Range(-1f, 1f)]
-	public float MoonEccentricity2 = 0.2f;
+	public float MoonEccentricity2;
 
 	[Range(0f, 2f)]
-	public float MoonSaturation = 1f;
+	public float MoonSaturation;
 
 	[Range(0f, 3f)]
-	public float DirectScatterBrightness = 1f;
+	public float DirectScatterBrightness;
 
 	[Range(0f, 3f)]
-	public float DirectScatterContrast = 1f;
+	public float DirectScatterContrast;
 
 	[Range(0f, 2f)]
-	public float Absorption = 1f;
+	public float Absorption;
 
 	[Header("Ambient Scattering")]
 	public Gradient AmbientColorScale;
 
 	[Range(0f, 1f)]
-	public float AmbientSaturation = 0.6f;
+	public float AmbientSaturation;
 
 	[Range(0f, 2f)]
-	public float AmbientScatteringFalloff = 1f;
+	public float AmbientScatteringFalloff;
 
 	[Range(0f, 3f)]
-	public float AmbientScatterBrightness = 1f;
+	public float AmbientScatterBrightness;
 
 	[Range(0f, 3f)]
-	public float AmbientScatterContrast = 1f;
+	public float AmbientScatterContrast;
 
-	[Range(0f, 1f)]
 	[Header("Other")]
-	public float CoverageScale = 1f;
+	[Range(0f, 1f)]
+	public float CoverageScale;
 
 	[Range(0f, 1f)]
-	public float CloudTypeTop = 1f;
+	public float CloudTypeTop;
 
 	[Range(0f, 1f)]
 	public float CloudTypeBottom;
 
 	[Range(0f, 1f)]
-	public float VerticalProfileTopEnd = 1f;
+	public float VerticalProfileTopEnd;
 
 	[Range(0f, 1f)]
 	public float VerticalProfileTopStart;
 
 	[Range(0f, 1f)]
-	public float VerticalProfileBottomStart = 1f;
+	public float VerticalProfileBottomStart;
 
 	[Range(0f, 1f)]
 	public float VerticalProfileBottomEnd;
 
 	public float WindShear;
 
-	public Vector2 WindVector = new Vector2(0f, 1f);
+	public Vector2 WindVector;
 
 	[Range(0f, 1f)]
-	public float ShadowDensityScale = 1f;
+	public float ShadowDensityScale;
 
 	[Range(0f, 1f)]
-	public float AtmosphereShadowDensityScale = 1f;
+	public float AtmosphereShadowDensityScale;
 
 	[Min(0f)]
-	public float HazeDensity = 1f;
+	public float HazeDensity;
 
 	[Min(0f)]
-	public float HazeHeightFalloff = 0.035f;
+	public float HazeHeightFalloff;
 
 	[Range(0f, 1f)]
 	public float HorizonBuffer;
@@ -261,5 +261,51 @@ public class VolumeCloudsConfig : ScriptableObject
 		HazeDensity = Mathf.Lerp(a.HazeDensity, b.HazeDensity, t);
 		HazeHeightFalloff = Mathf.Lerp(a.HazeHeightFalloff, b.HazeHeightFalloff, t);
 		HorizonBuffer = Mathf.Lerp(a.HorizonBuffer, b.HorizonBuffer, t);
+	}
+
+	public VolumeCloudsConfig()
+	{
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		WeatherLayer = new VolumeCloudsWeatherLayerConfig();
+		Billows = 1f;
+		BillowsGamma = 2f;
+		BillowsFrequencyCurve = 0.45f;
+		Wisps = 1f;
+		WispsGamma = 2f;
+		WispsFrequencyCurve = 1f;
+		DetailTypeDensityCurve = 0.25f;
+		DetailTypeHeightTransition = 0.3f;
+		CurlNoiseScale = 0.2f;
+		CurlNoiseStrength = 50f;
+		DensityScale = 0.05f;
+		DensityCurve = 0.4f;
+		WispsDensitySoftening = 0.3f;
+		MSIntensity = 1f;
+		MSAbsorption = 0.5f;
+		MSDepthFalloff = 1f;
+		MSMinDepth = 0.01f;
+		SunEccentricity1 = 0.6f;
+		SunEccentricity2 = 0.2f;
+		MoonEccentricity1 = 0.9f;
+		MoonEccentricity2 = 0.2f;
+		MoonSaturation = 1f;
+		DirectScatterBrightness = 1f;
+		DirectScatterContrast = 1f;
+		Absorption = 1f;
+		AmbientSaturation = 0.6f;
+		AmbientScatteringFalloff = 1f;
+		AmbientScatterBrightness = 1f;
+		AmbientScatterContrast = 1f;
+		CoverageScale = 1f;
+		CloudTypeTop = 1f;
+		VerticalProfileTopEnd = 1f;
+		VerticalProfileBottomStart = 1f;
+		WindVector = new Vector2(0f, 1f);
+		ShadowDensityScale = 1f;
+		AtmosphereShadowDensityScale = 1f;
+		HazeDensity = 1f;
+		HazeHeightFalloff = 0.035f;
+		((ScriptableObject)this)._002Ector();
 	}
 }

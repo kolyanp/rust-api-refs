@@ -8,7 +8,7 @@ public class TriggerForce : TriggerBase, IServerComponent
 
 	public const float AngularDrag = 10f;
 
-	public Vector3 velocity = Vector3.forward;
+	public Vector3 velocity;
 
 	public override GameObject InterestedInObject(GameObject obj)
 	{
@@ -77,5 +77,13 @@ public class TriggerForce : TriggerBase, IServerComponent
 				entityContent.ApplyInheritedVelocity(val);
 			}
 		}
+	}
+
+	public TriggerForce()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		velocity = Vector3.forward;
+		base._002Ector();
 	}
 }

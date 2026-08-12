@@ -18,7 +18,7 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 			Condition = 2,
 			Category = 3,
 			Custom = 4,
-			LAST = 4
+			LAST = Custom
 		}
 
 		public bool enabled;
@@ -596,8 +596,8 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 		goto IL_006b;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void UpdatedStorageSettings(RPCMessage msg)
 	{
 		SortSettings val = msg.read.Proto<SortSettings>((SortSettings)null);

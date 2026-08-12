@@ -11,7 +11,14 @@ public class FPNativeList<T> : IPooled where T : struct
 
 	private int _capacity;
 
-	public NativeArray<T> Array => _array;
+	public NativeArray<T> Array
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _array;
+		}
+	}
 
 	public int Count => _length;
 

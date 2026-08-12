@@ -6,9 +6,9 @@ namespace Rust.Ai.Gen2;
 
 public class RustNavMeshPath
 {
-	public readonly List<Vector3> corners = new List<Vector3>();
+	public readonly List<Vector3> corners;
 
-	public NavMeshPathStatus status = (NavMeshPathStatus)2;
+	public NavMeshPathStatus status;
 
 	public NavMeshPath unityPath;
 
@@ -70,5 +70,13 @@ public class RustNavMeshPath
 		corners.AddRange(other.corners);
 		status = other.status;
 		unityPath = other.unityPath;
+	}
+
+	public RustNavMeshPath()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		corners = new List<Vector3>();
+		status = (NavMeshPathStatus)2;
+		base._002Ector();
 	}
 }

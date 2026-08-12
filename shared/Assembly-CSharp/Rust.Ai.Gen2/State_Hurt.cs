@@ -58,7 +58,7 @@ public class State_Hurt : State_PlayAnimationRM
 			{
 				bool num = Owner.Distance((BaseEntity)baseCombatEntity) < 16f;
 				bool flag3 = !target.IsNonNpcPlayer() && baseCombatEntity.IsNonNpcPlayer();
-				flag2 = num || flag3;
+				flag2 = num | flag3;
 			}
 			if (flag2)
 			{

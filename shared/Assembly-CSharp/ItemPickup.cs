@@ -17,7 +17,7 @@ public class ItemPickup : DroppedItem
 	{
 		base.Spawn();
 		bool flag = false;
-		if (!(Application.isLoadingSave || flag))
+		if (!(Application.isLoadingSave | flag))
 		{
 			Item item = ItemManager.Create(itemDef, amount, skinOverride, isServerSide: true, 0uL);
 			InitializeItem(item);

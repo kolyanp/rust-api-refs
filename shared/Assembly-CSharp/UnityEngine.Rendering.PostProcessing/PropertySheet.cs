@@ -10,6 +10,7 @@ public sealed class PropertySheet
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Expected O, but got Unknown
+		base._002Ector();
 		this.material = material;
 		properties = new MaterialPropertyBlock();
 	}

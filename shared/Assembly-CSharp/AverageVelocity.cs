@@ -14,7 +14,14 @@ public class AverageVelocity
 
 	public float Speed => averageSpeed;
 
-	public Vector3 Average => averageVelocity;
+	public Vector3 Average
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return averageVelocity;
+		}
+	}
 
 	public void Record(Vector3 newPos)
 	{

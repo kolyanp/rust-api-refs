@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class DrawArrow : MonoBehaviour
 {
-	public Color color = new Color(1f, 1f, 1f, 1f);
+	public Color color;
 
-	public float length = 0.2f;
+	public float length;
 
-	public float arrowLength = 0.02f;
+	public float arrowLength;
 
 	private void OnDrawGizmos()
 	{
@@ -61,5 +61,15 @@ public class DrawArrow : MonoBehaviour
 		Gizmos.DrawLine(val, val + up * arrowLength - forward * arrowLength);
 		Gizmos.DrawLine(val, val - up * arrowLength - forward * arrowLength);
 		Gizmos.DrawLine(val + up * arrowLength - forward * arrowLength, val - up * arrowLength - forward * arrowLength);
+	}
+
+	public DrawArrow()
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		color = new Color(1f, 1f, 1f, 1f);
+		length = 0.2f;
+		arrowLength = 0.02f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

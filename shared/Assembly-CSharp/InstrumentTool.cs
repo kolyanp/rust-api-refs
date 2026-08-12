@@ -10,7 +10,7 @@ public class InstrumentTool : HeldEntity
 
 	public SoundDefinition DeploySound;
 
-	public Vector2 PitchClamp = new Vector2(-90f, 90f);
+	public Vector2 PitchClamp;
 
 	public bool UseAnimationSlotEvents;
 
@@ -134,8 +134,8 @@ public class InstrumentTool : HeldEntity
 		ClientRPC(RpcTarget.NetworkGroup("Client_PlayNote"), arg, arg2, arg3, arg4);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Server_StopNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();
@@ -163,5 +163,13 @@ public class InstrumentTool : HeldEntity
 	public override bool IsInstrument()
 	{
 		return true;
+	}
+
+	public InstrumentTool()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		PitchClamp = new Vector2(-90f, 90f);
+		base._002Ector();
 	}
 }

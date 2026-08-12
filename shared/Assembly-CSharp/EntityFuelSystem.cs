@@ -143,7 +143,7 @@ public class EntityFuelSystem : IFuelSystem
 
 	public bool HasFuel(bool forceCheck = false)
 	{
-		if (Time.time > nextFuelCheckTime || forceCheck)
+		if ((Time.time > nextFuelCheckTime) | forceCheck)
 		{
 			object obj = Interface.CallHook("OnFuelCheck", this);
 			if (obj is bool)

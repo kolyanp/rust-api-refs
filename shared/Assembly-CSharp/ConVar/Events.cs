@@ -34,7 +34,7 @@ public class Events : ConsoleSystem
 	private static PendingEventChange GetPendingChanges(string id, bool create)
 	{
 		PendingEventChange pendingEventChange = TargetChanges.FirstOrDefault((PendingEventChange c) => c.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
-		if (pendingEventChange == null && create)
+		if ((pendingEventChange == null) & create)
 		{
 			pendingEventChange = new PendingEventChange(id);
 			TargetChanges.Add(pendingEventChange);

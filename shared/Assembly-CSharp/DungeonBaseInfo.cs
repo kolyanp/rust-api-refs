@@ -52,7 +52,12 @@ public class DungeonBaseInfo : LandmarkInfo
 			dungeonBaseFloor = new DungeonBaseFloor();
 			dungeonBaseFloor.Links.Add(link);
 			Floors.Add(dungeonBaseFloor);
-			Floors.Sort((DungeonBaseFloor l, DungeonBaseFloor r) => l.SignedDistance(((Component)this).transform.position).CompareTo(r.SignedDistance(((Component)this).transform.position)));
+			Floors.Sort(delegate(DungeonBaseFloor l, DungeonBaseFloor r)
+			{
+				//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+				//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+				return l.SignedDistance(((Component)this).transform.position).CompareTo(r.SignedDistance(((Component)this).transform.position));
+			});
 		}
 		else
 		{

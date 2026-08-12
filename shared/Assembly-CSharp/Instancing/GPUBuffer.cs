@@ -43,6 +43,7 @@ public class GPUBuffer<T> : GPUBuffer, IDisposable where T : unmanaged
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Expected O, but got Unknown
+		base._002Ector();
 		count = length;
 		stride = Marshal.SizeOf<T>();
 		Type = target;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Rust.Ai.Gen2;
 using Unity.AI.Navigation;
@@ -44,6 +45,9 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 
 	private List<IAISleepable> sleepables = new List<IAISleepable>();
 
+	[CompilerGenerated]
+	private OBB _003CareaBox_003Ek__BackingField;
+
 	private bool isDirty = true;
 
 	private int processIndex;
@@ -80,7 +84,22 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 		}
 	}
 
-	public OBB areaBox { get; private set; }
+	public OBB areaBox
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CareaBox_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CareaBox_003Ek__BackingField = value;
+		}
+	}
 
 	public static AIInformationZone Merge(List<AIInformationZone> zones, GameObject newRoot)
 	{
@@ -691,8 +710,7 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 		AIPoint aIPoint2 = null;
 		float num = -1f;
 		float num2 = float.PositiveInfinity;
-		int pointCount;
-		AIPoint[] movePointsInRange = GetMovePointsInRange(((Component)targetEntity).transform.position, maxRange, out pointCount);
+		AIPoint[] movePointsInRange = GetMovePointsInRange(((Component)targetEntity).transform.position, maxRange, out var pointCount);
 		if (movePointsInRange == null || pointCount <= 0)
 		{
 			return null;
@@ -747,11 +765,11 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 				num = num3;
 			}
 		}
-		if ((Object)(object)aIPoint == (Object)null && returnRandom)
+		if (((Object)(object)aIPoint == (Object)null) & returnRandom)
 		{
 			return movePointsInRange[Random.Range(0, movePointsInRange.Length)] as AIMovePoint;
 		}
-		if ((Object)(object)aIPoint == (Object)null && returnClosest)
+		if (((Object)(object)aIPoint == (Object)null) & returnClosest)
 		{
 			return aIPoint2 as AIMovePoint;
 		}
@@ -828,8 +846,7 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 		AICoverPoint aICoverPoint = null;
 		float num = 0f;
 		AIMovePoint closestRaw = GetClosestRaw(currentPosition, onlyIncludeWithCover: true);
-		int pointCount;
-		AICoverPoint[] coverPointsInRange = GetCoverPointsInRange(currentPosition, maxRange, out pointCount);
+		AICoverPoint[] coverPointsInRange = GetCoverPointsInRange(currentPosition, maxRange, out var pointCount);
 		if (coverPointsInRange == null || pointCount <= 0)
 		{
 			return null;
@@ -862,7 +879,7 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 			if (aICoverPoint2.InUse())
 			{
 				bool flag = aICoverPoint2.IsUsedBy(forObject);
-				if (!(allowObjectToReuse && flag))
+				if (!(allowObjectToReuse & flag))
 				{
 					num4 -= 1000f;
 				}

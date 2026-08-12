@@ -13,6 +13,7 @@ public class TriggerMount : TriggerBase, IServerComponent
 		{
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			this.entryTime = entryTime;
 			this.entryPos = entryPos;
 		}

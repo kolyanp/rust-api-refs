@@ -234,7 +234,7 @@ public class Elevator : IOEntity, IFlagNotify
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		int num = Floor - targetFloor;
 		Vector3 val = Vector3.up * ((float)num * FloorHeight);
-		val.y -= 1f;
+		val.y--;
 		return ((Component)this).transform.position - val;
 	}
 

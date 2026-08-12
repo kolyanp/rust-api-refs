@@ -27,7 +27,14 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 
 	private NetworkableId __sync_EaselId;
 
-	public Vector2i TextureSize => new Vector2i(PaintableSource.texWidth, PaintableSource.texHeight);
+	public Vector2i TextureSize
+	{
+		get
+		{
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			return new Vector2i(PaintableSource.texWidth, PaintableSource.texHeight);
+		}
+	}
 
 	public int TextureCount => 1;
 
@@ -78,7 +85,14 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	public NetworkableId NetworkID => net.ID;
+	public NetworkableId NetworkID
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return net.ID;
+		}
+	}
 
 	public FileStorage.Type FileType => FileStorage.Type.png;
 
@@ -257,9 +271,9 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		return CanUpdateSign(player);
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.MaxDistance(5f)]
+	[RPC_Server]
 	public void UpdateSign(RPCMessage msg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -278,8 +292,8 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void LockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateSign(msg.player))
@@ -291,8 +305,8 @@ public class PhotoFrame : StorageContainer, ILOD, IImageReceiver, ISignage, IUGC
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void UnLockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUnlockSign(msg.player))

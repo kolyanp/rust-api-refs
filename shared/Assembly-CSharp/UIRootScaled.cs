@@ -8,7 +8,7 @@ public class UIRootScaled : UIRoot
 
 	public bool OverrideReference;
 
-	public Vector2 TargetReference = new Vector2(1280f, 720f);
+	public Vector2 TargetReference;
 
 	public CanvasScaler scaler;
 
@@ -35,5 +35,13 @@ public class UIRootScaled : UIRoot
 		{
 			scaler.referenceResolution = val;
 		}
+	}
+
+	public UIRootScaled()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		TargetReference = new Vector2(1280f, 720f);
+		base._002Ector();
 	}
 }

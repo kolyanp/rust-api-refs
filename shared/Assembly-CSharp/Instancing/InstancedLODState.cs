@@ -37,6 +37,7 @@ public class InstancedLODState
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		MeshCull component = ((Component)renderer).GetComponent<MeshCull>();
 		MeshFilter component2 = ((Component)renderer).GetComponent<MeshFilter>();
 		Mesh = component2.sharedMesh;

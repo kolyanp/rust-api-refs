@@ -149,7 +149,14 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public NativeArray<short> deepSeaHeights;
 
-	public ReadOnly<short> DeepSeaData => deepSeaHeights.AsReadOnly();
+	public ReadOnly<short> DeepSeaData
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return deepSeaHeights.AsReadOnly();
+		}
+	}
 
 	public override void Setup()
 	{

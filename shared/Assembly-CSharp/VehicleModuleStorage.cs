@@ -37,9 +37,9 @@ public class VehicleModuleStorage : VehicleModuleSeating
 
 	private EntityRef storageUnitInstance;
 
-	private static ItemDefinition _crudeItem = null;
+	private static ItemDefinition _crudeItem;
 
-	public static readonly Phrase StorageCantBeMovedError = new Phrase("error.itemsinstorage", "Cannot move item: Storage contains items!");
+	public static readonly Phrase StorageCantBeMovedError;
 
 	private TimeSince lastExplosionSpawned;
 
@@ -236,8 +236,8 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open(RPCMessage msg)
 	{
 		TryOpen(msg.player);
@@ -276,8 +276,8 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		return StorageCantBeMovedError;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_TryOpenWithKeycode(RPCMessage msg)
 	{
 		if (!base.IsOnACar)
@@ -346,5 +346,13 @@ public class VehicleModuleStorage : VehicleModuleSeating
 				Effect.server.Run(crudeExplosionEffect.resourcePath, ((Component)baseEntity).transform.position);
 			}
 		}
+	}
+
+	static VehicleModuleStorage()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Expected O, but got Unknown
+		_crudeItem = null;
+		StorageCantBeMovedError = new Phrase("error.itemsinstorage", "Cannot move item: Storage contains items!");
 	}
 }

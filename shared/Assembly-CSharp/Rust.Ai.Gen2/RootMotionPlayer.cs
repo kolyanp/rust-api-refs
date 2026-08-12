@@ -8,15 +8,25 @@ namespace Rust.Ai.Gen2;
 [SoftRequireComponent(typeof(RustNavMeshAgent))]
 public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 {
-	public struct Warp(float startTime, float endTime, Vector3 translationScale, float rotationScale = 1f)
+	public struct Warp
 	{
-		public float startTime = startTime;
+		public float startTime;
 
-		public float endTime = endTime;
+		public float endTime;
 
-		public Vector3 translationScale = translationScale;
+		public Vector3 translationScale;
 
-		public float rotationScale = rotationScale;
+		public float rotationScale;
+
+		public Warp(float startTime, float endTime, Vector3 translationScale, float rotationScale = 1f)
+		{
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			this.startTime = startTime;
+			this.endTime = endTime;
+			this.translationScale = translationScale;
+			this.rotationScale = rotationScale;
+		}
 	}
 
 	public class PlayServerState : IPooled

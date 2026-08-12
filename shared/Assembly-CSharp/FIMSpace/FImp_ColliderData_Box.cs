@@ -31,6 +31,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		Is2D = false;
 		base.Collider = (Collider)(object)collider;
 		base.Transform = ((Component)collider).transform;
@@ -47,6 +48,7 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		Is2D = true;
 		base.Collider2D = (Collider2D)(object)collider2D;
 		base.Transform = ((Component)collider2D).transform;
@@ -1782,13 +1784,13 @@ public class FImp_ColliderData_Box : FImp_ColliderData_Base
 		}
 		if (val3.x > val3.y)
 		{
-			if (val3.x > val3.z || is2D)
+			if ((val3.x > val3.z) | is2D)
 			{
 				return right * Mathf.Sign(val2.x);
 			}
 			return forward * Mathf.Sign(val2.z);
 		}
-		if (val3.y > val3.z || is2D)
+		if ((val3.y > val3.z) | is2D)
 		{
 			return up * Mathf.Sign(val2.y);
 		}

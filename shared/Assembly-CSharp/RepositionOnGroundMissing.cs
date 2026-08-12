@@ -6,7 +6,7 @@ public class RepositionOnGroundMissing : EntityComponent<BaseEntity>, IServerCom
 
 	public bool killIfInvalid;
 
-	public LayerMask castLayers = LayerMask.op_Implicit(10551552);
+	public LayerMask castLayers;
 
 	private void OnGroundMissing()
 	{
@@ -82,5 +82,13 @@ public class RepositionOnGroundMissing : EntityComponent<BaseEntity>, IServerCom
 				baseEntity.SendNetworkUpdate();
 			}
 		}
+	}
+
+	public RepositionOnGroundMissing()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		castLayers = LayerMask.op_Implicit(10551552);
+		base._002Ector();
 	}
 }

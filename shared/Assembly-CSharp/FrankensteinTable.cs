@@ -198,7 +198,7 @@ public class FrankensteinTable : StorageContainer
 				CheckItem(slot.info, list, HeadItems, ref set);
 				CheckItem(slot.info, list, TorsoItems, ref set2);
 				CheckItem(slot.info, list, LegItems, ref set3);
-				if (set && set2 && set3)
+				if (set & set2 & set3)
 				{
 					return list;
 				}
@@ -230,7 +230,7 @@ public class FrankensteinTable : StorageContainer
 			CheckItem(item, null, TorsoItems, ref set2);
 			CheckItem(item, null, LegItems, ref set3);
 		}
-		return set && set2 && set3;
+		return set & set2 & set3;
 	}
 
 	private void CheckItem(ItemDefinition item, List<ItemDefinition> itemList, List<ItemDefinition> validItems, ref bool set)
@@ -277,8 +277,8 @@ public class FrankensteinTable : StorageContainer
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void CreateFrankenstein(RPCMessage msg)
 	{
 	}

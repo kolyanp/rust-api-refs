@@ -19,9 +19,9 @@ public static class Consts
 
 	public const string HelpUrlConfig = "http://saladgamer.com/vlb-doc/config/";
 
-	public static readonly bool ProceduralObjectsVisibleInEditor = true;
+	public static readonly bool ProceduralObjectsVisibleInEditor;
 
-	public static readonly Color FlatColor = Color.white;
+	public static readonly Color FlatColor;
 
 	public const ColorMode ColorModeDefault = ColorMode.Flat;
 
@@ -85,7 +85,7 @@ public static class Consts
 
 	public const float NoiseScaleDefault = 0.5f;
 
-	public static readonly Vector3 NoiseVelocityDefault = new Vector3(0.07f, 0.18f, 0.05f);
+	public static readonly Vector3 NoiseVelocityDefault;
 
 	public const BlendingMode BlendingModeDefault = BlendingMode.Additive;
 
@@ -139,6 +139,9 @@ public static class Consts
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		ProceduralObjectsVisibleInEditor = true;
+		FlatColor = Color.white;
+		NoiseVelocityDefault = new Vector3(0.07f, 0.18f, 0.05f);
 		BlendMode[] array = new BlendMode[3];
 		RuntimeHelpers.InitializeArray(array, (RuntimeFieldHandle)/*OpCode not supported: LdMemberToken*/);
 		BlendingMode_SrcFactor = (BlendMode[])(object)array;

@@ -29,7 +29,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		public int approachNode;
 	}
 
-	public int targetNodeIndex = -1;
+	public int targetNodeIndex;
 
 	public GameObject wakeParent;
 
@@ -145,13 +145,13 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	private CargoShipContainerDestination[] containerDestinations;
 
-	private HashSet<ulong> boardedPlayerIds = new HashSet<ulong>();
+	private HashSet<ulong> boardedPlayerIds;
 
 	public static bool hasCalculatedApproaches = false;
 
 	public BaseEntity mapMarkerInstance;
 
-	public Vector3 currentVelocity = Vector3.zero;
+	public Vector3 currentVelocity;
 
 	public float currentThrottle;
 
@@ -173,7 +173,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public HarborProximityManager proxManager;
 
-	private float lastSpeed = 0.3f;
+	private float lastSpeed;
 
 	public bool IsShipDocked => HasFlag(Flags.Reserved1);
 
@@ -804,7 +804,7 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public void UpdateRadiation()
 	{
-		currentRadiation += 1f;
+		currentRadiation++;
 		TriggerRadiation[] componentsInChildren = radiation.GetComponentsInChildren<TriggerRadiation>();
 		for (int i = 0; i < componentsInChildren.Length; i++)
 		{
@@ -1499,5 +1499,16 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		{
 		}
 		return base.OnRpcMessage(player, rpc, msg);
+	}
+
+	public CargoShip()
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		targetNodeIndex = -1;
+		boardedPlayerIds = new HashSet<ulong>();
+		currentVelocity = Vector3.zero;
+		lastSpeed = 0.3f;
+		base._002Ector();
 	}
 }

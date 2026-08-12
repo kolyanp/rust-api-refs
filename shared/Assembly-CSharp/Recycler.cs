@@ -36,9 +36,9 @@ public class Recycler : StorageContainer, IPowergridEntity
 
 	public Light lightComponent;
 
-	public Color lightGreenColor = new Color(2f / 3f, 1f, 0.08627451f);
+	public Color lightGreenColor;
 
-	public Color lightRedColor = new Color(1f, 0.04849673f, 0.01568627f);
+	public Color lightRedColor;
 
 	public string recyclerGreenMaterialAssetPath;
 
@@ -264,8 +264,8 @@ public class Recycler : StorageContainer, IPowergridEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SVSwitch(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -804,5 +804,16 @@ public class Recycler : StorageContainer, IPowergridEntity
 			1 => true, 
 			_ => base.ShouldInvalidateCache(id), 
 		};
+	}
+
+	public Recycler()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		lightGreenColor = new Color(2f / 3f, 1f, 0.08627451f);
+		lightRedColor = new Color(1f, 0.04849673f, 0.01568627f);
+		base._002Ector();
 	}
 }

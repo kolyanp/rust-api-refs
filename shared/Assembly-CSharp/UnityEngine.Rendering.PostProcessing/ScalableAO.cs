@@ -25,13 +25,9 @@ internal sealed class ScalableAO : UnityEngine.Rendering.PostProcessing.IAmbient
 
 	private AmbientOcclusion m_Settings;
 
-	private readonly RenderTargetIdentifier[] m_MRT = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2]
-	{
-		RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)10),
-		RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2)
-	};
+	private readonly RenderTargetIdentifier[] m_MRT;
 
-	private readonly int[] m_SampleCount = new int[5] { 4, 6, 10, 8, 12 };
+	private readonly int[] m_SampleCount;
 
 	public ScalableAO(AmbientOcclusion settings)
 	{
@@ -39,6 +35,13 @@ internal sealed class ScalableAO : UnityEngine.Rendering.PostProcessing.IAmbient
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		m_MRT = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2]
+		{
+			RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)10),
+			RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2)
+		};
+		m_SampleCount = new int[5] { 4, 6, 10, 8, 12 };
+		base._002Ector();
 		m_Settings = settings;
 	}
 

@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class StatusPanel : MonoBehaviour
 {
-	[SerializeField]
 	[Header("On Status")]
+	[SerializeField]
 	private RustText onStatusText;
 
 	[SerializeField]

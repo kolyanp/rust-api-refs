@@ -59,11 +59,11 @@ public static class PremiumUtil
 
 	public const string KickReason = "premium_account_required";
 
-	public static readonly Phrase KickPhrase = new Phrase("premium.kick_phrase", "Your account must have premium status to play on this server.");
+	public static readonly Phrase KickPhrase;
 
-	public static string PremiumStatusEndpoint = "https://rust-premium.facepunch.com/api/premium/status";
+	public static string PremiumStatusEndpoint;
 
-	private static readonly HttpClient Http = new HttpClient();
+	private static readonly HttpClient Http;
 
 	public static async Task<PremiumCheckResult> CheckIfPlayerIsPremium(ulong steamId)
 	{
@@ -113,34 +113,29 @@ public static class PremiumUtil
 		{
 			throw new ArgumentException("SteamIDs list cannot be empty", "steamIds");
 		}
-		string text = JsonConvert.SerializeObject((object)new PremiumCheckRequest
+		string content = JsonConvert.SerializeObject((object)new PremiumCheckRequest
 		{
 			SteamIds = steamIds
 		});
-		HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Server.premiumVerifyEndpoint);
-		try
+		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Server.premiumVerifyEndpoint);
+		request.Content = new StringContent(content, Encoding.UTF8, "application/json");
+		using HttpResponseMessage response = await Http.SendAsync(request);
+		response.EnsureSuccessStatusCode();
+		string text = await response.Content.ReadAsStringAsync();
+		PremiumCheckResponse premiumCheckResponse = JsonConvert.DeserializeObject<PremiumCheckResponse>(text);
+		if (premiumCheckResponse?.Results == null || premiumCheckResponse.Results.Count != steamIds.Count)
 		{
-			request.Content = (HttpContent)new StringContent(text, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await Http.SendAsync(request);
-			try
-			{
-				response.EnsureSuccessStatusCode();
-				string text2 = await response.Content.ReadAsStringAsync();
-				PremiumCheckResponse premiumCheckResponse = JsonConvert.DeserializeObject<PremiumCheckResponse>(text2);
-				if (premiumCheckResponse?.Results == null || premiumCheckResponse.Results.Count != steamIds.Count)
-				{
-					throw new Exception("Premium verify endpoint returned malformed response: " + text2);
-				}
-				return premiumCheckResponse.Results;
-			}
-			finally
-			{
-				((IDisposable)response)?.Dispose();
-			}
+			throw new Exception("Premium verify endpoint returned malformed response: " + text);
 		}
-		finally
-		{
-			((IDisposable)request)?.Dispose();
-		}
+		return premiumCheckResponse.Results;
+	}
+
+	static PremiumUtil()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		KickPhrase = new Phrase("premium.kick_phrase", "Your account must have premium status to play on this server.");
+		PremiumStatusEndpoint = "https://rust-premium.facepunch.com/api/premium/status";
+		Http = new HttpClient();
 	}
 }

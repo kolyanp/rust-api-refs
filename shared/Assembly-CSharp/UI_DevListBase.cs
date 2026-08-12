@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public abstract class UI_DevListBase : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected FlexColumnsElement flexColumns;
 
 	[SerializeField]

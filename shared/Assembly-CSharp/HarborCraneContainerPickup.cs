@@ -37,11 +37,11 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	public Transform ServerTowerGrab;
 
-	public float LockTime = 5f;
+	public float LockTime;
 
-	public float MaxMoveDistance = 32f;
+	public float MaxMoveDistance;
 
-	public float PickedUpObjectRotationSpeed = 30f;
+	public float PickedUpObjectRotationSpeed;
 
 	private List<ContainerStack> Stacks;
 
@@ -49,19 +49,19 @@ public class HarborCraneContainerPickup : HarborCrane
 
 	private const float ContainerSize = 3f;
 
-	public int MaxContainerStackSize = 3;
+	public int MaxContainerStackSize;
 
 	public bool DebugContainerSpawns;
 
 	public bool DebugContainerDestinations;
 
-	private Vector3 grabOffset = new Vector3(0f, 19f, 0f);
+	private Vector3 grabOffset;
 
 	public static ListHashSet<HarborCraneContainerPickup> AllCranes = new ListHashSet<HarborCraneContainerPickup>();
 
 	private Vector3 startForward;
 
-	private List<QueuedMove> movesToMake = new List<QueuedMove>();
+	private List<QueuedMove> movesToMake;
 
 	private QueuedMove? moveInProcess;
 
@@ -682,5 +682,18 @@ public class HarborCraneContainerPickup : HarborCrane
 			}
 		}
 		UpdateArmSupports(((Component)this).transform.right);
+	}
+
+	public HarborCraneContainerPickup()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		LockTime = 5f;
+		MaxMoveDistance = 32f;
+		PickedUpObjectRotationSpeed = 30f;
+		MaxContainerStackSize = 3;
+		grabOffset = new Vector3(0f, 19f, 0f);
+		movesToMake = new List<QueuedMove>();
+		base._002Ector();
 	}
 }

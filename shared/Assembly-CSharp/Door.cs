@@ -14,7 +14,7 @@ using UnityEngine.Assertions;
 
 public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 {
-	public static readonly Phrase UpgradeBlockedLock = new Phrase("simple.upgrade.blocked_lock", "Remove lock to upgrade.");
+	public static readonly Phrase UpgradeBlockedLock;
 
 	public GameObjectRef knockEffect;
 
@@ -56,8 +56,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 	[ReadOnly]
 	private float openAnimLength = 4f;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private float closeAnimLength = 4f;
 
 	public const Flags ReverseOpen = Flags.Reserved1;
@@ -70,11 +70,11 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	public NavMeshLink NavMeshLink;
 
-	private static int nonWalkableArea = -1;
+	private static int nonWalkableArea;
 
-	private static int animalAgentTypeId = -1;
+	private static int animalAgentTypeId;
 
-	private static int humanoidAgentTypeId = -1;
+	private static int humanoidAgentTypeId;
 
 	private float decayResetTimeLast = float.NegativeInfinity;
 
@@ -88,15 +88,15 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	private float nextKnockTime = float.NegativeInfinity;
 
-	private static int openHash = Animator.StringToHash("open");
+	private static int openHash;
 
-	private static int closeHash = Animator.StringToHash("close");
+	private static int closeHash;
 
-	private static int reverseOpenHash = Animator.StringToHash("reverseOpen");
+	private static int reverseOpenHash;
 
-	private static int reverseCloseAnimHash = Animator.StringToHash("CloseReverse");
+	private static int reverseCloseAnimHash;
 
-	private static int reverseOpenAnimHash = Animator.StringToHash("OpenReverse");
+	private static int reverseOpenAnimHash;
 
 	public override bool AllowOnCargoShip => allowOnCargoShip;
 
@@ -638,8 +638,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
@@ -798,8 +798,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 	{
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_KnockDoor(RPCMessage rpc)
 	{
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
@@ -823,8 +823,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		Interface.CallHook("OnDoorKnocked", this, rpc.player);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_ToggleHatch(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract(usableWhileCrawling: true) || !hasHatch)
@@ -867,8 +867,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_NotifyWoundedOpen(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -913,8 +913,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_NotifyWoundedClose(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -1242,9 +1242,9 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		global::SimpleUpgrade.DoUpgrade(this, player, upgradeItem);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void DoSimpleUpgrade(RPCMessage msg)
 	{
 		if (base.SecondsSinceAttacked < 30f)
@@ -1291,5 +1291,20 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 			return false;
 		}
 		return base.CanBeReskinned(player);
+	}
+
+	static Door()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		UpgradeBlockedLock = new Phrase("simple.upgrade.blocked_lock", "Remove lock to upgrade.");
+		nonWalkableArea = -1;
+		animalAgentTypeId = -1;
+		humanoidAgentTypeId = -1;
+		openHash = Animator.StringToHash("open");
+		closeHash = Animator.StringToHash("close");
+		reverseOpenHash = Animator.StringToHash("reverseOpen");
+		reverseCloseAnimHash = Animator.StringToHash("CloseReverse");
+		reverseOpenAnimHash = Animator.StringToHash("OpenReverse");
 	}
 }

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class UIMarketTerminal : UIDialog, IVendingMachineInterface
 {
-	public static readonly Phrase PendingDeliveryPluralPhrase = new Phrase("market.pending_delivery.plural", "Waiting for {n} deliveries...");
+	public static readonly Phrase PendingDeliveryPluralPhrase;
 
-	public static readonly Phrase PendingDeliverySingularPhrase = new Phrase("market.pending_delivery.singular", "Waiting for delivery...");
+	public static readonly Phrase PendingDeliverySingularPhrase;
 
 	public Canvas canvas;
 
@@ -52,4 +52,14 @@ public class UIMarketTerminal : UIDialog, IVendingMachineInterface
 	public SoundDefinition buyItemSoundDef;
 
 	public SoundDefinition buttonPressSoundDef;
+
+	static UIMarketTerminal()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		PendingDeliveryPluralPhrase = new Phrase("market.pending_delivery.plural", "Waiting for {n} deliveries...");
+		PendingDeliverySingularPhrase = new Phrase("market.pending_delivery.singular", "Waiting for delivery...");
+	}
 }

@@ -163,17 +163,13 @@ public class MaterialConfig : ScriptableObject
 		for (int j = 0; j < Floats.Length; j++)
 		{
 			ShaderParametersFloat shaderParametersFloat = Floats[j];
-			float src;
-			float dst;
-			float num = shaderParametersFloat.FindBlendParameters(pos, biomeOverride, out src, out dst);
+			float num = shaderParametersFloat.FindBlendParameters(pos, biomeOverride, out var src, out var dst);
 			properties.SetFloat(shaderParametersFloat.Name, Mathf.Lerp(src, dst, num));
 		}
 		for (int k = 0; k < Colors.Length; k++)
 		{
 			ShaderParametersColor shaderParametersColor = Colors[k];
-			Color src2;
-			Color dst2;
-			float num2 = shaderParametersColor.FindBlendParameters(pos, biomeOverride, out src2, out dst2);
+			float num2 = shaderParametersColor.FindBlendParameters(pos, biomeOverride, out var src2, out var dst2);
 			properties.SetColor(shaderParametersColor.Name, Color.Lerp(src2, dst2, num2));
 		}
 		for (int l = 0; l < Textures.Length; l++)

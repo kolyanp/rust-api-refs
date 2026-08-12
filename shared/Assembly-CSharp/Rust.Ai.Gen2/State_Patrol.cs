@@ -10,10 +10,10 @@ namespace Rust.Ai.Gen2;
 public class State_Patrol : FSMStateBase
 {
 	[SerializeField]
-	private Vector2 distanceRange = new Vector2(4f, 6f);
+	private Vector2 distanceRange;
 
 	[SerializeField]
-	private float homeRadius = 10f;
+	private float homeRadius;
 
 	[SerializeField]
 	private RustNavMeshAgent.Speeds speed;
@@ -226,5 +226,14 @@ public class State_Patrol : FSMStateBase
 		{
 			baseCombatEntity.SetHealth(Owner.MaxHealth());
 		}
+	}
+
+	public State_Patrol()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		distanceRange = new Vector2(4f, 6f);
+		homeRadius = 10f;
+		base._002Ector();
 	}
 }

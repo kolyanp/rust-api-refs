@@ -1,17 +1,90 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 
 public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 {
-	public AnimationClipPlayable Playable { get; private set; }
+	[CompilerGenerated]
+	private AnimationClipPlayable _003CPlayable_003Ek__BackingField;
 
-	public AnimatorControllerPlayable Controller { get; private set; }
+	[CompilerGenerated]
+	private AnimatorControllerPlayable _003CController_003Ek__BackingField;
 
-	public AnimationLayerMixerPlayable LayerMixer { get; private set; }
+	[CompilerGenerated]
+	private AnimationLayerMixerPlayable _003CLayerMixer_003Ek__BackingField;
 
-	public PlayableGraph Graph { get; private set; }
+	[CompilerGenerated]
+	private PlayableGraph _003CGraph_003Ek__BackingField;
+
+	public AnimationClipPlayable Playable
+	{
+		[CompilerGenerated]
+		readonly get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CPlayable_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CPlayable_003Ek__BackingField = value;
+		}
+	}
+
+	public AnimatorControllerPlayable Controller
+	{
+		[CompilerGenerated]
+		readonly get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CController_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CController_003Ek__BackingField = value;
+		}
+	}
+
+	public AnimationLayerMixerPlayable LayerMixer
+	{
+		[CompilerGenerated]
+		readonly get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLayerMixer_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLayerMixer_003Ek__BackingField = value;
+		}
+	}
+
+	public PlayableGraph Graph
+	{
+		[CompilerGenerated]
+		readonly get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CGraph_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CGraph_003Ek__BackingField = value;
+		}
+	}
 
 	public float Length { get; private set; }
 

@@ -20,7 +20,14 @@ public class SimpleSplineTranslator
 
 	public float Speed => speed;
 
-	public Vector3 Offset => offset;
+	public Vector3 Offset
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return offset;
+		}
+	}
 
 	public float CurrentDistance => currentDistance;
 
@@ -30,6 +37,7 @@ public class SimpleSplineTranslator
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		this.spline = spline;
 		this.speed = speed;
 		this.loop = loop;
@@ -43,6 +51,7 @@ public class SimpleSplineTranslator
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		spline = null;
 		splineData = null;
 		speed = 0f;

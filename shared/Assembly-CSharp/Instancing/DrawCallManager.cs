@@ -39,7 +39,7 @@ public class DrawCallManager
 
 		public DrawCallJobData JobData;
 
-		public MaterialPropertyBlock MaterialBlock = new MaterialPropertyBlock();
+		public MaterialPropertyBlock MaterialBlock;
 
 		public DrawCallKey CalculateKey()
 		{
@@ -50,6 +50,14 @@ public class DrawCallManager
 				_key = new DrawCallKey(Material, ShadowMode, ReceiveShadows, LightProbes);
 			}
 			return _key;
+		}
+
+		public DrawCall()
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Expected O, but got Unknown
+			MaterialBlock = new MaterialPropertyBlock();
+			base._002Ector();
 		}
 	}
 
@@ -71,7 +79,7 @@ public class DrawCallManager
 
 	private int _positionBufferVersion;
 
-	private List<DrawCall> DrawCalls = new List<DrawCall>();
+	private List<DrawCall> DrawCalls;
 
 	private bool _needsDrawCallRebuild;
 
@@ -81,7 +89,7 @@ public class DrawCallManager
 
 	private const int initialCapacity = 1024;
 
-	private Bounds cullingBounds = new Bounds(Vector3.zero, Vector3.one * 30000f);
+	private Bounds cullingBounds;
 
 	public int DrawCallsLastFrame { get; private set; }
 
@@ -94,6 +102,9 @@ public class DrawCallManager
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		DrawCalls = new List<DrawCall>();
+		cullingBounds = new Bounds(Vector3.zero, Vector3.one * 30000f);
+		base._002Ector();
 		this.cellAllocator = cellAllocator;
 		GeometryBuffers = geometryBuffers;
 	}

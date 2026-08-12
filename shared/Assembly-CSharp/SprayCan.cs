@@ -43,51 +43,51 @@ public class SprayCan : HeldEntity
 
 	public const Flags IsFreeSpraying = Flags.Reserved1;
 
-	public static Phrase LastReskinError = Phrase.op_Implicit(string.Empty);
+	public static Phrase LastReskinError;
 
-	public static BaseEntity LastReskinErrorEntity = null;
+	public static BaseEntity LastReskinErrorEntity;
 
-	public static string LastReskinErrorArgString = string.Empty;
+	public static string LastReskinErrorArgString;
 
-	public static readonly Phrase FreeSprayNamePhrase = new Phrase("freespray_radial", "Free Spray");
+	public static readonly Phrase FreeSprayNamePhrase;
 
-	public static readonly Phrase FreeSprayDescPhrase = new Phrase("freespray_radial_desc", "Spray shapes freely with various colors");
+	public static readonly Phrase FreeSprayDescPhrase;
 
-	public static readonly Phrase BuildingSkinColourPhrase = new Phrase("buildingskin_colour", "Set colour");
+	public static readonly Phrase BuildingSkinColourPhrase;
 
-	public static readonly Phrase BuildingSkinColourDescPhrase = new Phrase("buildingskin_colour_desc", "Set the block to the highlighted colour");
+	public static readonly Phrase BuildingSkinColourDescPhrase;
 
-	public static readonly Phrase EntityChangeSkinPhrase = new Phrase("entity_changeskin", "Change skin");
+	public static readonly Phrase EntityChangeSkinPhrase;
 
-	public static readonly Phrase EntityChangeSkinDescPhrase = new Phrase("entity_changeskin_desc", "Open skin selection");
+	public static readonly Phrase EntityChangeSkinDescPhrase;
 
-	public static readonly Phrase EntityChangeColourPhrase = new Phrase("entity_changecolour", "Change colour");
+	public static readonly Phrase EntityChangeColourPhrase;
 
-	public static readonly Phrase EntityChangeColourDescPhrase = new Phrase("entity_changecolour_desc", "Open colour selection");
+	public static readonly Phrase EntityChangeColourDescPhrase;
 
-	public static readonly Phrase DoorMustBeClosed = new Phrase("error_doormustbeclosed", "Door must be closed");
+	public static readonly Phrase DoorMustBeClosed;
 
-	public static readonly Phrase NeedDoorAccess = new Phrase("error_needdooraccess", "Need door access");
+	public static readonly Phrase NeedDoorAccess;
 
-	public static readonly Phrase CannotReskinThatDoor = new Phrase("error_cannotreskindoor", "Cannot reskin that door");
+	public static readonly Phrase CannotReskinThatDoor;
 
-	public static readonly Phrase RecentlyDamaged = new Phrase("error_reskin_recentlydamaged", "Recently damaged, reskinnable in {0} seconds");
+	public static readonly Phrase RecentlyDamaged;
 
-	public static readonly Phrase ExplosivesActive = new Phrase("error_explosivesactive", "Cannot reskin an object with explosives attached");
+	public static readonly Phrase ExplosivesActive;
 
-	public static readonly Phrase PlayerInAir = new Phrase("error_playerinair", "You must be on the ground");
+	public static readonly Phrase PlayerInAir;
 
-	public static readonly Phrase BlockedByPlayer = new Phrase("error_blockedbyplayer_reskin", "Blocked by intersecting player");
+	public static readonly Phrase BlockedByPlayer;
 
-	public static readonly Phrase BlockedBySomething = new Phrase("error_blockedbysomething", "Blocked by something");
+	public static readonly Phrase BlockedBySomething;
 
-	public static readonly Phrase PlayerIsMounted = new Phrase("error_playerismounted", "Player {0} is mounted");
+	public static readonly Phrase PlayerIsMounted;
 
-	public static readonly Phrase CannotReskinInMonument = new Phrase("error_reskin_monument", "Cannot reskin objects inside a monument");
+	public static readonly Phrase CannotReskinInMonument;
 
-	public static readonly Phrase NeedLockAccess = new Phrase("error_needlockaccess", "Need lock access");
+	public static readonly Phrase NeedLockAccess;
 
-	public static readonly Phrase NotAuthorized = new Phrase("error_notauthorized", "You are not authorized");
+	public static readonly Phrase NotAuthorized;
 
 	public SoundDefinition SpraySound;
 
@@ -447,9 +447,9 @@ public class SprayCan : HeldEntity
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ChangeItemSkin(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -635,10 +635,10 @@ public class SprayCan : HeldEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server.IsActiveItem]
+	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void ChangeWallpaper(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -780,7 +780,7 @@ public class SprayCan : HeldEntity
 		return !triggerNoSpray.IsPositionValid(pos);
 	}
 
-	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
@@ -788,7 +788,7 @@ public class SprayCan : HeldEntity
 		typeof(Vector3),
 		typeof(int)
 	})]
-	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void CreateSpray(RPCMessage msg)
 	{
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
@@ -949,5 +949,72 @@ public class SprayCan : HeldEntity
 				break;
 			}
 		}
+	}
+
+	static SprayCan()
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Expected O, but got Unknown
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Expected O, but got Unknown
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Expected O, but got Unknown
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Expected O, but got Unknown
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Expected O, but got Unknown
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Expected O, but got Unknown
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Expected O, but got Unknown
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Expected O, but got Unknown
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Expected O, but got Unknown
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Expected O, but got Unknown
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fb: Expected O, but got Unknown
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Expected O, but got Unknown
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Expected O, but got Unknown
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Expected O, but got Unknown
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Expected O, but got Unknown
+		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Expected O, but got Unknown
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Expected O, but got Unknown
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Expected O, but got Unknown
+		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019b: Expected O, but got Unknown
+		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01af: Expected O, but got Unknown
+		LastReskinError = Phrase.op_Implicit(string.Empty);
+		LastReskinErrorEntity = null;
+		LastReskinErrorArgString = string.Empty;
+		FreeSprayNamePhrase = new Phrase("freespray_radial", "Free Spray");
+		FreeSprayDescPhrase = new Phrase("freespray_radial_desc", "Spray shapes freely with various colors");
+		BuildingSkinColourPhrase = new Phrase("buildingskin_colour", "Set colour");
+		BuildingSkinColourDescPhrase = new Phrase("buildingskin_colour_desc", "Set the block to the highlighted colour");
+		EntityChangeSkinPhrase = new Phrase("entity_changeskin", "Change skin");
+		EntityChangeSkinDescPhrase = new Phrase("entity_changeskin_desc", "Open skin selection");
+		EntityChangeColourPhrase = new Phrase("entity_changecolour", "Change colour");
+		EntityChangeColourDescPhrase = new Phrase("entity_changecolour_desc", "Open colour selection");
+		DoorMustBeClosed = new Phrase("error_doormustbeclosed", "Door must be closed");
+		NeedDoorAccess = new Phrase("error_needdooraccess", "Need door access");
+		CannotReskinThatDoor = new Phrase("error_cannotreskindoor", "Cannot reskin that door");
+		RecentlyDamaged = new Phrase("error_reskin_recentlydamaged", "Recently damaged, reskinnable in {0} seconds");
+		ExplosivesActive = new Phrase("error_explosivesactive", "Cannot reskin an object with explosives attached");
+		PlayerInAir = new Phrase("error_playerinair", "You must be on the ground");
+		BlockedByPlayer = new Phrase("error_blockedbyplayer_reskin", "Blocked by intersecting player");
+		BlockedBySomething = new Phrase("error_blockedbysomething", "Blocked by something");
+		PlayerIsMounted = new Phrase("error_playerismounted", "Player {0} is mounted");
+		CannotReskinInMonument = new Phrase("error_reskin_monument", "Cannot reskin objects inside a monument");
+		NeedLockAccess = new Phrase("error_needlockaccess", "Need lock access");
+		NotAuthorized = new Phrase("error_notauthorized", "You are not authorized");
 	}
 }

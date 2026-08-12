@@ -117,9 +117,7 @@ public class AiLocationSpawner : SpawnGroup
 		for (int i = 0; i < numToSpawn; i++)
 		{
 			GameObjectRef prefab = GetPrefab();
-			Vector3 pos;
-			Quaternion rot;
-			BaseSpawnPoint spawnPoint = GetSpawnPoint(prefab, out pos, out rot);
+			BaseSpawnPoint spawnPoint = GetSpawnPoint(prefab, out var pos, out var rot);
 			if (Object.op_Implicit((Object)(object)spawnPoint))
 			{
 				BaseEntity baseEntity = GameManager.server.CreateEntity(prefab.resourcePath, pos, rot);

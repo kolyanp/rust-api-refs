@@ -19,8 +19,8 @@ using UnityEngine;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("server")]
+[ResetStaticFields]
 public class Server : ConsoleSystem
 {
 	[ServerVar(Help = "(Generated) IP address the server binds to; leave empty to bind to all interfaces")]
@@ -688,6 +688,9 @@ public class Server : ConsoleSystem
 	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - affects how many players get batched into 1 task by counting the size of their network queues. Higher number - less tasks")]
 	public static int ParallelNetworkQueueBatchSize = 256;
 
+	[CompilerGenerated]
+	private static Era _003CEra_003Ek__BackingField;
+
 	[ServerVar(Help = "(Generated) Setting this to true assigns a new random value to the world generation seed; useful for wipe scripts that want a fresh random map each time")]
 	public static bool randomize_seed
 	{
@@ -1110,7 +1113,22 @@ public class Server : ConsoleSystem
 		}
 	}
 
-	public static Era Era { get; private set; }
+	public static Era Era
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003CEra_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003CEra_003Ek__BackingField = value;
+		}
+	}
 
 	private static void ApplyGamemode()
 	{

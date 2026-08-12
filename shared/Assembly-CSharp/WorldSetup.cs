@@ -259,7 +259,7 @@ public class WorldSetup : SingletonComponent<WorldSetup>
 			CancelSetup("World File Outdated: " + World.Name);
 			yield break;
 		}
-		while (retryCount <= 1 && shouldRetry);
+		while ((retryCount <= 1) & shouldRetry);
 		if (World.Cached)
 		{
 			World.InitSize(World.Serialization.world.size);

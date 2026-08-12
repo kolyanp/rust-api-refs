@@ -31,9 +31,9 @@ public class ShopFront : StorageContainer
 
 	private bool swappingItems;
 
-	private static readonly Phrase TradeLockedError = new Phrase("error.tradelocked", "Trade Locked!");
+	private static readonly Phrase TradeLockedError;
 
-	private static readonly Phrase TradeUnsuccessfulError = new Phrase("error.tradeunsuccessful", "Trade Unsuccessful!");
+	private static readonly Phrase TradeUnsuccessfulError;
 
 	private float AngleDotProduct => 1f - maxUseAngle / 90f;
 
@@ -242,8 +242,8 @@ public class ShopFront : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AcceptClicked(RPCMessage msg)
 	{
 		if (!IsTradingPlayer(msg.player) || (Object)(object)vendorPlayer == (Object)null || (Object)(object)customerPlayer == (Object)null || Interface.CallHook("OnShopAcceptClick", this, msg.player) != null)
@@ -459,5 +459,15 @@ public class ShopFront : StorageContainer
 	{
 		base.GetAllInventories(list);
 		list.Add(customerInventory);
+	}
+
+	static ShopFront()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		TradeLockedError = new Phrase("error.tradelocked", "Trade Locked!");
+		TradeUnsuccessfulError = new Phrase("error.tradeunsuccessful", "Trade Unsuccessful!");
 	}
 }

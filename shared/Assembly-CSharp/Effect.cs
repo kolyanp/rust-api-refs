@@ -426,6 +426,7 @@ public class Effect : EffectData
 	{
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		((EffectData)this)._002Ector();
 		Init(Type.Generic, posWorld, normWorld, sourceConnection);
 		pooledString = effectName;
 	}
@@ -434,6 +435,7 @@ public class Effect : EffectData
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		((EffectData)this)._002Ector();
 		Init(Type.Generic, ent, boneID, posLocal, normLocal, sourceConnection);
 		pooledString = effectName;
 	}

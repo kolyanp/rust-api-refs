@@ -6,15 +6,15 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.MotionBlurRenderer), "Unity/Motion Blur", false)]
 public sealed class MotionBlur : PostProcessEffectSettings
 {
-	[Tooltip("The angle of rotary shutter. Larger values give longer exposure.")]
 	[Range(0f, 360f)]
+	[Tooltip("The angle of rotary shutter. Larger values give longer exposure.")]
 	public FloatParameter shutterAngle = new FloatParameter
 	{
 		value = 270f
 	};
 
-	[Range(4f, 32f)]
 	[Tooltip("The amount of sample points. This affects quality and performance.")]
+	[Range(4f, 32f)]
 	public IntParameter sampleCount = new IntParameter
 	{
 		value = 10

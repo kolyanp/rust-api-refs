@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Missions/OBJECTIVES/CookItem")]
 public class MissionObjective_CookItem : MissionObjective
 {
-	[ItemSelector]
 	[Tooltip("The cooked result that this objective is looking for (eg cooked chicken, not raw)")]
+	[ItemSelector]
 	public ItemDefinition targetItem;
 
 	public int targetItemAmount;

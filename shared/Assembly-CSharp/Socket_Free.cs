@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class Socket_Free : Socket_Base
 {
-	public Vector3 idealPlacementNormal = Vector3.up;
+	public Vector3 idealPlacementNormal;
 
-	public bool useTargetNormal = true;
+	public bool useTargetNormal;
 
 	public bool snapToTargetProvidedRotations;
 
 	[Tooltip("Allows for rolling the rotation of the deployable depending on distance. If you don't want the deployable to be able to rotate on it's Z axis, disable this.")]
-	public bool blendAimAngle = true;
+	public bool blendAimAngle;
 
 	public override bool TestTarget(Construction.Target target)
 	{
@@ -177,5 +177,15 @@ public class Socket_Free : Socket_Base
 			return -val;
 		}
 		return val;
+	}
+
+	public Socket_Free()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		idealPlacementNormal = Vector3.up;
+		useTargetNormal = true;
+		blendAimAngle = true;
+		base._002Ector();
 	}
 }

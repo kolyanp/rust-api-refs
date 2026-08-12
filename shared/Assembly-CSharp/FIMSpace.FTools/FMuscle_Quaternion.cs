@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.FTools;
@@ -9,6 +10,9 @@ public class FMuscle_Quaternion
 {
 	[HideInInspector]
 	public Quaternion DesiredRotation;
+
+	[CompilerGenerated]
+	private Quaternion _003CProceduralRotation_003Ek__BackingField;
 
 	private FMuscle_Float x;
 
@@ -30,7 +34,22 @@ public class FMuscle_Quaternion
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float BrakePower = 0.2f;
 
-	public Quaternion ProceduralRotation { get; private set; }
+	public Quaternion ProceduralRotation
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CProceduralRotation_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CProceduralRotation_003Ek__BackingField = value;
+		}
+	}
 
 	public bool IsCorrect => x != null;
 

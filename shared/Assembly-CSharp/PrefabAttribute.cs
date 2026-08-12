@@ -260,11 +260,11 @@ public abstract class PrefabAttribute : MonoBehaviour, IPrefabPreProcess
 	{
 		bool flag = (object)x == null;
 		bool flag2 = (object)y == null;
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			return true;
 		}
-		if (flag || flag2)
+		if (flag | flag2)
 		{
 			return false;
 		}

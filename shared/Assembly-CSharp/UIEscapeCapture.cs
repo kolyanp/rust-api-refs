@@ -4,13 +4,13 @@ using UnityEngine.Events;
 
 public class UIEscapeCapture : ListComponent<UIEscapeCapture>
 {
-	public UnityEvent onEscape = new UnityEvent();
+	public UnityEvent onEscape;
 
 	[Tooltip("If true, pressing escape will call only this callback and not any others.")]
-	public bool blockOtherCallbacks = true;
+	public bool blockOtherCallbacks;
 
 	[Tooltip("Set this to true if you want this EscapeCapture to take priority over any older EscapeCapture when enabled. Surely this should be default?")]
-	public bool insertAtTop = true;
+	public bool insertAtTop;
 
 	[ClientVar(ClientAdmin = true, Help = "(Generated) When enabled, draws debug visualisations for this system (seismic sensor range sphere, escape capture state, etc.); editor/admin-only")]
 	public static bool debug;
@@ -57,5 +57,15 @@ public class UIEscapeCapture : ListComponent<UIEscapeCapture>
 			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
 		}
 		return false;
+	}
+
+	public UIEscapeCapture()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Expected O, but got Unknown
+		onEscape = new UnityEvent();
+		blockOtherCallbacks = true;
+		insertAtTop = true;
+		base._002Ector();
 	}
 }

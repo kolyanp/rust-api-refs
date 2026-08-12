@@ -78,7 +78,7 @@ public static class DemoCompat
 		_resolvedRPCs.Clear();
 		bool flag = _compatOverride ?? Demo.compatibilitylayer;
 		_compatOverride = null;
-		_active = flag && requiresCompat;
+		_active = flag & requiresCompat;
 		LogCompatibilityInfo(header, flag);
 	}
 

@@ -29,7 +29,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public float nextToggleTime;
 
-	public Vector3 spawnOrigin = Vector3.zero;
+	public Vector3 spawnOrigin;
 
 	public float lastExtensionArmState;
 
@@ -37,11 +37,11 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public float lastYawState;
 
-	public bool handbrakeOn = true;
+	public bool handbrakeOn;
 
 	public float nextSelfHealTime;
 
-	public Vector3 lastDamagePos = Vector3.zero;
+	public Vector3 lastDamagePos;
 
 	public float lastDrivenTime;
 
@@ -51,13 +51,13 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public VehicleTerrainHandler serverTerrainHandler;
 
-	private Vector3 customInertiaTensor = new Vector3(25000f, 11000f, 19000f);
+	private Vector3 customInertiaTensor;
 
 	public float extensionArmState;
 
 	public float raiseArmState;
 
-	public float yawState = 1f;
+	public float yawState;
 
 	[Header("Magnet Crane")]
 	public Animator animator;
@@ -66,13 +66,13 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	private Transform COM;
 
 	[SerializeField]
-	public float arm1Speed = 0.01f;
+	public float arm1Speed;
 
 	[SerializeField]
-	public float arm2Speed = 0.01f;
+	public float arm2Speed;
 
 	[SerializeField]
-	public float turnYawSpeed = 0.01f;
+	public float turnYawSpeed;
 
 	[SerializeField]
 	public BaseMagnet Magnet;
@@ -129,7 +129,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	public TriggerHurtEx magnetDamage;
 
 	[SerializeField]
-	public int engineKW = 250;
+	public int engineKW;
 
 	[SerializeField]
 	private CarWheel[] wheels;
@@ -146,21 +146,21 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 	[SerializeField]
 	private EmissionToggle lightToggle;
 
-	public static readonly Phrase ReturnMessage = new Phrase("junkyardcrane.return", "Return to the Junkyard. Excessive damage will occur.");
+	public static readonly Phrase ReturnMessage;
 
 	private const Flags Flag_ArmMovement = Flags.Reserved7;
 
 	private const Flags Flag_BaseMovementInput = Flags.Reserved10;
 
-	private static int leftTreadParam = Animator.StringToHash("left tread movement");
+	private static int leftTreadParam;
 
-	private static int rightTreadParam = Animator.StringToHash("right tread movement");
+	private static int rightTreadParam;
 
-	private static int yawParam = Animator.StringToHash("Yaw");
+	private static int yawParam;
 
-	private static int arm1Param = Animator.StringToHash("Arm_01");
+	private static int arm1Param;
 
-	private static int arm2Param = Animator.StringToHash("Arm_02");
+	private static int arm2Param;
 
 	public VehicleTerrainHandler.Surface OnSurface
 	{
@@ -481,14 +481,14 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 			raiseArmMove = UpdateMoveInput(raiseArmInput, raiseArmMove, 3f, Time.fixedDeltaTime);
 			bool flag2 = extensionInput != 0f || raiseArmInput != 0f || yawInput != 0f;
 			flagsUpdateScope.Set(Flags.Reserved7, flag2);
-			magnetDamage.damageEnabled = IsOn() && flag2;
+			magnetDamage.damageEnabled = IsOn() & flag2;
 			extensionArmState += extensionInput * arm1Speed * num;
 			raiseArmState += raiseArmInput * arm2Speed * num;
 			yawState += yawInput * turnYawSpeed * num;
 			yawState %= 1f;
 			if (yawState < 0f)
 			{
-				yawState += 1f;
+				yawState++;
 			}
 			extensionArmState = Mathf.Clamp(extensionArmState, -1f, 1f);
 			raiseArmState = Mathf.Clamp(raiseArmState, -1f, 1f);
@@ -710,5 +710,37 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 			return !IsOn();
 		}
 		return true;
+	}
+
+	public MagnetCrane()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		spawnOrigin = Vector3.zero;
+		handbrakeOn = true;
+		lastDamagePos = Vector3.zero;
+		customInertiaTensor = new Vector3(25000f, 11000f, 19000f);
+		yawState = 1f;
+		arm1Speed = 0.01f;
+		arm2Speed = 0.01f;
+		turnYawSpeed = 0.01f;
+		engineKW = 250;
+		base._002Ector();
+	}
+
+	static MagnetCrane()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		ReturnMessage = new Phrase("junkyardcrane.return", "Return to the Junkyard. Excessive damage will occur.");
+		leftTreadParam = Animator.StringToHash("left tread movement");
+		rightTreadParam = Animator.StringToHash("right tread movement");
+		yawParam = Animator.StringToHash("Yaw");
+		arm1Param = Animator.StringToHash("Arm_01");
+		arm2Param = Animator.StringToHash("Arm_02");
 	}
 }

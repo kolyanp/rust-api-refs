@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TeamUI : MonoBehaviour
 {
-	public static Phrase invitePhrase = new Phrase("team.invited", "{0} has invited you to join a team");
+	public static Phrase invitePhrase;
 
 	public Canvas canvas;
 
@@ -28,7 +28,7 @@ public class TeamUI : MonoBehaviour
 
 	public RustText inviteText;
 
-	public static bool dirty = true;
+	public static bool dirty;
 
 	[NonSerialized]
 	public static ulong pendingTeamID;
@@ -39,4 +39,12 @@ public class TeamUI : MonoBehaviour
 	public GameObject teamMemberDetailsPanel;
 
 	public RustText selectedTeamMemberNameText;
+
+	static TeamUI()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		invitePhrase = new Phrase("team.invited", "{0} has invited you to join a team");
+		dirty = true;
+	}
 }

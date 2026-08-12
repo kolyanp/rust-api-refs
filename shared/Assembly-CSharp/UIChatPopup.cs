@@ -4,13 +4,13 @@ using UnityEngine.UI;
 
 public class UIChatPopup : MonoBehaviour
 {
-	public static Phrase MutePhrase = new Phrase("chat.mute", "Mute");
+	public static Phrase MutePhrase;
 
-	public static Phrase UnmutePhrase = new Phrase("chat.unmute", "Unmute");
+	public static Phrase UnmutePhrase;
 
-	public static Phrase MutedGlobalChatPhrase = new Phrase("chat.mutedglobal", "Muted global chat.");
+	public static Phrase MutedGlobalChatPhrase;
 
-	public static Phrase UnmutedGlobalChatPhrase = new Phrase("chat.unmutedglobal", "Unmuted global chat.");
+	public static Phrase UnmutedGlobalChatPhrase;
 
 	public UIChat Chat;
 
@@ -37,4 +37,20 @@ public class UIChatPopup : MonoBehaviour
 	public GameObject ViewInDiscordButton;
 
 	public GameObject AcceptInviteButton;
+
+	static UIChatPopup()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		MutePhrase = new Phrase("chat.mute", "Mute");
+		UnmutePhrase = new Phrase("chat.unmute", "Unmute");
+		MutedGlobalChatPhrase = new Phrase("chat.mutedglobal", "Muted global chat.");
+		UnmutedGlobalChatPhrase = new Phrase("chat.unmutedglobal", "Unmuted global chat.");
+	}
 }

@@ -39,7 +39,7 @@ public class MountedWeaponSeat : BaseVehicleSeat
 						return null;
 					}
 					_nextSearchTime = Time.time + 2f;
-					_searchCount += 1f;
+					_searchCount++;
 				}
 			}
 			return _owner;

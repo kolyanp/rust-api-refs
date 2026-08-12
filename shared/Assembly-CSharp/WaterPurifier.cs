@@ -148,7 +148,7 @@ public class WaterPurifier : LiquidContainer
 			return;
 		}
 		bool flag = HasDirtyWater();
-		if (!IsBoiling() && flag)
+		if (!IsBoiling() & flag)
 		{
 			InvokeRepeating(CheckCoolDown, 2f, 2f);
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);

@@ -408,10 +408,12 @@ public class ApartmentBuilding : BaseEntity
 
 	private ApartmentRoom FetchClosestUnoccupiedRoom(ApartmentSize size)
 	{
-		return (from x in rooms
-			where !x.IsCurrentlyRented() && x.Size == size
-			orderby Vector3.Distance(((Component)x).transform.position, ((Component)this).transform.position)
-			select x).FirstOrDefault();
+		return rooms.Where((ApartmentRoom x) => !x.IsCurrentlyRented() && x.Size == size).OrderBy(delegate(ApartmentRoom x)
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			return Vector3.Distance(((Component)x).transform.position, ((Component)this).transform.position);
+		}).FirstOrDefault();
 	}
 
 	public static void OnTeamMembershipChanged(List<ulong> members, ulong removedPlayer = 0uL)

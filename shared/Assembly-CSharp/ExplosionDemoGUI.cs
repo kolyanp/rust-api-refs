@@ -4,7 +4,7 @@ public class ExplosionDemoGUI : MonoBehaviour
 {
 	public GameObject[] Prefabs;
 
-	public float reactivateTime = 4f;
+	public float reactivateTime;
 
 	public Light Sun;
 
@@ -12,7 +12,7 @@ public class ExplosionDemoGUI : MonoBehaviour
 
 	private GameObject currentInstance;
 
-	private GUIStyle guiStyleHeader = new GUIStyle();
+	private GUIStyle guiStyleHeader;
 
 	private float sunIntensity;
 
@@ -84,5 +84,14 @@ public class ExplosionDemoGUI : MonoBehaviour
 		}
 		currentInstance = Object.Instantiate<GameObject>(Prefabs[currentNomber], ((Component)this).transform.position, default(Quaternion));
 		currentInstance.AddComponent<ExplosionDemoReactivator>().TimeDelayToReactivate = reactivateTime;
+	}
+
+	public ExplosionDemoGUI()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Expected O, but got Unknown
+		reactivateTime = 4f;
+		guiStyleHeader = new GUIStyle();
+		((MonoBehaviour)this)._002Ector();
 	}
 }

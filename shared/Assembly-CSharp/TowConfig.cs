@@ -13,12 +13,7 @@ public class TowConfig : PrefabAttribute
 		public float AngularLimitZ;
 	}
 
-	private static readonly Configuration DefaultConfig = new Configuration
-	{
-		AngularLimitsX = new Vector2(-80f, 80f),
-		AngularLimitY = 60f,
-		AngularLimitZ = 55f
-	};
+	private static readonly Configuration DefaultConfig;
 
 	public Configuration Config = DefaultConfig;
 
@@ -39,5 +34,17 @@ public class TowConfig : PrefabAttribute
 		result.AngularLimitY = Mathf.Min(Config.AngularLimitY, config.AngularLimitY);
 		result.AngularLimitZ = Mathf.Min(Config.AngularLimitZ, config.AngularLimitZ);
 		return result;
+	}
+
+	static TowConfig()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		DefaultConfig = new Configuration
+		{
+			AngularLimitsX = new Vector2(-80f, 80f),
+			AngularLimitY = 60f,
+			AngularLimitZ = 55f
+		};
 	}
 }

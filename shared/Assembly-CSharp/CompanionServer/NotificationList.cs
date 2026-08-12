@@ -201,18 +201,18 @@ public class NotificationList
 		{
 			pushRequest.SteamIds.Add(steamId);
 		}
-		string text = JsonConvert.SerializeObject((object)pushRequest);
+		string content = JsonConvert.SerializeObject((object)pushRequest);
 		Pool.Free<PushRequest>(ref pushRequest);
 		try
 		{
-			StringContent val = new StringContent(text, Encoding.UTF8, "application/json");
-			HttpResponseMessage val2 = await WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/push/send", (HttpContent)(object)val);
-			if (!val2.IsSuccessStatusCode)
+			StringContent content2 = new StringContent(content, Encoding.UTF8, "application/json");
+			HttpResponseMessage httpResponseMessage = await WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/push/send", content2);
+			if (!httpResponseMessage.IsSuccessStatusCode)
 			{
-				DebugEx.LogWarning($"Failed to send notification: {val2.StatusCode}", (StackTraceLogType)0);
+				DebugEx.LogWarning($"Failed to send notification: {httpResponseMessage.StatusCode}", (StackTraceLogType)0);
 				return NotificationSendResult.ServerError;
 			}
-			if (val2.StatusCode == HttpStatusCode.Accepted)
+			if (httpResponseMessage.StatusCode == HttpStatusCode.Accepted)
 			{
 				return NotificationSendResult.NoTargetsFound;
 			}

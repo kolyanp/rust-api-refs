@@ -262,7 +262,7 @@ public class HuntingTrophy : StorageContainer
 		{
 			flag = true;
 		}
-		if (!flag && flag2)
+		if (!flag & flag2)
 		{
 			GameObject headSource = headEnt.GetHeadSource();
 			BasePlayer basePlayer = default(BasePlayer);

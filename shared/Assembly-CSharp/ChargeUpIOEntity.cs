@@ -27,8 +27,8 @@ public class ChargeUpIOEntity : IOEntity
 
 	public bool RequireInputToTrigger;
 
-	[Tooltip("If this entity has no sound, disable this to save on resources")]
 	[Header("Charging Sounds")]
+	[Tooltip("If this entity has no sound, disable this to save on resources")]
 	public bool doSounds = true;
 
 	public SoundDefinition startChargingSound;
@@ -138,7 +138,7 @@ public class ChargeUpIOEntity : IOEntity
 		}
 		bool flag = IsOn();
 		bool flag2 = IsPowered();
-		if (!flag && flag2)
+		if (!flag & flag2)
 		{
 			CancelInvoke(InactiveDecayCharge);
 			InvokeRepeating(InactiveChargeUp, 0f, chargingTickDuration);

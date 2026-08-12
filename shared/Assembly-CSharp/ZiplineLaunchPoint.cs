@@ -238,7 +238,7 @@ public class ZiplineLaunchPoint : BaseEntity
 				num6 = num5 * num3 * num4;
 				bool flag = CheckLineOfSight(position, ((Component)item2).transform.position);
 				bool flag2 = CheckLineOfSight(((Component)item2).transform.position, position2);
-				if (flag && flag2)
+				if (flag & flag2)
 				{
 					num = num6;
 					ziplineTarget = item;
@@ -258,7 +258,7 @@ public class ZiplineLaunchPoint : BaseEntity
 						{
 							bool num7 = CheckLineOfSight(((Component)item2).transform.position, ((Component)item3).transform.position);
 							bool flag3 = CheckLineOfSight(((Component)item3).transform.position, ((Component)item).transform.position);
-							if (num7 && flag3)
+							if (num7 & flag3)
 							{
 								num = num6;
 								ziplineTarget = item;
@@ -298,9 +298,9 @@ public class ZiplineLaunchPoint : BaseEntity
 		return false;
 	}
 
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	public void MountPlayer(RPCMessage msg)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)

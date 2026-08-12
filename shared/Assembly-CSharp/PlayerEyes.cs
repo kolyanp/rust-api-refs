@@ -1,20 +1,24 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerEyes : EntityComponent<BasePlayer>
 {
-	public static readonly Vector3 EyeOffset = new Vector3(0f, 1.5f, 0f);
+	public static readonly Vector3 EyeOffset;
 
-	public static readonly Vector3 DuckOffset = new Vector3(0f, -0.6f, 0f);
+	public static readonly Vector3 DuckOffset;
 
-	public static readonly Vector3 CrawlOffset = new Vector3(0f, -1.15f, 0.175f);
+	public static readonly Vector3 CrawlOffset;
 
-	public static readonly Vector3 ParachuteOffset = new Vector3(0f, -1.45f, 0.3f);
+	public static readonly Vector3 ParachuteOffset;
 
-	public Vector3 thirdPersonSleepingOffset = new Vector3(0.43f, 1.25f, 0.7f);
+	public Vector3 thirdPersonSleepingOffset;
 
 	public LazyAimProperties defaultLazyAim;
 
-	private EncryptedValue<Vector3> viewOffset = Vector3.zero;
+	private EncryptedValue<Vector3> viewOffset;
+
+	[CompilerGenerated]
+	private Quaternion _003CbodyRotation_003Ek__BackingField;
 
 	public Vector3 worldMountedPosition
 	{
@@ -39,11 +43,38 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 		}
 	}
 
-	public Vector3 worldStandingPosition => ((Component)this).transform.position + EyeOffset;
+	public Vector3 worldStandingPosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.position + EyeOffset;
+		}
+	}
 
-	public Vector3 worldCrouchedPosition => worldStandingPosition + DuckOffset;
+	public Vector3 worldCrouchedPosition
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return worldStandingPosition + DuckOffset;
+		}
+	}
 
-	public Vector3 worldCrawlingPosition => worldStandingPosition + CrawlOffset;
+	public Vector3 worldCrawlingPosition
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return worldStandingPosition + CrawlOffset;
+		}
+	}
 
 	public Vector3 position
 	{
@@ -74,7 +105,14 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 		}
 	}
 
-	private Vector3 BodyLeanOffset => Vector3.zero;
+	private Vector3 BodyLeanOffset
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return Vector3.zero;
+		}
+	}
 
 	public Vector3 center
 	{
@@ -102,7 +140,16 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 		}
 	}
 
-	public Vector3 offset => ((Component)this).transform.up * (EyeOffset.y + viewOffset.Get().y);
+	public Vector3 offset
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.up * (EyeOffset.y + viewOffset.Get().y);
+		}
+	}
 
 	public Quaternion rotation
 	{
@@ -123,7 +170,22 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 		}
 	}
 
-	public Quaternion bodyRotation { get; set; }
+	public Quaternion bodyRotation
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CbodyRotation_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CbodyRotation_003Ek__BackingField = value;
+		}
+	}
 
 	public Quaternion parentRotation
 	{
@@ -161,7 +223,7 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		if (Object.op_Implicit((Object)(object)base.baseEntity) && isMounted)
+		if (Object.op_Implicit((Object)(object)base.baseEntity) & isMounted)
 		{
 			Vector3 val = mounted.EyePositionForPlayer(base.baseEntity, rotation);
 			if (val != Vector3.zero)
@@ -357,5 +419,31 @@ public class PlayerEyes : EntityComponent<BasePlayer>
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		return rotation;
+	}
+
+	public PlayerEyes()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		thirdPersonSleepingOffset = new Vector3(0.43f, 1.25f, 0.7f);
+		viewOffset = Vector3.zero;
+		base._002Ector();
+	}
+
+	static PlayerEyes()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		EyeOffset = new Vector3(0f, 1.5f, 0f);
+		DuckOffset = new Vector3(0f, -0.6f, 0f);
+		CrawlOffset = new Vector3(0f, -1.15f, 0.175f);
+		ParachuteOffset = new Vector3(0f, -1.45f, 0.3f);
 	}
 }

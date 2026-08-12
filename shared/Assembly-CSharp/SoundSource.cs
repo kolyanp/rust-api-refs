@@ -7,9 +7,17 @@ public class SoundSource : MonoBehaviour, IClientComponentEx, ILOD
 	[Serializable]
 	public class OcclusionPoint
 	{
-		public Vector3 offset = Vector3.zero;
+		public Vector3 offset;
 
 		public bool isOccluded;
+
+		public OcclusionPoint()
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			offset = Vector3.zero;
+			base._002Ector();
+		}
 	}
 
 	[Header("Occlusion")]

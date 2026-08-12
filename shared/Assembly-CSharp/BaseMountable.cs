@@ -53,7 +53,7 @@ public class BaseMountable : BaseCombatEntity
 
 	public const float MountCheckRadius = 0.25f;
 
-	public static Phrase dismountPhrase = new Phrase("dismount", "Dismount");
+	public static Phrase dismountPhrase;
 
 	[Header("Base Mountable")]
 	public MountSyncType mountSyncType;
@@ -65,13 +65,13 @@ public class BaseMountable : BaseCombatEntity
 
 	public bool overrideEyesRotation;
 
-	public Vector2 pitchClamp = new Vector2(-80f, 50f);
+	public Vector2 pitchClamp;
 
-	public Vector2 yawClamp = new Vector2(-80f, 80f);
+	public Vector2 yawClamp;
 
-	public bool canWieldItems = true;
+	public bool canWieldItems;
 
-	public bool relativeViewAngles = true;
+	public bool relativeViewAngles;
 
 	public bool disableLegsWhenMounted;
 
@@ -81,15 +81,15 @@ public class BaseMountable : BaseCombatEntity
 	public bool AllowForceMountWhenRestrained;
 
 	[Tooltip("Allow players to mount other mountables/ladders from this vehicle")]
-	public bool mountChaining = true;
+	public bool mountChaining;
 
 	public Transform mountAnchor;
 
-	public float mountLOSVertOffset = 0.5f;
+	public float mountLOSVertOffset;
 
-	[Range(0f, 1f)]
-	[Tooltip("The speed of the posde animation for this mountable.")]
 	[Header("Mount Pose")]
+	[Tooltip("The speed of the posde animation for this mountable.")]
+	[Range(0f, 1f)]
 	public float mountedAnimationSpeed;
 
 	public PlayerModel.MountPoses mountPose;
@@ -98,7 +98,7 @@ public class BaseMountable : BaseCombatEntity
 	public bool animateVehicleAim360;
 
 	[Space]
-	public float maxMountDistance = 1.5f;
+	public float maxMountDistance;
 
 	public Transform[] dismountPositions;
 
@@ -118,7 +118,7 @@ public class BaseMountable : BaseCombatEntity
 
 	public BasePlayer.CapsuleColliderInfo customPlayerCollider;
 
-	public float clippingCheckRadius = 0.4f;
+	public float clippingCheckRadius;
 
 	public bool clippingAndVisChecks;
 
@@ -141,17 +141,17 @@ public class BaseMountable : BaseCombatEntity
 
 	public MountGestureType allowedGestures;
 
-	public bool canDrinkWhileMounted = true;
+	public bool canDrinkWhileMounted;
 
 	public bool allowSleeperMounting;
 
 	public bool shouldShowHudHealth;
 
 	[Help("Set this to true if the mountable is enclosed so it doesn't move inside cars and such")]
-	public bool animateClothInLocalSpace = true;
+	public bool animateClothInLocalSpace;
 
 	[SerializeField]
-	private bool protectsFromAnimals = true;
+	private bool protectsFromAnimals;
 
 	[Header("Camera")]
 	public BasePlayer.CameraMode MountedCameraMode;
@@ -164,7 +164,7 @@ public class BaseMountable : BaseCombatEntity
 	[FormerlySerializedAs("needsVehicleTick")]
 	public bool isMobile;
 
-	public float SideLeanAmount = 0.2f;
+	public float SideLeanAmount;
 
 	public const float playerHeight = 1.8f;
 
@@ -172,14 +172,14 @@ public class BaseMountable : BaseCombatEntity
 
 	public BasePlayer _mounted;
 
-	public static ListHashSet<BaseMountable> AllMountables = new ListHashSet<BaseMountable>();
+	public static ListHashSet<BaseMountable> AllMountables;
 
-	public static ListHashSet<BaseMountable> Mounted = new ListHashSet<BaseMountable>();
+	public static ListHashSet<BaseMountable> Mounted;
 
 	[ServerVar(Help = "Toggles the usage of mountable MountedPlayerSync optimisations (only used by boat scientists currently)")]
-	public static bool canPauseMountedPlayerSync = false;
+	public static bool canPauseMountedPlayerSync;
 
-	protected bool syncsMountedPlayers = true;
+	protected bool syncsMountedPlayers;
 
 	public const float MOUNTABLE_TICK_RATE = 0.05f;
 
@@ -1594,5 +1594,37 @@ public class BaseMountable : BaseCombatEntity
 			return false;
 		}
 		return base.CanBeRedirectSwapped(player);
+	}
+
+	public BaseMountable()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		pitchClamp = new Vector2(-80f, 50f);
+		yawClamp = new Vector2(-80f, 80f);
+		canWieldItems = true;
+		relativeViewAngles = true;
+		mountChaining = true;
+		mountLOSVertOffset = 0.5f;
+		maxMountDistance = 1.5f;
+		clippingCheckRadius = 0.4f;
+		canDrinkWhileMounted = true;
+		animateClothInLocalSpace = true;
+		protectsFromAnimals = true;
+		SideLeanAmount = 0.2f;
+		syncsMountedPlayers = true;
+		base._002Ector();
+	}
+
+	static BaseMountable()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		dismountPhrase = new Phrase("dismount", "Dismount");
+		AllMountables = new ListHashSet<BaseMountable>();
+		Mounted = new ListHashSet<BaseMountable>();
+		canPauseMountedPlayerSync = false;
 	}
 }

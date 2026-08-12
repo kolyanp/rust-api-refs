@@ -17,9 +17,9 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 
 	public BoxCollider SpawnZone;
 
-	public float TraceHeight = 100f;
+	public float TraceHeight;
 
-	public LayerMask TraceLayerMask = LayerMask.op_Implicit(1503731969);
+	public LayerMask TraceLayerMask;
 
 	public Transform FerryWaypoint;
 
@@ -160,5 +160,14 @@ public class NexusIsland : BaseEntity, INexusTransferTriggerController
 		BaseEntity baseEntity = GameManager.server.CreateEntity(MapMarkerPrefab.resourcePath, MapMarkerLocation.position, MapMarkerLocation.rotation);
 		baseEntity.Spawn();
 		baseEntity.SetParent(this, worldPositionStays: true);
+	}
+
+	public NexusIsland()
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		TraceHeight = 100f;
+		TraceLayerMask = LayerMask.op_Implicit(1503731969);
+		base._002Ector();
 	}
 }

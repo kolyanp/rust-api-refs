@@ -103,8 +103,8 @@ public class PaintballGun : BaseProjectile
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Server_PaintballColorChanged(RPCMessage msg)
 	{
 		if (PaintballColorLookup.instance == null)

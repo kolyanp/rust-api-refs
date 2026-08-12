@@ -93,8 +93,7 @@ public class ConvarControlledSpawnPopulationRail : ConvarControlledSpawnPopulati
 				num2++;
 				if (TryGetRandomPointOnSpline(sidingSpline, component2, out var pos, out var rot))
 				{
-					GameObject spawned;
-					Status status = spawnHandler.TrySpawn(this, prefab2, pos, rot, out spawned);
+					Status status = spawnHandler.TrySpawn(this, prefab2, pos, rot, out var _);
 					spawnHandler.ReportAttempt(status, pos);
 					break;
 				}

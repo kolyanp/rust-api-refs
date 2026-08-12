@@ -5,13 +5,13 @@ public class UIParticle : BaseMonoBehaviour
 {
 	public Vector2 LifeTime;
 
-	public Vector2 Gravity = new Vector2(1000f, 1000f);
+	public Vector2 Gravity;
 
 	public Vector2 InitialX;
 
 	public Vector2 InitialY;
 
-	public Vector2 InitialScale = Vector2.one;
+	public Vector2 InitialScale;
 
 	public Vector2 InitialDelay;
 
@@ -129,5 +129,16 @@ public class UIParticle : BaseMonoBehaviour
 	private void Die()
 	{
 		Object.Destroy((Object)(object)((Component)this).gameObject);
+	}
+
+	public UIParticle()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		Gravity = new Vector2(1000f, 1000f);
+		InitialScale = Vector2.one;
+		base._002Ector();
 	}
 }

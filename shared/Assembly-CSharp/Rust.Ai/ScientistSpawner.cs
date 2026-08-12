@@ -6,15 +6,15 @@ namespace Rust.Ai;
 public class ScientistSpawner : SpawnGroup
 {
 	[Header("Scientist Spawner")]
-	public bool Mobile = true;
+	public bool Mobile;
 
 	public bool NeverMove;
 
 	public bool SpawnHostile;
 
-	public bool OnlyAggroMarkedTargets = true;
+	public bool OnlyAggroMarkedTargets;
 
-	public bool IsPeacekeeper = true;
+	public bool IsPeacekeeper;
 
 	public bool IsBandit;
 
@@ -24,14 +24,14 @@ public class ScientistSpawner : SpawnGroup
 
 	public Transform[] LookAtInterestPointsStationary;
 
-	public Vector2 RadioEffectRepeatRange = new Vector2(10f, 15f);
+	public Vector2 RadioEffectRepeatRange;
 
 	public Model Model;
 
 	[SerializeField]
 	private AiLocationManager _mgr;
 
-	private float _nextForcedRespawn = float.PositiveInfinity;
+	private float _nextForcedRespawn;
 
 	private bool _lastSpawnCallHadAliveMembers;
 
@@ -100,5 +100,17 @@ public class ScientistSpawner : SpawnGroup
 				Gizmos.DrawLine(((Component)this).transform.position, val.position);
 			}
 		}
+	}
+
+	public ScientistSpawner()
+	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		Mobile = true;
+		OnlyAggroMarkedTargets = true;
+		IsPeacekeeper = true;
+		RadioEffectRepeatRange = new Vector2(10f, 15f);
+		_nextForcedRespawn = float.PositiveInfinity;
+		base._002Ector();
 	}
 }

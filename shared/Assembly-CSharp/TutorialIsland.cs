@@ -45,7 +45,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 	public BaseMission FinalMission;
 
 	[Range(0f, 24f)]
-	public float TimeOfDay = 18f;
+	public float TimeOfDay;
 
 	public ItemDefinition rockDefinition;
 
@@ -56,28 +56,28 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 
 	private TutorialBuildTarget[] buildTargets;
 
-	public static Phrase NoTutorialIslandsAvailablePhrase = new Phrase("no_tutorial_islands_available", "No Tutorial Islands are currently available, please try again later...");
+	public static Phrase NoTutorialIslandsAvailablePhrase;
 
-	public static Phrase TutorialIslandStartCooldown = new Phrase("tutorial_island_start_cooldown", "Please wait {0} seconds before starting the tutorial again");
+	public static Phrase TutorialIslandStartCooldown;
 
-	public static ListHashSet<IslandBounds> BoundsListServer = new ListHashSet<IslandBounds>();
+	public static ListHashSet<IslandBounds> BoundsListServer;
 
-	public static float TutorialBoundsSize = 400f;
-
-	[ServerVar(Saved = true)]
-	public static bool SpawnTutorialIslandForNewPlayer = true;
-
-	private static ListHashSet<TutorialIsland> ActiveIslandsServer = new ListHashSet<TutorialIsland>();
+	public static float TutorialBoundsSize;
 
 	[ServerVar(Saved = true)]
-	public static bool EnforceTrespassChecks = true;
+	public static bool SpawnTutorialIslandForNewPlayer;
+
+	private static ListHashSet<TutorialIsland> ActiveIslandsServer;
+
+	[ServerVar(Saved = true)]
+	public static bool EnforceTrespassChecks;
 
 	[ServerVar(Help = "Will place the tutorial as close as possible to this pos, only for debugging")]
-	public static Vector3 OverrideTutorialLocation = Vector3.zero;
+	public static Vector3 OverrideTutorialLocation;
 
 	private const string TutorialIslandAssetPath = "assets/prefabs/missions/tutorialisland/tutorialisland.prefab";
 
-	private static float _tutorialWorldStart = 0f;
+	private static float _tutorialWorldStart;
 
 	public static Bounds WorldBoundsMinusTutorialIslands;
 
@@ -91,9 +91,9 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 
 	private bool readyToStartConversation;
 
-	private float tickRate = 1f;
+	private float tickRate;
 
-	private Vector3 kayakAnchorPoint = Vector3.zero;
+	private Vector3 kayakAnchorPoint;
 
 	private Kayak kayakToAnchor;
 
@@ -362,9 +362,7 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 worldPos;
-		Quaternion worldRot;
-		int unusedTutorialIslandLocationRotation = GetUnusedTutorialIslandLocationRotation(out worldPos, out worldRot);
+		int unusedTutorialIslandLocationRotation = GetUnusedTutorialIslandLocationRotation(out var worldPos, out var worldRot);
 		if (unusedTutorialIslandLocationRotation == -1)
 		{
 			return null;
@@ -950,5 +948,34 @@ public class TutorialIsland : BaseEntity, IEntityPingSource
 	public override bool ForceDeployableSetParent()
 	{
 		return true;
+	}
+
+	public TutorialIsland()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		TimeOfDay = 18f;
+		tickRate = 1f;
+		kayakAnchorPoint = Vector3.zero;
+		base._002Ector();
+	}
+
+	static TutorialIsland()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		NoTutorialIslandsAvailablePhrase = new Phrase("no_tutorial_islands_available", "No Tutorial Islands are currently available, please try again later...");
+		TutorialIslandStartCooldown = new Phrase("tutorial_island_start_cooldown", "Please wait {0} seconds before starting the tutorial again");
+		BoundsListServer = new ListHashSet<IslandBounds>();
+		TutorialBoundsSize = 400f;
+		SpawnTutorialIslandForNewPlayer = true;
+		ActiveIslandsServer = new ListHashSet<TutorialIsland>();
+		EnforceTrespassChecks = true;
+		OverrideTutorialLocation = Vector3.zero;
+		_tutorialWorldStart = 0f;
 	}
 }

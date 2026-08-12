@@ -29,23 +29,23 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private Material _gizmoMat;
 
-	private readonly List<TerrainAnchor> _gizmoAnchors = new List<TerrainAnchor>();
+	private readonly List<TerrainAnchor> _gizmoAnchors;
 
-	private readonly List<TerrainModifier> _gizmoModifiers = new List<TerrainModifier>();
+	private readonly List<TerrainModifier> _gizmoModifiers;
 
-	private int _gizmoTargetsFrame = -1;
+	private int _gizmoTargetsFrame;
 
-	private readonly HashSet<Transform> _selectedGizmoRoots = new HashSet<Transform>();
+	private readonly HashSet<Transform> _selectedGizmoRoots;
 
-	private static readonly Color AnchorColor = new Color(0.2f, 0.9f, 1f, 1f);
+	private static readonly Color AnchorColor;
 
-	private static readonly Color HeightSetColor = new Color(0.3f, 1f, 0.4f, 1f);
+	private static readonly Color HeightSetColor;
 
-	private static readonly Color HeightRaiseColor = new Color(1f, 0.85f, 0.2f, 1f);
+	private static readonly Color HeightRaiseColor;
 
-	private static readonly Color HeightAddColor = new Color(1f, 0.4f, 0.9f, 1f);
+	private static readonly Color HeightAddColor;
 
-	private static readonly Color OtherModColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+	private static readonly Color OtherModColor;
 
 	private WorldSerialization _mapSerialization;
 
@@ -65,7 +65,7 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private float[] _bakedRegion;
 
-	private string _preCliffStatus = "pre-cliff baseline: not loaded";
+	private string _preCliffStatus;
 
 	[Header("Terrain source")]
 	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
@@ -73,143 +73,143 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	[Header("Procedural (real Rust base heightmap)")]
 	[Tooltip("World seed fed to the real generator. 0 = auto.")]
-	public uint Seed = 54321u;
+	public uint Seed;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
-	public float ProceduralMapSize = 2000f;
+	public float ProceduralMapSize;
 
 	[Tooltip("Vertical height range in metres (terrain Size.y).")]
-	public float ProceduralHeightRange = 1000f;
+	public float ProceduralHeightRange;
 
 	[Tooltip("Auto-slope finder: acceptable terrain steepness (degrees) for dropping the cliff.")]
-	public int SlopeFinderMinAngle = 30;
+	public int SlopeFinderMinAngle;
 
-	public int SlopeFinderMaxAngle = 65;
+	public int SlopeFinderMaxAngle;
 
 	[Header("Terrain")]
 	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
-	public int HeightmapResolution = 513;
+	public int HeightmapResolution;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
-	public Vector3 TerrainSize = new Vector3(500f, 100f, 500f);
+	public Vector3 TerrainSize;
 
 	[Tooltip("World-space origin (bottom-south-west corner) of the sandbox terrain.")]
-	public Vector3 TerrainOrigin = Vector3.zero;
+	public Vector3 TerrainOrigin;
 
 	[Tooltip("Which canned height patch to seed the terrain with.")]
-	public TerrainPatch CurrentPatch = TerrainPatch.SlopeX;
+	public TerrainPatch CurrentPatch;
 
-	[Header("Map file region (real .map crop)")]
 	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
-	public string MapFilePath = string.Empty;
+	[Header("Map file region (real .map crop)")]
+	public string MapFilePath;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
-	public Vector3 RegionCenter = Vector3.zero;
+	public Vector3 RegionCenter;
 
 	[Tooltip("Side length in metres of the square region cropped from the map.")]
-	public float RegionSize = 300f;
+	public float RegionSize;
 
 	[Tooltip("World-Y that normalized height 0 maps to. Rust map heights are sea-level centred, so the terrain sits at y = -500 with a 1000m range (matches the shipped map loader). Nudge this if the terrain sits above/below the spawned cliffs.")]
-	public float MapWorldYOffset = -500f;
+	public float MapWorldYOffset;
 
 	[Tooltip("Auto-pick the region resolution to match the source map's per-cell detail over the cropped window. Turn off to use MapRegionResolution directly.")]
-	public bool AutoMapRegionResolution = true;
+	public bool AutoMapRegionResolution;
 
 	[Tooltip("Heightmap resolution of the cropped sandbox terrain (snapped to 2^n+1). Used when AutoMapRegionResolution is off; otherwise shows the last auto-computed value.")]
-	public int MapRegionResolution = 513;
+	public int MapRegionResolution;
 
 	[Tooltip("Spawn the real cliff prefabs that the map placed inside the region (kept linked to their prefab assets, so editing the prefab and recalculating shows the effect).")]
-	public bool SpawnRealCliffs = true;
+	public bool SpawnRealCliffs;
 
 	[Tooltip("Only spawn decor prefabs whose asset path looks like a cliff/rock, instead of all decor in the region.")]
-	public bool CliffPrefabsOnly = true;
+	public bool CliffPrefabsOnly;
 
 	[Tooltip("Use the cached pre-cliff terrain (T0) as the recalc baseline instead of the baked map terrain. T0 is captured once via 'Tools > Cliff Sandbox > Arm Pre-Cliff Terrain Capture' during a real generation of this map's seed/size. When off (or no cache), recalc falls back to the baked map terrain, which can produce spurious gaps.")]
-	public bool UsePreCliffBaseline = true;
+	public bool UsePreCliffBaseline;
 
 	[Tooltip("Procedural-generation scene the one-click 'Bake pre-cliff T0' button drives to capture T0. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene. Only used by the editor bake button.")]
-	public string GenerationScenePath = "Assets/Scenes/Release/Procedural Map.unity";
+	public string GenerationScenePath;
 
-	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	[Header("Placement")]
+	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]
-	public TerrainAnchorMode AnchorMode = TerrainAnchorMode.MaximizeHeight;
+	public TerrainAnchorMode AnchorMode;
 
 	[Tooltip("Snap the cliff root to the anchored Y after placing, so it visually follows the solve.")]
-	public bool SnapCliffToAnchoredHeight = true;
+	public bool SnapCliffToAnchoredHeight;
 
 	[Tooltip("When recalculating in Map File Region mode, re-apply each cliff's terrain modifiers at its real recorded map position instead of re-solving its anchors and moving it. This makes the recalc a faithful preview of the generated terrain around the cliff (anchors are still reported accepted/rejected for info). Turn off to also re-solve and move cliffs.")]
-	public bool RecalcKeepMapPositions = true;
+	public bool RecalcKeepMapPositions;
 
 	[Tooltip("When recalculating in Map File Region mode, re-spawn the real cliffs from their source prefab assets first so edits made to the prefab in the Project window are reflected. Spawned cliffs are plain clones (not linked to the asset), so without this a recalc would re-carve using the stale, pre-edit cliff instances. Turn off to recalc the exact instances currently in the scene (e.g. after moving them by hand).")]
-	public bool ResyncCliffsFromPrefabsOnRecalc = true;
+	public bool ResyncCliffsFromPrefabsOnRecalc;
 
 	[Tooltip("Hot-reload: before Carve selected / Re-anchor selected run, re-spawn the selected cliff(s) from their source prefab assets so edits made in Prefab Mode (or the Project window) apply immediately - no need to exit and re-enter play mode. Spawned cliffs are plain clones not linked to the asset, so without this Carve/Re-anchor keep using the stale, pre-edit clone. Turn off to act on the exact instances in the scene (e.g. after hand-moving them).")]
-	public bool HotReloadPrefabsBeforeAction = true;
+	public bool HotReloadPrefabsBeforeAction;
 
-	private int _nextSandboxCliffId = 1;
+	private int _nextSandboxCliffId;
 
 	[Tooltip("Replay each cliff's TerrainPlacement heightmap stamps during recalc, in addition to its TerrainModifiers. Rocks/formations flatten and blend the terrain under themselves with these stamps; the generator applies them before later pieces solve their anchors. Without replaying them the re-solve samples rougher, un-flattened terrain and rejects anchors the real map accepted. Turn off to replay only the height modifiers (the older behaviour).")]
-	public bool ReplayTerrainPlacementsOnRecalc = true;
+	public bool ReplayTerrainPlacementsOnRecalc;
 
 	[Tooltip("When re-anchoring, restrict the re-solve + reposition to cliffs whose name contains this text (case-insensitive); every other cliff stays locked to its faithful recorded map position. Leave empty to re-anchor every cliff. Re-anchoring ALL cliffs moves earlier pieces, which shifts the terrain later pieces were anchored to - so to test one edited prefab, set this to its name (e.g. 'cliff_hills_large_b') and only it will move.")]
-	public string ReAnchorOnlyName = string.Empty;
+	public string ReAnchorOnlyName;
 
-	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
 	[Header("Placement gizmos (play mode)")]
-	public bool ShowPlacementGizmos = true;
+	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
+	public bool ShowPlacementGizmos;
 
 	[Tooltip("Include TerrainAnchor gizmos (vertical solve range + radius).")]
-	public bool GizmoAnchors = true;
+	public bool GizmoAnchors;
 
 	[Tooltip("Include TerrainHeightSet modifier gizmos (radius ring).")]
-	public bool GizmoModifierHeightSet = true;
+	public bool GizmoModifierHeightSet;
 
 	[Tooltip("Include TerrainHeightRaise modifier gizmos (radius ring).")]
-	public bool GizmoModifierHeightRaise = true;
+	public bool GizmoModifierHeightRaise;
 
 	[Tooltip("Include TerrainHeightAdd modifier gizmos (radius ring).")]
-	public bool GizmoModifierHeightAdd = true;
+	public bool GizmoModifierHeightAdd;
 
 	[Tooltip("Include any other (non-height) TerrainModifier gizmos (radius ring).")]
-	public bool GizmoModifierOther = true;
+	public bool GizmoModifierOther;
 
 	[Tooltip("Only draw placement gizmos within this many metres of the camera (0 = no limit). Keeps dense real-map regions readable by hiding far-away gizmos.")]
-	public float GizmoDrawDistance = 60f;
+	public float GizmoDrawDistance;
 
 	[Tooltip("Click-to-select mode: instead of drawing every gizmo in range, left-click a cliff to toggle its gizmos on, click again to turn them off. Several cliffs can be selected at once.")]
-	public bool GizmoSelectionMode = true;
+	public bool GizmoSelectionMode;
 
 	[Header("Scale reference")]
 	[Tooltip("Spawn a bright, roughly player-sized capsule on the terrain so you can judge scale against the cliffs. Use 'Marker where I'm looking' or the J key to drop it under the aim.")]
-	public bool ShowPlayerScaleReference = true;
+	public bool ShowPlayerScaleReference;
 
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]
-	public float PlayerReferenceHeight = 1.8f;
+	public float PlayerReferenceHeight;
 
-	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
 	[Header("Camera (play-mode freecam)")]
-	public bool EnableFreecam = true;
+	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
+	public bool EnableFreecam;
 
 	[Tooltip("Base freecam move speed in metres/second (adjust live with the scroll wheel while flying).")]
-	public float FreecamMoveSpeed = 400f;
+	public float FreecamMoveSpeed;
 
 	[Tooltip("Speed multiplier while holding Shift.")]
-	public float FreecamSprintMultiplier = 5f;
+	public float FreecamSprintMultiplier;
 
 	[Tooltip("Mouse-look sensitivity (degrees per pixel of mouse delta).")]
-	public float FreecamLookSensitivity = 0.1f;
+	public float FreecamLookSensitivity;
 
 	[Tooltip("On Initialize, move the main camera to a vantage overlooking the terrain centre.")]
-	public bool MoveCameraOnInitialize = true;
+	public bool MoveCameraOnInitialize;
 
 	[Tooltip("After Place / Auto-place / Recalculate, fly the camera over to frame the cliff.")]
-	public bool FrameCameraOnPlacedCliff = true;
+	public bool FrameCameraOnPlacedCliff;
 
 	[Header("Hotkeys / UI")]
-	public bool DrawOnScreenControls = true;
+	public bool DrawOnScreenControls;
 
 	private GameObject _terrainGO;
 
@@ -229,17 +229,17 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCarveSelectionKey;
 
-	private string _lastPlaceInfo = "-";
+	private string _lastPlaceInfo;
 
-	private string _lastAnchorBreakdown = string.Empty;
+	private string _lastAnchorBreakdown;
 
-	private string _breakdownSubject = string.Empty;
+	private string _breakdownSubject;
 
 	private bool _editingTextField;
 
 	private bool _breakdownCapturedRejected;
 
-	private readonly List<GameObject> _spawnedCliffs = new List<GameObject>();
+	private readonly List<GameObject> _spawnedCliffs;
 
 	private bool _freecamActive;
 
@@ -2150,5 +2150,88 @@ public class CliffPlacementSandbox : MonoBehaviour
 		}
 		_spawnedCliffs.Clear();
 		cliffRoot = null;
+	}
+
+	public CliffPlacementSandbox()
+	{
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		_gizmoAnchors = new List<TerrainAnchor>();
+		_gizmoModifiers = new List<TerrainModifier>();
+		_gizmoTargetsFrame = -1;
+		_selectedGizmoRoots = new HashSet<Transform>();
+		_preCliffStatus = "pre-cliff baseline: not loaded";
+		Seed = 54321u;
+		ProceduralMapSize = 2000f;
+		ProceduralHeightRange = 1000f;
+		SlopeFinderMinAngle = 30;
+		SlopeFinderMaxAngle = 65;
+		HeightmapResolution = 513;
+		TerrainSize = new Vector3(500f, 100f, 500f);
+		TerrainOrigin = Vector3.zero;
+		CurrentPatch = TerrainPatch.SlopeX;
+		MapFilePath = string.Empty;
+		RegionCenter = Vector3.zero;
+		RegionSize = 300f;
+		MapWorldYOffset = -500f;
+		AutoMapRegionResolution = true;
+		MapRegionResolution = 513;
+		SpawnRealCliffs = true;
+		CliffPrefabsOnly = true;
+		UsePreCliffBaseline = true;
+		GenerationScenePath = "Assets/Scenes/Release/Procedural Map.unity";
+		AnchorMode = TerrainAnchorMode.MaximizeHeight;
+		SnapCliffToAnchoredHeight = true;
+		RecalcKeepMapPositions = true;
+		ResyncCliffsFromPrefabsOnRecalc = true;
+		HotReloadPrefabsBeforeAction = true;
+		_nextSandboxCliffId = 1;
+		ReplayTerrainPlacementsOnRecalc = true;
+		ReAnchorOnlyName = string.Empty;
+		ShowPlacementGizmos = true;
+		GizmoAnchors = true;
+		GizmoModifierHeightSet = true;
+		GizmoModifierHeightRaise = true;
+		GizmoModifierHeightAdd = true;
+		GizmoModifierOther = true;
+		GizmoDrawDistance = 60f;
+		GizmoSelectionMode = true;
+		ShowPlayerScaleReference = true;
+		PlayerReferenceHeight = 1.8f;
+		EnableFreecam = true;
+		FreecamMoveSpeed = 400f;
+		FreecamSprintMultiplier = 5f;
+		FreecamLookSensitivity = 0.1f;
+		MoveCameraOnInitialize = true;
+		FrameCameraOnPlacedCliff = true;
+		DrawOnScreenControls = true;
+		_lastPlaceInfo = "-";
+		_lastAnchorBreakdown = string.Empty;
+		_breakdownSubject = string.Empty;
+		_spawnedCliffs = new List<GameObject>();
+		((MonoBehaviour)this)._002Ector();
+	}
+
+	static CliffPlacementSandbox()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		AnchorColor = new Color(0.2f, 0.9f, 1f, 1f);
+		HeightSetColor = new Color(0.3f, 1f, 0.4f, 1f);
+		HeightRaiseColor = new Color(1f, 0.85f, 0.2f, 1f);
+		HeightAddColor = new Color(1f, 0.4f, 0.9f, 1f);
+		OtherModColor = new Color(0.8f, 0.8f, 0.8f, 1f);
 	}
 }

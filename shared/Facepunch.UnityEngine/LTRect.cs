@@ -6,7 +6,7 @@ public class LTRect
 {
 	public Rect _rect;
 
-	public float alpha = 1f;
+	public float alpha;
 
 	public float rotation;
 
@@ -14,7 +14,7 @@ public class LTRect
 
 	public Vector2 margin;
 
-	public Rect relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
+	public Rect relativeRect;
 
 	public bool rotateEnabled;
 
@@ -31,7 +31,7 @@ public class LTRect
 
 	public bool useColor;
 
-	public Color color = Color.white;
+	public Color color;
 
 	public bool fontScaleToFit;
 
@@ -41,7 +41,7 @@ public class LTRect
 
 	public Texture texture;
 
-	private int _id = -1;
+	private int _id;
 
 	[HideInInspector]
 	public int counter;
@@ -168,6 +168,11 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		alpha = 1f;
+		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
+		color = Color.white;
+		_id = -1;
+		base._002Ector();
 		reset();
 		rotateEnabled = (alphaEnabled = true);
 		_rect = new Rect(0f, 0f, 1f, 1f);
@@ -181,6 +186,11 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		alpha = 1f;
+		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
+		color = Color.white;
+		_id = -1;
+		base._002Ector();
 		_rect = rect;
 		reset();
 	}
@@ -193,6 +203,11 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		alpha = 1f;
+		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
+		color = Color.white;
+		_id = -1;
+		base._002Ector();
 		_rect = new Rect(x, y, width, height);
 		alpha = 1f;
 		rotation = 0f;
@@ -207,6 +222,11 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		this.alpha = 1f;
+		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
+		color = Color.white;
+		_id = -1;
+		base._002Ector();
 		_rect = new Rect(x, y, width, height);
 		this.alpha = alpha;
 		rotation = 0f;
@@ -221,6 +241,11 @@ public class LTRect
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		this.alpha = 1f;
+		relativeRect = new Rect(0f, 0f, float.PositiveInfinity, float.PositiveInfinity);
+		color = Color.white;
+		_id = -1;
+		base._002Ector();
 		_rect = new Rect(x, y, width, height);
 		this.alpha = alpha;
 		this.rotation = rotation;

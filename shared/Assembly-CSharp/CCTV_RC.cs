@@ -26,17 +26,17 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public Transform pitch;
 
-	public Vector2 pitchClamp = new Vector2(-50f, 50f);
+	public Vector2 pitchClamp;
 
-	public Vector2 yawClamp = new Vector2(-50f, 50f);
+	public Vector2 yawClamp;
 
-	public float turnSpeed = 25f;
+	public float turnSpeed;
 
-	public float serverLerpSpeed = 15f;
+	public float serverLerpSpeed;
 
-	public float clientLerpSpeed = 10f;
+	public float clientLerpSpeed;
 
-	public float zoomLerpSpeed = 10f;
+	public float zoomLerpSpeed;
 
 	public float[] fovScales;
 
@@ -46,17 +46,17 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public int fovScaleIndex;
 
-	public float fovScaleLerped = 1f;
+	public float fovScaleLerped;
 
-	public bool hasPTZ = true;
+	public bool hasPTZ;
 
-	public AnimationCurve dofCurve = AnimationCurve.Constant(0f, 1f, 0f);
+	public AnimationCurve dofCurve;
 
-	public float dofApertureMax = 10f;
+	public float dofApertureMax;
 
 	public const Flags Flag_HasViewer = Flags.Reserved5;
 
-	public bool disableWhenShot = true;
+	public bool disableWhenShot;
 
 	[ServerVar(Name = "camera_disable_seconds")]
 	public static float CameraDisableSeconds = 300f;
@@ -65,9 +65,9 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 
 	public AnimationCurve movementLoopGainCurve;
 
-	public float movementLoopSmoothing = 1f;
+	public float movementLoopSmoothing;
 
-	public float movementLoopReference = 50f;
+	public float movementLoopReference;
 
 	private Sound movementLoop;
 
@@ -379,7 +379,7 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 		{
 			fovScaleIndex = (fovScaleIndex + 1) % fovScales.Length;
 		}
-		return num != 0f || x != 0f || flag;
+		return (num != 0f || x != 0f) | flag;
 	}
 
 	public void UpdateRotation(float delta)
@@ -434,5 +434,27 @@ public class CCTV_RC : PoweredRemoteControlEntity, IRemoteControllableClientCall
 	public override float GetFovScale()
 	{
 		return fovScaleLerped;
+	}
+
+	public CCTV_RC()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		pitchClamp = new Vector2(-50f, 50f);
+		yawClamp = new Vector2(-50f, 50f);
+		turnSpeed = 25f;
+		serverLerpSpeed = 15f;
+		clientLerpSpeed = 10f;
+		zoomLerpSpeed = 10f;
+		fovScaleLerped = 1f;
+		hasPTZ = true;
+		dofCurve = AnimationCurve.Constant(0f, 1f, 0f);
+		dofApertureMax = 10f;
+		disableWhenShot = true;
+		movementLoopSmoothing = 1f;
+		movementLoopReference = 50f;
+		base._002Ector();
 	}
 }

@@ -1,36 +1,127 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(CanvasRenderer))]
+[ExecuteInEditMode]
 public class PieShape : Graphic
 {
 	[Range(0f, 1f)]
-	public float outerSize = 1f;
+	public float outerSize;
 
 	[Range(0f, 1f)]
-	public float innerSize = 0.5f;
+	public float innerSize;
 
-	public float startRadius = -45f;
+	public float startRadius;
 
-	public float endRadius = 45f;
+	public float endRadius;
 
 	public float border;
 
 	public bool debugDrawing;
 
+	[CompilerGenerated]
+	private Rect _003CdrawRect_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector2 _003CcentrePosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector2 _003CfirstPosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector2 _003ClastPosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CaveragePosition_003Ek__BackingField;
+
 	public bool calculateAverage;
 
-	public Rect drawRect { get; private set; }
+	public Rect drawRect
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CdrawRect_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CdrawRect_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector2 centrePosition { get; private set; }
+	public Vector2 centrePosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CcentrePosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CcentrePosition_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector2 firstPosition { get; private set; }
+	public Vector2 firstPosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CfirstPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CfirstPosition_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector2 lastPosition { get; private set; }
+	public Vector2 lastPosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003ClastPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003ClastPosition_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 averagePosition { get; private set; } = Vector2.op_Implicit(default(Vector2));
+	public Vector3 averagePosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CaveragePosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CaveragePosition_003Ek__BackingField = value;
+		}
+	}
 
 	protected override void OnPopulateMesh(VertexHelper vbo)
 	{
@@ -205,5 +296,19 @@ public class PieShape : Graphic
 		}
 		drawRect = new Rect(Mathf.Min(firstPosition.x, lastPosition.x), Mathf.Min(firstPosition.y, lastPosition.y), Mathf.Abs(firstPosition.x - lastPosition.x), Mathf.Abs(firstPosition.y - lastPosition.y));
 		centrePosition = Vector2.Lerp(firstPosition, lastPosition, 0.5f);
+	}
+
+	public PieShape()
+	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		outerSize = 1f;
+		innerSize = 0.5f;
+		startRadius = -45f;
+		endRadius = 45f;
+		averagePosition = Vector2.op_Implicit(default(Vector2));
+		((Graphic)this)._002Ector();
 	}
 }

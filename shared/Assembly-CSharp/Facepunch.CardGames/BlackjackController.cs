@@ -277,8 +277,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 
 	public bool TryGetCardPlayerDataBlackjack(int index, out CardPlayerDataBlackjack cpBlackjack)
 	{
-		CardPlayerData cardPlayer;
-		bool result = TryGetCardPlayerData(index, out cardPlayer);
+		bool result = TryGetCardPlayerData(index, out var cardPlayer);
 		cpBlackjack = (CardPlayerDataBlackjack)cardPlayer;
 		return result;
 	}
@@ -423,8 +422,7 @@ public class BlackjackController(BaseCardGameEntity owner) : CardGameController(
 		foreach (CardPlayerDataBlackjack item in PlayersInRound())
 		{
 			int num = 0;
-			int winnings;
-			BlackjackRoundResult mainResult = CheckResult(item.Cards, item.betThisRound, out winnings);
+			BlackjackRoundResult mainResult = CheckResult(item.Cards, item.betThisRound, out var winnings);
 			num += winnings;
 			BlackjackRoundResult splitResult = CheckResult(item.SplitCards, item.splitBetThisRound, out winnings);
 			num += winnings;

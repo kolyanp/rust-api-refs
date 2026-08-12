@@ -41,7 +41,7 @@ public class GenerateRailLayout : ProceduralComponent
 
 	public const float TerrainOffset = -0.125f;
 
-	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
+	private static Quaternion rot90;
 
 	private const int MaxDepth = 250000;
 
@@ -204,8 +204,11 @@ public class GenerateRailLayout : ProceduralComponent
 			int num2 = int.MaxValue;
 			TerrainPathConnect[] array2 = (from target in ((Component)monument).GetComponentsInChildren<TerrainPathConnect>(true)
 				where target.Type == InfrastructureType.Rail
-				orderby DistanceToRail(((Component)target).transform.position)
-				select target).ToArray();
+				select target).OrderBy(delegate(TerrainPathConnect target)
+			{
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				return DistanceToRail(((Component)target).transform.position);
+			}).ToArray();
 			TerrainPathConnect[] array3 = array2;
 			foreach (TerrainPathConnect terrainPathConnect in array3)
 			{
@@ -440,5 +443,12 @@ public class GenerateRailLayout : ProceduralComponent
 			}
 			return num20;
 		}
+	}
+
+	static GenerateRailLayout()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

@@ -29,9 +29,23 @@ public class ModularVehicleSocket
 	[SerializeField]
 	private SocketLocationType locationType;
 
-	public Vector3 WorldPosition => socketTransform.position;
+	public Vector3 WorldPosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return socketTransform.position;
+		}
+	}
 
-	public Quaternion WorldRotation => socketTransform.rotation;
+	public Quaternion WorldRotation
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return socketTransform.rotation;
+		}
+	}
 
 	public SocketWheelType WheelType => wheelType;
 

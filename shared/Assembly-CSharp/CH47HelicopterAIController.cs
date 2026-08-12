@@ -12,9 +12,9 @@ public class CH47HelicopterAIController : CH47Helicopter
 	[Tooltip("Prefab for the NPCs that will be spawned in the helicopter IF it lands.")]
 	public GameObjectRef dismountablePrefab;
 
-	public float maxTiltAngle = 0.3f;
+	public float maxTiltAngle;
 
-	public float AiAltitudeForce = 10000f;
+	public float AiAltitudeForce;
 
 	public GameObjectRef lockedCratePrefab;
 
@@ -28,17 +28,17 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public static HashSet<CH47HelicopterAIController> activeScientistCH47s = new HashSet<CH47HelicopterAIController>();
 
-	private List<BaseNPC2> parentedNpcs = new List<BaseNPC2>();
+	private List<BaseNPC2> parentedNpcs;
 
-	public int numCrates = 1;
+	public int numCrates;
 
 	private bool shouldLand;
 
 	public bool aimDirOverride;
 
-	public Vector3 _aimDirection = Vector3.forward;
+	public Vector3 _aimDirection;
 
-	public Vector3 _moveTarget = Vector3.zero;
+	public Vector3 _moveTarget;
 
 	public int lastAltitudeCheckFrame;
 
@@ -46,9 +46,9 @@ public class CH47HelicopterAIController : CH47Helicopter
 
 	public float currentDesiredAltitude;
 
-	private bool altitudeProtection = true;
+	private bool altitudeProtection;
 
-	public float hoverHeight = 30f;
+	public float hoverHeight;
 
 	[ServerVar(Help = "(Generated) Commands all active CH47 Chinook helicopter AI controllers to drop their cargo crate immediately")]
 	public static void dropCrate()
@@ -776,5 +776,22 @@ public class CH47HelicopterAIController : CH47Helicopter
 			}
 		}
 		base.DestroyShared();
+	}
+
+	public CH47HelicopterAIController()
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		maxTiltAngle = 0.3f;
+		AiAltitudeForce = 10000f;
+		parentedNpcs = new List<BaseNPC2>();
+		numCrates = 1;
+		_aimDirection = Vector3.forward;
+		_moveTarget = Vector3.zero;
+		altitudeProtection = true;
+		hoverHeight = 30f;
+		base._002Ector();
 	}
 }

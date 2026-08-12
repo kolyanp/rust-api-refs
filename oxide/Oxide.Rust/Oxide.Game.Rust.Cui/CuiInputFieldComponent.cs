@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine;
@@ -7,6 +8,12 @@ namespace Oxide.Game.Rust.Cui;
 
 public class CuiInputFieldComponent : ICuiComponent, ICuiColor, ICuiEnableable, ICuiGraphic
 {
+	[CompilerGenerated]
+	private TextAnchor _003CAlign_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private LineType _003CLineType_003Ek__BackingField;
+
 	public string Type => "UnityEngine.UI.InputField";
 
 	[JsonProperty("text")]
@@ -20,7 +27,22 @@ public class CuiInputFieldComponent : ICuiComponent, ICuiColor, ICuiEnableable, 
 
 	[JsonConverter(typeof(StringEnumConverter))]
 	[JsonProperty("align")]
-	public TextAnchor Align { get; set; }
+	public TextAnchor Align
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CAlign_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CAlign_003Ek__BackingField = value;
+		}
+	}
 
 	public string Color { get; set; }
 
@@ -32,7 +54,22 @@ public class CuiInputFieldComponent : ICuiComponent, ICuiColor, ICuiEnableable, 
 
 	[JsonConverter(typeof(StringEnumConverter))]
 	[JsonProperty("lineType")]
-	public LineType LineType { get; set; }
+	public LineType LineType
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLineType_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLineType_003Ek__BackingField = value;
+		}
+	}
 
 	[JsonProperty("readOnly", DefaultValueHandling = DefaultValueHandling.Include)]
 	public bool ReadOnly { get; set; }

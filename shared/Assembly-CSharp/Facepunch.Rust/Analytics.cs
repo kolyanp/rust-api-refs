@@ -947,9 +947,10 @@ public static class Analytics
 				{
 					return;
 				}
-				SubmitPoint(EventRecord.New("item_definitions").AddObject("items", from x in ItemManager.itemDictionary
-					select x.Value into x
-					select new
+				SubmitPoint(EventRecord.New("item_definitions").AddObject("items", ItemManager.itemDictionary.Select((KeyValuePair<int, ItemDefinition> x) => x.Value).Select(delegate(ItemDefinition x)
+				{
+					//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+					return new
 					{
 						item_id = x.itemid,
 						shortname = x.shortname,
@@ -958,13 +959,13 @@ public static class Analytics
 						category = x.category.ToString(),
 						display_name = x.displayName.english,
 						despawn_rarity = x.despawnRarity,
-						ingredients = (from y in x.Blueprint?.GetIngredients()
-							select new
-							{
-								shortname = y.itemDef.shortname,
-								amount = (int)y.amount
-							})
-					}).AddField("changeset", BuildInfo.Current.Scm.ChangeId));
+						ingredients = x.Blueprint?.GetIngredients().Select((ItemAmount y) => new
+						{
+							shortname = y.itemDef.shortname,
+							amount = (int)y.amount
+						})
+					};
+				})).AddField("changeset", BuildInfo.Current.Scm.ChangeId));
 			}
 			catch (Exception ex)
 			{

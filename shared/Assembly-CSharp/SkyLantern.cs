@@ -3,25 +3,25 @@ using UnityEngine;
 
 public class SkyLantern : StorageContainer, IIgniteable
 {
-	public float gravityScale = -0.1f;
+	public float gravityScale;
 
-	public float travelSpeed = 2f;
+	public float travelSpeed;
 
-	public float collisionRadius = 0.5f;
+	public float collisionRadius;
 
-	public float rotationSpeed = 5f;
+	public float rotationSpeed;
 
-	public float randOffset = 1f;
+	public float randOffset;
 
-	public float lifeTime = 120f;
+	public float lifeTime;
 
-	public float hoverHeight = 14f;
+	public float hoverHeight;
 
 	public Transform collisionCheckPoint;
 
 	private float idealAltitude;
 
-	private Vector3 travelVec = Vector3.forward;
+	private Vector3 travelVec;
 
 	private float takeOffY;
 
@@ -195,5 +195,20 @@ public class SkyLantern : StorageContainer, IIgniteable
 				StartSinking();
 			}
 		}
+	}
+
+	public SkyLantern()
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		gravityScale = -0.1f;
+		travelSpeed = 2f;
+		collisionRadius = 0.5f;
+		rotationSpeed = 5f;
+		randOffset = 1f;
+		lifeTime = 120f;
+		hoverHeight = 14f;
+		travelVec = Vector3.forward;
+		base._002Ector();
 	}
 }

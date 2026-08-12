@@ -50,12 +50,12 @@ public class Projectile : ListComponent<Projectile>
 
 	public float drag;
 
-	public float gravityModifier = 1f;
+	public float gravityModifier;
 
 	public float thickness;
 
-	[Tooltip("Tick this box to be able to change the initial orientation of the projectile")]
 	[Header("Orientation")]
+	[Tooltip("Tick this box to be able to change the initial orientation of the projectile")]
 	public bool changeInitialOrientation;
 
 	[Tooltip("This projectile will raycast for this many units, and then become a projectile. This is typically done for bullets.")]
@@ -67,7 +67,7 @@ public class Projectile : ListComponent<Projectile>
 	public bool remainInWorld;
 
 	[Range(0f, 1f)]
-	public float stickProbability = 1f;
+	public float stickProbability;
 
 	[Range(0f, 1f)]
 	public float breakProbability;
@@ -78,53 +78,53 @@ public class Projectile : ListComponent<Projectile>
 	[Range(0f, 1f)]
 	public float ricochetChance;
 
-	public float penetrationPower = 1f;
+	public float penetrationPower;
 
-	public bool canRefract = true;
+	public bool canRefract;
 
 	public bool penetratesVehicles;
 
 	[Range(0f, 1f)]
-	public float waterIntegrityLoss = 0.1f;
+	public float waterIntegrityLoss;
 
 	[Header("Damage")]
 	public DamageProperties damageProperties;
 
 	[Horizontal(2, -1)]
-	public MinMax damageDistances = new MinMax(10f, 100f);
+	public MinMax damageDistances;
 
 	[Horizontal(2, -1)]
-	public MinMax damageMultipliers = new MinMax(1f, 0.8f);
+	public MinMax damageMultipliers;
 
-	public List<DamageTypeEntry> damageTypes = new List<DamageTypeEntry>();
+	public List<DamageTypeEntry> damageTypes;
 
 	[Header("Rendering")]
 	public ScaleRenderer rendererToScale;
 
 	public ScaleRenderer firstPersonRenderer;
 
-	public bool createDecals = true;
+	public bool createDecals;
 
 	[FormerlySerializedAs("doDefaultHitEffects")]
 	[Header("Effects")]
-	public bool doHitEffects = true;
+	public bool doHitEffects;
 
 	[Header("Audio")]
 	public SoundDefinition flybySound;
 
-	public float flybySoundDistance = 7f;
+	public float flybySoundDistance;
 
 	public SoundDefinition closeFlybySound;
 
-	public float closeFlybyDistance = 3f;
+	public float closeFlybyDistance;
 
 	[Header("Tumble")]
 	public float tumbleSpeed;
 
-	public Vector3 tumbleAxis = Vector3.right;
+	public Vector3 tumbleAxis;
 
 	[Header("Clientside Custom Impact Effects")]
-	public bool playDefaultHitEffects = true;
+	public bool playDefaultHitEffects;
 
 	public CustomEffectData clientEffectData;
 
@@ -163,13 +163,13 @@ public class Projectile : ListComponent<Projectile>
 	public bool clientsideAttack;
 
 	[NonSerialized]
-	public float integrity = 1f;
+	public float integrity;
 
 	[NonSerialized]
-	public float maxDistance = float.PositiveInfinity;
+	public float maxDistance;
 
 	[NonSerialized]
-	public Modifier modifier = Modifier.Default;
+	public Modifier modifier;
 
 	[NonSerialized]
 	public bool invisible;
@@ -257,5 +257,29 @@ public class Projectile : ListComponent<Projectile>
 			return false;
 		}
 		return true;
+	}
+
+	public Projectile()
+	{
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		gravityModifier = 1f;
+		stickProbability = 1f;
+		penetrationPower = 1f;
+		canRefract = true;
+		waterIntegrityLoss = 0.1f;
+		damageDistances = new MinMax(10f, 100f);
+		damageMultipliers = new MinMax(1f, 0.8f);
+		damageTypes = new List<DamageTypeEntry>();
+		createDecals = true;
+		doHitEffects = true;
+		flybySoundDistance = 7f;
+		closeFlybyDistance = 3f;
+		tumbleAxis = Vector3.right;
+		playDefaultHitEffects = true;
+		integrity = 1f;
+		maxDistance = float.PositiveInfinity;
+		modifier = Modifier.Default;
+		base._002Ector();
 	}
 }

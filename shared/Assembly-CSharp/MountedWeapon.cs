@@ -20,27 +20,27 @@ public class MountedWeapon : StorageContainer
 	}
 
 	[ServerVar]
-	public static int antihack_level = 0;
+	public static int antihack_level;
 
 	[ServerVar]
-	public static float antihack_max_snap_degrees = 35f;
+	public static float antihack_max_snap_degrees;
 
 	[ServerVar]
-	public static float antihack_max_degrees_per_second_yaw = 720f;
+	public static float antihack_max_degrees_per_second_yaw;
 
 	[ServerVar]
-	public static float antihack_max_degrees_per_second_pitch = 720f;
+	public static float antihack_max_degrees_per_second_pitch;
 
 	[ReplicatedVar]
-	public static bool ENABLE_CLIENT_AUTHORITY = true;
+	public static bool ENABLE_CLIENT_AUTHORITY;
 
 	[ReplicatedVar]
-	public static bool DEBUG = false;
+	public static bool DEBUG;
 
-	private static readonly int Up = Animator.StringToHash("up");
+	private static readonly int Up;
 
-	[SerializeField]
 	[Header("Mounted Weapon")]
+	[SerializeField]
 	private Transform _eyes;
 
 	[SerializeField]
@@ -81,8 +81,8 @@ public class MountedWeapon : StorageContainer
 	[ItemSelector]
 	public ItemDefinition AmmoDef;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Second Weapon")]
+	[SerializeField]
 	private ItemDefinition _weapon2;
 
 	[SerializeField]
@@ -132,15 +132,15 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[Header("Mounted Weapon - Viewmodel")]
 	[SerializeField]
+	[Header("Mounted Weapon - Viewmodel")]
 	private bool _useViewmodel;
 
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[Header("Mounted Weapon - Aim Movement Sounds")]
 	[SerializeField]
+	[Header("Mounted Weapon - Aim Movement Sounds")]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]
@@ -162,9 +162,9 @@ public class MountedWeapon : StorageContainer
 
 	public const Flags Flag_Lights = Flags.Reserved5;
 
-	private static readonly Phrase _ammoPhrase = new Phrase("mountedweapon.reload.tip", "You need regular 5.56 ammo in your inventory to reload.");
+	private static readonly Phrase _ammoPhrase;
 
-	private static readonly Phrase _ammoFullPhrase = new Phrase("mountedweapon.reload.full.tip", "Can't reload. Ammo is already full!");
+	private static readonly Phrase _ammoFullPhrase;
 
 	private Vector3 _defaultEyePosition;
 
@@ -1395,7 +1395,7 @@ public class MountedWeapon : StorageContainer
 			int num3 = (Object.op_Implicit((Object)(object)baseProjectile2) ? baseProjectile2.primaryMagazine.contents : 0);
 			_reloadTaken[0] = Mathf.Max(0, num2 - _reloadStartMag[0]);
 			_reloadTaken[1] = Mathf.Max(0, num3 - _reloadStartMag[1]);
-			bool num4 = num || flag;
+			bool num4 = num | flag;
 			if (_reloadTime == 0f)
 			{
 				CalculateReloadTime();
@@ -1425,10 +1425,10 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
-	[RPC_Server.CallsPerSecond(100uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(100uL)]
+	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
@@ -1748,5 +1748,22 @@ public class MountedWeapon : StorageContainer
 			4 => true, 
 			_ => base.ShouldInvalidateCache(id), 
 		};
+	}
+
+	static MountedWeapon()
+	{
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Expected O, but got Unknown
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Expected O, but got Unknown
+		antihack_level = 0;
+		antihack_max_snap_degrees = 35f;
+		antihack_max_degrees_per_second_yaw = 720f;
+		antihack_max_degrees_per_second_pitch = 720f;
+		ENABLE_CLIENT_AUTHORITY = true;
+		DEBUG = false;
+		Up = Animator.StringToHash("up");
+		_ammoPhrase = new Phrase("mountedweapon.reload.tip", "You need regular 5.56 ammo in your inventory to reload.");
+		_ammoFullPhrase = new Phrase("mountedweapon.reload.full.tip", "Can't reload. Ammo is already full!");
 	}
 }

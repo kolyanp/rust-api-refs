@@ -4,17 +4,17 @@ public class AIHelicopterAnimation : MonoBehaviour
 {
 	public PatrolHelicopterAI _ai;
 
-	public float swayAmount = 1f;
+	public float swayAmount;
 
-	public float impactSwayAmount = 1f;
+	public float impactSwayAmount;
 
 	public float lastStrafeScalar;
 
 	public float lastForwardBackScalar;
 
-	public float degreeMax = 90f;
+	public float degreeMax;
 
-	public Vector3 lastPosition = Vector3.zero;
+	public Vector3 lastPosition;
 
 	public float oldMoveSpeed;
 
@@ -22,7 +22,7 @@ public class AIHelicopterAnimation : MonoBehaviour
 
 	public float flareAmount;
 
-	public float swaySmoothingFactor = 0.1f;
+	public float swaySmoothingFactor;
 
 	private float smoothedTime;
 
@@ -108,5 +108,17 @@ public class AIHelicopterAnimation : MonoBehaviour
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = ((Component)this).transform.position - lastPosition;
 		return ((Vector3)(ref val)).normalized;
+	}
+
+	public AIHelicopterAnimation()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		swayAmount = 1f;
+		impactSwayAmount = 1f;
+		degreeMax = 90f;
+		lastPosition = Vector3.zero;
+		swaySmoothingFactor = 0.1f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

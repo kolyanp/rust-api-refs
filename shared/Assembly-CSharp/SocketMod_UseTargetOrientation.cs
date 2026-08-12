@@ -158,7 +158,7 @@ public class SocketMod_UseTargetOrientation : SocketMod
 		case 2:
 		{
 			Vector3 val3;
-			if (flag2 && flag3)
+			if (flag2 & flag3)
 			{
 				Vector3 val = rotation2 * Vector3.right;
 				Vector3 val2 = rotation2 * Vector3.up;
@@ -169,7 +169,7 @@ public class SocketMod_UseTargetOrientation : SocketMod
 					place.rotation = Quaternion.LookRotation(normalized, val2);
 				}
 			}
-			else if (flag3 && flag4)
+			else if (flag3 & flag4)
 			{
 				Vector3 val4 = rotation2 * Vector3.up;
 				Vector3 val5 = rotation2 * Vector3.forward;
@@ -180,7 +180,7 @@ public class SocketMod_UseTargetOrientation : SocketMod
 					place.rotation = Quaternion.LookRotation(val5, val4);
 				}
 			}
-			else if (flag2 && flag4)
+			else if (flag2 & flag4)
 			{
 				Vector3 val6 = rotation2 * Vector3.right;
 				Vector3 val7 = rotation2 * Vector3.forward;

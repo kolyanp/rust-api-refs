@@ -7,27 +7,19 @@ public class FlameExplosive : TimedExplosive
 
 	public bool blockCreateUnderwater;
 
-	public float numToCreate = 10f;
+	public float numToCreate;
 
-	public float minVelocity = 2f;
+	public float minVelocity;
 
-	public float maxVelocity = 5f;
+	public float maxVelocity;
 
-	public float spreadAngle = 90f;
+	public float spreadAngle;
 
 	public bool forceUpForExplosion;
 
-	public AnimationCurve velocityCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-	{
-		new Keyframe(0f, 1f),
-		new Keyframe(1f, 1f)
-	});
+	public AnimationCurve velocityCurve;
 
-	public AnimationCurve spreadCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-	{
-		new Keyframe(0f, 1f),
-		new Keyframe(1f, 1f)
-	});
+	public AnimationCurve spreadCurve;
 
 	public override void Explode()
 	{
@@ -107,5 +99,36 @@ public class FlameExplosive : TimedExplosive
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
 		hitNormal = ((RaycastHit)(ref info)).normal;
 		FlameExplode(((RaycastHit)(ref info)).normal);
+	}
+
+	public FlameExplosive()
+	{
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Expected O, but got Unknown
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Expected O, but got Unknown
+		numToCreate = 10f;
+		minVelocity = 2f;
+		maxVelocity = 5f;
+		spreadAngle = 90f;
+		velocityCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+		{
+			new Keyframe(0f, 1f),
+			new Keyframe(1f, 1f)
+		});
+		spreadCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+		{
+			new Keyframe(0f, 1f),
+			new Keyframe(1f, 1f)
+		});
+		base._002Ector();
 	}
 }

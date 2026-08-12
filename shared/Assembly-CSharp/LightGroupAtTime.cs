@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LightGroupAtTime : FacepunchBehaviour
 {
-	public float IntensityOverride = 1f;
+	public float IntensityOverride;
 
 	public AnimationCurve IntensityScaleOverTime;
 
@@ -36,6 +36,7 @@ public class LightGroupAtTime : FacepunchBehaviour
 		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		IntensityOverride = 1f;
 		AnimationCurve val = new AnimationCurve();
 		val.keys = (Keyframe[])(object)new Keyframe[5]
 		{

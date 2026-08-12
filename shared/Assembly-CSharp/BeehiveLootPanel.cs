@@ -19,7 +19,17 @@ public class BeehiveLootPanel : LootPanel
 	[Header("Status")]
 	public StatusPanel status;
 
-	public static readonly Phrase YesIndoors = new Phrase("beehive.indoors.yes", "YES");
+	public static readonly Phrase YesIndoors;
 
-	public static readonly Phrase NoIndoors = new Phrase("beehive.indoors.no", "NO");
+	public static readonly Phrase NoIndoors;
+
+	static BeehiveLootPanel()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		YesIndoors = new Phrase("beehive.indoors.yes", "YES");
+		NoIndoors = new Phrase("beehive.indoors.no", "NO");
+	}
 }

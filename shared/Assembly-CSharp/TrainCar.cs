@@ -52,8 +52,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public float lastDecayTick;
 
-	[Header("Train Car")]
 	[SerializeField]
+	[Header("Train Car")]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -101,8 +101,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public float wheelRadius = 0.615f;
 
-	[FormerlySerializedAs("fxFinalExplosion")]
 	[SerializeField]
+	[FormerlySerializedAs("fxFinalExplosion")]
 	public GameObjectRef fxDestroyed;
 
 	[SerializeField]
@@ -135,8 +135,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[FormerlySerializedAs("rearCoupleFx")]
 	public ParticleSystem rearCouplingChangedFx;
 
-	[FormerlySerializedAs("fxCoupling")]
 	[SerializeField]
+	[FormerlySerializedAs("fxCoupling")]
 	public ParticleSystem newCouplingFX;
 
 	[SerializeField]
@@ -183,7 +183,14 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public const Flags Flag_LinedUpToUnload = Flags.Reserved4;
 
-	public Vector3 Position => ((Component)this).transform.position;
+	public Vector3 Position
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.position;
+		}
+	}
 
 	public float FrontWheelSplineDist { get; set; }
 
@@ -372,8 +379,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		if (TrainTrackSpline.TryFindTrackNear(GetFrontWheelPos(), 15f, out var splineResult, out var distResult))
 		{
 			FrontWheelSplineDist = distResult;
-			Vector3 tangent;
-			Vector3 positionAndTangent = splineResult.GetPositionAndTangent(FrontWheelSplineDist, ((Component)this).transform.forward, out tangent);
+			Vector3 positionAndTangent = splineResult.GetPositionAndTangent(FrontWheelSplineDist, ((Component)this).transform.forward, out var tangent);
 			SetTheRestFromFrontWheelData(ref splineResult, positionAndTangent, tangent, localTrackSelection, null, instantMove: true);
 			FrontTrackSection = splineResult;
 			if (!Application.isLoadingSave && !SpaceIsClear())
@@ -450,8 +456,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -762,8 +768,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 			TrainTrackSpline frontTS = moveResult.spline;
 			FrontWheelSplineDist = moveResult.distAlongSpline;
 			frontAtEndOfLine = moveResult.atEndOfLine;
-			Vector3 tangent;
-			Vector3 positionAndTangent = frontTS.GetPositionAndTangent(FrontWheelSplineDist, ((Component)this).transform.forward, out tangent);
+			Vector3 positionAndTangent = frontTS.GetPositionAndTangent(FrontWheelSplineDist, ((Component)this).transform.forward, out var tangent);
 			SetTheRestFromFrontWheelData(ref frontTS, positionAndTangent, tangent, trackSelection, trackSpline, instantMove: false);
 			FrontTrackSection = frontTS;
 		}
@@ -840,8 +845,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		TrainTrackSpline spline = moveResult.spline;
 		float distAlongSpline = moveResult.distAlongSpline;
 		rearAtEndOfLine = moveResult.atEndOfLine;
-		Vector3 tangent;
-		Vector3 positionAndTangent = spline.GetPositionAndTangent(distAlongSpline, ((Component)this).transform.forward, out tangent);
+		Vector3 positionAndTangent = spline.GetPositionAndTangent(distAlongSpline, ((Component)this).transform.forward, out var tangent);
 		if (rearAtEndOfLine)
 		{
 			moveResult = spline.MoveAlongSpline(tReq: new TrainTrackSpline.TrackRequest(trackSelection, spline, additionalAlt), prevSplineDist: distAlongSpline, askerForward: ((Component)this).transform.forward, distMoved: distFrontToBackWheel);
@@ -991,7 +995,7 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = IsAtAStation && Vector3.Distance(spawnOrigin, ((Component)this).transform.position) < 50f;
-		if (hasPassengers || AnyPlayersNearby(30f) || flag || IsOnAboveGroundSpawnRail)
+		if (((hasPassengers || AnyPlayersNearby(30f)) | flag) || IsOnAboveGroundSpawnRail)
 		{
 			return float.PositiveInfinity;
 		}

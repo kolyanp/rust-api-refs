@@ -4,23 +4,95 @@ namespace FIMSpace.FEditor;
 
 public class FEditor_StylesIn
 {
-	public static GUIStyle GrayBackground => Style(Color32.op_Implicit(new Color32((byte)128, (byte)128, (byte)127, (byte)76)));
+	public static GUIStyle GrayBackground
+	{
+		get
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)128, (byte)128, (byte)127, (byte)76)));
+		}
+	}
 
-	public static GUIStyle LGrayBackground => Style(Color32.op_Implicit(new Color32((byte)128, (byte)128, (byte)127, (byte)36)));
+	public static GUIStyle LGrayBackground
+	{
+		get
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)128, (byte)128, (byte)127, (byte)36)));
+		}
+	}
 
-	public static GUIStyle LBlueBackground => Style(Color32.op_Implicit(new Color32((byte)0, (byte)128, byte.MaxValue, (byte)12)));
+	public static GUIStyle LBlueBackground
+	{
+		get
+		{
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)0, (byte)128, byte.MaxValue, (byte)12)));
+		}
+	}
 
-	public static GUIStyle LNavy => Style(Color32.op_Implicit(new Color32((byte)167, (byte)228, (byte)243, (byte)44)));
+	public static GUIStyle LNavy
+	{
+		get
+		{
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)167, (byte)228, (byte)243, (byte)44)));
+		}
+	}
 
-	public static GUIStyle Emerald => Style(Color32.op_Implicit(new Color32((byte)0, (byte)200, (byte)100, (byte)44)));
+	public static GUIStyle Emerald
+	{
+		get
+		{
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)0, (byte)200, (byte)100, (byte)44)));
+		}
+	}
 
-	public static GUIStyle GreenBackground => Style(Color32.op_Implicit(new Color32((byte)0, (byte)225, (byte)86, (byte)45)));
+	public static GUIStyle GreenBackground
+	{
+		get
+		{
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)0, (byte)225, (byte)86, (byte)45)));
+		}
+	}
 
-	public static GUIStyle BlueBackground => Style(Color32.op_Implicit(new Color32((byte)0, (byte)128, byte.MaxValue, (byte)76)));
+	public static GUIStyle BlueBackground
+	{
+		get
+		{
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)0, (byte)128, byte.MaxValue, (byte)76)));
+		}
+	}
 
-	public static GUIStyle RedBackground => Style(Color32.op_Implicit(new Color32((byte)225, (byte)72, (byte)72, (byte)45)));
+	public static GUIStyle RedBackground
+	{
+		get
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)225, (byte)72, (byte)72, (byte)45)));
+		}
+	}
 
-	public static GUIStyle YellowBackground => Style(Color32.op_Implicit(new Color32((byte)225, (byte)244, (byte)11, (byte)45)));
+	public static GUIStyle YellowBackground
+	{
+		get
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			return Style(Color32.op_Implicit(new Color32((byte)225, (byte)244, (byte)11, (byte)45)));
+		}
+	}
 
 	public static GUIStyle Style(Color bgColor)
 	{

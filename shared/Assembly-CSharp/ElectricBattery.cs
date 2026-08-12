@@ -384,7 +384,7 @@ public class ElectricBattery : IOEntity, IInstanceDataReceiver
 				setFlags.Set(Flags.Reserved9, b: true);
 				MarkDirtyForceUpdateOutputs();
 			}
-			else if (!flag3 && flag4 && ((float)activeDrain > lastChargeIn || lastChargeIn == 0f))
+			else if ((!flag3 & flag4) && ((float)activeDrain > lastChargeIn || lastChargeIn == 0f))
 			{
 				setFlags.Set(Flags.Reserved9, b: false);
 				MarkDirtyForceUpdateOutputs();

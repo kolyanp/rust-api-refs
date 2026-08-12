@@ -5,7 +5,7 @@
     <TargetFramework>net40</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>15.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -22,7 +22,7 @@
     <Reference Include="Rust.UI" />
     <Reference Include="Rust.Data" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Nexus" />
     <Reference Include="Facepunch.Unity" />
@@ -79,7 +79,9 @@
     <Reference Include="UnityEngine.UnityWebRequestModule" />
     <Reference Include="Rust.RenderPipeline" />
     <Reference Include="UnityEngine.WindModule" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Net.Http.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.DirectorModule" />
     <Reference Include="Unity.Timeline" />
     <Reference Include="Rust.UI.Toolkit.DemoControls" />
@@ -105,7 +107,9 @@
     <Reference Include="Rust.Platform" />
     <Reference Include="Rust.Demo" />
     <Reference Include="UnityEngine.ImageConversionModule" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="TimeZoneConverter" />
     <Reference Include="LZ4" />
     <Reference Include="Facepunch.SteamNetworking" />

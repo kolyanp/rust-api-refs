@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class SnakeHazard : WildlifeHazard
 {
-	public static Phrase SnakeHazardFailedTipPhrase = new Phrase("toast.snake_hazard_failed", "Jump immediately when a Snake hisses to avoid its attack.");
+	public static Phrase SnakeHazardFailedTipPhrase;
 
 	[ServerVar(Help = "Population active on the server, per square km", ShowInAdminUI = true)]
-	public static float Population = 5f;
+	public static float Population;
 
 	public List<ModifierDefintion> FailModifierEffects;
 
@@ -185,5 +185,13 @@ public class SnakeHazard : WildlifeHazard
 		CancelInvoke(StartDelayedTeleport);
 		CancelInvoke(EndDelayedTeleport);
 		CancelInvoke(ApplyAttackToPlayer);
+	}
+
+	static SnakeHazard()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		SnakeHazardFailedTipPhrase = new Phrase("toast.snake_hazard_failed", "Jump immediately when a Snake hisses to avoid its attack.");
+		Population = 5f;
 	}
 }

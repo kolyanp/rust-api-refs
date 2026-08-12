@@ -14,7 +14,7 @@ public class SpinnerWheel : Signage
 
 	public float velocity;
 
-	public Quaternion targetRotation = Quaternion.identity;
+	public Quaternion targetRotation;
 
 	[Header("Sound")]
 	public SoundDefinition spinLoopSoundDef;
@@ -25,9 +25,9 @@ public class SpinnerWheel : Signage
 
 	public SoundDefinition spinStopSoundDef;
 
-	public float minTimeBetweenSpinAccentSounds = 0.3f;
+	public float minTimeBetweenSpinAccentSounds;
 
-	public float spinAccentAngleDelta = 180f;
+	public float spinAccentAngleDelta;
 
 	private Sound spinSound;
 
@@ -205,8 +205,8 @@ public class SpinnerWheel : Signage
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Spin(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && AllowPlayerSpins() && (AnyoneSpin() || rpc.player.CanBuild()) && Interface.CallHook("OnSpinWheel", rpc.player, this) == null && !(velocity > 15f))
@@ -227,8 +227,8 @@ public class SpinnerWheel : Signage
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_AnyoneSpin(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract())
@@ -242,5 +242,15 @@ public class SpinnerWheel : Signage
 	public bool AnyoneSpin()
 	{
 		return HasFlag(Flags.Reserved3);
+	}
+
+	public SpinnerWheel()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		targetRotation = Quaternion.identity;
+		minTimeBetweenSpinAccentSounds = 0.3f;
+		spinAccentAngleDelta = 180f;
+		base._002Ector();
 	}
 }

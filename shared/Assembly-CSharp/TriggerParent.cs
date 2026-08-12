@@ -145,7 +145,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		}
 	}
 
-	private struct IsClippingState(int overlapCount, NativeList<OBB> obbs, NativeList<int> obbLayerMasks) : IDisposable
+	private struct IsClippingState : IDisposable
 	{
 		public ref struct ReadOnly
 		{
@@ -162,15 +162,35 @@ public class TriggerParent : TriggerBase, IServerComponent
 
 		public const int MaxOverlaps = 6;
 
-		public NativeList<int> TriggerLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
+		public NativeList<int> TriggerLookup;
 
-		public NativeList<int> EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
+		public NativeList<int> EntLookup;
 
-		public NativeList<OBB> OBBs = obbs;
+		public NativeList<OBB> OBBs;
 
-		public NativeList<int> OBBLayerMasks = obbLayerMasks;
+		public NativeList<int> OBBLayerMasks;
 
-		public JobHandle OBBOverlapsHandle = default(JobHandle);
+		public JobHandle OBBOverlapsHandle;
+
+		public IsClippingState(int overlapCount, NativeList<OBB> obbs, NativeList<int> obbLayerMasks)
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			TriggerLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
+			EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)2));
+			OBBs = obbs;
+			OBBLayerMasks = obbLayerMasks;
+			OBBOverlapsHandle = default(JobHandle);
+		}
 
 		public ReadOnly AsReadOnly()
 		{
@@ -201,7 +221,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 		}
 	}
 
-	private struct IsInsideState(int overlapCount, NativeList<OBB> obbs, NativeList<Vector3> entPoints) : IDisposable
+	private struct IsInsideState : IDisposable
 	{
 		public ref struct ReadOnly
 		{
@@ -212,11 +232,25 @@ public class TriggerParent : TriggerBase, IServerComponent
 			public ReadOnly<Vector3> EntPoints;
 		}
 
-		public NativeList<int> EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)3));
+		public NativeList<int> EntLookup;
 
-		public NativeList<OBB> TriggerOBBs = obbs;
+		public NativeList<OBB> TriggerOBBs;
 
-		public NativeList<Vector3> EntPoints = entPoints;
+		public NativeList<Vector3> EntPoints;
+
+		public IsInsideState(int overlapCount, NativeList<OBB> obbs, NativeList<Vector3> entPoints)
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			EntLookup = new NativeList<int>(overlapCount, AllocatorHandle.op_Implicit((Allocator)3));
+			TriggerOBBs = obbs;
+			EntPoints = entPoints;
+		}
 
 		public ReadOnly AsReadOnly()
 		{
@@ -273,9 +307,9 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[NonSerialized]
 	public int StableIndex = -1;
 
+	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	[SerializeField]
 	[Header("General")]
-	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	protected bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -303,8 +337,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
 	public bool checkForObjUnderFeet;
 
-	[Header("You probably don't need it")]
 	[SerializeField]
+	[Header("You probably don't need it")]
 	private bool doExpensivePlayerClippingChecks;
 
 	[Tooltip("TickMode 1 only - Allow trigger to sleep if it hasn't moved on selected axis. Set to None if it should never ignore")]
@@ -838,7 +872,7 @@ public class TriggerParent : TriggerBase, IServerComponent
 						IL_0319:
 						if (flag5)
 						{
-							if (!triggerParent.parentSwimmers && flag6)
+							if (!triggerParent.parentSwimmers & flag6)
 							{
 								Transform transform = ((Component)basePlayer2).transform;
 								areSwimmingState.Players.Add(basePlayer2);
@@ -1433,11 +1467,10 @@ public class TriggerParent : TriggerBase, IServerComponent
 			break;
 		}
 		BasePlayer basePlayer = null;
-		if (doExpensivePlayerClippingChecks && flag2 && (Object)(object)(basePlayer = ent.ToPlayer()) != (Object)null)
+		if ((doExpensivePlayerClippingChecks & flag2) && (Object)(object)(basePlayer = ent.ToPlayer()) != (Object)null)
 		{
 			Vector3 val = basePlayer.TriggerPoint();
-			Collider col;
-			bool result = AntiHack.TestNoClipping(basePlayer, val, val + Vector3.one * 0.0001f, BasePlayer.NoClipRadius(ConVar.AntiHack.noclip_margin), ConVar.AntiHack.noclip_backtracking, out col, overlapVehicleLayer: true, associatedMountable);
+			bool result = AntiHack.TestNoClipping(basePlayer, val, val + Vector3.one * 0.0001f, BasePlayer.NoClipRadius(ConVar.AntiHack.noclip_margin), ConVar.AntiHack.noclip_backtracking, out var _, overlapVehicleLayer: true, associatedMountable);
 			Pool.FreeUnmanaged<Collider>(ref list);
 			return result;
 		}

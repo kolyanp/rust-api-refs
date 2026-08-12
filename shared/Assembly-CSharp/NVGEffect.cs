@@ -42,65 +42,17 @@ public class NVGEffect : PostEffectsBase, IImageEffect
 		public FilterMode filterMode;
 	}
 
-	public ColorCorrectionParams ColorCorrection1 = new ColorCorrectionParams
-	{
-		saturation = 1f,
-		redChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(1f, 1f)
-		}),
-		greenChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(1f, 1f)
-		}),
-		blueChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(1f, 1f)
-		})
-	};
+	public ColorCorrectionParams ColorCorrection1;
 
-	public ColorCorrectionParams ColorCorrection2 = new ColorCorrectionParams
-	{
-		saturation = 1f,
-		redChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(1f, 1f)
-		}),
-		greenChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(1f, 1f)
-		}),
-		blueChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
-		{
-			new Keyframe(0f, 0f),
-			new Keyframe(1f, 1f)
-		})
-	};
+	public ColorCorrectionParams ColorCorrection2;
 
-	public NoiseAndGrainParams NoiseAndGrain = new NoiseAndGrainParams
-	{
-		intensityMultiplier = 1.5f,
-		generalIntensity = 1f,
-		blackIntensity = 1f,
-		whiteIntensity = 1f,
-		midGrey = 0.182f,
-		monochrome = true,
-		intensities = new Vector3(1f, 1f, 1f),
-		tiling = new Vector3(60f, 70f, 80f),
-		monochromeTiling = 55f,
-		filterMode = (FilterMode)0
-	};
+	public NoiseAndGrainParams NoiseAndGrain;
 
 	private Texture2D rgbChannelTex1;
 
 	private Texture2D rgbChannelTex2;
 
-	private bool updateTexturesOnStartup = true;
+	private bool updateTexturesOnStartup;
 
 	public Texture2D NoiseTexture;
 
@@ -282,5 +234,103 @@ public class NVGEffect : PostEffectsBase, IImageEffect
 		}
 		GL.End();
 		GL.PopMatrix();
+	}
+
+	public NVGEffect()
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Expected O, but got Unknown
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Expected O, but got Unknown
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Expected O, but got Unknown
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0128: Expected O, but got Unknown
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Expected O, but got Unknown
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a4: Expected O, but got Unknown
+		//IL_0208: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023c: Unknown result type (might be due to invalid IL or missing references)
+		ColorCorrection1 = new ColorCorrectionParams
+		{
+			saturation = 1f,
+			redChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+			{
+				new Keyframe(0f, 0f),
+				new Keyframe(1f, 1f)
+			}),
+			greenChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+			{
+				new Keyframe(0f, 0f),
+				new Keyframe(1f, 1f)
+			}),
+			blueChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+			{
+				new Keyframe(0f, 0f),
+				new Keyframe(1f, 1f)
+			})
+		};
+		ColorCorrection2 = new ColorCorrectionParams
+		{
+			saturation = 1f,
+			redChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+			{
+				new Keyframe(0f, 0f),
+				new Keyframe(1f, 1f)
+			}),
+			greenChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+			{
+				new Keyframe(0f, 0f),
+				new Keyframe(1f, 1f)
+			}),
+			blueChannel = new AnimationCurve((Keyframe[])(object)new Keyframe[2]
+			{
+				new Keyframe(0f, 0f),
+				new Keyframe(1f, 1f)
+			})
+		};
+		NoiseAndGrain = new NoiseAndGrainParams
+		{
+			intensityMultiplier = 1.5f,
+			generalIntensity = 1f,
+			blackIntensity = 1f,
+			whiteIntensity = 1f,
+			midGrey = 0.182f,
+			monochrome = true,
+			intensities = new Vector3(1f, 1f, 1f),
+			tiling = new Vector3(60f, 70f, 80f),
+			monochromeTiling = 55f,
+			filterMode = (FilterMode)0
+		};
+		updateTexturesOnStartup = true;
+		((PostEffectsBase)this)._002Ector();
 	}
 }

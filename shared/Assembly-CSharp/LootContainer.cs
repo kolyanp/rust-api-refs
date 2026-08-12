@@ -35,33 +35,33 @@ public class LootContainer : StorageContainer, ILootContainer
 		public Era[] eras;
 	}
 
-	public bool destroyOnEmpty = true;
+	public bool destroyOnEmpty;
 
 	public LootSpawn lootDefinition;
 
 	public int maxDefinitionsToSpawn;
 
-	public float minSecondsBetweenRefresh = 3600f;
+	public float minSecondsBetweenRefresh;
 
-	public float maxSecondsBetweenRefresh = 7200f;
+	public float maxSecondsBetweenRefresh;
 
-	public bool initialLootSpawn = true;
+	public bool initialLootSpawn;
 
-	public float xpLootedScale = 1f;
+	public float xpLootedScale;
 
-	public float xpDestroyedScale = 1f;
+	public float xpDestroyedScale;
 
 	public bool BlockPlayerItemInput;
 
 	public int scrapAmount;
 
-	public string deathStat = "";
+	public string deathStat;
 
 	public LootSpawnSlot[] LootSpawnSlots;
 
 	public spawnType SpawnType;
 
-	public ClanScoreEventType clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
+	public ClanScoreEventType clanScoreEventForFirstLooter;
 
 	[NonSerialized]
 	public bool HasBeenLooted;
@@ -459,5 +459,19 @@ public class LootContainer : StorageContainer, ILootContainer
 	public override void InitShared()
 	{
 		base.InitShared();
+	}
+
+	public LootContainer()
+	{
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		destroyOnEmpty = true;
+		minSecondsBetweenRefresh = 3600f;
+		maxSecondsBetweenRefresh = 7200f;
+		initialLootSpawn = true;
+		xpLootedScale = 1f;
+		xpDestroyedScale = 1f;
+		deathStat = "";
+		clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
+		base._002Ector();
 	}
 }

@@ -82,6 +82,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		((CustomYieldInstruction)this)._002Ector();
 		_raycastCommands = new NativeArray<RaycastCommand>(10000, (Allocator)4, (NativeArrayOptions)1);
 		_raycastHits = new NativeArray<RaycastHit>(10000, (Allocator)4, (NativeArrayOptions)0);
 		_colliderIds = new NativeArray<int>(512, (Allocator)4, (NativeArrayOptions)0);

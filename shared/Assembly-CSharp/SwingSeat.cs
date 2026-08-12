@@ -9,7 +9,7 @@ public class SwingSeat : BaseVehicleSeat
 {
 	public Transform pivot;
 
-	public Vector3 swingAxis = Vector3.right;
+	public Vector3 swingAxis;
 
 	public float minAngle;
 
@@ -21,16 +21,16 @@ public class SwingSeat : BaseVehicleSeat
 
 	public float damping;
 
-	public float launchScale = 1f;
+	public float launchScale;
 
-	public float launchMinSpeed = 20f;
+	public float launchMinSpeed;
 
 	[Range(0f, 1f)]
-	public float launchLift = 0.25f;
+	public float launchLift;
 
 	public bool heavyLanding;
 
-	public bool flailOnLaunch = true;
+	public bool flailOnLaunch;
 
 	public ChildAnimatorSubSystem swingAnimator;
 
@@ -42,7 +42,7 @@ public class SwingSeat : BaseVehicleSeat
 
 	public AnimationCurve swingMovementGainCurve;
 
-	public float swingMovementSmoothing = 4f;
+	public float swingMovementSmoothing;
 
 	public AnimationCurve swingMovementAccentGainCurve;
 
@@ -327,5 +327,18 @@ public class SwingSeat : BaseVehicleSeat
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	public SwingSeat()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		swingAxis = Vector3.right;
+		launchScale = 1f;
+		launchMinSpeed = 20f;
+		launchLift = 0.25f;
+		flailOnLaunch = true;
+		swingMovementSmoothing = 4f;
+		base._002Ector();
 	}
 }

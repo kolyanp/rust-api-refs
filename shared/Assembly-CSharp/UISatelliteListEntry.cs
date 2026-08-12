@@ -20,9 +20,9 @@ public class UISatelliteListEntry : MonoBehaviour, IPointerEnterHandler, IEventS
 	public Button button;
 
 	[Header("Hover")]
-	public Color panelColor = new Color(0.85490197f, 10f / 51f, 0.05490196f);
+	public Color panelColor;
 
-	public Color textColor = new Color(11f / 51f, 0.08627451f, 1f / 17f);
+	public Color textColor;
 
 	public Image rowFill;
 
@@ -38,5 +38,16 @@ public class UISatelliteListEntry : MonoBehaviour, IPointerEnterHandler, IEventS
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
+	}
+
+	public UISatelliteListEntry()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		panelColor = new Color(0.85490197f, 10f / 51f, 0.05490196f);
+		textColor = new Color(11f / 51f, 0.08627451f, 1f / 17f);
+		((MonoBehaviour)this)._002Ector();
 	}
 }

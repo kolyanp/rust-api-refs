@@ -67,8 +67,8 @@ public class BaseMelee : AttackEntity
 
 	public List<MaterialFX> materialStrikeFX = new List<MaterialFX>();
 
-	[Range(0f, 1f)]
 	[Header("Other")]
+	[Range(0f, 1f)]
 	public float heartStress = 0.5f;
 
 	public ResourceDispenser.GatherProperties gathering;
@@ -320,9 +320,9 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
@@ -809,7 +809,7 @@ public class BaseMelee : AttackEntity
 								flag8 = false;
 							}
 						}
-						if (ConVar.AntiHack.melee_protection >= 4 && flag8 && flag && !flag7 && !flag2 && !flag3 && !flag4 && !flag5)
+						if (((ConVar.AntiHack.melee_protection >= 4) & flag8 & flag) && !flag7 && !flag2 && !flag3 && !flag4 && !flag5)
 						{
 							val2 = basePlayer.GetParentVelocity();
 							float magnitude = ((Vector3)(ref val2)).magnitude;
@@ -824,7 +824,7 @@ public class BaseMelee : AttackEntity
 								flag8 = false;
 							}
 						}
-						if (ConVar.AntiHack.melee_protection >= 4 && flag8 && flag && !flag7 && !flag2 && !flag3 && flag5 && ConVar.AntiHack.parenthistory && basePlayer.tickHistory.ParentCount > 0)
+						if (((((ConVar.AntiHack.melee_protection >= 4) & flag8 & flag) && !flag7 && !flag2 && !flag3) & flag5) && ConVar.AntiHack.parenthistory && basePlayer.tickHistory.ParentCount > 0)
 						{
 							val2 = basePlayer.GetParentVelocity();
 							float magnitude2 = ((Vector3)(ref val2)).magnitude;
@@ -945,7 +945,7 @@ public class BaseMelee : AttackEntity
 								flag8 = false;
 							}
 						}
-						if (flag8 && flag && !flag7)
+						if ((flag8 & flag) && !flag7)
 						{
 							Vector3 hitPositionWorld3 = hitInfo.HitPositionWorld;
 							Vector3 position3 = basePlayer.eyes.position;
@@ -966,7 +966,7 @@ public class BaseMelee : AttackEntity
 							}
 						}
 					}
-					if (ConVar.AntiHack.melee_protection >= 5 && flag8 && flag6 && !flag && hitEntity.AntiHackVelocity() == 0f && !hitEntity.IsOnMovingObject() && !(hitEntity is ResourceEntity) && !(hitEntity is CollectibleEntity) && !(hitEntity is BaseLock) && !(hitEntity is BaseCombatEntity { ValidateMeleeColliderAntihack: false }))
+					if (ConVar.AntiHack.melee_protection >= 5 && (flag8 & flag6) && !flag && hitEntity.AntiHackVelocity() == 0f && !hitEntity.IsOnMovingObject() && !(hitEntity is ResourceEntity) && !(hitEntity is CollectibleEntity) && !(hitEntity is BaseLock) && !(hitEntity is BaseCombatEntity { ValidateMeleeColliderAntihack: false }))
 					{
 						Vector3 hitPositionWorld4 = hitInfo.HitPositionWorld;
 						float melee_entity_bounds_radius = ConVar.AntiHack.melee_entity_bounds_radius;

@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ConnectModal : UI_Window
 {
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private RustText _title;
 
 	[SerializeField]
@@ -61,8 +61,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private UI_TagToggle _iommuCheck;
 
-	[SerializeField]
 	[Header("References - Friends")]
+	[SerializeField]
 	private RustText _friendsText;
 
 	[SerializeField]
@@ -105,9 +105,22 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private RectMask2D _scrollMask;
 
-	public static Phrase lastPlayedPhrase = new Phrase("connection.modal.lastplayed.ago", "{0} ago");
+	public static Phrase lastPlayedPhrase;
 
-	public static Phrase serverAgePhrase = new Phrase("connection.modal.serverage.old", "{0} old");
+	public static Phrase serverAgePhrase;
 
-	public static Phrase loadingError = new Phrase("connection.modal.error", "Error loading server");
+	public static Phrase loadingError;
+
+	static UI_ConnectModal()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		lastPlayedPhrase = new Phrase("connection.modal.lastplayed.ago", "{0} ago");
+		serverAgePhrase = new Phrase("connection.modal.serverage.old", "{0} old");
+		loadingError = new Phrase("connection.modal.error", "Error loading server");
+	}
 }

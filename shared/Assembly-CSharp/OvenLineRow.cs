@@ -10,23 +10,23 @@ public class OvenLineRow : MonoBehaviour
 
 	public Transform Container;
 
-	public Color Color = Color.white;
+	public Color Color;
 
 	public Sprite TriangleSprite;
 
-	public int LineWidth = 2;
+	public int LineWidth;
 
-	public int ArrowWidth = 6;
+	public int ArrowWidth;
 
-	public int ArrowHeight = 4;
+	public int ArrowHeight;
 
-	public int Padding = 2;
+	public int Padding;
 
 	private int _topCount;
 
 	private int _bottomCount;
 
-	private List<GameObject> images = new List<GameObject>();
+	private List<GameObject> images;
 
 	private void Update()
 	{
@@ -138,5 +138,18 @@ public class OvenLineRow : MonoBehaviour
 		((Component)obj).transform.localScale = Vector3.one;
 		((Graphic)obj).color = Color;
 		return obj;
+	}
+
+	public OvenLineRow()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		Color = Color.white;
+		LineWidth = 2;
+		ArrowWidth = 6;
+		ArrowHeight = 4;
+		Padding = 2;
+		images = new List<GameObject>();
+		((MonoBehaviour)this)._002Ector();
 	}
 }

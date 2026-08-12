@@ -8,19 +8,19 @@ public class UICircleSimple : UIPrimitiveBase
 {
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	[Range(0f, 1000f)]
-	public int ArcSteps = 100;
+	public int ArcSteps;
 
-	public bool Fill = true;
+	public bool Fill;
 
-	public float Thickness = 5f;
+	public float Thickness;
 
 	public bool ThicknessIsOutside;
 
-	private List<int> indices = new List<int>();
+	private List<int> indices;
 
-	private List<UIVertex> vertices = new List<UIVertex>();
+	private List<UIVertex> vertices;
 
-	private Vector2 uvCenter = new Vector2(0.5f, 0.5f);
+	private Vector2 uvCenter;
 
 	protected override void OnPopulateMesh(VertexHelper vh)
 	{
@@ -219,5 +219,18 @@ public class UICircleSimple : UIPrimitiveBase
 	{
 		Thickness = thickness;
 		((Graphic)this).SetVerticesDirty();
+	}
+
+	public UICircleSimple()
+	{
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		ArcSteps = 100;
+		Fill = true;
+		Thickness = 5f;
+		indices = new List<int>();
+		vertices = new List<UIVertex>();
+		uvCenter = new Vector2(0.5f, 0.5f);
+		base._002Ector();
 	}
 }

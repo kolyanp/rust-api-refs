@@ -14,9 +14,9 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		Full
 	}
 
-	public float DefaultCoverPointScore = 1f;
+	public float DefaultCoverPointScore;
 
-	public float CoverPointRayLength = 1f;
+	public float CoverPointRayLength;
 
 	public LayerMask CoverLayerMask;
 
@@ -30,15 +30,15 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 	[ServerVar(Help = "cover_point_sample_step_height defines the height of the steps we do vertically for the cover point volume's cover point generation (smaller steps gives more accurate cover points, but at a higher processing cost). (default: 2.0)")]
 	public static float cover_point_sample_step_height = 2f;
 
-	public readonly List<CoverPoint> CoverPoints = new List<CoverPoint>();
+	public readonly List<CoverPoint> CoverPoints;
 
-	private readonly List<CoverPointBlockerVolume> _coverPointBlockers = new List<CoverPointBlockerVolume>();
+	private readonly List<CoverPointBlockerVolume> _coverPointBlockers;
 
-	private float _dynNavMeshBuildCompletionTime = -1f;
+	private float _dynNavMeshBuildCompletionTime;
 
 	private int _genAttempts;
 
-	private Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
+	private Bounds bounds;
 
 	public bool repeat => true;
 
@@ -229,8 +229,7 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit rayHit;
-		CoverType coverType = ProvidesCoverInDir(new Ray(((NavMeshHit)(ref info)).position, -((NavMeshHit)(ref info)).normal), CoverPointRayLength, out rayHit);
+		CoverType coverType = ProvidesCoverInDir(new Ray(((NavMeshHit)(ref info)).position, -((NavMeshHit)(ref info)).normal), CoverPointRayLength, out var _);
 		if (coverType == CoverType.None)
 		{
 			return null;
@@ -305,5 +304,20 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 		Bounds val = default(Bounds);
 		((Bounds)(ref val))._002Ector(((Component)this).transform.position, ((Component)this).transform.localScale);
 		return ((Bounds)(ref val)).Contains(point);
+	}
+
+	public CoverPointVolume()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		DefaultCoverPointScore = 1f;
+		CoverPointRayLength = 1f;
+		CoverPoints = new List<CoverPoint>();
+		_coverPointBlockers = new List<CoverPointBlockerVolume>();
+		_dynNavMeshBuildCompletionTime = -1f;
+		bounds = new Bounds(Vector3.zero, Vector3.zero);
+		((MonoBehaviour)this)._002Ector();
 	}
 }

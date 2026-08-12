@@ -6,13 +6,20 @@ using Unity.Mathematics;
 using UnityEngine;
 
 [GenerateTestsForBurstCompatibility]
-public struct CoarseQueryGrid(int cellSize, int maxWorldSizeXZ, float yCutoff) : IDisposable
+public struct CoarseQueryGrid : IDisposable
 {
 	public struct RefCountedSpatialArray : IDisposable
 	{
 		private NativeArray<byte> _array;
 
-		public NativeArray<byte> RawArray => _array;
+		public NativeArray<byte> RawArray
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _array;
+			}
+		}
 
 		public int Length => _array.Length;
 
@@ -55,25 +62,47 @@ public struct CoarseQueryGrid(int cellSize, int maxWorldSizeXZ, float yCutoff) :
 
 	private const float StaticBoundsInflation = 0.1f;
 
-	private readonly int _cellXZDimensionCount = (int)((float)(maxWorldSizeXZ / cellSize) + 0.5f);
+	private readonly int _cellXZDimensionCount;
 
-	private readonly Vector2 _gridCentre = new Vector2((float)maxWorldSizeXZ * 0.5f, (float)maxWorldSizeXZ * 0.5f);
+	private readonly Vector2 _gridCentre;
 
-	private readonly float _yCutoff = yCutoff;
+	private readonly float _yCutoff;
 
-	private readonly int _cellSize = cellSize;
+	private readonly int _cellSize;
 
-	private readonly int _cellClampLimit = _upperStaticSpatialArray.Length - 1;
+	private readonly int _cellClampLimit;
 
-	private NativeReference<bool> _result = new NativeReference<bool>(AllocatorHandle.op_Implicit((Allocator)4), (NativeArrayOptions)1);
+	private NativeReference<bool> _result;
 
-	private bool _hasDisposed = false;
+	private bool _hasDisposed;
 
-	private NativeList<Bounds> _dynamicBounds = new NativeList<Bounds>(AllocatorHandle.op_Implicit((Allocator)4));
+	private NativeList<Bounds> _dynamicBounds;
 
-	private RefCountedSpatialArray _upperStaticSpatialArray = RefCountedSpatialArray.Init(_cellXZDimensionCount * _cellXZDimensionCount);
+	private RefCountedSpatialArray _upperStaticSpatialArray;
 
-	private RefCountedSpatialArray _lowerStaticSpatialArray = RefCountedSpatialArray.Init(_cellXZDimensionCount * _cellXZDimensionCount);
+	private RefCountedSpatialArray _lowerStaticSpatialArray;
+
+	public CoarseQueryGrid(int cellSize, int maxWorldSizeXZ, float yCutoff)
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		_cellSize = cellSize;
+		_cellXZDimensionCount = (int)((float)(maxWorldSizeXZ / cellSize) + 0.5f);
+		_gridCentre = new Vector2((float)maxWorldSizeXZ * 0.5f, (float)maxWorldSizeXZ * 0.5f);
+		_yCutoff = yCutoff;
+		_hasDisposed = false;
+		_result = new NativeReference<bool>(AllocatorHandle.op_Implicit((Allocator)4), (NativeArrayOptions)1);
+		_upperStaticSpatialArray = RefCountedSpatialArray.Init(_cellXZDimensionCount * _cellXZDimensionCount);
+		_lowerStaticSpatialArray = RefCountedSpatialArray.Init(_cellXZDimensionCount * _cellXZDimensionCount);
+		_dynamicBounds = new NativeList<Bounds>(AllocatorHandle.op_Implicit((Allocator)4));
+		_cellClampLimit = _upperStaticSpatialArray.Length - 1;
+	}
 
 	private bool TouchesUpperSpatial(Bounds bounds)
 	{

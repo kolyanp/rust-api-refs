@@ -500,31 +500,79 @@ public class PowergridManager : PointEntity<PowergridManager>
 		}
 	}
 
-	private static bool Server_TryFindForceFastDeteriorationFuse(out Item lowestConditionFuse)
+	private static bool Server_IsActiveFuse(InsertedFuseEntry entry)
 	{
-		float num = Mathf.Clamp01(Powergrid.fuseFastDeteriorationThreshold);
-		lowestConditionFuse = null;
-		float num2 = float.MaxValue;
+		if ((Object)(object)entry.FuseBox != (Object)null && !entry.FuseBox.IsDestroyed && entry.Fuse != null)
+		{
+			return entry.Fuse.hasCondition;
+		}
+		return false;
+	}
+
+	public static void Server_GatherInsertedFuses(List<Item> fuses)
+	{
 		int i = 0;
 		for (int count = insertedFuses.Count; i < count; i++)
 		{
-			InsertedFuseEntry insertedFuseEntry = insertedFuses[i];
-			if (!((Object)(object)insertedFuseEntry.FuseBox == (Object)null) && !insertedFuseEntry.FuseBox.IsDestroyed && insertedFuseEntry.Fuse.hasCondition)
+			InsertedFuseEntry entry = insertedFuses[i];
+			if (Server_IsActiveFuse(entry))
 			{
-				float conditionNormalized = insertedFuseEntry.Fuse.conditionNormalized;
-				if (conditionNormalized <= num)
+				fuses.Add(entry.Fuse);
+			}
+		}
+	}
+
+	public static void Server_GatherFullDecayFuses(List<Item> fullDecayFuses)
+	{
+		int fuseFullDecayCount = Powergrid.fuseFullDecayCount;
+		if (fuseFullDecayCount <= 0)
+		{
+			return;
+		}
+		int i = 0;
+		for (int count = insertedFuses.Count; i < count; i++)
+		{
+			InsertedFuseEntry entry = insertedFuses[i];
+			if (!Server_IsActiveFuse(entry))
+			{
+				continue;
+			}
+			float condition = entry.Fuse.condition;
+			int num = fullDecayFuses.Count;
+			for (int j = 0; j < fullDecayFuses.Count; j++)
+			{
+				if (condition < fullDecayFuses[j].condition)
 				{
-					lowestConditionFuse = null;
-					return false;
+					num = j;
+					break;
 				}
-				if (conditionNormalized < num2)
+			}
+			if (num < fuseFullDecayCount)
+			{
+				fullDecayFuses.Insert(num, entry.Fuse);
+				if (fullDecayFuses.Count > fuseFullDecayCount)
 				{
-					num2 = conditionNormalized;
-					lowestConditionFuse = insertedFuseEntry.Fuse;
+					fullDecayFuses.RemoveAt(fullDecayFuses.Count - 1);
 				}
 			}
 		}
-		return lowestConditionFuse != null;
+	}
+
+	public static float Server_GetSlowDecayRateScale(Item fuse)
+	{
+		float num = Mathf.Max(Powergrid.fuseSlowDecayFractionMin, 0f);
+		float num2 = Mathf.Max(Powergrid.fuseSlowDecayFractionMax, num);
+		if (num2 <= 0f)
+		{
+			return 0f;
+		}
+		if (num >= num2)
+		{
+			return num;
+		}
+		ulong value = fuse.uid.Value;
+		uint num3 = (uint)(value ^ (value >> 32));
+		return Mathf.Lerp(num, num2, SeedRandom.Wanghash01(ref num3));
 	}
 
 	private void ServerFuseDeteriorationTick()
@@ -538,21 +586,26 @@ public class PowergridManager : PointEntity<PowergridManager>
 			{
 				return;
 			}
-			Item item = null;
-			if (Powergrid.fuseFastDeteriorateLowest && Server_TryFindForceFastDeteriorationFuse(out var lowestConditionFuse))
+			PooledList<Item> val = Pool.Get<PooledList<Item>>();
+			try
 			{
-				item = lowestConditionFuse;
-			}
-			for (int num = insertedFuses.Count - 1; num >= 0; num--)
-			{
-				if (num < insertedFuses.Count)
+				Server_GatherFullDecayFuses((List<Item>)(object)val);
+				for (int num = insertedFuses.Count - 1; num >= 0; num--)
 				{
-					InsertedFuseEntry insertedFuseEntry = insertedFuses[num];
-					if (!((Object)(object)insertedFuseEntry.FuseBox == (Object)null) && !insertedFuseEntry.FuseBox.IsDestroyed && insertedFuseEntry.Fuse.hasCondition)
+					if (num < insertedFuses.Count)
 					{
-						insertedFuseEntry.FuseBox.Server_DeteriorateFuse(insertedFuseEntry.Fuse, deltaTime, insertedFuseEntry.Fuse == item);
+						InsertedFuseEntry entry = insertedFuses[num];
+						if (Server_IsActiveFuse(entry))
+						{
+							float decayRateScale = (((List<Item>)(object)val).Contains(entry.Fuse) ? 1f : Server_GetSlowDecayRateScale(entry.Fuse));
+							entry.FuseBox.Server_DeteriorateFuse(entry.Fuse, deltaTime, decayRateScale);
+						}
 					}
 				}
+			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
 			}
 		}
 	}

@@ -103,8 +103,8 @@ public class BaseNpc : BaseCombatEntity
 			Player
 		}
 
-		[Range(0f, 1f)]
 		[Tooltip("Ai will be less likely to fight animals that are larger than them, and more likely to flee from them.")]
+		[Range(0f, 1f)]
 		public float Size;
 
 		[Tooltip("How fast we can move")]
@@ -237,21 +237,21 @@ public class BaseNpc : BaseCombatEntity
 
 	public bool NewAI;
 
-	public bool LegacyNavigation = true;
+	public bool LegacyNavigation;
 
-	public bool canSwim = true;
+	public bool canSwim;
 
 	private Vector3 stepDirection;
 
 	private float maxFleeTime;
 
-	private float fleeHealthThresholdPercentage = 1f;
+	private float fleeHealthThresholdPercentage;
 
-	private float blockEnemyTargetingTimeout = float.NegativeInfinity;
+	private float blockEnemyTargetingTimeout;
 
-	private float blockFoodTargetingTimeout = float.NegativeInfinity;
+	private float blockFoodTargetingTimeout;
 
-	private float aggroTimeout = float.NegativeInfinity;
+	private float aggroTimeout;
 
 	private float lastAggroChanceResult;
 
@@ -259,9 +259,9 @@ public class BaseNpc : BaseCombatEntity
 
 	private const float aggroChanceRecalcTimeout = 5f;
 
-	private float eatTimeout = float.NegativeInfinity;
+	private float eatTimeout;
 
-	private float wakeUpBlockMoveTimeout = float.NegativeInfinity;
+	private float wakeUpBlockMoveTimeout;
 
 	private BaseEntity blockTargetingThisEnemy;
 
@@ -294,21 +294,21 @@ public class BaseNpc : BaseCombatEntity
 
 	[SerializeField]
 	[InspectorFlags]
-	public Enum topologyPreference = (Enum)96;
+	public Enum topologyPreference;
 
 	[InspectorFlags]
 	public AiFlags aiFlags;
 
 	[NonSerialized]
-	public byte[] CurrentFacts = new byte[Enum.GetValues(typeof(Facts)).Length];
+	public byte[] CurrentFacts;
 
 	[Header("NPC Senses")]
-	public int ForgetUnseenEntityTime = 10;
+	public int ForgetUnseenEntityTime;
 
-	public float SensesTickRate = 0.5f;
+	public float SensesTickRate;
 
 	[NonSerialized]
-	public BaseEntity[] SensesResults = new BaseEntity[64];
+	public BaseEntity[] SensesResults;
 
 	private float lastTickTime;
 
@@ -335,24 +335,24 @@ public class BaseNpc : BaseCombatEntity
 
 	public Vector3 AttackOffset;
 
-	public float AttackDamage = 20f;
+	public float AttackDamage;
 
-	public DamageType AttackDamageType = DamageType.Bite;
+	public DamageType AttackDamageType;
 
 	public float MinimumTargetHealthFraction;
 
 	[Tooltip("Stamina to use per attack")]
-	public float AttackCost = 0.1f;
+	public float AttackCost;
 
 	[Tooltip("How often can we attack")]
-	public float AttackRate = 1f;
+	public float AttackRate;
 
 	[Tooltip("Maximum Distance for an attack")]
-	public float AttackRange = 1f;
+	public float AttackRange;
 
 	public RustNavMeshAgent NavAgent;
 
-	public LayerMask movementMask = LayerMask.op_Implicit(1503731969);
+	public LayerMask movementMask;
 
 	public float stuckDuration;
 
@@ -363,6 +363,9 @@ public class BaseNpc : BaseCombatEntity
 	private bool _isDormant;
 
 	private float lastSetDestinationTime;
+
+	[CompilerGenerated]
+	private Vector3 _003CSpawnPosition_003Ek__BackingField;
 
 	[NonSerialized]
 	public StateTimer BusyTimer;
@@ -554,7 +557,22 @@ public class BaseNpc : BaseCombatEntity
 
 	public BaseCombatEntity CombatTarget => AttackTarget as BaseCombatEntity;
 
-	public Vector3 SpawnPosition { get; set; }
+	public Vector3 SpawnPosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CSpawnPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CSpawnPosition_003Ek__BackingField = value;
+		}
+	}
 
 	public float AttackTargetVisibleFor => 0f;
 
@@ -586,7 +604,14 @@ public class BaseNpc : BaseCombatEntity
 
 	public float GetAttackRange => AttackRange;
 
-	public Vector3 GetAttackOffset => AttackOffset;
+	public Vector3 GetAttackOffset
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return AttackOffset;
+		}
+	}
 
 	public float GetStamina => Stamina.Level;
 
@@ -596,15 +621,39 @@ public class BaseNpc : BaseCombatEntity
 
 	public float GetSleep => Sleep;
 
-	public Vector3 CurrentAimAngles => ((Component)this).transform.forward;
+	public Vector3 CurrentAimAngles
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.forward;
+		}
+	}
 
 	public float GetStuckDuration => stuckDuration;
 
 	public float GetLastStuckTime => lastStuckTime;
 
-	public Vector3 AttackPosition => ServerPosition + ((Component)this).transform.TransformDirection(AttackOffset);
+	public Vector3 AttackPosition
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			return ServerPosition + ((Component)this).transform.TransformDirection(AttackOffset);
+		}
+	}
 
-	public Vector3 CrouchedAttackPosition => AttackPosition;
+	public Vector3 CrouchedAttackPosition
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return AttackPosition;
+		}
+	}
 
 	public float currentBehaviorDuration => 0f;
 
@@ -844,7 +893,7 @@ public class BaseNpc : BaseCombatEntity
 		}
 		if ((Object)(object)(ent as BasePlayer) != (Object)null)
 		{
-			num += 1f;
+			num++;
 		}
 		return num;
 	}
@@ -2184,5 +2233,32 @@ public class BaseNpc : BaseCombatEntity
 	public override float AntiHackVelocity()
 	{
 		return Stats.Speed;
+	}
+
+	public BaseNpc()
+	{
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		LegacyNavigation = true;
+		canSwim = true;
+		fleeHealthThresholdPercentage = 1f;
+		blockEnemyTargetingTimeout = float.NegativeInfinity;
+		blockFoodTargetingTimeout = float.NegativeInfinity;
+		aggroTimeout = float.NegativeInfinity;
+		eatTimeout = float.NegativeInfinity;
+		wakeUpBlockMoveTimeout = float.NegativeInfinity;
+		topologyPreference = (Enum)96;
+		CurrentFacts = new byte[Enum.GetValues(typeof(Facts)).Length];
+		ForgetUnseenEntityTime = 10;
+		SensesTickRate = 0.5f;
+		SensesResults = new BaseEntity[64];
+		AttackDamage = 20f;
+		AttackDamageType = DamageType.Bite;
+		AttackCost = 0.1f;
+		AttackRate = 1f;
+		AttackRange = 1f;
+		movementMask = LayerMask.op_Implicit(1503731969);
+		base._002Ector();
 	}
 }

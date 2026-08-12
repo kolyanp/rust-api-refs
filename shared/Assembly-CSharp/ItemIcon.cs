@@ -7,15 +7,15 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 {
 	private Color backgroundColor;
 
-	public Color selectedBackgroundColor = new Color(0.12156863f, 0.41960785f, 32f / 51f, 40f / 51f);
+	public Color selectedBackgroundColor;
 
-	public float unoccupiedAlpha = 1f;
+	public float unoccupiedAlpha;
 
 	public Color unoccupiedColor;
 
-	public Color conditionFillColor = new Color(23f / 51f, 47f / 85f, 23f / 85f, 1f);
+	public Color conditionFillColor;
 
-	public Color refrigeratedConditionFillColor = new Color(0.12156863f, 44f / 85f, 32f / 51f, 1f);
+	public Color refrigeratedConditionFillColor;
 
 	public ItemContainerSource containerSource;
 
@@ -24,7 +24,7 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 	[Range(0f, 64f)]
 	public int slot;
 
-	public bool setSlotFromSiblingIndex = true;
+	public bool setSlotFromSiblingIndex;
 
 	public GameObject slots;
 
@@ -68,11 +68,11 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 
 	public AmmoIconIndicator ammoIconIndicator;
 
-	public bool allowSelection = true;
+	public bool allowSelection;
 
-	public bool allowDropping = true;
+	public bool allowDropping;
 
-	public bool allowMove = true;
+	public bool allowMove;
 
 	public bool showCountDropShadow;
 
@@ -94,5 +94,24 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
+	}
+
+	public ItemIcon()
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		selectedBackgroundColor = new Color(0.12156863f, 0.41960785f, 32f / 51f, 40f / 51f);
+		unoccupiedAlpha = 1f;
+		conditionFillColor = new Color(23f / 51f, 47f / 85f, 23f / 85f, 1f);
+		refrigeratedConditionFillColor = new Color(0.12156863f, 44f / 85f, 32f / 51f, 1f);
+		setSlotFromSiblingIndex = true;
+		allowSelection = true;
+		allowDropping = true;
+		allowMove = true;
+		base._002Ector();
 	}
 }

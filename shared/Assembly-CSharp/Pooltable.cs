@@ -10,36 +10,36 @@ using UnityEngine.Assertions;
 
 public class Pooltable : BaseCombatEntity
 {
-	private readonly Dictionary<ulong, BaseEntity> playerMountables = new Dictionary<ulong, BaseEntity>();
+	private readonly Dictionary<ulong, BaseEntity> playerMountables;
 
 	private TimeSince timeSinceLastMove;
 
-	[SerializeField]
 	[Header("Shared")]
+	[SerializeField]
 	private float ballRadius;
 
 	[SerializeField]
-	private float tableWidth = 1.2f;
+	private float tableWidth;
 
 	[SerializeField]
-	private float tableHeight = 0.6f;
+	private float tableHeight;
 
 	[SerializeField]
-	private float pocketRadius = 0.045f;
+	private float pocketRadius;
 
 	[SerializeField]
-	private float mouthWidth = 0.08f;
+	private float mouthWidth;
 
 	[SerializeField]
-	private float cueBallStartX = -0.545f;
+	private float cueBallStartX;
 
 	[SerializeField]
 	private WorldSpline worldSpline;
 
+	[Range(0f, 0.75f)]
 	[SerializeField]
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
-	[Range(0f, 0.75f)]
-	private float splineTableCloseness = 0.25f;
+	private float splineTableCloseness;
 
 	[Header("Server")]
 	[SerializeField]
@@ -48,8 +48,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[Header("Client")]
 	[SerializeField]
+	[Header("Client")]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -74,53 +74,53 @@ public class Pooltable : BaseCombatEntity
 	private GameObjectRef resetGameEffect;
 
 	[SerializeField]
-	private Vector2 ballCollisionSpeedRange = new Vector2(0.1f, 3f);
+	private Vector2 ballCollisionSpeedRange;
 
 	[SerializeField]
-	private float ballCollisionSoundInterval = 0.02f;
+	private float ballCollisionSoundInterval;
 
-	[Header("Ball Return")]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
+	[Header("Ball Return")]
 	[SerializeField]
 	private WorldSpline ballReturnPath;
 
-	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
 	[SerializeField]
+	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
 	private GameObject[] basketBalls;
 
 	[SerializeField]
-	private float ballReturnSpeed = 1.5f;
+	private float ballReturnSpeed;
 
 	[SerializeField]
-	private float eyeOverrideBehindCueBallOffset = 0.6f;
+	private float eyeOverrideBehindCueBallOffset;
 
 	[SerializeField]
-	private float eyeOverrideHeightOffset = 0.2f;
+	private float eyeOverrideHeightOffset;
 
 	protected const Flags Flag_IdleResettable = Flags.Reserved1;
 
 	[ReplicatedVar]
-	public static bool debug_pool = false;
+	public static bool debug_pool;
 
 	[ReplicatedVar]
-	public static float physics_update_rate = 64f;
+	public static float physics_update_rate;
 
 	[ServerVar(Saved = true, Help = "Show pool game tooltip notifications")]
-	public static bool show_tooltips = false;
+	public static bool show_tooltips;
 
 	[ServerVar(Help = "(Generated) Anyone can reset a pool game nobody has interacted with for this many seconds")]
-	public static float idle_reset_seconds = 180f;
+	public static float idle_reset_seconds;
 
 	[ServerVar(Help = "(Generated) Seconds the shooter stays seated watching their shot before being dismounted")]
-	public static float watch_after_shot_seconds = 2f;
+	public static float watch_after_shot_seconds;
 
 	private Engine physicsEngine;
 
 	private PoolTableGameController gameController;
 
-	private static readonly Phrase ProcessingTurnPhrase = new Phrase("poolprocessing", "Processing turn");
+	private static readonly Phrase ProcessingTurnPhrase;
 
-	private static readonly Phrase WaitingForPlayerPhrase = new Phrase("poolwaiting", "Waiting for player");
+	private static readonly Phrase WaitingForPlayerPhrase;
 
 	private const float MinShotForce = 1f;
 
@@ -134,18 +134,18 @@ public class Pooltable : BaseCombatEntity
 
 	private const float TableBoundSoftness = 0.15f;
 
-	private static readonly int[][] RackRows = new int[5][]
-	{
-		new int[1] { 1 },
-		new int[2] { 9, 2 },
-		new int[3] { 10, 8, 3 },
-		new int[4] { 11, 4, 12, 5 },
-		new int[5] { 13, 6, 14, 15, 7 }
-	};
+	private static readonly int[][] RackRows;
 
 	private float PhysicsRate => 1f / physics_update_rate;
 
-	private Vector2 CueBallStartPosition => new Vector2(cueBallStartX, 0f);
+	private Vector2 CueBallStartPosition
+	{
+		get
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return new Vector2(cueBallStartX, 0f);
+		}
+	}
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -471,8 +471,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		BeginGame(msg.player, solo: true);
@@ -523,8 +523,8 @@ public class Pooltable : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && gameController != null)
@@ -560,8 +560,7 @@ public class Pooltable : BaseCombatEntity
 		if (!((Object)(object)worldSpline == (Object)null) && (physicsEngine == null || !physicsEngine.HasMovingBalls()) && playerMountables.Count <= 0)
 		{
 			CancelInvoke(DismountAllSeatedPlayers);
-			float distanceOnSpline;
-			Vector3 pos = PullSplinePointTowardTable(worldSpline.GetClosestPointWorld(((Component)player).transform.position, out distanceOnSpline));
+			Vector3 pos = PullSplinePointTowardTable(worldSpline.GetClosestPointWorld(((Component)player).transform.position, out var distanceOnSpline));
 			BaseEntity baseEntity = GameManager.server.CreateEntity(mountableRef.resourcePath, pos);
 			baseEntity.SetParent(this, worldPositionStays: true);
 			((Component)baseEntity).transform.rotation = Quaternion.LookRotation(GetDirToCueBall(pos));
@@ -576,8 +575,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -598,8 +597,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))
@@ -1280,5 +1279,47 @@ public class Pooltable : BaseCombatEntity
 			string text3 = "predictedShotId=n/a lastApplied=n/a";
 			Debug.Log((object)string.Format("[PoolTable] table={0} gcState={1} currentIndex={2} serverShotId={3} {4} | {5}", new object[6] { text, text2, num, num2, text3, message }));
 		}
+	}
+
+	public Pooltable()
+	{
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		playerMountables = new Dictionary<ulong, BaseEntity>();
+		tableWidth = 1.2f;
+		tableHeight = 0.6f;
+		pocketRadius = 0.045f;
+		mouthWidth = 0.08f;
+		cueBallStartX = -0.545f;
+		splineTableCloseness = 0.25f;
+		ballCollisionSpeedRange = new Vector2(0.1f, 3f);
+		ballCollisionSoundInterval = 0.02f;
+		ballReturnSpeed = 1.5f;
+		eyeOverrideBehindCueBallOffset = 0.6f;
+		eyeOverrideHeightOffset = 0.2f;
+		base._002Ector();
+	}
+
+	static Pooltable()
+	{
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Expected O, but got Unknown
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Expected O, but got Unknown
+		debug_pool = false;
+		physics_update_rate = 64f;
+		show_tooltips = false;
+		idle_reset_seconds = 180f;
+		watch_after_shot_seconds = 2f;
+		ProcessingTurnPhrase = new Phrase("poolprocessing", "Processing turn");
+		WaitingForPlayerPhrase = new Phrase("poolwaiting", "Waiting for player");
+		RackRows = new int[5][]
+		{
+			new int[1] { 1 },
+			new int[2] { 9, 2 },
+			new int[3] { 10, 8, 3 },
+			new int[4] { 11, 4, 12, 5 },
+			new int[5] { 13, 6, 14, 15, 7 }
+		};
 	}
 }

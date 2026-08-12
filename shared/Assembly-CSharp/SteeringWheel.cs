@@ -10,9 +10,9 @@ using UnityEngine.Assertions;
 
 public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 {
-	public static Phrase TipPhrase = new Phrase("boat_steeringwheel_tip", "Interact with the steering wheel to code lock your boat.");
+	public static Phrase TipPhrase;
 
-	public static Phrase MountedTipPhrase = new Phrase("boat_steeringwheel_tip_mounted", "Look at the center of the wheel for options when mounted.");
+	public static Phrase MountedTipPhrase;
 
 	[Header("Steering Wheel")]
 	public GameObjectRef PrivPrefab;
@@ -512,9 +512,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		flagsUpdateScope.Set(Flags.Locked, BoatLock.HasALock);
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void RPC_RequestAddLock(RPCMessage msg)
 	{
 		if (BoatLock.HasALock)
@@ -612,9 +612,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public void RequestFinishBuilding(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -630,9 +630,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestFinishBuildingFromWheel(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -665,9 +665,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	public void RequestEditBoat(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -862,5 +862,15 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	static SteeringWheel()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		TipPhrase = new Phrase("boat_steeringwheel_tip", "Interact with the steering wheel to code lock your boat.");
+		MountedTipPhrase = new Phrase("boat_steeringwheel_tip_mounted", "Look at the center of the wheel for options when mounted.");
 	}
 }

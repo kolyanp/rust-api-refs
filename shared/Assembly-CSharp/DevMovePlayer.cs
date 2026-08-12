@@ -8,9 +8,9 @@ public class DevMovePlayer : BaseMonoBehaviour
 
 	public bool moveRandomly;
 
-	public Vector3 destination = Vector3.zero;
+	public Vector3 destination;
 
-	public Vector3 lookPoint = Vector3.zero;
+	public Vector3 lookPoint;
 
 	private int waypointIndex;
 
@@ -129,5 +129,16 @@ public class DevMovePlayer : BaseMonoBehaviour
 			_ = ((Vector3)(ref val)).normalized;
 			player.SendNetworkUpdate();
 		}
+	}
+
+	public DevMovePlayer()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		destination = Vector3.zero;
+		lookPoint = Vector3.zero;
+		base._002Ector();
 	}
 }

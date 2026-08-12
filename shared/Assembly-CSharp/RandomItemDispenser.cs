@@ -36,7 +36,7 @@ public class RandomItemDispenser : PrefabAttribute, IServerComponent
 			if (!((Object)(object)forPlayer != (Object)null) || !forPlayer.IsInTutorial || !itemChance.IgnoreInTutorial)
 			{
 				bool flag = TryAward(itemChance, forPlayer, distributorPosition);
-				if (OnlyAwardOne && flag)
+				if (OnlyAwardOne & flag)
 				{
 					break;
 				}

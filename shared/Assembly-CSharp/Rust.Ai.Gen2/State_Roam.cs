@@ -10,16 +10,16 @@ namespace Rust.Ai.Gen2;
 public class State_Roam : FSMStateBase
 {
 	[SerializeField]
-	private Vector2 distanceRange = new Vector2(10f, 20f);
+	private Vector2 distanceRange;
 
 	[SerializeField]
-	private float homeRadius = 50f;
+	private float homeRadius;
 
 	[SerializeField]
 	private RustNavMeshAgent.Speeds minSpeed;
 
 	[SerializeField]
-	private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Sprint;
+	private RustNavMeshAgent.Speeds maxSpeed;
 
 	[SerializeField]
 	protected bool favourWater;
@@ -149,5 +149,15 @@ public class State_Roam : FSMStateBase
 		{
 			baseCombatEntity.SetHealth(Owner.MaxHealth());
 		}
+	}
+
+	public State_Roam()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		distanceRange = new Vector2(10f, 20f);
+		homeRadius = 50f;
+		maxSpeed = RustNavMeshAgent.Speeds.Sprint;
+		base._002Ector();
 	}
 }

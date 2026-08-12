@@ -64,44 +64,44 @@ public class SatelliteControlComputer : BaseMountable
 
 	private bool crashPrefabResolved;
 
-	public static readonly Phrase OfflinePhrase = new Phrase("satcomp.offline", "SYSTEM OFFLINE — INSERT ITEMS");
+	public static readonly Phrase OfflinePhrase;
 
-	public static readonly Phrase ReadyPhrase = new Phrase("satcomp.inrange", "SATELLITES IN RANGE. SELECT TARGET");
+	public static readonly Phrase ReadyPhrase;
 
-	public static readonly Phrase ControllingPhrase = new Phrase("satcomp.deorbitburn", "DEORBIT BURN ACTIVE. FIRE THRUSTERS");
+	public static readonly Phrase ControllingPhrase;
 
-	public static readonly Phrase CooldownPhrase = new Phrase("satcomp.recalibrating", "RECALIBRATING. PLEASE WAIT");
+	public static readonly Phrase CooldownPhrase;
 
-	public static readonly Phrase DescendingPhrase = new Phrase("satcomp.impactin", "SATELLITE DESCENDING. IMPACT IN:");
+	public static readonly Phrase DescendingPhrase;
 
-	public static readonly Phrase NeedFuelPhrase = new Phrase("satcomp.needfuel", "Insert the required items to power the terminal");
+	public static readonly Phrase NeedFuelPhrase;
 
-	public static readonly Phrase MissingItemsPhrase = new Phrase("satcomp.missingitems", "Insert {0}");
+	public static readonly Phrase MissingItemsPhrase;
 
-	public static readonly Phrase EventActivePhrase = new Phrase("satcomp.eventactive", "A satellite is already descending");
+	public static readonly Phrase EventActivePhrase;
 
-	public static readonly Phrase NoGridPowerPhrase = new Phrase("satcomp.nogridpower", "No grid power — bring the power plant online");
+	public static readonly Phrase NoGridPowerPhrase;
 
-	public static readonly Phrase NoCrashSitePhrase = new Phrase("satcomp.nocrashsite", "Unsuitable location");
+	public static readonly Phrase NoCrashSitePhrase;
 
-	public static readonly Phrase NotEnoughFuelForDistancePhrase = new Phrase("satcomp.nofueldistance", "Not enough fuel to move that far");
+	public static readonly Phrase NotEnoughFuelForDistancePhrase;
 
-	public static readonly Phrase OutOfBoundsPhrase = new Phrase("satcomp.outofbounds", "Edge of map reached");
+	public static readonly Phrase OutOfBoundsPhrase;
 
-	public static readonly Phrase LaunchAbortedPhrase = new Phrase("satcomp.launchaborted", "Launch aborted — no viable crash site");
+	public static readonly Phrase LaunchAbortedPhrase;
 
 	[Header("Satellite Computer")]
 	public GameObjectRef menuPrefab;
 
-	[Header("Spectator Screen")]
 	[Tooltip("Pre-spawned world-space monitor UI (a child of this entity's prefab, sitting just behind the glass) that renders the read-only crash map for everyone nearby. Initialised in ClientInit.")]
+	[Header("Spectator Screen")]
 	public SatelliteSpectatorScreenUI spectatorScreen;
 
 	[Tooltip("Pre-spawned world-space monitor UI (a prefab child like the spectator screen) that shows only the countdown to impact. Initialised in ClientInit.")]
 	public SatelliteCountdownScreenUI countdownScreen;
 
-	[Header("Power")]
 	[Tooltip("Items the player must have, and which are consumed, to power up the terminal. amount is the minimum required/consumed; set maxAmount higher to roll a random cost in that range each session (leave maxAmount at -1/0 for a fixed cost).")]
+	[Header("Power")]
 	public List<ItemAmountRanged> powerCost = new List<ItemAmountRanged>();
 
 	private List<int> resolvedPowerCost = new List<int>();
@@ -109,8 +109,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Child SatelliteFuelStorage prefab the player loads the power-up items into. Spawned and parented to this computer on first init.")]
 	public GameObjectRef fuelStoragePrefab;
 
-	[Header("Satellites")]
 	[Tooltip("Number of satellites to generate each session")]
+	[Header("Satellites")]
 	public int satelliteCount = 6;
 
 	[Header("Satellite Prefab")]
@@ -134,7 +134,14 @@ public class SatelliteControlComputer : BaseMountable
 
 	public static SatelliteControlComputer ActiveDescending { get; private set; }
 
-	public Vector3 LockedCrashPosition => targeting.finalCrashPos;
+	public Vector3 LockedCrashPosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return targeting.finalCrashPos;
+		}
+	}
 
 	private ControlState State => GetControlState(targeting.isDescending);
 
@@ -624,9 +631,9 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	public void RPC_PowerUp(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) || HasFlag(Flags.Reserved10))
@@ -783,9 +790,9 @@ public class SatelliteControlComputer : BaseMountable
 		paidPowerCost.Clear();
 	}
 
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	public void RPC_OpenFuelStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -821,8 +828,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_SelectSatellite(RPCMessage msg)
 	{
 		if (State == ControlState.Ready && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -882,8 +889,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_FireThruster(RPCMessage msg)
 	{
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
@@ -1136,9 +1143,9 @@ public class SatelliteControlComputer : BaseMountable
 		lateralOffset += val * num2;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void RPC_LockTrajectory(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved9) && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()) && !targetingSearchActive)
@@ -1199,7 +1206,7 @@ public class SatelliteControlComputer : BaseMountable
 		{
 			float x = targeting.center.x;
 			float z = targeting.center.z;
-			bool flag = SendDebugCrashPos && haveCrashPos;
+			bool flag = SendDebugCrashPos & haveCrashPos;
 			float arg = (flag ? crashPos.x : 0f);
 			float arg2 = (flag ? crashPos.z : 0f);
 			ClientRPC(RpcTarget.Player("RPC_ThrusterFired", player), labelIndex, fuelRemaining, x, z, targeting.radius, flag ? 1 : 0, arg, arg2);
@@ -1536,9 +1543,9 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[Menu.Icon("power")]
-	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
 	[Menu("satcomp.powerup", "Power Up Terminal")]
+	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
+	[Menu.Icon("power")]
 	[Menu.ShowIf("Menu_PowerUp_ShowIf")]
 	public void Menu_PowerUp(BasePlayer player)
 	{
@@ -1549,9 +1556,9 @@ public class SatelliteControlComputer : BaseMountable
 		return IsOffline;
 	}
 
-	[Menu.Icon("open")]
 	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
 	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
+	[Menu.Icon("open")]
 	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
 	public void Menu_LoadFuel(BasePlayer player)
 	{
@@ -1560,5 +1567,48 @@ public class SatelliteControlComputer : BaseMountable
 	public bool Menu_LoadFuel_ShowIf(BasePlayer player)
 	{
 		return true;
+	}
+
+	static SatelliteControlComputer()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Expected O, but got Unknown
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Expected O, but got Unknown
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Expected O, but got Unknown
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Expected O, but got Unknown
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Expected O, but got Unknown
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Expected O, but got Unknown
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Expected O, but got Unknown
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Expected O, but got Unknown
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Expected O, but got Unknown
+		OfflinePhrase = new Phrase("satcomp.offline", "SYSTEM OFFLINE — INSERT ITEMS");
+		ReadyPhrase = new Phrase("satcomp.inrange", "SATELLITES IN RANGE. SELECT TARGET");
+		ControllingPhrase = new Phrase("satcomp.deorbitburn", "DEORBIT BURN ACTIVE. FIRE THRUSTERS");
+		CooldownPhrase = new Phrase("satcomp.recalibrating", "RECALIBRATING. PLEASE WAIT");
+		DescendingPhrase = new Phrase("satcomp.impactin", "SATELLITE DESCENDING. IMPACT IN:");
+		NeedFuelPhrase = new Phrase("satcomp.needfuel", "Insert the required items to power the terminal");
+		MissingItemsPhrase = new Phrase("satcomp.missingitems", "Insert {0}");
+		EventActivePhrase = new Phrase("satcomp.eventactive", "A satellite is already descending");
+		NoGridPowerPhrase = new Phrase("satcomp.nogridpower", "No grid power — bring the power plant online");
+		NoCrashSitePhrase = new Phrase("satcomp.nocrashsite", "Unsuitable location");
+		NotEnoughFuelForDistancePhrase = new Phrase("satcomp.nofueldistance", "Not enough fuel to move that far");
+		OutOfBoundsPhrase = new Phrase("satcomp.outofbounds", "Edge of map reached");
+		LaunchAbortedPhrase = new Phrase("satcomp.launchaborted", "Launch aborted — no viable crash site");
 	}
 }

@@ -51,7 +51,14 @@ public class HableCurve
 	{
 		private HableCurve parent;
 
-		public Vector4 curve => new Vector4(parent.inverseWhitePoint, parent.x0, parent.x1, 0f);
+		public Vector4 curve
+		{
+			get
+			{
+				//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+				return new Vector4(parent.inverseWhitePoint, parent.x0, parent.x1, 0f);
+			}
+		}
 
 		public Vector4 toeSegmentA
 		{

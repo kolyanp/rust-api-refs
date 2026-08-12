@@ -39,21 +39,21 @@ public class ExcavatorSignalComputer : BaseCombatEntity
 
 	public int maxNumSuppliesCalled = -1;
 
-	public static readonly Phrase readyphrase = new Phrase("excavator.signal.ready", "READY");
+	public static readonly Phrase readyphrase;
 
-	public static readonly Phrase chargephrase = new Phrase("excavator.signal.charging", "COMSYS CHARGING");
+	public static readonly Phrase chargephrase;
 
-	public static readonly Phrase emptyphrase = new Phrase("excavator.signal.empty", "OFFLINE");
+	public static readonly Phrase emptyphrase;
 
-	public static readonly Phrase transmitphrase = new Phrase("excavator.signal.transmit", "TRANSMITTING");
+	public static readonly Phrase transmitphrase;
 
-	public static readonly Phrase inboundphrase = new Phrase("excavator.signal.inbound", "CARGO INBOUND");
+	public static readonly Phrase inboundphrase;
 
 	[ServerVar(Help = "(Generated) Amount of charge (in seconds of operation) the excavator signal computer requires before it can manually call a supply drop")]
-	public static float chargeNeededForSupplies = 600f;
+	public static float chargeNeededForSupplies;
 
 	[ServerVar(Help = "(Generated) Amount of charge required for the excavator to automatically trigger supply drop delivery without player activation")]
-	public static float automaticChargeNeededForSupplies = 600f;
+	public static float automaticChargeNeededForSupplies;
 
 	private float lastChargeTime;
 
@@ -197,9 +197,9 @@ public class ExcavatorSignalComputer : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RequestSupplies(RPCMessage rpc)
 	{
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
@@ -254,5 +254,26 @@ public class ExcavatorSignalComputer : BaseCombatEntity
 			chargePower = info.msg.ioEntity.genericFloat1;
 			numSuppliesCalled = info.msg.ioEntity.genericInt1;
 		}
+	}
+
+	static ExcavatorSignalComputer()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Expected O, but got Unknown
+		readyphrase = new Phrase("excavator.signal.ready", "READY");
+		chargephrase = new Phrase("excavator.signal.charging", "COMSYS CHARGING");
+		emptyphrase = new Phrase("excavator.signal.empty", "OFFLINE");
+		transmitphrase = new Phrase("excavator.signal.transmit", "TRANSMITTING");
+		inboundphrase = new Phrase("excavator.signal.inbound", "CARGO INBOUND");
+		chargeNeededForSupplies = 600f;
+		automaticChargeNeededForSupplies = 600f;
 	}
 }

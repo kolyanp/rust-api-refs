@@ -120,9 +120,9 @@ public class UI_StoreItemOverlayPage : UI_Window
 		public PageElement[] Elements;
 	}
 
+	[Space]
 	[Header("Page Content")]
 	[SerializeField]
-	[Space]
 	private CanvasGroup bodyCanvasGroup;
 
 	[SerializeField]
@@ -208,7 +208,7 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private CoverImage skinViewerImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private PageContent pageContent;
 }

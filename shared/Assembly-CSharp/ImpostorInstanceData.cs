@@ -8,7 +8,7 @@ public class ImpostorInstanceData
 
 	private int hash;
 
-	private Vector4 positionAndScale = Vector4.zero;
+	private Vector4 positionAndScale;
 
 	public Renderer Renderer { get; private set; }
 
@@ -22,6 +22,8 @@ public class ImpostorInstanceData
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		positionAndScale = Vector4.zero;
+		base._002Ector();
 		Renderer = renderer;
 		Mesh = mesh;
 		Material = material;
@@ -39,6 +41,8 @@ public class ImpostorInstanceData
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		positionAndScale = Vector4.zero;
+		base._002Ector();
 		positionAndScale = new Vector4(position.x, position.y, position.z, scale.x);
 		Mesh = mesh;
 		Material = material;

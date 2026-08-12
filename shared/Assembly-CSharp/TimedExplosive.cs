@@ -17,13 +17,13 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	}
 
 	[Header("General")]
-	public float timerAmountMin = 10f;
+	public float timerAmountMin;
 
-	public float timerAmountMax = 20f;
+	public float timerAmountMax;
 
 	public float minExplosionRadius;
 
-	public float explosionRadius = 10f;
+	public float explosionRadius;
 
 	public bool explodeOnContact;
 
@@ -38,14 +38,14 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 
 	public bool BlindAI;
 
-	public float aiBlindDuration = 2.5f;
+	public float aiBlindDuration;
 
-	public float aiBlindRange = 4f;
+	public float aiBlindRange;
 
 	[Header("Offsets")]
 	public ExplosionEffectOffsetMode explosionOffsetMode;
 
-	public Vector3 explosionEffectOffset = Vector3.zero;
+	public Vector3 explosionEffectOffset;
 
 	[Header("Normals")]
 	public bool explosionMatchesNormal;
@@ -72,20 +72,20 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 
 	[Min(0f)]
 	[Header("Water")]
-	public float underwaterExplosionDepth = 1f;
+	public float underwaterExplosionDepth;
 
 	[MinMax(0f, 100f)]
 	[Tooltip("Optional: Will fall back to underwaterExplosionEffect or explosionEffect if not assigned.")]
-	public MinMax watersurfaceExplosionDepth = new MinMax(0.5f, 10f);
+	public MinMax watersurfaceExplosionDepth;
 
 	public bool waterCausesExplosion;
 
 	[Header("Other")]
-	public int vibrationLevel = 3;
+	public int vibrationLevel;
 
-	public List<DamageTypeEntry> damageTypes = new List<DamageTypeEntry>();
+	public List<DamageTypeEntry> damageTypes;
 
-	public List<DamageTypeEntry> playerDamage = new List<DamageTypeEntry>();
+	public List<DamageTypeEntry> playerDamage;
 
 	public bool splashWallpaperThroughWalls;
 
@@ -117,7 +117,7 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 
 	private static BaseEntity[] queryResults = new BaseEntity[64];
 
-	private Vector3 lastPosition = Vector3.zero;
+	private Vector3 lastPosition;
 
 	public override bool PositionTickFixedTime
 	{
@@ -829,5 +829,26 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		{
 			component.enabled = wantsCollision;
 		}
+	}
+
+	public TimedExplosive()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		timerAmountMin = 10f;
+		timerAmountMax = 20f;
+		explosionRadius = 10f;
+		aiBlindDuration = 2.5f;
+		aiBlindRange = 4f;
+		explosionEffectOffset = Vector3.zero;
+		underwaterExplosionDepth = 1f;
+		watersurfaceExplosionDepth = new MinMax(0.5f, 10f);
+		vibrationLevel = 3;
+		damageTypes = new List<DamageTypeEntry>();
+		playerDamage = new List<DamageTypeEntry>();
+		lastPosition = Vector3.zero;
+		base._002Ector();
 	}
 }

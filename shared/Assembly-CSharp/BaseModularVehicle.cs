@@ -43,7 +43,14 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 
 	public ModularVehicleInventory Inventory { get; set; }
 
-	public Vector3 CentreOfMass => centreOfMassTransform.localPosition;
+	public Vector3 CentreOfMass
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return centreOfMassTransform.localPosition;
+		}
+	}
 
 	public int NumAttachedModules => AttachedModuleEntities.Count;
 

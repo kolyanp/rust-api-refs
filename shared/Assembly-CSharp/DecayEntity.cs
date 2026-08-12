@@ -28,16 +28,16 @@ public class DecayEntity : BaseCombatEntity
 		public bool canBeDemolished;
 	}
 
-	public static readonly Phrase CancelTitle = new Phrase("cancel", "Cancel");
+	public static readonly Phrase CancelTitle;
 
-	public static readonly Phrase CancelDesc = new Phrase("cancel_desc", "");
+	public static readonly Phrase CancelDesc;
 
-	public static readonly Phrase DemolishTitle = new Phrase("demolish", "Demolish");
+	public static readonly Phrase DemolishTitle;
 
-	public static readonly Phrase DemolishDesc = new Phrase("demolish_desc", "Slowly and automatically dismantle this block");
+	public static readonly Phrase DemolishDesc;
 
 	[ServerVar(Help = "(Generated) Time window in seconds after placement during which a player can demolish their own building block; default 600s (10 minutes)")]
-	public static int demolish_seconds = 600;
+	public static int demolish_seconds;
 
 	public const Flags DemolishFlag = Flags.Reserved2;
 
@@ -46,7 +46,7 @@ public class DecayEntity : BaseCombatEntity
 
 	public GameObjectRef debrisPrefab;
 
-	public Vector3 debrisRotationOffset = Vector3.zero;
+	public Vector3 debrisRotationOffset;
 
 	public DebrisPosition[] DebrisPositions;
 
@@ -62,7 +62,7 @@ public class DecayEntity : BaseCombatEntity
 	public Upkeep upkeep;
 
 	[ServerVar(Help = "(Generated) When enabled, logs detailed debug output for building privilege (tool cupboard auth) checks during decay calculations")]
-	public static bool DebugGetPrivilege = false;
+	public static bool DebugGetPrivilege;
 
 	public Decay decay;
 
@@ -70,7 +70,7 @@ public class DecayEntity : BaseCombatEntity
 
 	public float lastDecayTick;
 
-	public float decayVariance = 1f;
+	public float decayVariance;
 
 	public virtual bool IsDemolishSupported => canBeDemolished;
 
@@ -193,8 +193,8 @@ public class DecayEntity : BaseCombatEntity
 		return player.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanDemolish(msg.player) && Interface.CallHook("OnStructureDemolish", this, msg.player, false) == null)
@@ -208,8 +208,8 @@ public class DecayEntity : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoImmediateDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && msg.player.IsAdmin && Interface.CallHook("OnStructureDemolish", this, msg.player, true) == null)
@@ -549,7 +549,7 @@ public class DecayEntity : BaseCombatEntity
 			float num2 = buildingBlock2.SqrDistance(position);
 			if (!buildingBlock2.grounded)
 			{
-				num2 += 1f;
+				num2++;
 			}
 			if (num2 < num)
 			{
@@ -795,5 +795,32 @@ public class DecayEntity : BaseCombatEntity
 			return false;
 		}
 		return baseEntity.ForceDeployableSetParent();
+	}
+
+	public DecayEntity()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		debrisRotationOffset = Vector3.zero;
+		decayVariance = 1f;
+		base._002Ector();
+	}
+
+	static DecayEntity()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		CancelTitle = new Phrase("cancel", "Cancel");
+		CancelDesc = new Phrase("cancel_desc", "");
+		DemolishTitle = new Phrase("demolish", "Demolish");
+		DemolishDesc = new Phrase("demolish_desc", "Slowly and automatically dismantle this block");
+		demolish_seconds = 600;
+		DebugGetPrivilege = false;
 	}
 }

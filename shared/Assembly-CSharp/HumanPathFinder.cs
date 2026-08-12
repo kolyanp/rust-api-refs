@@ -50,8 +50,7 @@ public class HumanPathFinder : BasePathFinder
 		bool flag = clampDistance > -1f;
 		float num = float.NegativeInfinity;
 		AIPoint aIPoint = null;
-		int pointCount;
-		AIPoint[] movePointsInRange = aiZone.GetMovePointsInRange(anchorPos, lookupMaxRange, out pointCount);
+		AIPoint[] movePointsInRange = aiZone.GetMovePointsInRange(anchorPos, lookupMaxRange, out var pointCount);
 		if (movePointsInRange == null || pointCount <= 0)
 		{
 			return null;

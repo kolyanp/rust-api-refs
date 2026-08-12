@@ -29,17 +29,17 @@ public class MicrophoneStand : BaseMountable
 
 	public AudioMixerGroup LowPitchMix;
 
-	public Phrase NormalPhrase = new Phrase("microphone_normal", "Normal");
+	public Phrase NormalPhrase;
 
-	public Phrase NormalDescPhrase = new Phrase("microphone_normal_desc", "No voice effect");
+	public Phrase NormalDescPhrase;
 
-	public Phrase HighPitchPhrase = new Phrase("microphone_high", "High Pitch");
+	public Phrase HighPitchPhrase;
 
-	public Phrase HighPitchDescPhrase = new Phrase("microphone_high_desc", "High pitch voice");
+	public Phrase HighPitchDescPhrase;
 
-	public Phrase LowPitchPhrase = new Phrase("microphone_low", "Low");
+	public Phrase LowPitchPhrase;
 
-	public Phrase LowPitchDescPhrase = new Phrase("microphone_low_desc", "Low pitch voice");
+	public Phrase LowPitchDescPhrase;
 
 	public GameObjectRef IOSubEntity;
 
@@ -190,5 +190,28 @@ public class MicrophoneStand : BaseMountable
 			currentSpeechMode = (SpeechMode)info.msg.microphoneStand.microphoneMode;
 			ioEntity.uid = info.msg.microphoneStand.IORef;
 		}
+	}
+
+	public MicrophoneStand()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Expected O, but got Unknown
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Expected O, but got Unknown
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Expected O, but got Unknown
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Expected O, but got Unknown
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Expected O, but got Unknown
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Expected O, but got Unknown
+		NormalPhrase = new Phrase("microphone_normal", "Normal");
+		NormalDescPhrase = new Phrase("microphone_normal_desc", "No voice effect");
+		HighPitchPhrase = new Phrase("microphone_high", "High Pitch");
+		HighPitchDescPhrase = new Phrase("microphone_high_desc", "High pitch voice");
+		LowPitchPhrase = new Phrase("microphone_low", "Low");
+		LowPitchDescPhrase = new Phrase("microphone_low_desc", "Low pitch voice");
+		base._002Ector();
 	}
 }

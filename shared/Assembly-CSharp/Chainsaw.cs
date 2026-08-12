@@ -25,9 +25,9 @@ public class Chainsaw : BaseMelee
 
 	public ChainsawAudioAdvanced chainsawAudioAdvanced;
 
-	public static readonly Phrase UnloadAmmoTitle = new Phrase("unload_ammo", "Unload Ammo");
+	public static readonly Phrase UnloadAmmoTitle;
 
-	public static readonly Phrase UnloadAmmoDesc = new Phrase("unload_ammo_desc", "Unload the ammunition in this weapon and place it in your inventory.");
+	public static readonly Phrase UnloadAmmoDesc;
 
 	[Header("Chainsaw")]
 	public float fuelPerSec = 1f;
@@ -331,7 +331,7 @@ public class Chainsaw : BaseMelee
 			if (ammoRemainder >= 1f)
 			{
 				num2++;
-				ammoRemainder -= 1f;
+				ammoRemainder--;
 			}
 			ammo -= num2;
 			if (ammo <= 0)
@@ -355,8 +355,8 @@ public class Chainsaw : BaseMelee
 		GetItem()?.MarkDirty();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void DoReload(RPCMessage msg)
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
@@ -435,8 +435,8 @@ public class Chainsaw : BaseMelee
 		ReduceAmmo(fuelPerSec);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void Server_StartEngine(RPCMessage msg)
 	{
 		if (ammo > 0 && !EngineOn())
@@ -462,8 +462,8 @@ public class Chainsaw : BaseMelee
 		SetEngineStatus(status: false, FlagsUpdateMode.SendNetworkUpdate_Flags);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void Server_SetAttacking(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -564,5 +564,15 @@ public class Chainsaw : BaseMelee
 			return (Item)obj;
 		}
 		return ownerPlayer.inventory.FindItemByItemName(fuelType.shortname);
+	}
+
+	static Chainsaw()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		UnloadAmmoTitle = new Phrase("unload_ammo", "Unload Ammo");
+		UnloadAmmoDesc = new Phrase("unload_ammo_desc", "Unload the ammunition in this weapon and place it in your inventory.");
 	}
 }

@@ -209,7 +209,7 @@ public class Listener
 		}
 		lock (BannedNetworks)
 		{
-			flag = BannedNetworks.Remove(item) || flag;
+			flag = BannedNetworks.Remove(item) | flag;
 		}
 		if (flag)
 		{

@@ -60,13 +60,9 @@ public class DartsGameBoard : BaseCombatEntity
 
 	public List<DartsGameLeaderboardEntry> Leaderboard;
 
-	public static readonly int[] ScoreSlices = new int[20]
-	{
-		6, 13, 4, 18, 1, 20, 5, 12, 9, 14,
-		11, 8, 16, 7, 19, 3, 17, 2, 15, 10
-	};
+	public static readonly int[] ScoreSlices;
 
-	public static readonly int BullScore = 25;
+	public static readonly int BullScore;
 
 	private bool _disposed;
 
@@ -83,7 +79,7 @@ public class DartsGameBoard : BaseCombatEntity
 	[HideInInspector]
 	public DartsGameReticle Reticle;
 
-	private static Vector3 DartSyncResetPosition = Vector3.one * -999f;
+	private static Vector3 DartSyncResetPosition;
 
 	private int lastUsedDart;
 
@@ -539,8 +535,8 @@ public class DartsGameBoard : BaseCombatEntity
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -553,9 +549,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_EndGame(RPCMessage msg)
 	{
 		EndGame();
@@ -890,5 +886,19 @@ public class DartsGameBoard : BaseCombatEntity
 			2 => true, 
 			_ => base.ShouldInvalidateCache(id), 
 		};
+	}
+
+	static DartsGameBoard()
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		ScoreSlices = new int[20]
+		{
+			6, 13, 4, 18, 1, 20, 5, 12, 9, 14,
+			11, 8, 16, 7, 19, 3, 17, 2, 15, 10
+		};
+		BullScore = 25;
+		DartSyncResetPosition = Vector3.one * -999f;
 	}
 }

@@ -32,8 +32,7 @@ internal struct AppendRaycastHitsJob : IJob
 		int num = Src.Length / SrcMaxHitsPerBatch;
 		for (int i = 0; i < num; i++)
 		{
-			int endInd;
-			int num2 = GamePhysicsJobs.Util.FindFreeSlot(i, in Dst, DstMaxHitsPerBatch, out endInd);
+			int num2 = GamePhysicsJobs.Util.FindFreeSlot(i, in Dst, DstMaxHitsPerBatch, out var endInd);
 			int num3 = i * SrcMaxHitsPerBatch;
 			int num4 = num3 + SrcMaxHitsPerBatch;
 			while (num2 < endInd && num3 < num4)

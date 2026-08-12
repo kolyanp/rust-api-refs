@@ -73,7 +73,7 @@ public static class NexusUtil
 	{
 		string value;
 		bool result = default(bool);
-		return TryGetString(variables, "starterZone", out value) && bool.TryParse(value, out result) && result;
+		return (TryGetString(variables, "starterZone", out value) && bool.TryParse(value, out result)) & result;
 	}
 
 	public static bool TryGetString(this VariableDictionary variables, string key, out string value)

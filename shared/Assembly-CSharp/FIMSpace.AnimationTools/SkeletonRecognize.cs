@@ -34,39 +34,39 @@ public static class SkeletonRecognize
 
 		public Transform ProbablyHead;
 
-		public List<Transform> TrReachingGround = new List<Transform>();
+		public List<Transform> TrReachingGround;
 
-		public List<Transform> TrReachingSides = new List<Transform>();
+		public List<Transform> TrReachingSides;
 
-		public List<Transform> TrEnds = new List<Transform>();
+		public List<Transform> TrEnds;
 
-		public List<Transform> ProbablySpineChain = new List<Transform>();
+		public List<Transform> ProbablySpineChain;
 
-		public List<Transform> ProbablySpineChainShort = new List<Transform>();
+		public List<Transform> ProbablySpineChainShort;
 
-		public List<List<Transform>> ProbablyRightArms = new List<List<Transform>>();
+		public List<List<Transform>> ProbablyRightArms;
 
-		public List<List<Transform>> ProbablyLeftArms = new List<List<Transform>>();
+		public List<List<Transform>> ProbablyLeftArms;
 
-		public List<List<Transform>> ProbablyLeftLegs = new List<List<Transform>>();
+		public List<List<Transform>> ProbablyLeftLegs;
 
-		public List<Transform> ProbablyLeftLegRoot = new List<Transform>();
+		public List<Transform> ProbablyLeftLegRoot;
 
-		public List<List<Transform>> ProbablyRightLegs = new List<List<Transform>>();
+		public List<List<Transform>> ProbablyRightLegs;
 
-		public List<Transform> ProbablyRightLegRoot = new List<Transform>();
+		public List<Transform> ProbablyRightLegRoot;
 
-		public Vector3 LocalSpaceHighest = Vector3.zero;
+		public Vector3 LocalSpaceHighest;
 
-		public Vector3 LocalSpaceMostRight = Vector3.zero;
+		public Vector3 LocalSpaceMostRight;
 
-		public Vector3 LocalSpaceMostForward = Vector3.zero;
+		public Vector3 LocalSpaceMostForward;
 
-		public Vector3 LocalSpaceMostBack = Vector3.zero;
+		public Vector3 LocalSpaceMostBack;
 
-		public Vector3 LocalSpaceMostLeft = Vector3.zero;
+		public Vector3 LocalSpaceMostLeft;
 
-		public Vector3 LocalSpaceLowest = Vector3.zero;
+		public Vector3 LocalSpaceLowest;
 
 		public EWhatIsIt WhatIsIt;
 
@@ -192,6 +192,24 @@ public static class SkeletonRecognize
 			//IL_0e5b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0dd9: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0f05: Unknown result type (might be due to invalid IL or missing references)
+			TrReachingGround = new List<Transform>();
+			TrReachingSides = new List<Transform>();
+			TrEnds = new List<Transform>();
+			ProbablySpineChain = new List<Transform>();
+			ProbablySpineChainShort = new List<Transform>();
+			ProbablyRightArms = new List<List<Transform>>();
+			ProbablyLeftArms = new List<List<Transform>>();
+			ProbablyLeftLegs = new List<List<Transform>>();
+			ProbablyLeftLegRoot = new List<Transform>();
+			ProbablyRightLegs = new List<List<Transform>>();
+			ProbablyRightLegRoot = new List<Transform>();
+			LocalSpaceHighest = Vector3.zero;
+			LocalSpaceMostRight = Vector3.zero;
+			LocalSpaceMostForward = Vector3.zero;
+			LocalSpaceMostBack = Vector3.zero;
+			LocalSpaceMostLeft = Vector3.zero;
+			LocalSpaceLowest = Vector3.zero;
+			base._002Ector();
 			AnimatorTransform = t;
 			Transform[] array;
 			if (checkOnly != null)

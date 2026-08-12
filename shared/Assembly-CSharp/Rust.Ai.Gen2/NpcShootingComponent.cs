@@ -12,10 +12,10 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 	public ItemDefinition weaponItemDefinition;
 
 	[SerializeField]
-	private Vector3 offset = new Vector3(0.25f, 1.4f, 0.71f);
+	private Vector3 offset;
 
 	[SerializeField]
-	private float damageModifier = 1f;
+	private float damageModifier;
 
 	private const float spreadWhenAccurate = 0.1f;
 
@@ -35,13 +35,20 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 
 	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)this).GetComponent<RustNavMeshAgent>());
 
-	private Vector3 EyePosition => Senses.EyePosition;
+	private Vector3 EyePosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return Senses.EyePosition;
+		}
+	}
 
-	public bool AllowShooting { get; set; } = true;
+	public bool AllowShooting { get; set; }
 
-	public bool AllowBeingAccurate { get; set; } = true;
+	public bool AllowBeingAccurate { get; set; }
 
-	public bool OnlyShootIfTargetIsVisible { get; set; } = true;
+	public bool OnlyShootIfTargetIsVisible { get; set; }
 
 	public override void ServerInitPostNetworkGroupAssign()
 	{
@@ -432,5 +439,17 @@ public class NpcShootingComponent : EntityComponent<BaseEntity>
 		}
 		Quaternion val2 = Quaternion.Inverse(((Component)base.baseEntity).transform.rotation) * val;
 		return ((Component)base.baseEntity).transform.TransformPoint(val2 * Vector3Ex.WithXY(offset, 0f, 0f) + Vector3Ex.WithZ(offset, 0f));
+	}
+
+	public NpcShootingComponent()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		offset = new Vector3(0.25f, 1.4f, 0.71f);
+		damageModifier = 1f;
+		AllowShooting = true;
+		AllowBeingAccurate = true;
+		OnlyShootIfTargetIsVisible = true;
+		base._002Ector();
 	}
 }

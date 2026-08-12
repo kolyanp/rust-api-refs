@@ -22,7 +22,14 @@ public sealed class ByteQuadtree
 
 		public uint Value => source.values[level][x, y];
 
-		public Vector2 Coords => new Vector2((float)x, (float)y);
+		public Vector2 Coords
+		{
+			get
+			{
+				//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+				return new Vector2((float)x, (float)y);
+			}
+		}
 
 		public int Depth => source.levels - level - 1;
 

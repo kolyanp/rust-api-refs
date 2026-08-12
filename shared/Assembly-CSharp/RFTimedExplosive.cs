@@ -122,7 +122,7 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 
 	public void RFSignalUpdate(bool on)
 	{
-		if (IsArmed() && on && !IsInvoking(Explode))
+		if ((IsArmed() & on) && !IsInvoking(Explode))
 		{
 			Invoke(Explode, Random.Range(0f, 0.2f));
 		}
@@ -254,8 +254,8 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void Pickup(RPCMessage msg)
 	{
 		if (Interface.CallHook("ICanPickupEntity", msg.player, this) != null || !msg.player.CanInteract() || !IsArmed())

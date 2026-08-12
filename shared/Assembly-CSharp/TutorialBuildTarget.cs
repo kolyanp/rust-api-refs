@@ -10,17 +10,17 @@ public class TutorialBuildTarget : MonoBehaviour
 
 	public GameObject VisualObject;
 
-	public Vector3 PhysCheckOffset = Vector3.zero;
+	public Vector3 PhysCheckOffset;
 
-	public bool Snap = true;
+	public bool Snap;
 
-	public float MaxDistance = 0.5f;
+	public float MaxDistance;
 
 	public BaseMission RequiredMission;
 
-	public int RequiredMissionStage = -1;
+	public int RequiredMissionStage;
 
-	public float MaxValidAngle = 180f;
+	public float MaxValidAngle;
 
 	public bool IsValid(Construction toConstruct, Construction.Target target, ref Construction.Placement placement)
 	{
@@ -157,5 +157,17 @@ public class TutorialBuildTarget : MonoBehaviour
 		}
 		Pool.FreeUnmanaged<BaseEntity>(ref list);
 		return flag;
+	}
+
+	public TutorialBuildTarget()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		PhysCheckOffset = Vector3.zero;
+		Snap = true;
+		MaxDistance = 0.5f;
+		RequiredMissionStage = -1;
+		MaxValidAngle = 180f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

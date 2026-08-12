@@ -28,12 +28,22 @@ public class StableObjectArray<T> : StableObjectArray, IDisposable
 
 	public T[] UnsafeObjects => _objects;
 
-	public ReadOnly<int> StableIndexLookup => _stableIndexLookup.GetSubArray(0, _count).AsReadOnly();
+	public ReadOnly<int> StableIndexLookup
+	{
+		get
+		{
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			return _stableIndexLookup.GetSubArray(0, _count).AsReadOnly();
+		}
+	}
 
 	public StableObjectArray(int initCapacity)
 	{
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		_objects = new T[initCapacity];
 		_movingIndices = new int[initCapacity];
 		_stableIndexLookup = new NativeArray<int>(initCapacity, (Allocator)4, (NativeArrayOptions)0);

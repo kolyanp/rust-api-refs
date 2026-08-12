@@ -9,10 +9,10 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 		Any
 	}
 
-	public bool runClientside = true;
+	public bool runClientside;
 
 	[Tooltip("Server-side only works if the EntityFlag_Toggle is on the same GameObject as the Entity")]
-	public bool runServerside = true;
+	public bool runServerside;
 
 	public BaseEntity.Flags flag;
 
@@ -25,10 +25,10 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 	private BaseEntity.Flags notFlag;
 
 	[SerializeField]
-	private UnityEvent onFlagEnabled = new UnityEvent();
+	private UnityEvent onFlagEnabled;
 
 	[SerializeField]
-	private UnityEvent onFlagDisabled = new UnityEvent();
+	private UnityEvent onFlagDisabled;
 
 	internal bool hasRunOnce;
 
@@ -91,5 +91,18 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 		{
 			process.RemoveComponent((Component)(object)this);
 		}
+	}
+
+	public EntityFlag_Toggle()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Expected O, but got Unknown
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Expected O, but got Unknown
+		runClientside = true;
+		runServerside = true;
+		onFlagEnabled = new UnityEvent();
+		onFlagDisabled = new UnityEvent();
+		base._002Ector();
 	}
 }

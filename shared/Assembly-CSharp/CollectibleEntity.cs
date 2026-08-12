@@ -8,7 +8,7 @@ using UnityEngine.Assertions;
 
 public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 {
-	public static readonly Phrase EatTitle = new Phrase("eat", "Eat");
+	public static readonly Phrase EatTitle;
 
 	public Phrase itemName;
 
@@ -227,5 +227,12 @@ public class CollectibleEntity : BaseEntity, IPrefabPreProcess
 		{
 			preProcess.RemoveComponent((Component)(object)((Component)this).GetComponent<Collider>());
 		}
+	}
+
+	static CollectibleEntity()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		EatTitle = new Phrase("eat", "Eat");
 	}
 }

@@ -6,21 +6,21 @@ using UnityEngine;
 public class VolumeCloudsNoiseLayerConfig
 {
 	[Range(0f, 6f)]
-	public float Ceiling = 1f;
+	public float Ceiling;
 
 	[Range(-5f, 1f)]
 	public float Floor;
 
-	public Vector2 Frequency = Vector2.one;
+	public Vector2 Frequency;
 
-	public Vector3 Offset = Vector3.zero;
+	public Vector3 Offset;
 
-	public int Octaves = 1;
+	public int Octaves;
 
 	public float Rotation;
 
 	[Range(0.001f, 10f)]
-	public float Exponent = 1f;
+	public float Exponent;
 
 	public void CopyFrom(VolumeCloudsNoiseLayerConfig copy)
 	{
@@ -60,5 +60,19 @@ public class VolumeCloudsNoiseLayerConfig
 		sb.AppendLine($"Offset: {ofs}");
 		sb.AppendLine($"Octaves: {Octaves}");
 		sb.AppendLine($"Exp: {Exponent}");
+	}
+
+	public VolumeCloudsNoiseLayerConfig()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		Ceiling = 1f;
+		Frequency = Vector2.one;
+		Offset = Vector3.zero;
+		Octaves = 1;
+		Exponent = 1f;
+		base._002Ector();
 	}
 }

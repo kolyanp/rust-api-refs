@@ -578,14 +578,14 @@ public class Networkable : IPooled
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2 = default(_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed);
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2.state = state;
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2.batchIndex = batchIndex;
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2.batchSize = batchSize;
-			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2._003C_003E1__state = -1;
-			((AsyncUniTaskMethodBuilder)(ref _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2._003C_003Et__builder)).Start<_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed>(ref _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2);
-			return ((AsyncUniTaskMethodBuilder)(ref _003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed2._003C_003Et__builder)).Task;
+			_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed obj = default(_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed);
+			obj._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
+			obj.state = state;
+			obj.batchIndex = batchIndex;
+			obj.batchSize = batchSize;
+			obj._003C_003E1__state = -1;
+			((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003C_003CUpdateSubscriptions_003Eg__ProcessBatchAsync_007C36_0_003Ed>(ref obj);
+			return ((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 		}
 		static void WaitAndIntegrate(UpdateSubs_AsyncState state, List<UniTask> tasks, NativeArray<int> removeLimits2, NativeArray<int> addLimits2)
 		{

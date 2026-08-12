@@ -390,11 +390,9 @@ public class AnalyticsManager
 			get
 			{
 				int num = 0;
-				foreach (KeyValuePair<AnalyticsTable, JsonAccumulator> accumulator in accumulators)
+				foreach (var (_, jsonAccumulator2) in accumulators)
 				{
-					accumulator.Deconstruct(out var _, out var value);
-					JsonAccumulator jsonAccumulator = value;
-					num += jsonAccumulator.ItemsWritten;
+					num += jsonAccumulator2.ItemsWritten;
 				}
 				return num;
 			}
@@ -405,11 +403,9 @@ public class AnalyticsManager
 			get
 			{
 				long num = 0L;
-				foreach (KeyValuePair<AnalyticsTable, JsonAccumulator> accumulator in accumulators)
+				foreach (var (_, jsonAccumulator2) in accumulators)
 				{
-					accumulator.Deconstruct(out var _, out var value);
-					JsonAccumulator jsonAccumulator = value;
-					num += jsonAccumulator.BytesWritten;
+					num += jsonAccumulator2.BytesWritten;
 				}
 				return num;
 			}
@@ -417,8 +413,6 @@ public class AnalyticsManager
 
 		public FPUploaderImpl(bool isClient)
 		{
-			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0016: Expected O, but got Unknown
 			this.isClient = isClient;
 		}
 
@@ -447,63 +441,55 @@ public class AnalyticsManager
 			{
 				try
 				{
-					ByteArrayContent content = new ByteArrayContent(stream.GetBuffer(), 0, (int)stream.Length);
-					try
+					using ByteArrayContent content = new ByteArrayContent(stream.GetBuffer(), 0, (int)stream.Length);
+					content.Headers.ContentType = JsonContentType;
+					content.Headers.ContentEncoding.Add("gzip");
+					if (!string.IsNullOrEmpty(Analytics.AnalyticsSecret))
 					{
-						((HttpContent)content).Headers.ContentType = JsonContentType;
-						((HttpContent)content).Headers.ContentEncoding.Add("gzip");
-						if (!string.IsNullOrEmpty(Analytics.AnalyticsSecret))
-						{
-							((HttpHeaders)((HttpContent)content).Headers).Add(Analytics.AnalyticsHeader, Analytics.AnalyticsSecret);
-						}
-						else
-						{
-							((HttpHeaders)((HttpContent)content).Headers).Add(Analytics.AnalyticsHeader, Analytics.AnalyticsPublicKey);
-						}
-						if (!isClient)
-						{
-							((HttpHeaders)((HttpContent)content).Headers).Add("X-SERVER-IP", Net.sv.ip);
-							((HttpHeaders)((HttpContent)content).Headers).Add("X-SERVER-PORT", Net.sv.port.ToString());
-						}
-						string text = (isClient ? Analytics.ClientAnalyticsUrl : Analytics.ServerAnalyticsUrl);
-						if (Analytics.Log || Analytics.DryRun)
-						{
-							string text2 = table.Name + " POST " + text + ":\n";
-							text2 += "Headers:\n";
-							foreach (KeyValuePair<string, IEnumerable<string>> item in (HttpHeaders)((HttpContent)content).Headers)
-							{
-								text2 = text2 + "  " + item.Key + ": " + string.Join(',', item.Value) + "\n";
-							}
-							text2 += $"Data: {stream.Length} bytes\n";
-							int num = (int)Math.Min(stream.Length, 256L);
-							string text3 = "";
-							byte[] buffer = stream.GetBuffer();
-							for (int i = 0; i < num; i++)
-							{
-								string text4 = text3;
-								char c = (char)buffer[i];
-								text3 = text4 + c;
-							}
-							text2 += text3;
-							Debug.Log((object)text2);
-						}
-						if (!Analytics.DryRun)
-						{
-							(await httpClient.PostAsync(text, (HttpContent)(object)content)).EnsureSuccessStatusCode();
-						}
-						bytesUploaded += stream.Length;
+						content.Headers.Add(Analytics.AnalyticsHeader, Analytics.AnalyticsSecret);
 					}
-					finally
+					else
 					{
-						((IDisposable)content)?.Dispose();
+						content.Headers.Add(Analytics.AnalyticsHeader, Analytics.AnalyticsPublicKey);
 					}
+					if (!isClient)
+					{
+						content.Headers.Add("X-SERVER-IP", Net.sv.ip);
+						content.Headers.Add("X-SERVER-PORT", Net.sv.port.ToString());
+					}
+					string text = (isClient ? Analytics.ClientAnalyticsUrl : Analytics.ServerAnalyticsUrl);
+					if (Analytics.Log || Analytics.DryRun)
+					{
+						string text2 = table.Name + " POST " + text + ":\n";
+						text2 += "Headers:\n";
+						foreach (KeyValuePair<string, IEnumerable<string>> header in content.Headers)
+						{
+							text2 = text2 + "  " + header.Key + ": " + string.Join(',', header.Value) + "\n";
+						}
+						text2 += $"Data: {stream.Length} bytes\n";
+						int num = (int)Math.Min(stream.Length, 256L);
+						string text3 = "";
+						byte[] buffer = stream.GetBuffer();
+						for (int i = 0; i < num; i++)
+						{
+							string text4 = text3;
+							char c = (char)buffer[i];
+							text3 = text4 + c;
+						}
+						text2 += text3;
+						Debug.Log((object)text2);
+					}
+					if (!Analytics.DryRun)
+					{
+						(await httpClient.PostAsync(text, content)).EnsureSuccessStatusCode();
+					}
+					bytesUploaded += stream.Length;
 				}
 				catch (Exception ex)
 				{
-					HttpRequestException ex2 = (HttpRequestException)(object)((ex is HttpRequestException) ? ex : null);
-					if (ex2 != null)
+					if (ex is HttpRequestException ex2)
 					{
-						Debug.Log((object)("HTTP Error when uploading analytics: " + ((Exception)(object)ex2).Message));
+						Debug.Log((object)("HTTP Error when uploading analytics: " + ex2.Message));
 					}
 					else
 					{
@@ -571,11 +557,9 @@ public class AnalyticsManager
 			get
 			{
 				int num = 0;
-				foreach (KeyValuePair<AnalyticsTable, BulkAccumulator> accumulator in accumulators)
+				foreach (var (_, bulkAccumulator2) in accumulators)
 				{
-					accumulator.Deconstruct(out var _, out var value);
-					BulkAccumulator bulkAccumulator = value;
-					num += bulkAccumulator.ItemsWritten;
+					num += bulkAccumulator2.ItemsWritten;
 				}
 				return num;
 			}
@@ -586,11 +570,9 @@ public class AnalyticsManager
 			get
 			{
 				long num = 0L;
-				foreach (KeyValuePair<AnalyticsTable, BulkAccumulator> accumulator in accumulators)
+				foreach (var (_, bulkAccumulator2) in accumulators)
 				{
-					accumulator.Deconstruct(out var _, out var value);
-					BulkAccumulator bulkAccumulator = value;
-					num += bulkAccumulator.BytesWritten;
+					num += bulkAccumulator2.BytesWritten;
 				}
 				return num;
 			}

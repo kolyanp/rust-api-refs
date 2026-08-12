@@ -40,7 +40,7 @@ public class BaseLiquidVessel : AttackEntity
 
 	public float fillMlPerSec = 500f;
 
-	public static Phrase DifferentLiquidType = new Phrase("fill_different_liquid_type", "You can't mix different liquids");
+	public static Phrase DifferentLiquidType;
 
 	private float lastFillTime;
 
@@ -542,8 +542,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void SendFilling(RPCMessage msg)
 	{
 		bool filling = msg.read.Bit();
@@ -590,5 +590,12 @@ public class BaseLiquidVessel : AttackEntity
 			}
 		}
 		return null;
+	}
+
+	static BaseLiquidVessel()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		DifferentLiquidType = new Phrase("fill_different_liquid_type", "You can't mix different liquids");
 	}
 }

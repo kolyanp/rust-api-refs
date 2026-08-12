@@ -48,9 +48,9 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	private bool shouldBypassClippingChecks;
 
-	public static Phrase sprintPhrase = new Phrase("sprint", "Sprint");
+	public static Phrase sprintPhrase;
 
-	public static Phrase boostPhrase = new Phrase("boost", "Boost");
+	public static Phrase boostPhrase;
 
 	[SerializeField]
 	[Header("Bike")]
@@ -72,55 +72,55 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	public CarSettings carSettings;
 
 	[SerializeField]
-	public int engineKW = 59;
+	public int engineKW;
 
 	[SerializeField]
-	public float idleFuelPerSec = 0.03f;
+	public float idleFuelPerSec;
 
 	[SerializeField]
-	public float maxFuelPerSec = 0.15f;
-
-	[SerializeField]
-	[Range(0f, 1f)]
-	private float pitchStabP = 0.01f;
+	public float maxFuelPerSec;
 
 	[Range(0f, 1f)]
 	[SerializeField]
-	private float pitchStabD = 0.005f;
+	private float pitchStabP;
+
+	[Range(0f, 1f)]
+	[SerializeField]
+	private float pitchStabD;
+
+	[Range(0f, 1f)]
+	[SerializeField]
+	private float twoWheelRollStabP;
+
+	[Range(0f, 1f)]
+	[SerializeField]
+	private float twoWheelRollStabD;
 
 	[SerializeField]
-	[Range(0f, 1f)]
-	private float twoWheelRollStabP = 100f;
-
-	[SerializeField]
-	[Range(0f, 1f)]
-	private float twoWheelRollStabD = 10f;
-
 	[Range(1f, 500f)]
-	[SerializeField]
-	private float manyWheelStabP = 40f;
+	private float manyWheelStabP;
 
+	[SerializeField]
 	[Range(1f, 100f)]
-	[SerializeField]
-	private float manyWheelStabD = 10f;
+	private float manyWheelStabD;
 
-	[SerializeField]
 	[Range(0f, 1f)]
-	public float airControlTorquePower = 0.04f;
+	[SerializeField]
+	public float airControlTorquePower;
 
-	public float sprintTime = 5f;
+	public float sprintTime;
 
 	[SerializeField]
-	public float sprintRegenTime = 10f;
+	public float sprintRegenTime;
 
 	[SerializeField]
-	public float sprintBoostPercent = 0.3f;
+	public float sprintBoostPercent;
 
 	[SerializeField]
 	private ProtectionProperties riderProtection;
 
 	[SerializeField]
-	private float hurtTriggerMinSpeed = 1f;
+	private float hurtTriggerMinSpeed;
 
 	[SerializeField]
 	private TriggerHurtNotChild hurtTriggerFront;
@@ -129,31 +129,31 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	private TriggerHurtNotChild hurtTriggerRear;
 
 	[SerializeField]
-	private float maxLeanSpeed = 20f;
+	private float maxLeanSpeed;
 
 	[SerializeField]
-	private float leftMaxLean = 60f;
+	private float leftMaxLean;
 
 	[SerializeField]
-	private float rightMaxLean = 60f;
+	private float rightMaxLean;
 
 	[SerializeField]
-	private float midairRotationForce = 1f;
+	private float midairRotationForce;
 
 	[SerializeField]
-	private Vector3 customInertiaTensor = new Vector3(85f, 60f, 40f);
+	private Vector3 customInertiaTensor;
 
 	public PoweredBy poweredBy;
 
+	[SerializeField]
 	[Range(0f, 1f)]
-	[SerializeField]
-	public float percentFood = 0.5f;
+	public float percentFood;
 
 	[SerializeField]
-	public float playerDamageThreshold = 40f;
+	public float playerDamageThreshold;
 
 	[SerializeField]
-	public float playerDeathThreshold = 75f;
+	public float playerDeathThreshold;
 
 	[SerializeField]
 	private bool hasBell;
@@ -220,28 +220,28 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	private Transform sidecarPhysicsHinge;
 
 	[ServerVar(Help = "How long before a bike loses all its health while outside")]
-	public static float outsideDecayMinutes = 1440f;
+	public static float outsideDecayMinutes;
 
 	[ServerVar(Help = "Pedal bike population active on the server (roadside spawns)", ShowInAdminUI = true)]
-	public static float pedalRoadsidePopulation = 1f;
+	public static float pedalRoadsidePopulation;
 
 	[SerializeField]
 	private Transform realSidecarCapsule;
 
 	[ServerVar(Help = "Pedal bike population in monuments", ShowInAdminUI = true)]
-	public static float pedalMonumentPopulation = 1f;
+	public static float pedalMonumentPopulation;
 
 	[SerializeField]
 	private Transform duplicateSidecarCapsule;
 
 	[ServerVar(Help = "Motorbike population in monuments", ShowInAdminUI = true)]
-	public static float motorbikeMonumentPopulation = 1f;
+	public static float motorbikeMonumentPopulation;
 
 	[ServerVar(Help = "Can bike crashes cause damage or death to the rider?")]
-	public static bool doPlayerDamage = true;
+	public static bool doPlayerDamage;
 
 	[ServerVar(Help = "Amount of collision damage on a bike required to ragdoll the player")]
-	public static float playerDamageRagdollTheshold = 10f;
+	public static float playerDamageRagdollTheshold;
 
 	private bool hasExtraWheel;
 
@@ -261,7 +261,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public const Flags Flag_IsBunnyhopping = Flags.Reserved10;
 
-	private float _mass = -1f;
+	private float _mass;
 
 	private float cachedFuelFraction;
 
@@ -575,7 +575,7 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 					flag = SprintPercentRemaining > 0f;
 				}
 				bool flag2 = DuckInput || (ThrottleInput > 0f && BrakeInput > 0f);
-				if (poweredBy == PoweredBy.Fuel && carPhysics.IsGrounded() && flag2)
+				if ((poweredBy == PoweredBy.Fuel && carPhysics.IsGrounded()) & flag2)
 				{
 					inBurnoutMode = true;
 				}
@@ -1207,5 +1207,51 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 			return !GamePhysics.CheckCapsule(player.eyes.position, mountAnchor.position + Vector3.up * 0.5f, 0.25f, 2162688, (QueryTriggerInteraction)0);
 		}
 		return false;
+	}
+
+	public Bike()
+	{
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		engineKW = 59;
+		idleFuelPerSec = 0.03f;
+		maxFuelPerSec = 0.15f;
+		pitchStabP = 0.01f;
+		pitchStabD = 0.005f;
+		twoWheelRollStabP = 100f;
+		twoWheelRollStabD = 10f;
+		manyWheelStabP = 40f;
+		manyWheelStabD = 10f;
+		airControlTorquePower = 0.04f;
+		sprintTime = 5f;
+		sprintRegenTime = 10f;
+		sprintBoostPercent = 0.3f;
+		hurtTriggerMinSpeed = 1f;
+		maxLeanSpeed = 20f;
+		leftMaxLean = 60f;
+		rightMaxLean = 60f;
+		midairRotationForce = 1f;
+		customInertiaTensor = new Vector3(85f, 60f, 40f);
+		percentFood = 0.5f;
+		playerDamageThreshold = 40f;
+		playerDeathThreshold = 75f;
+		_mass = -1f;
+		base._002Ector();
+	}
+
+	static Bike()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		sprintPhrase = new Phrase("sprint", "Sprint");
+		boostPhrase = new Phrase("boost", "Boost");
+		outsideDecayMinutes = 1440f;
+		pedalRoadsidePopulation = 1f;
+		pedalMonumentPopulation = 1f;
+		motorbikeMonumentPopulation = 1f;
+		doPlayerDamage = true;
+		playerDamageRagdollTheshold = 10f;
 	}
 }

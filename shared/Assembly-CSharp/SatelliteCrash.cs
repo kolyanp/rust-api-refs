@@ -39,9 +39,9 @@ public class SatelliteCrash : BaseCombatEntity
 
 	private const float EntryDirCenterDeadzone = 25f;
 
-	private static readonly Phrase CrashEventTitlePhrase = new Phrase("satellite.event.title", "SATELLITE EVENT");
+	private static readonly Phrase CrashEventTitlePhrase;
 
-	private static readonly Phrase CrashEventBodyPhrase = new Phrase("satellite.event.crashed", "A satellite has crashed at {0}!");
+	private static readonly Phrase CrashEventBodyPhrase;
 
 	private bool hasCrashed;
 
@@ -81,7 +81,7 @@ public class SatelliteCrash : BaseCombatEntity
 
 	private const float CrateClearanceSkin = 0.1f;
 
-	private static readonly Collider[] crateClearanceBuffer = (Collider[])(object)new Collider[16];
+	private static readonly Collider[] crateClearanceBuffer;
 
 	private const float CrateMaxFloorSlope = 30f;
 
@@ -120,9 +120,9 @@ public class SatelliteCrash : BaseCombatEntity
 	[Tooltip("Visual effect played at the crash position when the satellite hits the ground")]
 	public GameObjectRef groundImpactEffect;
 
-	[FormerlySerializedAs("maxCratesToSpawn")]
 	[Header("Crash Config")]
 	[Tooltip("Loot budget at 1.0x mass scale, in crate-equivalents. Multiplied by the mass-to-loot curve; the result spawns as crates up to Max Crates Per Crash, with any overflow going into extra items per crate.")]
+	[FormerlySerializedAs("maxCratesToSpawn")]
 	public int baselineCrateSpawnCount = 6;
 
 	public int maxFireballs = 10;
@@ -137,8 +137,8 @@ public class SatelliteCrash : BaseCombatEntity
 
 	public float startHeight = 200f;
 
-	[Tooltip("Maps satellite mass (kg) to the loot multiplier. The multiplier scales fireball count and the total crate loot budget (crate count up to Max Crates Per Crash, overflow into extra items per crate). Flat outside the first/last key.")]
 	[Header("Loot Scaling")]
+	[Tooltip("Maps satellite mass (kg) to the loot multiplier. The multiplier scales fireball count and the total crate loot budget (crate count up to Max Crates Per Crash, overflow into extra items per crate). Flat outside the first/last key.")]
 	public AnimationCurve massToLootScale = AnimationCurve.Linear(1000f, 0.5f, 6000f, 3f);
 
 	[Tooltip("Hard cap on crates spawned per crash, regardless of the loot multiplier. Budget beyond this goes into extra items per crate.")]
@@ -1184,9 +1184,7 @@ public class SatelliteCrash : BaseCombatEntity
 			points.RemoveAt(points.Count - 1);
 			if (!((Object)(object)val == (Object)null))
 			{
-				Collider floorCollider;
-				Vector3 floorNormal;
-				Vector3 val2 = FindCrateFloor(val.position, out floorCollider, out floorNormal);
+				Vector3 val2 = FindCrateFloor(val.position, out var floorCollider, out var floorNormal);
 				if (IsCrateSpotUsable(val2, floorCollider, floorNormal))
 				{
 					groundPos = val2;
@@ -1322,5 +1320,16 @@ public class SatelliteCrash : BaseCombatEntity
 			_ = info.msg.satelliteCrash.crashTarget;
 			crashTarget = info.msg.satelliteCrash.crashTarget;
 		}
+	}
+
+	static SatelliteCrash()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		CrashEventTitlePhrase = new Phrase("satellite.event.title", "SATELLITE EVENT");
+		CrashEventBodyPhrase = new Phrase("satellite.event.crashed", "A satellite has crashed at {0}!");
+		crateClearanceBuffer = (Collider[])(object)new Collider[16];
 	}
 }

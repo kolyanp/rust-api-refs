@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class NPCPlayer : BasePlayer
 {
-	public float MovementTickStartDelay = 1f;
+	public float MovementTickStartDelay;
 
 	public AIInformationZone VirtualInfoZone;
 
@@ -23,17 +23,17 @@ public class NPCPlayer : BasePlayer
 
 	public PlayerInventoryProperties[] loadouts;
 
-	public LayerMask movementMask = LayerMask.op_Implicit(1503731969);
+	public LayerMask movementMask;
 
-	public bool LegacyNavigation = true;
+	public bool LegacyNavigation;
 
 	public RustNavMeshAgent NavAgent;
 
-	public float damageScale = 1f;
+	public float damageScale;
 
-	public float shortRange = 10f;
+	public float shortRange;
 
-	public float attackLengthMaxShortRangeScale = 1f;
+	public float attackLengthMaxShortRangeScale;
 
 	private bool _isDormant;
 
@@ -705,5 +705,18 @@ public class NPCPlayer : BasePlayer
 
 	protected virtual void ApplyLoot(NPCPlayerCorpse corpse)
 	{
+	}
+
+	public NPCPlayer()
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		MovementTickStartDelay = 1f;
+		movementMask = LayerMask.op_Implicit(1503731969);
+		LegacyNavigation = true;
+		damageScale = 1f;
+		shortRange = 10f;
+		attackLengthMaxShortRangeScale = 1f;
+		base._002Ector();
 	}
 }

@@ -171,7 +171,7 @@ public class RelationshipManager : BaseEntity
 		{
 			foreach (KeyValuePair<ulong, PlayerRelationshipInfo> relation in relations)
 			{
-				var (_, playerRelationshipInfo2) = (KeyValuePair<ulong, PlayerRelationshipInfo>)(ref relation);
+				var (_, playerRelationshipInfo2) = relation;
 				Pool.Free<PlayerRelationshipInfo>(ref playerRelationshipInfo2);
 			}
 			relations.Clear();
@@ -418,7 +418,7 @@ public class RelationshipManager : BaseEntity
 	}
 
 	[ReplicatedVar(Default = "true")]
-	public static bool contacts = true;
+	public static bool contacts;
 
 	public const FileStorage.Type MugshotFileFormat = FileStorage.Type.jpg;
 
@@ -437,22 +437,22 @@ public class RelationshipManager : BaseEntity
 	private int startingReputation;
 
 	[ServerVar(Help = "(Generated) Time in minutes after which relationship/contacts data for players who have not been seen is forgotten and removed")]
-	public static int forgetafterminutes = 960;
+	public static int forgetafterminutes;
 
 	[ServerVar(Help = "(Generated) Maximum number of relationship entries (contacts) each player can store; older entries are evicted when the limit is reached")]
-	public static int maxplayerrelationships = 128;
+	public static int maxplayerrelationships;
 
 	[ServerVar(Help = "(Generated) Distance in metres within which two players must be for a 'seen' relationship event to be recorded")]
-	public static float seendistance = 10f;
+	public static float seendistance;
 
 	[ServerVar(Help = "(Generated) Interval in seconds between mugshot (contact portrait) refresh attempts for known players")]
-	public static float mugshotUpdateInterval = 300f;
+	public static float mugshotUpdateInterval;
 
-	private static List<BasePlayer> _dirtyRelationshipPlayers = new List<BasePlayer>();
+	private static List<BasePlayer> _dirtyRelationshipPlayers;
 
-	private static Phrase RemoteInvitesBlocked = new Phrase("remote.invites.blocked", "That player has remote invites turned off");
+	private static Phrase RemoteInvitesBlocked;
 
-	public static int maxTeamSize_Internal = 8;
+	public static int maxTeamSize_Internal;
 
 	public Dictionary<ulong, BasePlayer> cachedPlayers = new Dictionary<ulong, BasePlayer>();
 
@@ -968,7 +968,7 @@ public class RelationshipManager : BaseEntity
 				Vector3 normalized = ((Vector3)(ref val)).normalized;
 				bool flag4 = Vector3.Dot(player.eyes.HeadForward(), normalized) >= 0.6f;
 				float num5 = Vector3Ex.Distance2D(((Component)player).transform.position, ((Component)otherPlayer).transform.position);
-				if (flag2 && num5 < num4 && flag4)
+				if ((flag2 && num5 < num4) & flag4)
 				{
 					ClientRPC(RpcTarget.Player("CLIENT_DoMugshot", player), num2);
 					relations.lastMugshotTime = Time.realtimeSinceStartup;
@@ -1104,8 +1104,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void SERVER_ChangeRelationship(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1134,8 +1134,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void SERVER_UpdatePlayerNote(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1836,5 +1836,19 @@ public class RelationshipManager : BaseEntity
 				playerRelationships.relations.Add(relation.playerID, value);
 			}
 		}
+	}
+
+	static RelationshipManager()
+	{
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Expected O, but got Unknown
+		contacts = true;
+		forgetafterminutes = 960;
+		maxplayerrelationships = 128;
+		seendistance = 10f;
+		mugshotUpdateInterval = 300f;
+		_dirtyRelationshipPlayers = new List<BasePlayer>();
+		RemoteInvitesBlocked = new Phrase("remote.invites.blocked", "That player has remote invites turned off");
+		maxTeamSize_Internal = 8;
 	}
 }

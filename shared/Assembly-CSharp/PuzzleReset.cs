@@ -46,13 +46,13 @@ public class PuzzleReset : FacepunchBehaviour
 
 	public bool radiationReset;
 
-	public static Phrase BlockedWarningPhrase = new Phrase("monument.blocked.warning", "This monument is resetting, please leave the area!");
+	public static Phrase BlockedWarningPhrase;
 
 	private AIInformationZone zone;
 
 	private TwoTierRadiationZone radiationZone;
 
-	public static ListHashSet<PuzzleReset> AllResets = new ListHashSet<PuzzleReset>();
+	public static ListHashSet<PuzzleReset> AllResets;
 
 	private float currentResetTotalTime;
 
@@ -72,9 +72,9 @@ public class PuzzleReset : FacepunchBehaviour
 
 	private string lootedSpawnGroupName;
 
-	private static string TwoTierRadSpherePath = "assets/prefabs/io/electric/generators/twotierradiationsphere.prefab";
+	private static string TwoTierRadSpherePath;
 
-	private static string TwoTierRadBoxPath = "assets/prefabs/io/electric/generators/twotierradiationbox.prefab";
+	private static string TwoTierRadBoxPath;
 
 	private bool canUseRadiationReset
 	{
@@ -815,5 +815,15 @@ public class PuzzleReset : FacepunchBehaviour
 		size.y = Mathf.Min(size.y * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, size.y + ConVar.Server.monumentPuzzleResetRadiationMaxRadiusIncrease * 2f);
 		size.z = Mathf.Min(size.z * ConVar.Server.monumentPuzzleResetRadiationRadiusMultiplier, size.z + ConVar.Server.monumentPuzzleResetRadiationMaxRadiusIncrease * 2f);
 		return size;
+	}
+
+	static PuzzleReset()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		BlockedWarningPhrase = new Phrase("monument.blocked.warning", "This monument is resetting, please leave the area!");
+		AllResets = new ListHashSet<PuzzleReset>();
+		TwoTierRadSpherePath = "assets/prefabs/io/electric/generators/twotierradiationsphere.prefab";
+		TwoTierRadBoxPath = "assets/prefabs/io/electric/generators/twotierradiationbox.prefab";
 	}
 }

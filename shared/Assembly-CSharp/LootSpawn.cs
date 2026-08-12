@@ -100,7 +100,11 @@ public class LootSpawn : ScriptableObject
 		}
 		else
 		{
-			allowedSubSpawn = subSpawn.Where((Entry x) => x.category.HasAnySpawns() && (x.restrictedEras == null || x.restrictedEras.Length == 0 || Array.IndexOf(x.restrictedEras, ConVar.Server.Era) != -1)).ToArray();
+			allowedSubSpawn = subSpawn.Where(delegate(Entry x)
+			{
+				//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+				return x.category.HasAnySpawns() && (x.restrictedEras == null || x.restrictedEras.Length == 0 || Array.IndexOf(x.restrictedEras, ConVar.Server.Era) != -1);
+			}).ToArray();
 		}
 		if (items == null || items.Length == 0)
 		{

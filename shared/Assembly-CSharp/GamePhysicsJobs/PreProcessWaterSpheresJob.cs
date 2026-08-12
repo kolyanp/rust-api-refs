@@ -46,8 +46,7 @@ internal struct PreProcessWaterSpheresJob : IJob
 			{
 				continue;
 			}
-			int endInd;
-			int num2 = GamePhysicsJobs.Util.FindFreeSlot(i, in hits, maxHitsPerTrace, out endInd);
+			int num2 = GamePhysicsJobs.Util.FindFreeSlot(i, in hits, maxHitsPerTrace, out var endInd);
 			if (num2 != endInd)
 			{
 				int num3 = num++;

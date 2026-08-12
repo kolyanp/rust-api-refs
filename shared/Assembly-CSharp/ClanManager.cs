@@ -3604,21 +3604,21 @@ public class ClanManager : BaseEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	[AsyncStateMachine(typeof(_003CServer_CreateClan_003Ed__1))]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[AsyncStateMachine(typeof(_003CServer_CreateClan_003Ed__1))]
 	public UniTaskVoid Server_CreateClan(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CreateClan_003Ed__1 _003CServer_CreateClan_003Ed__2 = default(_003CServer_CreateClan_003Ed__1);
-		_003CServer_CreateClan_003Ed__2._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_CreateClan_003Ed__2._003C_003E4__this = this;
-		_003CServer_CreateClan_003Ed__2.msg = msg;
-		_003CServer_CreateClan_003Ed__2._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CreateClan_003Ed__2._003C_003Et__builder)).Start<_003CServer_CreateClan_003Ed__1>(ref _003CServer_CreateClan_003Ed__2);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CreateClan_003Ed__2._003C_003Et__builder)).Task;
+		_003CServer_CreateClan_003Ed__1 obj = default(_003CServer_CreateClan_003Ed__1);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CreateClan_003Ed__1>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetClan_003Ed__2))]
@@ -3629,47 +3629,47 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetClan_003Ed__2 _003CServer_GetClan_003Ed__3 = default(_003CServer_GetClan_003Ed__2);
-		_003CServer_GetClan_003Ed__3._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_GetClan_003Ed__3._003C_003E4__this = this;
-		_003CServer_GetClan_003Ed__3.msg = msg;
-		_003CServer_GetClan_003Ed__3._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetClan_003Ed__3._003C_003Et__builder)).Start<_003CServer_GetClan_003Ed__2>(ref _003CServer_GetClan_003Ed__3);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetClan_003Ed__3._003C_003Et__builder)).Task;
+		_003CServer_GetClan_003Ed__2 obj = default(_003CServer_GetClan_003Ed__2);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetClan_003Ed__2>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetLogs_003Ed__3))]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_GetLogs(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetLogs_003Ed__3 _003CServer_GetLogs_003Ed__4 = default(_003CServer_GetLogs_003Ed__3);
-		_003CServer_GetLogs_003Ed__4._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_GetLogs_003Ed__4._003C_003E4__this = this;
-		_003CServer_GetLogs_003Ed__4.msg = msg;
-		_003CServer_GetLogs_003Ed__4._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetLogs_003Ed__4._003C_003Et__builder)).Start<_003CServer_GetLogs_003Ed__3>(ref _003CServer_GetLogs_003Ed__4);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetLogs_003Ed__4._003C_003Et__builder)).Task;
+		_003CServer_GetLogs_003Ed__3 obj = default(_003CServer_GetLogs_003Ed__3);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetLogs_003Ed__3>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_GetScoreEvents_003Ed__4))]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	public UniTaskVoid Server_GetScoreEvents(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetScoreEvents_003Ed__4 _003CServer_GetScoreEvents_003Ed__5 = default(_003CServer_GetScoreEvents_003Ed__4);
-		_003CServer_GetScoreEvents_003Ed__5._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_GetScoreEvents_003Ed__5._003C_003E4__this = this;
-		_003CServer_GetScoreEvents_003Ed__5.msg = msg;
-		_003CServer_GetScoreEvents_003Ed__5._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetScoreEvents_003Ed__5._003C_003Et__builder)).Start<_003CServer_GetScoreEvents_003Ed__4>(ref _003CServer_GetScoreEvents_003Ed__5);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetScoreEvents_003Ed__5._003C_003Et__builder)).Task;
+		_003CServer_GetScoreEvents_003Ed__4 obj = default(_003CServer_GetScoreEvents_003Ed__4);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetScoreEvents_003Ed__4>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[RPC_Server]
@@ -3680,64 +3680,64 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetInvitations_003Ed__5 _003CServer_GetInvitations_003Ed__6 = default(_003CServer_GetInvitations_003Ed__5);
-		_003CServer_GetInvitations_003Ed__6._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_GetInvitations_003Ed__6._003C_003E4__this = this;
-		_003CServer_GetInvitations_003Ed__6.msg = msg;
-		_003CServer_GetInvitations_003Ed__6._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetInvitations_003Ed__6._003C_003Et__builder)).Start<_003CServer_GetInvitations_003Ed__5>(ref _003CServer_GetInvitations_003Ed__6);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetInvitations_003Ed__6._003C_003Et__builder)).Task;
+		_003CServer_GetInvitations_003Ed__5 obj = default(_003CServer_GetInvitations_003Ed__5);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetInvitations_003Ed__5>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_GetLeaderboard_003Ed__8))]
+	[RPC_Server]
 	public UniTaskVoid Server_GetLeaderboard(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_GetLeaderboard_003Ed__8 _003CServer_GetLeaderboard_003Ed__9 = default(_003CServer_GetLeaderboard_003Ed__8);
-		_003CServer_GetLeaderboard_003Ed__9._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_GetLeaderboard_003Ed__9._003C_003E4__this = this;
-		_003CServer_GetLeaderboard_003Ed__9.msg = msg;
-		_003CServer_GetLeaderboard_003Ed__9._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetLeaderboard_003Ed__9._003C_003Et__builder)).Start<_003CServer_GetLeaderboard_003Ed__8>(ref _003CServer_GetLeaderboard_003Ed__9);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_GetLeaderboard_003Ed__9._003C_003Et__builder)).Task;
+		_003CServer_GetLeaderboard_003Ed__8 obj = default(_003CServer_GetLeaderboard_003Ed__8);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_GetLeaderboard_003Ed__8>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_SetLogo_003Ed__9))]
-	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetLogo(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetLogo_003Ed__9 _003CServer_SetLogo_003Ed__10 = default(_003CServer_SetLogo_003Ed__9);
-		_003CServer_SetLogo_003Ed__10._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_SetLogo_003Ed__10._003C_003E4__this = this;
-		_003CServer_SetLogo_003Ed__10.msg = msg;
-		_003CServer_SetLogo_003Ed__10._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetLogo_003Ed__10._003C_003Et__builder)).Start<_003CServer_SetLogo_003Ed__9>(ref _003CServer_SetLogo_003Ed__10);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetLogo_003Ed__10._003C_003Et__builder)).Task;
+		_003CServer_SetLogo_003Ed__9 obj = default(_003CServer_SetLogo_003Ed__9);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetLogo_003Ed__9>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_SetColor_003Ed__10))]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[AsyncStateMachine(typeof(_003CServer_SetColor_003Ed__10))]
 	public UniTaskVoid Server_SetColor(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetColor_003Ed__10 _003CServer_SetColor_003Ed__11 = default(_003CServer_SetColor_003Ed__10);
-		_003CServer_SetColor_003Ed__11._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_SetColor_003Ed__11._003C_003E4__this = this;
-		_003CServer_SetColor_003Ed__11.msg = msg;
-		_003CServer_SetColor_003Ed__11._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetColor_003Ed__11._003C_003Et__builder)).Start<_003CServer_SetColor_003Ed__10>(ref _003CServer_SetColor_003Ed__11);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetColor_003Ed__11._003C_003Et__builder)).Task;
+		_003CServer_SetColor_003Ed__10 obj = default(_003CServer_SetColor_003Ed__10);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetColor_003Ed__10>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_SetMotd_003Ed__11))]
@@ -3748,98 +3748,98 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetMotd_003Ed__11 _003CServer_SetMotd_003Ed__12 = default(_003CServer_SetMotd_003Ed__11);
-		_003CServer_SetMotd_003Ed__12._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_SetMotd_003Ed__12._003C_003E4__this = this;
-		_003CServer_SetMotd_003Ed__12.msg = msg;
-		_003CServer_SetMotd_003Ed__12._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetMotd_003Ed__12._003C_003Et__builder)).Start<_003CServer_SetMotd_003Ed__11>(ref _003CServer_SetMotd_003Ed__12);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetMotd_003Ed__12._003C_003Et__builder)).Task;
+		_003CServer_SetMotd_003Ed__11 obj = default(_003CServer_SetMotd_003Ed__11);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetMotd_003Ed__11>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_Invite_003Ed__12))]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_Invite(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_Invite_003Ed__12 _003CServer_Invite_003Ed__13 = default(_003CServer_Invite_003Ed__12);
-		_003CServer_Invite_003Ed__13._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_Invite_003Ed__13._003C_003E4__this = this;
-		_003CServer_Invite_003Ed__13.msg = msg;
-		_003CServer_Invite_003Ed__13._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_Invite_003Ed__13._003C_003Et__builder)).Start<_003CServer_Invite_003Ed__12>(ref _003CServer_Invite_003Ed__13);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_Invite_003Ed__13._003C_003Et__builder)).Task;
+		_003CServer_Invite_003Ed__12 obj = default(_003CServer_Invite_003Ed__12);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_Invite_003Ed__12>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_CancelInvite_003Ed__13))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_CancelInvite_003Ed__13))]
 	public UniTaskVoid Server_CancelInvite(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CancelInvite_003Ed__13 _003CServer_CancelInvite_003Ed__14 = default(_003CServer_CancelInvite_003Ed__13);
-		_003CServer_CancelInvite_003Ed__14._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_CancelInvite_003Ed__14._003C_003E4__this = this;
-		_003CServer_CancelInvite_003Ed__14.msg = msg;
-		_003CServer_CancelInvite_003Ed__14._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CancelInvite_003Ed__14._003C_003Et__builder)).Start<_003CServer_CancelInvite_003Ed__13>(ref _003CServer_CancelInvite_003Ed__14);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CancelInvite_003Ed__14._003C_003Et__builder)).Task;
+		_003CServer_CancelInvite_003Ed__13 obj = default(_003CServer_CancelInvite_003Ed__13);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CancelInvite_003Ed__13>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
 	public UniTaskVoid Server_AcceptInvitation(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_AcceptInvitation_003Ed__14 _003CServer_AcceptInvitation_003Ed__15 = default(_003CServer_AcceptInvitation_003Ed__14);
-		_003CServer_AcceptInvitation_003Ed__15._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_AcceptInvitation_003Ed__15._003C_003E4__this = this;
-		_003CServer_AcceptInvitation_003Ed__15.msg = msg;
-		_003CServer_AcceptInvitation_003Ed__15._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_AcceptInvitation_003Ed__15._003C_003Et__builder)).Start<_003CServer_AcceptInvitation_003Ed__14>(ref _003CServer_AcceptInvitation_003Ed__15);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_AcceptInvitation_003Ed__15._003C_003Et__builder)).Task;
+		_003CServer_AcceptInvitation_003Ed__14 obj = default(_003CServer_AcceptInvitation_003Ed__14);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_AcceptInvitation_003Ed__14>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_CancelInvitation_003Ed__15))]
+	[RPC_Server]
 	public UniTaskVoid Server_CancelInvitation(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CancelInvitation_003Ed__15 _003CServer_CancelInvitation_003Ed__16 = default(_003CServer_CancelInvitation_003Ed__15);
-		_003CServer_CancelInvitation_003Ed__16._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_CancelInvitation_003Ed__16._003C_003E4__this = this;
-		_003CServer_CancelInvitation_003Ed__16.msg = msg;
-		_003CServer_CancelInvitation_003Ed__16._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CancelInvitation_003Ed__16._003C_003Et__builder)).Start<_003CServer_CancelInvitation_003Ed__15>(ref _003CServer_CancelInvitation_003Ed__16);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CancelInvitation_003Ed__16._003C_003Et__builder)).Task;
+		_003CServer_CancelInvitation_003Ed__15 obj = default(_003CServer_CancelInvitation_003Ed__15);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CancelInvitation_003Ed__15>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_Kick_003Ed__16))]
 	public UniTaskVoid Server_Kick(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_Kick_003Ed__16 _003CServer_Kick_003Ed__17 = default(_003CServer_Kick_003Ed__16);
-		_003CServer_Kick_003Ed__17._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_Kick_003Ed__17._003C_003E4__this = this;
-		_003CServer_Kick_003Ed__17.msg = msg;
-		_003CServer_Kick_003Ed__17._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_Kick_003Ed__17._003C_003Et__builder)).Start<_003CServer_Kick_003Ed__16>(ref _003CServer_Kick_003Ed__17);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_Kick_003Ed__17._003C_003Et__builder)).Task;
+		_003CServer_Kick_003Ed__16 obj = default(_003CServer_Kick_003Ed__16);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_Kick_003Ed__16>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[RPC_Server]
@@ -3850,98 +3850,98 @@ public class ClanManager : BaseEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetPlayerRole_003Ed__17 _003CServer_SetPlayerRole_003Ed__18 = default(_003CServer_SetPlayerRole_003Ed__17);
-		_003CServer_SetPlayerRole_003Ed__18._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_SetPlayerRole_003Ed__18._003C_003E4__this = this;
-		_003CServer_SetPlayerRole_003Ed__18.msg = msg;
-		_003CServer_SetPlayerRole_003Ed__18._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetPlayerRole_003Ed__18._003C_003Et__builder)).Start<_003CServer_SetPlayerRole_003Ed__17>(ref _003CServer_SetPlayerRole_003Ed__18);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetPlayerRole_003Ed__18._003C_003Et__builder)).Task;
+		_003CServer_SetPlayerRole_003Ed__17 obj = default(_003CServer_SetPlayerRole_003Ed__17);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetPlayerRole_003Ed__17>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_SetPlayerNotes_003Ed__18))]
+	[RPC_Server]
 	public UniTaskVoid Server_SetPlayerNotes(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SetPlayerNotes_003Ed__18 _003CServer_SetPlayerNotes_003Ed__19 = default(_003CServer_SetPlayerNotes_003Ed__18);
-		_003CServer_SetPlayerNotes_003Ed__19._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_SetPlayerNotes_003Ed__19._003C_003E4__this = this;
-		_003CServer_SetPlayerNotes_003Ed__19.msg = msg;
-		_003CServer_SetPlayerNotes_003Ed__19._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetPlayerNotes_003Ed__19._003C_003Et__builder)).Start<_003CServer_SetPlayerNotes_003Ed__18>(ref _003CServer_SetPlayerNotes_003Ed__19);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SetPlayerNotes_003Ed__19._003C_003Et__builder)).Task;
+		_003CServer_SetPlayerNotes_003Ed__18 obj = default(_003CServer_SetPlayerNotes_003Ed__18);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SetPlayerNotes_003Ed__18>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_CreateRole_003Ed__19))]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public UniTaskVoid Server_CreateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_CreateRole_003Ed__19 _003CServer_CreateRole_003Ed__20 = default(_003CServer_CreateRole_003Ed__19);
-		_003CServer_CreateRole_003Ed__20._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_CreateRole_003Ed__20._003C_003E4__this = this;
-		_003CServer_CreateRole_003Ed__20.msg = msg;
-		_003CServer_CreateRole_003Ed__20._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CreateRole_003Ed__20._003C_003Et__builder)).Start<_003CServer_CreateRole_003Ed__19>(ref _003CServer_CreateRole_003Ed__20);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_CreateRole_003Ed__20._003C_003Et__builder)).Task;
+		_003CServer_CreateRole_003Ed__19 obj = default(_003CServer_CreateRole_003Ed__19);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_CreateRole_003Ed__19>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
+	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_UpdateRole_003Ed__20))]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	public UniTaskVoid Server_UpdateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_UpdateRole_003Ed__20 _003CServer_UpdateRole_003Ed__21 = default(_003CServer_UpdateRole_003Ed__20);
-		_003CServer_UpdateRole_003Ed__21._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_UpdateRole_003Ed__21._003C_003E4__this = this;
-		_003CServer_UpdateRole_003Ed__21.msg = msg;
-		_003CServer_UpdateRole_003Ed__21._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_UpdateRole_003Ed__21._003C_003Et__builder)).Start<_003CServer_UpdateRole_003Ed__20>(ref _003CServer_UpdateRole_003Ed__21);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_UpdateRole_003Ed__21._003C_003Et__builder)).Task;
+		_003CServer_UpdateRole_003Ed__20 obj = default(_003CServer_UpdateRole_003Ed__20);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_UpdateRole_003Ed__20>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_DeleteRole_003Ed__21))]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_DeleteRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_DeleteRole_003Ed__21 _003CServer_DeleteRole_003Ed__22 = default(_003CServer_DeleteRole_003Ed__21);
-		_003CServer_DeleteRole_003Ed__22._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_DeleteRole_003Ed__22._003C_003E4__this = this;
-		_003CServer_DeleteRole_003Ed__22.msg = msg;
-		_003CServer_DeleteRole_003Ed__22._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_DeleteRole_003Ed__22._003C_003Et__builder)).Start<_003CServer_DeleteRole_003Ed__21>(ref _003CServer_DeleteRole_003Ed__22);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_DeleteRole_003Ed__22._003C_003Et__builder)).Task;
+		_003CServer_DeleteRole_003Ed__21 obj = default(_003CServer_DeleteRole_003Ed__21);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_DeleteRole_003Ed__21>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_SwapRoles_003Ed__22))]
-	[RPC_Server]
 	public UniTaskVoid Server_SwapRoles(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		_003CServer_SwapRoles_003Ed__22 _003CServer_SwapRoles_003Ed__23 = default(_003CServer_SwapRoles_003Ed__22);
-		_003CServer_SwapRoles_003Ed__23._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
-		_003CServer_SwapRoles_003Ed__23._003C_003E4__this = this;
-		_003CServer_SwapRoles_003Ed__23.msg = msg;
-		_003CServer_SwapRoles_003Ed__23._003C_003E1__state = -1;
-		((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SwapRoles_003Ed__23._003C_003Et__builder)).Start<_003CServer_SwapRoles_003Ed__22>(ref _003CServer_SwapRoles_003Ed__23);
-		return ((AsyncUniTaskVoidMethodBuilder)(ref _003CServer_SwapRoles_003Ed__23._003C_003Et__builder)).Task;
+		_003CServer_SwapRoles_003Ed__22 obj = default(_003CServer_SwapRoles_003Ed__22);
+		obj._003C_003Et__builder = AsyncUniTaskVoidMethodBuilder.Create();
+		obj._003C_003E4__this = this;
+		obj.msg = msg;
+		obj._003C_003E1__state = -1;
+		((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003CServer_SwapRoles_003Ed__22>(ref obj);
+		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
 	private bool CheckClanResult(int requestId, BasePlayer player, ClanValueResult<IClan> result, out IClan clan)

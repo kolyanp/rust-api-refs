@@ -103,8 +103,7 @@ public abstract class ZoneController
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		Bounds worldBounds = NexusServer.GetWorldBounds();
 		float num = Mathf.Max(((Bounds)(ref worldBounds)).extents.x, ((Bounds)(ref worldBounds)).extents.z);
-		Vector3 position;
-		Vector3 val = (NexusServer.TryGetIslandPosition(sourceZone, out position) ? (position + new Vector3((float)Random.Range(-1, 1), 0f, (float)Random.Range(-1, 1)) * 100f) : (Vector3Ex.XZ3D(Random.insideUnitCircle) * num * 0.75f));
+		Vector3 val = (NexusServer.TryGetIslandPosition(sourceZone, out var position) ? (position + new Vector3((float)Random.Range(-1, 1), 0f, (float)Random.Range(-1, 1)) * 100f) : (Vector3Ex.XZ3D(Random.insideUnitCircle) * num * 0.75f));
 		Vector3 val2 = Vector3Ex.WithY(val, WaterLevel.GetWaterSurface(val, waves: false, volumes: false));
 		Vector3 val3 = Vector3Ex.WithY(TerrainMeta.Center, val2.y) - val2;
 		Quaternion item = Quaternion.LookRotation(((Vector3)(ref val3)).normalized, Vector3.up);

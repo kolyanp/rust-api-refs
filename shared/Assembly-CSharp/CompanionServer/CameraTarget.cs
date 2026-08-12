@@ -1,10 +1,22 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace CompanionServer;
 
 public readonly struct CameraTarget : IEquatable<CameraTarget>
 {
-	public NetworkableId EntityId { get; }
+	[CompilerGenerated]
+	private readonly NetworkableId _003CEntityId_003Ek__BackingField;
+
+	public NetworkableId EntityId
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CEntityId_003Ek__BackingField;
+		}
+	}
 
 	public CameraTarget(NetworkableId entityId)
 	{

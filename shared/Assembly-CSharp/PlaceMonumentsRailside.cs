@@ -71,7 +71,7 @@ public class PlaceMonumentsRailside : ProceduralComponent
 
 	private const int IndividualCandidates = 8;
 
-	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
+	private static Quaternion rot90;
 
 	public override void Process(uint seed)
 	{
@@ -556,5 +556,12 @@ public class PlaceMonumentsRailside : ProceduralComponent
 			}
 		}
 		return num;
+	}
+
+	static PlaceMonumentsRailside()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

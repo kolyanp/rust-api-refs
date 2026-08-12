@@ -13,11 +13,11 @@ public class MarchingCubesTesting : FacepunchBehaviour, IDisposable
 
 	public MeshCollider TargetCollider;
 
-	public Vector3Int GridResolution = new Vector3Int(32, 40, 32);
+	public Vector3Int GridResolution;
 
-	public Vector3 GridOffset = new Vector3(0f, -20f, 0f);
+	public Vector3 GridOffset;
 
-	public float GridScale = 1f / 32f;
+	public float GridScale;
 
 	private Mesh _mesh;
 
@@ -98,5 +98,17 @@ public class MarchingCubesTesting : FacepunchBehaviour, IDisposable
 	public void Dispose()
 	{
 		_generator.Dispose();
+	}
+
+	public MarchingCubesTesting()
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		GridResolution = new Vector3Int(32, 40, 32);
+		GridOffset = new Vector3(0f, -20f, 0f);
+		GridScale = 1f / 32f;
+		base._002Ector();
 	}
 }

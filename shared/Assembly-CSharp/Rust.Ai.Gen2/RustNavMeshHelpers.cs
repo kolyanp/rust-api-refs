@@ -97,8 +97,7 @@ public static class RustNavMeshHelpers
 		if ((Object)(object)independantNavmesh != (Object)null && independantNavmesh.Navmesh != null && independantNavmesh.Navmesh.IsBuilt())
 		{
 			Vector3 position = independantNavmesh.TransformPointFromWorldSpaceToNavSpace(sourcePositionWS);
-			NavMeshHit hit;
-			bool num2 = independantNavmesh.Navmesh.SamplePosition(position, out hit, Vector3.one * maxDistance);
+			bool num2 = independantNavmesh.Navmesh.SamplePosition(position, out var hit, Vector3.one * maxDistance);
 			hitWS = hit;
 			if (num2)
 			{

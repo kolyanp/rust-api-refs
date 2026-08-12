@@ -16,14 +16,22 @@ namespace CompanionServer;
 
 public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 {
-	private struct Message(Connection connection, MemoryBuffer buffer)
+	private struct Message
 	{
-		public readonly Connection Connection = connection;
+		public readonly Connection Connection;
 
-		public readonly MemoryBuffer Buffer = buffer;
+		public readonly MemoryBuffer Buffer;
+
+		public Message(Connection connection, MemoryBuffer buffer)
+		{
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			Connection = connection;
+			Buffer = buffer;
+		}
 	}
 
-	private static readonly ByteArrayStream Stream = new ByteArrayStream();
+	private static readonly ByteArrayStream Stream;
 
 	private readonly TokenBucketList<IPAddress> _ipTokenBuckets;
 
@@ -59,6 +67,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 	{
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Expected O, but got Unknown
+		base._002Ector();
 		Listener listener = this;
 		Address = ipAddress;
 		Port = port;
@@ -284,5 +293,12 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 	public bool CanSendPairingNotification(ulong playerId)
 	{
 		return _pairingTokenBuckets.Get(playerId).TryTake(1.0);
+	}
+
+	static Listener()
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Expected O, but got Unknown
+		Stream = new ByteArrayStream();
 	}
 }

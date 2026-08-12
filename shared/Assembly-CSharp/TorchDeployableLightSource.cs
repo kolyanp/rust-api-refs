@@ -264,7 +264,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 			{
 				flagsUpdateScope2.Set(Flags.On, wantsOn);
 			}
-			if (HasFlag(Flags.Reserved1) && wantsOn)
+			if (HasFlag(Flags.Reserved1) & wantsOn)
 			{
 				InvokeRepeating(TickTorchDurability, 1f, 1f);
 			}

@@ -321,7 +321,7 @@ public class ElectricWaterWheel : IOEntity
 		int num = 0;
 		bool flag = (Object)(object)waterWheelMountable != (Object)null && waterWheelMountable.AnyMounted();
 		bool flag2 = (Object)(object)waterWheelMountable != (Object)null && waterWheelMountable.HasFlag(Flags.Reserved11);
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			float num2 = Time.deltaTime * manualPowerLerpSpeed;
 			num = Mathf.CeilToInt(Mathf.Lerp((float)currentEnergy, (float)maxPowerGenerationFromManualUse, num2));

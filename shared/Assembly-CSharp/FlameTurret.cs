@@ -414,7 +414,7 @@ public class FlameTurret : StorageContainer
 		if (Time.realtimeSinceStartup >= nextFireballTime)
 		{
 			nextFireballTime = Time.realtimeSinceStartup + Random.Range(1f, 2f);
-			Vector3 val3 = ((Random.Range(0, 10) <= 7 && flag) ? ((RaycastHit)(ref val2)).point : (((Ray)(ref val)).origin + ((Ray)(ref val)).direction * (flag ? ((RaycastHit)(ref val2)).distance : flameRange) * Random.Range(0.4f, 1f)));
+			Vector3 val3 = (((Random.Range(0, 10) <= 7) & flag) ? ((RaycastHit)(ref val2)).point : (((Ray)(ref val)).origin + ((Ray)(ref val)).direction * (flag ? ((RaycastHit)(ref val2)).distance : flameRange) * Random.Range(0.4f, 1f)));
 			BaseEntity baseEntity = GameManager.server.CreateEntity(fireballPrefab.resourcePath, val3 - ((Ray)(ref val)).direction * 0.25f);
 			if (Object.op_Implicit((Object)(object)baseEntity))
 			{

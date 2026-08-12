@@ -107,9 +107,9 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public SoundDefinition chasisLurchSoundDef;
 
-	public float chasisLurchAngleDelta = 2f;
+	public float chasisLurchAngleDelta;
 
-	public float chasisLurchSpeedDelta = 2f;
+	public float chasisLurchSpeedDelta;
 
 	public float lastAngle;
 
@@ -117,19 +117,19 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public SoundDefinition turretTurnLoopDef;
 
-	public float turretLoopGainSpeed = 3f;
+	public float turretLoopGainSpeed;
 
-	public float turretLoopPitchSpeed = 3f;
+	public float turretLoopPitchSpeed;
 
 	public float turretLoopMinAngleDelta;
 
-	public float turretLoopMaxAngleDelta = 10f;
+	public float turretLoopMaxAngleDelta;
 
-	public float turretLoopPitchMin = 0.5f;
+	public float turretLoopPitchMin;
 
-	public float turretLoopPitchMax = 1f;
+	public float turretLoopPitchMax;
 
-	public float turretLoopGainThreshold = 0.0001f;
+	public float turretLoopGainThreshold;
 
 	private Sound turretTurnLoop;
 
@@ -137,9 +137,9 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private SoundModulation.Modulator turretTurnLoopPitch;
 
-	public float enginePitch = 0.9f;
+	public float enginePitch;
 
-	public float rpmMultiplier = 0.6f;
+	public float rpmMultiplier;
 
 	private TreadAnimator treadAnimator;
 
@@ -152,11 +152,11 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private bool followingSpine;
 
-	private int splineId = -1;
+	private int splineId;
 
 	private WorldSpline spline;
 
-	private int entryDirection = 1;
+	private int entryDirection;
 
 	private TimeSince lastJoinedSpline;
 
@@ -169,15 +169,15 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public GameObjectRef RoadScientistPrefab;
 
-	public int ScientistSpawnCount = 4;
+	public int ScientistSpawnCount;
 
-	public float ScientistSpawnRadius = 3f;
+	public float ScientistSpawnRadius;
 
-	public List<GameObject> ScientistSpawnPoints = new List<GameObject>();
+	public List<GameObject> ScientistSpawnPoints;
 
-	public List<ScientistSpawnGroup> ScientistSpawns = new List<ScientistSpawnGroup>();
+	public List<ScientistSpawnGroup> ScientistSpawns;
 
-	public bool SetScientistChaseBasedOnWeapon = true;
+	public bool SetScientistChaseBasedOnWeapon;
 
 	[ServerVar]
 	public static float DeployHealthRangeMin = 0.4f;
@@ -213,13 +213,13 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public static bool KillScientistsOnBradleyDeath = false;
 
 	[HideInInspector]
-	public bool RoadSpawned = true;
+	public bool RoadSpawned;
 
-	private List<ScientistNPC> activeScientists = new List<ScientistNPC>();
+	private List<ScientistNPC> activeScientists;
 
-	private List<GameObjectRef> mountedScientistPrefabs = new List<GameObjectRef>();
+	private List<GameObjectRef> mountedScientistPrefabs;
 
-	private List<Vector3> scientistSpawnPositions = new List<Vector3>();
+	private List<Vector3> scientistSpawnPositions;
 
 	private int numberOfScientistsToSpawn;
 
@@ -239,40 +239,40 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	private bool deployingScientists;
 
-	private Dictionary<uint, GameObjectRef> scientistPrefabLookUp = new Dictionary<uint, GameObjectRef>();
+	private Dictionary<uint, GameObjectRef> scientistPrefabLookUp;
 
 	[Header("Targeting")]
-	public float viewDistance = 100f;
+	public float viewDistance;
 
-	public float searchRange = 100f;
+	public float searchRange;
 
-	public float searchFrequency = 2f;
+	public float searchFrequency;
 
-	public float memoryDuration = 20f;
+	public float memoryDuration;
 
 	public static float sightUpdateRate = 0.5f;
 
-	public List<TargetInfo> targetList = new List<TargetInfo>();
+	public List<TargetInfo> targetList;
 
 	public BaseCombatEntity mainGunTarget;
 
 	[Header("Coax")]
-	public float coaxFireRate = 0.06667f;
+	public float coaxFireRate;
 
-	public int coaxBurstLength = 10;
+	public int coaxBurstLength;
 
-	public float coaxAimCone = 3f;
+	public float coaxAimCone;
 
-	public float bulletDamage = 15f;
+	public float bulletDamage;
 
 	[Header("TopTurret")]
-	public float topTurretFireRate = 0.25f;
+	public float topTurretFireRate;
 
 	public float nextCoaxTime;
 
 	public int numCoaxBursted;
 
-	public float nextTopTurretTime = 0.3f;
+	public float nextTopTurretTime;
 
 	public GameObjectRef gun_fire_effect;
 
@@ -286,22 +286,22 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public WheelCollider[] rightWheels;
 
 	[Header("Movement Config")]
-	public float moveForceMax = 2000f;
+	public float moveForceMax;
 
-	public float brakeForce = 100f;
+	public float brakeForce;
 
-	public float turnForce = 2000f;
+	public float turnForce;
 
-	public float sideStiffnessMax = 1f;
+	public float sideStiffnessMax;
 
-	public float sideStiffnessMin = 0.5f;
+	public float sideStiffnessMin;
 
 	public Transform centerOfMass;
 
-	public float stoppingDist = 5f;
+	public float stoppingDist;
 
 	[Header("Control")]
-	public float throttle = 1f;
+	public float throttle;
 
 	public float turning;
 
@@ -347,13 +347,13 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public GameObjectRef SmokeGrenadePrefab;
 
-	public Vector3 turretAimVector = Vector3.forward;
+	public Vector3 turretAimVector;
 
-	public Vector3 desiredAimVector = Vector3.forward;
+	public Vector3 desiredAimVector;
 
-	public Vector3 topTurretAimVector = Vector3.forward;
+	public Vector3 topTurretAimVector;
 
-	public Vector3 desiredTopTurretAimVector = Vector3.forward;
+	public Vector3 desiredTopTurretAimVector;
 
 	[Header("Effects")]
 	public GameObjectRef explosionEffect;
@@ -370,7 +370,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 	public int maxCratesToSpawn;
 
 	[Header("Spline")]
-	public float splineMovementSpeed = 2f;
+	public float splineMovementSpeed;
 
 	public Vector3 splineOffset;
 
@@ -379,13 +379,13 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public IAIPath patrolPath;
 
-	public bool DoAI = true;
+	public bool DoAI;
 
 	public GameObjectRef mainCannonMuzzleFlash;
 
 	public GameObjectRef mainCannonProjectile;
 
-	public float recoilScale = 200f;
+	public float recoilScale;
 
 	public RustNavMeshPath navMeshPath;
 
@@ -401,7 +401,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public const string PREFAB_PATH = "assets/prefabs/npc/m2bradley/bradleyapc.prefab";
 
-	public float nextFireTime = 10f;
+	public float nextFireTime;
 
 	public int numBursted;
 
@@ -1460,7 +1460,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			{
 				bool flag = VisibilityTest(mainGunTarget);
 				float num = Vector3.Distance(((Component)mainGunTarget).transform.position, ((Component)this).transform.position);
-				if (Time.time > nextCoaxTime && flag && num <= 40f)
+				if (((Time.time > nextCoaxTime) & flag) && num <= 40f)
 				{
 					numCoaxBursted++;
 					FireGun(GetAimPoint(mainGunTarget), 3f, isCoax: true);
@@ -1471,7 +1471,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 						numCoaxBursted = 0;
 					}
 				}
-				if (num >= 10f && flag)
+				if ((num >= 10f) & flag)
 				{
 					FireGunTest();
 				}
@@ -2894,5 +2894,66 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 
 	public void OnHurtTriggerOccupant(BaseEntity hurtEntity, DamageType damageType, float damageTotal)
 	{
+	}
+
+	public BradleyAPC()
+	{
+		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
+		chasisLurchAngleDelta = 2f;
+		chasisLurchSpeedDelta = 2f;
+		turretLoopGainSpeed = 3f;
+		turretLoopPitchSpeed = 3f;
+		turretLoopMaxAngleDelta = 10f;
+		turretLoopPitchMin = 0.5f;
+		turretLoopPitchMax = 1f;
+		turretLoopGainThreshold = 0.0001f;
+		enginePitch = 0.9f;
+		rpmMultiplier = 0.6f;
+		splineId = -1;
+		entryDirection = 1;
+		ScientistSpawnCount = 4;
+		ScientistSpawnRadius = 3f;
+		ScientistSpawnPoints = new List<GameObject>();
+		ScientistSpawns = new List<ScientistSpawnGroup>();
+		SetScientistChaseBasedOnWeapon = true;
+		RoadSpawned = true;
+		activeScientists = new List<ScientistNPC>();
+		mountedScientistPrefabs = new List<GameObjectRef>();
+		scientistSpawnPositions = new List<Vector3>();
+		scientistPrefabLookUp = new Dictionary<uint, GameObjectRef>();
+		viewDistance = 100f;
+		searchRange = 100f;
+		searchFrequency = 2f;
+		memoryDuration = 20f;
+		targetList = new List<TargetInfo>();
+		coaxFireRate = 0.06667f;
+		coaxBurstLength = 10;
+		coaxAimCone = 3f;
+		bulletDamage = 15f;
+		topTurretFireRate = 0.25f;
+		nextTopTurretTime = 0.3f;
+		moveForceMax = 2000f;
+		brakeForce = 100f;
+		turnForce = 2000f;
+		sideStiffnessMax = 1f;
+		sideStiffnessMin = 0.5f;
+		stoppingDist = 5f;
+		throttle = 1f;
+		turretAimVector = Vector3.forward;
+		desiredAimVector = Vector3.forward;
+		topTurretAimVector = Vector3.forward;
+		desiredTopTurretAimVector = Vector3.forward;
+		splineMovementSpeed = 2f;
+		DoAI = true;
+		recoilScale = 200f;
+		nextFireTime = 10f;
+		base._002Ector();
 	}
 }

@@ -62,8 +62,7 @@ public class State_AttackUnreachableWarped : FSMStateBase
 			return true;
 		}
 		float radius = BasePlayer.GetRadius();
-		RaycastHit hitInfoNS;
-		bool result = agent.SampleGroundPositionWithPhysics(((Component)targetAsPlayer).transform.position, out hitInfoNS, 2f, radius * 0.5f);
+		bool result = agent.SampleGroundPositionWithPhysics(((Component)targetAsPlayer).transform.position, out var hitInfoNS, 2f, radius * 0.5f);
 		projectedLocation = ((RaycastHit)(ref hitInfoNS)).point;
 		return result;
 	}

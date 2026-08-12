@@ -20,8 +20,8 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 	[SerializeField]
 	private ParticleSystemGroup[] particleGroups;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Light[] lights;
 
 	[SerializeField]
@@ -78,7 +78,7 @@ public class ParticleSystemContainer : MonoBehaviour, IPrefabPreProcess
 
 	public void PreProcess(IPrefabProcessor preProcess, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)
 	{
-		if (precached && clientside)
+		if (precached & clientside)
 		{
 			List<ParticleSystemGroup> list = new List<ParticleSystemGroup>();
 			ParticleSystem[] componentsInChildren = ((Component)this).GetComponentsInChildren<ParticleSystem>();

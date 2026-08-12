@@ -16,7 +16,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2160]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2161]
 	{
 		new ConsoleSystem.Command
 		{
@@ -29062,47 +29062,21 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "fusefastdeterioratelowest",
+			Name = "fusefulldecaycount",
 			Parent = "powergrid",
-			FullName = "powergrid.fusefastdeterioratelowest",
+			FullName = "powergrid.fusefulldecaycount",
 			ServerAdmin = true,
 			Saved = true,
-			Description = "If enabled, whenever no heavy fuse in the power plant is below fuseFastDeteriorationThreshold, the single lowest condition fuse deteriorates at the fast rate anyway.",
+			Description = "How many of the worst condition heavy fuses in the power plant decay at the full rate (burning out after fuseLifespanSeconds). Every other inserted fuse decays slowly instead. If 0 no fuse ever decays at the full rate.",
 			Variable = true,
-			GetOveride = () => Powergrid.fuseFastDeteriorateLowest.ToString(),
+			GetOveride = delegate
+			{
+				int fuseFullDecayCount = Powergrid.fuseFullDecayCount;
+				return (fuseFullDecayCount < -1 || fuseFullDecayCount > 127) ? fuseFullDecayCount.ToString() : Memoized.IntToString.Get(fuseFullDecayCount);
+			},
 			SetOveride = delegate(string str)
 			{
-				Powergrid.fuseFastDeteriorateLowest = StringExtensions.ToBool(str);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "fusefastdeteriorationscale",
-			Parent = "powergrid",
-			FullName = "powergrid.fusefastdeteriorationscale",
-			ServerAdmin = true,
-			Saved = true,
-			Description = "How much faster heavy fuses plugged into the power plant deteriorate once their normalized condition is at or below fuseFastDeteriorationThreshold.",
-			Variable = true,
-			GetOveride = () => Powergrid.fuseFastDeteriorationScale.ToString(),
-			SetOveride = delegate(string str)
-			{
-				Powergrid.fuseFastDeteriorationScale = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "fusefastdeteriorationthreshold",
-			Parent = "powergrid",
-			FullName = "powergrid.fusefastdeteriorationthreshold",
-			ServerAdmin = true,
-			Saved = true,
-			Description = "Normalized condition (0-1) at which heavy fuses plugged into the power plant start deteriorating faster. At or below this threshold the deterioration rate is multiplied by fuseFastDeteriorationScale. Set to 0 to disable accelerated deterioration.",
-			Variable = true,
-			GetOveride = () => Powergrid.fuseFastDeteriorationThreshold.ToString(),
-			SetOveride = delegate(string str)
-			{
-				Powergrid.fuseFastDeteriorationThreshold = StringExtensions.ToFloat(str, 0f);
+				Powergrid.fuseFullDecayCount = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -29111,11 +29085,55 @@ public class ConsoleGen
 			Parent = "powergrid",
 			FullName = "powergrid.fuselifespanseconds",
 			ServerAdmin = true,
+			Saved = true,
+			Description = "How long a heavy fuse plugged into the power plant lasts while it is decaying at the full rate (how long the worst fuses in the power plant survive for). If <= 0 then fuses last forever.",
 			Variable = true,
 			GetOveride = () => Powergrid.fuseLifespanSeconds.ToString(),
 			SetOveride = delegate(string str)
 			{
 				Powergrid.fuseLifespanSeconds = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuseslowdecayfractionmax",
+			Parent = "powergrid",
+			FullName = "powergrid.fuseslowdecayfractionmax",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Maximum fraction (0-1) of the full decay rate applied to heavy fuses that aren't one of the worst fuseFullDecayCount. See fuseSlowDecayFractionMin.",
+			Variable = true,
+			GetOveride = () => Powergrid.fuseSlowDecayFractionMax.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.fuseSlowDecayFractionMax = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fuseslowdecayfractionmin",
+			Parent = "powergrid",
+			FullName = "powergrid.fuseslowdecayfractionmin",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Minimum fraction (0-1) of the full decay rate applied to heavy fuses that aren't one of the worst fuseFullDecayCount. Each fuse rolls its own fraction between fuseSlowDecayFractionMin and fuseSlowDecayFractionMax and keeps it for its lifetime.",
+			Variable = true,
+			GetOveride = () => Powergrid.fuseSlowDecayFractionMin.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.fuseSlowDecayFractionMin = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fusestatus",
+			Parent = "powergrid",
+			FullName = "powergrid.fusestatus",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Powergrid.fuseStatus(arg);
 			}
 		},
 		new ConsoleSystem.Command

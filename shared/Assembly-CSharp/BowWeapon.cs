@@ -109,8 +109,8 @@ public class BowWeapon : BaseProjectile
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void BowReload(RPCMessage msg)
 	{
 		BasePlayer ownerPlayer = GetOwnerPlayer();

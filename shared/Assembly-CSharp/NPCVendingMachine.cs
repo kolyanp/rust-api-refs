@@ -46,7 +46,7 @@ public class NPCVendingMachine : VendingMachine
 			TotalIntervals++;
 			SoldThisInterval = 0uL;
 			float num = 0f;
-			num = ((!(GetAverageSalesPerInterval() <= averageSalesPerInterval || flag)) ? PriceIncreaseAmount : (0f - PriceDecreaseAmount));
+			num = ((!((GetAverageSalesPerInterval() <= averageSalesPerInterval) | flag)) ? PriceIncreaseAmount : (0f - PriceDecreaseAmount));
 			if (IsForReceivedCurrency)
 			{
 				CurrentMultiplier -= num;
@@ -466,7 +466,7 @@ public class NPCVendingMachine : VendingMachine
 		{
 			result = 2;
 		}
-		if (sellItemAsBP && currencyItemAsBP)
+		if (sellItemAsBP & currencyItemAsBP)
 		{
 			result = 3;
 		}

@@ -99,8 +99,8 @@ public static class SystemCommands
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
 	[ClientVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
+	[ServerVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
 	public static void cpu_priority(ConsoleSystem.Arg arg)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)

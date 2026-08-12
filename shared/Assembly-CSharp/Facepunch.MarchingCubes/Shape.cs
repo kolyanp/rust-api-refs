@@ -6,21 +6,41 @@ using UnityEngine;
 namespace Facepunch.MarchingCubes;
 
 [BurstCompile]
-public readonly struct Shape(ShapeType type, float3 position, float3 extents, quaternion rotation, bool isAdditive, float smoothing)
+public readonly struct Shape
 {
-	public readonly ShapeType Type = type;
+	public readonly ShapeType Type;
 
-	public readonly bool IsAdditive = isAdditive;
+	public readonly bool IsAdditive;
 
-	public readonly float Smoothing = smoothing;
+	public readonly float Smoothing;
 
-	public readonly float3 Position = position;
+	public readonly float3 Position;
 
-	public readonly float3 Extents = extents;
+	public readonly float3 Extents;
 
-	public readonly quaternion Rotation = rotation;
+	public readonly quaternion Rotation;
 
-	private readonly quaternion InvRotation = math.inverse(rotation);
+	private readonly quaternion InvRotation;
+
+	public Shape(ShapeType type, float3 position, float3 extents, quaternion rotation, bool isAdditive, float smoothing)
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		Type = type;
+		Position = position;
+		Extents = extents;
+		Rotation = rotation;
+		InvRotation = math.inverse(rotation);
+		IsAdditive = isAdditive;
+		Smoothing = smoothing;
+	}
 
 	public Bounds GetBounds()
 	{

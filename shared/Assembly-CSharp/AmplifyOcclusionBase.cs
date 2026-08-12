@@ -9,107 +9,107 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per pass.")]
-	public SampleCountLevel SampleCount = SampleCountLevel.Medium;
+	public SampleCountLevel SampleCount;
 
-	public PerPixelNormalSource PerPixelNormals = PerPixelNormalSource.Camera;
+	public PerPixelNormalSource PerPixelNormals;
 
 	[Tooltip("Final applied intensity of the occlusion effect.")]
 	[Range(0f, 1f)]
-	public float Intensity = 1f;
+	public float Intensity;
 
-	public Color Tint = Color.black;
+	public Color Tint;
 
-	[Tooltip("Radius spread of the occlusion.")]
 	[Range(0f, 32f)]
-	public float Radius = 2f;
+	[Tooltip("Radius spread of the occlusion.")]
+	public float Radius;
 
 	[NonSerialized]
 	[Range(32f, 1024f)]
 	[Tooltip("Max sampling range in pixels.")]
-	public int PixelRadiusLimit = 512;
+	public int PixelRadiusLimit;
 
 	[NonSerialized]
 	[Range(0f, 2f)]
 	[Tooltip("Occlusion contribution amount on relation to radius.")]
-	public float RadiusIntensity = 1f;
+	public float RadiusIntensity;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
-	public float PowerExponent = 1.8f;
+	[Tooltip("Power exponent attenuation of the occlusion.")]
+	public float PowerExponent;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("Controls the initial occlusion contribution offset.")]
-	public float Bias = 0.05f;
+	[Range(0f, 0.99f)]
+	public float Bias;
 
 	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
-	public float Thickness = 1f;
+	public float Thickness;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
-	public bool Downsample = true;
+	public bool Downsample;
 
-	[Header("Distance Fade")]
 	[Tooltip("Control parameters at faraway.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance in Unity unities that start to fade.")]
-	public float FadeStart = 100f;
+	public float FadeStart;
 
 	[Tooltip("Length distance to performe the transition.")]
-	public float FadeLength = 50f;
+	public float FadeLength;
 
 	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
 	public float FadeToIntensity;
 
-	public Color FadeToTint = Color.black;
+	public Color FadeToTint;
 
-	[Range(0f, 32f)]
 	[Tooltip("Final Radius parameter.")]
-	public float FadeToRadius = 2f;
+	[Range(0f, 32f)]
+	public float FadeToRadius;
 
-	[Range(0f, 16f)]
 	[Tooltip("Final PowerExponent parameter.")]
-	public float FadeToPowerExponent = 1.8f;
+	[Range(0f, 16f)]
+	public float FadeToPowerExponent;
 
 	[Tooltip("Final Thickness parameter.")]
 	[Range(0f, 1f)]
-	public float FadeToThickness = 1f;
+	public float FadeToThickness;
 
 	[Header("Bilateral Blur")]
-	public bool BlurEnabled = true;
+	public bool BlurEnabled;
 
-	[Tooltip("Radius in screen pixels.")]
 	[Range(1f, 4f)]
-	public int BlurRadius = 3;
+	[Tooltip("Radius in screen pixels.")]
+	public int BlurRadius;
 
 	[Tooltip("Number of times that the Blur will repeat.")]
 	[Range(1f, 4f)]
-	public int BlurPasses = 1;
+	public int BlurPasses;
 
-	[Range(0f, 20f)]
 	[Tooltip("0 - Blured, 1 - Sharpened.")]
-	public float BlurSharpness = 10f;
+	[Range(0f, 20f)]
+	public float BlurSharpness;
 
 	[Header("Temporal Filter")]
 	[Tooltip("Accumulates the effect over the time.")]
-	public bool FilterEnabled = true;
+	public bool FilterEnabled;
 
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
 	[Range(0f, 1f)]
-	public float FilterBlending = 0.5f;
+	public float FilterBlending;
 
 	[Range(0f, 1f)]
 	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
-	public float FilterResponse = 0.5f;
+	public float FilterResponse;
 
 	[NonSerialized]
 	[Tooltip("Enables directional variations.")]
-	public bool TemporalDirections = true;
+	public bool TemporalDirections;
 
 	[NonSerialized]
 	[Tooltip("Enables offset variations.")]
-	public bool TemporalOffsets = true;
+	public bool TemporalOffsets;
 
 	[NonSerialized]
 	[Tooltip("Reduces ghosting effect near the objects's edges while moving.")]
@@ -117,5 +117,41 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	[NonSerialized]
 	[Tooltip("Uses the object movement information for calc new areas of occlusion.")]
-	public bool UseMotionVectors = true;
+	public bool UseMotionVectors;
+
+	public AmplifyOcclusionBase()
+	{
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		SampleCount = SampleCountLevel.Medium;
+		PerPixelNormals = PerPixelNormalSource.Camera;
+		Intensity = 1f;
+		Tint = Color.black;
+		Radius = 2f;
+		PixelRadiusLimit = 512;
+		RadiusIntensity = 1f;
+		PowerExponent = 1.8f;
+		Bias = 0.05f;
+		Thickness = 1f;
+		Downsample = true;
+		FadeStart = 100f;
+		FadeLength = 50f;
+		FadeToTint = Color.black;
+		FadeToRadius = 2f;
+		FadeToPowerExponent = 1.8f;
+		FadeToThickness = 1f;
+		BlurEnabled = true;
+		BlurRadius = 3;
+		BlurPasses = 1;
+		BlurSharpness = 10f;
+		FilterEnabled = true;
+		FilterBlending = 0.5f;
+		FilterResponse = 0.5f;
+		TemporalDirections = true;
+		TemporalOffsets = true;
+		UseMotionVectors = true;
+		((MonoBehaviour)this)._002Ector();
+	}
 }

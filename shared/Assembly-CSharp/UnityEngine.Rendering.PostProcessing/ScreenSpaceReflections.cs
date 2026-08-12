@@ -25,8 +25,8 @@ public sealed class ScreenSpaceReflections : PostProcessEffectSettings
 		value = ScreenSpaceReflectionResolution.Downsampled
 	};
 
-	[Range(1f, 64f)]
 	[Tooltip("Ray thickness. Lower values are more expensive but allow the effect to detect smaller details.")]
+	[Range(1f, 64f)]
 	public FloatParameter thickness = new FloatParameter
 	{
 		value = 8f

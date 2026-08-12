@@ -898,7 +898,7 @@ public class GenerateDungeonGrid : ProceduralComponent
 							val[num9, num10] = prefab6;
 							bool num11 = prefab7 == null || prefab6.Component.WestVariant == prefab7.Component.EastVariant;
 							bool flag5 = prefab9 == null || prefab6.Component.SouthVariant == prefab9.Component.NorthVariant;
-							if (num11 && flag5)
+							if (num11 & flag5)
 							{
 								break;
 							}

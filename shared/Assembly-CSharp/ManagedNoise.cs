@@ -404,9 +404,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num6 = Simplex2D(x * num2, y * num2, out dx, out dy);
+			double num6 = Simplex2D(x * num2, y * num2, out var dx, out var dy);
 			num4 += dx;
 			num5 += dy;
 			num += num3 * num6 / (1.0 + (num4 * num4 + num5 * num5));
@@ -427,9 +425,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double x2 = Simplex2D(x * num2, y * num2, out dx, out dy);
+			double x2 = Simplex2D(x * num2, y * num2, out var dx, out var dy);
 			num4 += dx;
 			num5 += dy;
 			num += num3 * Abs(x2) / (1.0 + (num4 * num4 + num5 * num5));
@@ -450,9 +446,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double x2 = Simplex2D(x * num2, y * num2, out dx, out dy);
+			double x2 = Simplex2D(x * num2, y * num2, out var dx, out var dy);
 			num4 += dx;
 			num5 += dy;
 			num += num3 * (1.0 - Abs(x2)) / (1.0 + (num4 * num4 + num5 * num5));
@@ -473,9 +467,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num6 = Simplex2D(x * num2, y * num2, out dx, out dy);
+			double num6 = Simplex2D(x * num2, y * num2, out var dx, out var dy);
 			num4 += dx;
 			num5 += dy;
 			num += num3 * (num6 * num6) / (1.0 + (num4 * num4 + num5 * num5));
@@ -496,9 +488,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out dx, out dy);
+			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out var dx, out var dy);
 			num += num3 * num6;
 			num4 += num3 * dx * (0.0 - num6);
 			num5 += num3 * dy * (0.0 - num6);
@@ -519,9 +509,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out dx, out dy);
+			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out var dx, out var dy);
 			num += num3 * Abs(num6);
 			num4 += num3 * dx * (0.0 - num6);
 			num5 += num3 * dy * (0.0 - num6);
@@ -542,9 +530,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out dx, out dy);
+			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out var dx, out var dy);
 			num += num3 * (1.0 - Abs(num6));
 			num4 += num3 * dx * (0.0 - num6);
 			num5 += num3 * dy * (0.0 - num6);
@@ -565,9 +551,7 @@ public static class ManagedNoise
 		double num5 = 0.0;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out dx, out dy);
+			double num6 = Simplex2D((x + warp * num4) * num2, (y + warp * num5) * num2, out var dx, out var dy);
 			num += num3 * (num6 * num6);
 			num4 += num3 * dx * (0.0 - num6);
 			num5 += num3 * dy * (0.0 - num6);
@@ -591,9 +575,7 @@ public static class ManagedNoise
 		double num8 = num2 * gain;
 		for (int i = 0; i < octaves; i++)
 		{
-			double dx;
-			double dy;
-			double num9 = Simplex2D(x * num3 + num4, y * num3 + num5, out dx, out dy);
+			double num9 = Simplex2D(x * num3 + num4, y * num3 + num5, out var dx, out var dy);
 			double num10 = num9 * num9;
 			double num11 = dx * num9;
 			double num12 = dy * num9;

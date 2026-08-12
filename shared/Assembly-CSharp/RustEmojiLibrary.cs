@@ -91,31 +91,31 @@ public class RustEmojiLibrary : BaseScriptableObject
 
 	public const int MAX_TEX_SIZE_PIXELS = 256;
 
-	public static Dictionary<string, ServerEmojiConfig> allServerEmoji = new Dictionary<string, ServerEmojiConfig>();
+	public static Dictionary<string, ServerEmojiConfig> allServerEmoji;
 
-	private static bool hasLoaded = false;
+	private static bool hasLoaded;
 
 	[NonSerialized]
-	public static List<string> cachedServerList = new List<string>();
+	public static List<string> cachedServerList;
 
-	public static NetworkableId EmojiStorageNetworkId = new NetworkableId(0uL);
+	public static NetworkableId EmojiStorageNetworkId;
 
 	[HideInInspector]
 	public RustEmojiConfig[] Configs;
 
-	public RenderTextureDescriptor RenderTextureDesc = new RenderTextureDescriptor(256, 256, (GraphicsFormat)8, 0);
+	public RenderTextureDescriptor RenderTextureDesc;
 
-	public int InitialPoolSize = 10;
+	public int InitialPoolSize;
 
-	private List<EmojiSource> all = new List<EmojiSource>();
+	private List<EmojiSource> all;
 
-	private List<EmojiSource> conditionalAccessOnly = new List<EmojiSource>();
+	private List<EmojiSource> conditionalAccessOnly;
 
 	public GameObjectRef VideoPlayerRef;
 
-	private static RustEmojiLibrary _instance = null;
+	private static RustEmojiLibrary _instance;
 
-	private static bool hasPrewarmed = false;
+	private static bool hasPrewarmed;
 
 	public static RustEmojiLibrary Instance
 	{
@@ -164,7 +164,7 @@ public class RustEmojiLibrary : BaseScriptableObject
 				{
 					Debug.Log((object)(item + " is an invalid jpg"));
 				}
-				else if (flag || flag2)
+				else if (flag | flag2)
 				{
 					FileStorage.Type type = FileStorage.Type.jpg;
 					if (flag)
@@ -277,5 +277,28 @@ public class RustEmojiLibrary : BaseScriptableObject
 			}
 		}
 		return false;
+	}
+
+	public RustEmojiLibrary()
+	{
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		RenderTextureDesc = new RenderTextureDescriptor(256, 256, (GraphicsFormat)8, 0);
+		InitialPoolSize = 10;
+		all = new List<EmojiSource>();
+		conditionalAccessOnly = new List<EmojiSource>();
+		base._002Ector();
+	}
+
+	static RustEmojiLibrary()
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		allServerEmoji = new Dictionary<string, ServerEmojiConfig>();
+		hasLoaded = false;
+		cachedServerList = new List<string>();
+		EmojiStorageNetworkId = new NetworkableId(0uL);
+		_instance = null;
+		hasPrewarmed = false;
 	}
 }

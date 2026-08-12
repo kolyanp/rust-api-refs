@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class BaseVehicleMountPoint : BaseMountable
 {
-	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
 	[Header("BaseVehicleMountPoint")]
+	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
 	public bool RequiresVehicleFixedUpdateOnSeat;
 
 	public override bool DirectlyMountable()
@@ -49,5 +49,15 @@ public class BaseVehicleMountPoint : BaseMountable
 			return 0f;
 		}
 		return baseVehicle.AirFactor();
+	}
+
+	public override bool BlocksWaterFor(BasePlayer player)
+	{
+		BaseVehicle baseVehicle = VehicleParent();
+		if ((Object)(object)baseVehicle == (Object)null)
+		{
+			return false;
+		}
+		return baseVehicle.BlocksWaterFor(player);
 	}
 }

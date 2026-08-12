@@ -222,7 +222,7 @@ public class NpcCoverManager : SingletonComponent<NpcCoverManager>, IServerCompo
 		bool flag = ((Vector3)(ref val2)).sqrMagnitude <= num;
 		val2 = end - center;
 		bool flag2 = ((Vector3)(ref val2)).sqrMagnitude <= num;
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			return true;
 		}

@@ -164,8 +164,7 @@ public class DeliveryDrone : Drone
 			break;
 		case State.FlyToVendingMachine:
 		{
-			bool isBlocked;
-			float num2 = CalculatePreferredY(out isBlocked);
+			float num2 = CalculatePreferredY(out var isBlocked);
 			if (isBlocked && currentPosition.y < num2)
 			{
 				SetGoToY(num2 + marginAbovePreferredHeight);
@@ -208,8 +207,7 @@ public class DeliveryDrone : Drone
 		}
 		case State.ReturnToTerminal:
 		{
-			bool isBlocked2;
-			float num3 = CalculatePreferredY(out isBlocked2);
+			float num3 = CalculatePreferredY(out var isBlocked2);
 			if (isBlocked2 && currentPosition.y < num3)
 			{
 				SetGoToY(num3 + marginAbovePreferredHeight);

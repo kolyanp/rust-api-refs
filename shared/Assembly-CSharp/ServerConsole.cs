@@ -12,17 +12,28 @@ using Windows;
 
 public class ServerConsole : SingletonComponent<ServerConsole>
 {
-	private struct ConsoleMessage(string message, string stackTrace, LogType type)
+	private struct ConsoleMessage
 	{
-		public string Message = message;
+		public string Message;
 
-		public string StackTrace = stackTrace;
+		public string StackTrace;
 
-		public LogType Type = type;
+		public LogType Type;
 
-		public ConsoleColor? Color = null;
+		public ConsoleColor? Color;
 
-		public List<string> StatusUpdate = null;
+		public List<string> StatusUpdate;
+
+		public ConsoleMessage(string message, string stackTrace, LogType type)
+		{
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			Message = message;
+			StackTrace = stackTrace;
+			Type = type;
+			StatusUpdate = null;
+			Color = null;
+		}
 	}
 
 	public ConsoleWindow console;

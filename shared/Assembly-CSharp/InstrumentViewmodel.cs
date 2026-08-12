@@ -78,7 +78,7 @@ public class InstrumentViewmodel : MonoBehaviour
 			{
 				ViewAnimator.SetBool(recentlyPlayedHash, recentlyPlayed);
 			}
-			if (UpdatePlayedNoteTrigger && playedNoteThisFrame)
+			if (UpdatePlayedNoteTrigger & playedNoteThisFrame)
 			{
 				ViewAnimator.SetTrigger(playedNoteHash);
 			}

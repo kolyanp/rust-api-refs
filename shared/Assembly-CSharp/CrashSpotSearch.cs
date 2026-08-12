@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using UnityEngine;
@@ -41,7 +42,7 @@ public class CrashSpotSearch
 
 	private readonly int[] order;
 
-	private readonly List<Vector3> tcPositions = new List<Vector3>();
+	private readonly List<Vector3> tcPositions;
 
 	private bool initialized;
 
@@ -61,6 +62,9 @@ public class CrashSpotSearch
 
 	private int physicalUneven;
 
+	[CompilerGenerated]
+	private Vector3 _003CResult_003Ek__BackingField;
+
 	private const float GoldenAngle = 2.3999631f;
 
 	private const int FootprintSampleCount = 13;
@@ -75,11 +79,26 @@ public class CrashSpotSearch
 
 	private const float SeaLevelClearance = 0.5f;
 
-	public int TcsInArea { get; private set; } = -1;
+	public int TcsInArea { get; private set; }
 
 	public int SamplesTested => nextSample;
 
-	public Vector3 Result { get; private set; }
+	public Vector3 Result
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CResult_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CResult_003Ek__BackingField = value;
+		}
+	}
 
 	private bool ShouldLog
 	{
@@ -100,6 +119,9 @@ public class CrashSpotSearch
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		tcPositions = new List<Vector3>();
+		TcsInArea = -1;
+		base._002Ector();
 		this.center = center;
 		this.radius = radius;
 		this.clearanceRadius = clearanceRadius;

@@ -10,7 +10,14 @@ public class TickHistory
 
 	public int ParentCount => parentPoints.Count;
 
-	public Vector3 this[int index] => points[index];
+	public Vector3 this[int index]
+	{
+		get
+		{
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			return points[index];
+		}
+	}
 
 	public TickHistory(int capacity)
 	{

@@ -56,7 +56,7 @@ public class Workbench : StorageContainer
 	}
 
 	[Header("Upgrades")]
-	public int upgradeSlotCount = 4;
+	public int upgradeSlotCount;
 
 	public TriggerComfort upgradeComfortTrigger;
 
@@ -84,9 +84,9 @@ public class Workbench : StorageContainer
 	[Tooltip("Individual filler transforms that are hidden when their associated upgrade is installed.")]
 	public UpgradeFillerVisual[] upgradeFillerVisuals;
 
-	private readonly List<CachedUpgrade> cachedServerUpgrades = new List<CachedUpgrade>();
+	private readonly List<CachedUpgrade> cachedServerUpgrades;
 
-	public static readonly Phrase RecycleBinNotEmptyPhrase = new Phrase("workbench.recyclebin.notempty", "Empty the recycle bin before removing it");
+	public static readonly Phrase RecycleBinNotEmptyPhrase;
 
 	public const int blueprintSlot = 0;
 
@@ -108,15 +108,15 @@ public class Workbench : StorageContainer
 
 	private const string recycleBinLootPanel = "generic_resizable";
 
-	private Vector3 originalCraftTriggerSize = Vector3.zero;
+	private Vector3 originalCraftTriggerSize;
 
-	private Vector3 originalCraftTriggerCenter = Vector3.zero;
+	private Vector3 originalCraftTriggerCenter;
 
 	private bool craftTriggerCached;
 
-	private float originalComfortBaseValue = -1f;
+	private float originalComfortBaseValue;
 
-	private float originalComfortTriggerRadius = -1f;
+	private float originalComfortTriggerRadius;
 
 	private float originalMaxHealth;
 
@@ -130,7 +130,7 @@ public class Workbench : StorageContainer
 
 	public TechTreeData[] techTrees;
 
-	private float clientTechTreeMultiplier = 1f;
+	private float clientTechTreeMultiplier;
 
 	public static ItemDefinition blueprintBaseDef;
 
@@ -935,8 +935,8 @@ public class Workbench : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TechTreeUnlock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1014,8 +1014,7 @@ public class Workbench : StorageContainer
 						Interface.CallHook("OnTechTreeNodeUnlocked", this, byID, player, val2);
 						foreach (ItemDefinition item3 in (List<ItemDefinition>)(object)val2)
 						{
-							int tax2;
-							int num3 = ScrapForResearch(item3, techTreeForLevel.techTreeLevel, out tax2, this);
+							int num3 = ScrapForResearch(item3, techTreeForLevel.techTreeLevel, out var tax2, this);
 							Facepunch.Rust.Analytics.Azure.OnBlueprintLearned(player, item3, "techtree", num3 + tax2, this);
 						}
 						return;
@@ -1034,8 +1033,7 @@ public class Workbench : StorageContainer
 			{
 				return;
 			}
-			int tax3;
-			int num4 = Mathf.RoundToInt((float)(ScrapForResearch(byID.itemDef, techTreeForLevel.techTreeLevel, out tax3, this) + tax3) * GetBypassCostMultiplier());
+			int num4 = Mathf.RoundToInt((float)(ScrapForResearch(byID.itemDef, techTreeForLevel.techTreeLevel, out var tax3, this) + tax3) * GetBypassCostMultiplier());
 			if (amount >= num4)
 			{
 				player.inventory.Take(null, itemid, num4);
@@ -1060,8 +1058,8 @@ public class Workbench : StorageContainer
 		return blueprintBaseDef;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_BeginExperiment(RPCMessage msg)
 	{
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -1295,8 +1293,8 @@ public class Workbench : StorageContainer
 		return result;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenRecycleBin(RPCMessage msg)
 	{
 		if (!isLootable || Static)
@@ -1428,5 +1426,28 @@ public class Workbench : StorageContainer
 	public override bool SupportsChildDeployables()
 	{
 		return true;
+	}
+
+	public Workbench()
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		upgradeSlotCount = 4;
+		cachedServerUpgrades = new List<CachedUpgrade>();
+		originalCraftTriggerSize = Vector3.zero;
+		originalCraftTriggerCenter = Vector3.zero;
+		originalComfortBaseValue = -1f;
+		originalComfortTriggerRadius = -1f;
+		clientTechTreeMultiplier = 1f;
+		base._002Ector();
+	}
+
+	static Workbench()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		RecycleBinNotEmptyPhrase = new Phrase("workbench.recyclebin.notempty", "Empty the recycle bin before removing it");
 	}
 }

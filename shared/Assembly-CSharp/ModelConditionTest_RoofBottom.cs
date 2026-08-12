@@ -59,7 +59,7 @@ public class ModelConditionTest_RoofBottom : ModelConditionTest
 				break;
 			}
 		}
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			return false;
 		}

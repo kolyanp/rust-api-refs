@@ -3,10 +3,10 @@ using UnityEngine;
 public class EnvironmentVolumeTrigger : MonoBehaviour
 {
 	[HideInInspector]
-	public Vector3 Center = Vector3.zero;
+	public Vector3 Center;
 
 	[HideInInspector]
-	public Vector3 Size = Vector3.one;
+	public Vector3 Size;
 
 	public EnvironmentVolume volume { get; private set; }
 
@@ -29,5 +29,16 @@ public class EnvironmentVolumeTrigger : MonoBehaviour
 
 	protected virtual void OnVolumeTriggerUpdate()
 	{
+	}
+
+	public EnvironmentVolumeTrigger()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		Center = Vector3.zero;
+		Size = Vector3.one;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

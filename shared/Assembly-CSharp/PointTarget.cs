@@ -9,6 +9,7 @@ public sealed class PointTarget : IAITarget
 	public PointTarget(Vector3 pos, float radius = 3f)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		Position = pos;
 		_radius = Mathf.Max(0.1f, radius);
 	}

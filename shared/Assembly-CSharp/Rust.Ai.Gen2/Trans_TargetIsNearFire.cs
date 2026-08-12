@@ -40,7 +40,7 @@ public class Trans_TargetIsNearFire : FSMTransitionBase
 			bool flag2 = Vector3.Distance(((Component)owner).transform.position, ((Component)target).transform.position) < 18f;
 			if (onlySeeFireWhenClose)
 			{
-				return flag && flag2;
+				return flag & flag2;
 			}
 			return flag;
 		}

@@ -33,23 +33,23 @@ public class AdventCalendar : BaseCombatEntity
 
 	public GameObject[] crosses;
 
-	public static List<AdventCalendar> all = new List<AdventCalendar>();
+	public static List<AdventCalendar> all;
 
-	public static Dictionary<ulong, List<int>> playerRewardHistory = new Dictionary<ulong, List<int>>();
+	public static Dictionary<ulong, List<int>> playerRewardHistory;
 
-	public static readonly Phrase CheckLater = new Phrase("adventcalendar.checklater", "You've already claimed today's gift. Come back tomorrow.");
+	public static readonly Phrase CheckLater;
 
-	public static readonly Phrase EventOver = new Phrase("adventcalendar.eventover", "The Advent Calendar event is over. See you next year.");
+	public static readonly Phrase EventOver;
 
 	public GameObjectRef giftEffect;
 
 	public GameObjectRef boxCloseEffect;
 
 	[ServerVar]
-	public static int overrideAdventCalendarDay = 0;
+	public static int overrideAdventCalendarDay;
 
 	[ServerVar]
-	public static int overrideAdventCalendarMonth = 0;
+	public static int overrideAdventCalendarMonth;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -209,5 +209,19 @@ public class AdventCalendar : BaseCombatEntity
 		{
 			AwardGift(player);
 		}
+	}
+
+	static AdventCalendar()
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		all = new List<AdventCalendar>();
+		playerRewardHistory = new Dictionary<ulong, List<int>>();
+		CheckLater = new Phrase("adventcalendar.checklater", "You've already claimed today's gift. Come back tomorrow.");
+		EventOver = new Phrase("adventcalendar.eventover", "The Advent Calendar event is over. See you next year.");
+		overrideAdventCalendarDay = 0;
+		overrideAdventCalendarMonth = 0;
 	}
 }

@@ -66,9 +66,9 @@ public class BaseFishingRod : HeldEntity
 		PlayerMoved
 	}
 
-	public static UpdateFishingRod updateFishingRodQueue = new UpdateFishingRod();
+	public static UpdateFishingRod updateFishingRodQueue;
 
-	public static Phrase overfishedWarningPhrase = new Phrase("overfished_warning", "This area is overfished, only junk remains.");
+	public static Phrase overfishedWarningPhrase;
 
 	private TimeUntil nextFishStateChange;
 
@@ -96,18 +96,18 @@ public class BaseFishingRod : HeldEntity
 
 	private ItemModFishable lastFish;
 
-	public static Dictionary<Vector2, (int, TimeSince)> FishedSpots = new Dictionary<Vector2, (int, TimeSince)>();
+	public static Dictionary<Vector2, (int, TimeSince)> FishedSpots;
 
 	private bool inQueue;
 
 	[ServerVar(Help = "(Generated) When enabled, all fishing attempts succeed immediately regardless of bite probability; cheat for testing fishing catch logic")]
-	public static bool ForceSuccess = false;
+	public static bool ForceSuccess;
 
 	[ServerVar(Help = "(Generated) When enabled, all fishing attempts fail immediately; cheat for testing failed-catch animations and UI feedback")]
-	public static bool ForceFail = false;
+	public static bool ForceFail;
 
 	[ServerVar(Help = "(Generated) When enabled, fish bite the hook immediately after casting without any wait time; cheat for testing bite response")]
-	public static bool ImmediateHook = false;
+	public static bool ImmediateHook;
 
 	public GameObjectRef FishingBobberRef;
 
@@ -133,11 +133,11 @@ public class BaseFishingRod : HeldEntity
 
 	public ItemModFishable ForceFish;
 
-	public static Flags PullingLeftFlag = Flags.Reserved6;
+	public static Flags PullingLeftFlag;
 
-	public static Flags PullingRightFlag = Flags.Reserved7;
+	public static Flags PullingRightFlag;
 
-	public static Flags ReelingInFlag = Flags.Reserved8;
+	public static Flags ReelingInFlag;
 
 	public GameObjectRef BobberPreview;
 
@@ -291,8 +291,8 @@ public class BaseFishingRod : HeldEntity
 	}
 
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server]
 	private void Server_RequestCast(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -386,10 +386,10 @@ public class BaseFishingRod : HeldEntity
 		ClientRPC(RpcTarget.NetworkGroup("Client_ResetLine"), (int)reason);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.IsActiveItem]
 	private void Server_OverfishingCheck(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -547,7 +547,7 @@ public class BaseFishingRod : HeldEntity
 		bool flag = ownerPlayer.serverInput.IsDown(BUTTON.RIGHT);
 		bool flag2 = ownerPlayer.serverInput.IsDown(BUTTON.LEFT);
 		bool flag3 = HasReelInInput(ownerPlayer.serverInput);
-		if (flag2 && flag)
+		if (flag2 & flag)
 		{
 			flag2 = (flag = false);
 		}
@@ -568,33 +568,33 @@ public class BaseFishingRod : HeldEntity
 		fishingBobber.ServerMovementUpdate(flag2, flag, flag3, ref currentFishState, position, fishableModifier, value);
 		bool flag4 = false;
 		float num4 = 0f;
-		if (flag3 || flag2 || flag)
+		if (flag3 | flag2 | flag)
 		{
 			flag4 = true;
 			num4 = 0.5f;
 		}
 		if (currentFishState != 0 && flag4)
 		{
-			if (currentFishState.Contains(FishState.PullingBack) && flag3)
+			if (currentFishState.Contains(FishState.PullingBack) & flag3)
 			{
 				num4 = 1.5f;
 			}
-			else if ((currentFishState.Contains(FishState.PullingLeft) || currentFishState.Contains(FishState.PullingRight)) && flag3)
+			else if ((currentFishState.Contains(FishState.PullingLeft) || currentFishState.Contains(FishState.PullingRight)) & flag3)
 			{
 				num4 = 1.2f;
 			}
-			else if (currentFishState.Contains(FishState.PullingLeft) && flag)
+			else if (currentFishState.Contains(FishState.PullingLeft) & flag)
 			{
 				num4 = 0.8f;
 			}
-			else if (currentFishState.Contains(FishState.PullingRight) && flag2)
+			else if (currentFishState.Contains(FishState.PullingRight) & flag2)
 			{
 				num4 = 0.8f;
 			}
 		}
 		if (flag3 && currentFishState != 0)
 		{
-			num4 += 1f;
+			num4++;
 		}
 		num4 *= fishableModifier.StrainModifier * GlobalStrainSpeedMultiplier;
 		num4 -= ownerPlayer.modifiers.GetValue(Modifier.ModifierType.FishingBoost, 1f) - 1f;
@@ -735,9 +735,9 @@ public class BaseFishingRod : HeldEntity
 	private void UpdateFlags(bool inputLeft = false, bool inputRight = false, bool back = false)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local);
-		flagsUpdateScope.Set(PullingLeftFlag, CurrentState == CatchState.Catching && inputLeft);
-		flagsUpdateScope.Set(PullingRightFlag, CurrentState == CatchState.Catching && inputRight);
-		flagsUpdateScope.Set(ReelingInFlag, CurrentState == CatchState.Catching && back);
+		flagsUpdateScope.Set(PullingLeftFlag, (CurrentState == CatchState.Catching) & inputLeft);
+		flagsUpdateScope.Set(PullingRightFlag, (CurrentState == CatchState.Catching) & inputRight);
+		flagsUpdateScope.Set(ReelingInFlag, (CurrentState == CatchState.Catching) & back);
 	}
 
 	public void FishArea(Vector3 position)
@@ -907,8 +907,7 @@ public class BaseFishingRod : HeldEntity
 		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit hitInfo;
-		bool num = GamePhysics.Trace(new Ray(pos + Vector3.up, Vector3.down), 0f, out hitInfo, 1.5f, 16, (QueryTriggerInteraction)0);
+		bool num = GamePhysics.Trace(new Ray(pos + Vector3.up, Vector3.down), 0f, out var hitInfo, 1.5f, 16, (QueryTriggerInteraction)0);
 		if (num)
 		{
 			waterBody = RaycastHitEx.GetWaterBody(hitInfo);
@@ -995,5 +994,20 @@ public class BaseFishingRod : HeldEntity
 			return state.IsDown(BUTTON.FIRE_PRIMARY);
 		}
 		return true;
+	}
+
+	static BaseFishingRod()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Expected O, but got Unknown
+		updateFishingRodQueue = new UpdateFishingRod();
+		overfishedWarningPhrase = new Phrase("overfished_warning", "This area is overfished, only junk remains.");
+		FishedSpots = new Dictionary<Vector2, (int, TimeSince)>();
+		ForceSuccess = false;
+		ForceFail = false;
+		ImmediateHook = false;
+		PullingLeftFlag = Flags.Reserved6;
+		PullingRightFlag = Flags.Reserved7;
+		ReelingInFlag = Flags.Reserved8;
 	}
 }

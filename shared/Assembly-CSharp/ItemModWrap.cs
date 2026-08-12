@@ -4,9 +4,9 @@ public class ItemModWrap : ItemMod
 
 	public ItemDefinition wrappedDefinition;
 
-	public static Phrase wrap_gift = new Phrase("wrap_gift", "Wrap Gift");
+	public static Phrase wrap_gift;
 
-	public static Phrase wrap_gift_desc = new Phrase("wrap_gift_desc", "Wrap this item and turn it in to an openable gift");
+	public static Phrase wrap_gift_desc;
 
 	public override void ServerCommand(Item item, string command, BasePlayer player)
 	{
@@ -33,5 +33,15 @@ public class ItemModWrap : ItemMod
 				Effect.server.Run(successEffect.resourcePath, player.eyes.position);
 			}
 		}
+	}
+
+	static ItemModWrap()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		wrap_gift = new Phrase("wrap_gift", "Wrap Gift");
+		wrap_gift_desc = new Phrase("wrap_gift_desc", "Wrap this item and turn it in to an openable gift");
 	}
 }

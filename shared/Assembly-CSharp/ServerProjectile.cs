@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Facepunch;
 using Rust.Ai.Gen2;
 using UnityEngine;
@@ -40,11 +41,29 @@ public class ServerProjectile : EntityComponent<BaseEntity>
 
 	public float swimRandom;
 
+	[CompilerGenerated]
+	private Vector3 _003CCurrentVelocity_003Ek__BackingField;
+
 	public virtual bool HasRangeLimit => true;
 
 	protected virtual int mask => 1237003025;
 
-	public Vector3 CurrentVelocity { get; set; }
+	public Vector3 CurrentVelocity
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CCurrentVelocity_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CCurrentVelocity_003Ek__BackingField = value;
+		}
+	}
 
 	public bool Impacted => impacted;
 

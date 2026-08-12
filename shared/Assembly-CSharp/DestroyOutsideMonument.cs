@@ -10,7 +10,14 @@ public class DestroyOutsideMonument : FacepunchBehaviour
 
 	private MonumentInfo ourMonument;
 
-	private Vector3 OurPos => ((Component)baseCombatEntity).transform.position;
+	private Vector3 OurPos
+	{
+		get
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)baseCombatEntity).transform.position;
+		}
+	}
 
 	protected void OnEnable()
 	{

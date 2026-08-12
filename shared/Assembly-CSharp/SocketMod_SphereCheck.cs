@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SocketMod_SphereCheck : SocketMod
 {
-	public float sphereRadius = 1f;
+	public float sphereRadius;
 
 	public LayerMask layerMask;
 
@@ -17,7 +17,7 @@ public class SocketMod_SphereCheck : SocketMod
 	[Space]
 	public BaseEntity[] entityWhitelist;
 
-	private Phrase lastError = new Phrase("", "");
+	private Phrase lastError;
 
 	protected override Phrase ErrorPhrase => lastError;
 
@@ -108,5 +108,14 @@ public class SocketMod_SphereCheck : SocketMod
 			return true;
 		}
 		return false;
+	}
+
+	public SocketMod_SphereCheck()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Expected O, but got Unknown
+		sphereRadius = 1f;
+		lastError = new Phrase("", "");
+		base._002Ector();
 	}
 }

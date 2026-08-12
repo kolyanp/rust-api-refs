@@ -5,15 +5,15 @@ public class MissionObjective_MountEntityType : MissionObjective
 {
 	public BaseEntityRef[] targetEntities;
 
-	public LayerMask targetLayerMask = LayerMask.op_Implicit(-1);
+	public LayerMask targetLayerMask;
 
-	public int numToMount = 1;
+	public int numToMount;
 
-	public bool shouldUpdateMissionLocation = true;
+	public bool shouldUpdateMissionLocation;
 
 	private bool isInitialized;
 
-	private readonly ListHashSet<uint> targetPrefabIDs = new ListHashSet<uint>();
+	private readonly ListHashSet<uint> targetPrefabIDs;
 
 	private void EnsureInitialized()
 	{
@@ -80,5 +80,16 @@ public class MissionObjective_MountEntityType : MissionObjective
 				break;
 			}
 		}
+	}
+
+	public MissionObjective_MountEntityType()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		targetLayerMask = LayerMask.op_Implicit(-1);
+		numToMount = 1;
+		shouldUpdateMissionLocation = true;
+		targetPrefabIDs = new ListHashSet<uint>();
+		base._002Ector();
 	}
 }

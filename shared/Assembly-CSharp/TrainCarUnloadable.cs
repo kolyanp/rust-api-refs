@@ -15,8 +15,8 @@ public class TrainCarUnloadable : TrainCar
 		Fuel
 	}
 
-	[SerializeField]
 	[Header("Train Car Unloadable")]
+	[SerializeField]
 	private GameObjectRef storagePrefab;
 
 	[SerializeField]
@@ -36,7 +36,7 @@ public class TrainCarUnloadable : TrainCar
 
 	[Range(0f, 1f)]
 	[SerializeField]
-	public float vacuumStretchPercent = 0.5f;
+	public float vacuumStretchPercent;
 
 	[SerializeField]
 	private ParticleSystemContainer unloadingFXContainer;
@@ -46,11 +46,11 @@ public class TrainCarUnloadable : TrainCar
 
 	public WagonType wagonType;
 
-	private int lootTypeIndex = -1;
+	private int lootTypeIndex;
 
-	internal List<EntityRef<LootContainer>> lootContainers = new List<EntityRef<LootContainer>>();
+	internal List<EntityRef<LootContainer>> lootContainers;
 
-	private Vector3 _oreScale = Vector3.one;
+	private Vector3 _oreScale;
 
 	private float animPercent;
 
@@ -405,8 +405,8 @@ public class TrainCarUnloadable : TrainCar
 		return num;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -427,5 +427,16 @@ public class TrainCarUnloadable : TrainCar
 	public void SetLootPercentage(float value)
 	{
 		TrainWagonLootData.SetOrePercent(lootTypeIndex, GetStorageContainer(), value);
+	}
+
+	public TrainCarUnloadable()
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		vacuumStretchPercent = 0.5f;
+		lootTypeIndex = -1;
+		lootContainers = new List<EntityRef<LootContainer>>();
+		_oreScale = Vector3.one;
+		base._002Ector();
 	}
 }

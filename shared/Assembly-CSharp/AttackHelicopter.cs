@@ -99,7 +99,7 @@ public class AttackHelicopter : PlayerHelicopter
 	public Transform rightFlareLaunchPos;
 
 	[SerializeField]
-	public float flareLaunchVel = 10f;
+	public float flareLaunchVel;
 
 	[SerializeField]
 	[Header("Heli Pilot Lights")]
@@ -121,9 +121,9 @@ public class AttackHelicopter : PlayerHelicopter
 	private Renderer flareLightGreen;
 
 	[Header("Heli Turret")]
-	public Vector2 turretPitchClamp = new Vector2(-15f, 70f);
+	public Vector2 turretPitchClamp;
 
-	public Vector2 turretYawClamp = new Vector2(-90f, 90f);
+	public Vector2 turretYawClamp;
 
 	public const Flags IN_GUNNER_VIEW_FLAG = Flags.Reserved9;
 
@@ -133,13 +133,13 @@ public class AttackHelicopter : PlayerHelicopter
 
 	protected static int altGaugeIndex = Animator.StringToHash("altFraction");
 
-	protected int altShakeIndex = -1;
+	protected int altShakeIndex;
 
 	public EntityRef<AttackHelicopterTurret> turretInstance;
 
 	public EntityRef<AttackHelicopterRockets> rocketsInstance;
 
-	public GunnerInputState gunnerInputState = new GunnerInputState();
+	public GunnerInputState gunnerInputState;
 
 	public TimeSince timeSinceLastGunnerInput;
 
@@ -759,8 +759,8 @@ public class AttackHelicopter : PlayerHelicopter
 		GameManager.server.CreatePrefab(pilotFlare.resourcePath, rightFlareLaunchPos.position, Quaternion.identity).GetComponent<HeliPilotFlare>().Init(((Component)this).transform.right * flareLaunchVel);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenTurret(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -779,8 +779,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -799,8 +799,8 @@ public class AttackHelicopter : PlayerHelicopter
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -812,8 +812,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_CloseGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -825,8 +825,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_SetRocketAmmoType(RPCMessage msg)
 	{
 		if (!((Object)(object)GetDriver() != (Object)(object)msg.player))
@@ -859,5 +859,19 @@ public class AttackHelicopter : PlayerHelicopter
 				i--;
 			}
 		}
+	}
+
+	public AttackHelicopter()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		flareLaunchVel = 10f;
+		turretPitchClamp = new Vector2(-15f, 70f);
+		turretYawClamp = new Vector2(-90f, 90f);
+		altShakeIndex = -1;
+		gunnerInputState = new GunnerInputState();
+		base._002Ector();
 	}
 }

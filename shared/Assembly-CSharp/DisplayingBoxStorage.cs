@@ -49,37 +49,37 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	[Header("WARNING: DO NOT REARRANGE, please only replace prefabs with upgraded versions if necessary, don't change the order of existing ones")]
 	public GameObjectRef[] itemDisplayPrefabs;
 
-	[Tooltip("Overrides for specific items to display in certain categories.")]
 	[Header("Okay you're good now. You can rearrange these.")]
+	[Tooltip("Overrides for specific items to display in certain categories.")]
 	public List<DisplayItemOverride> displayItemOverrides;
 
 	[Tooltip("Anchors for displaying the conditional prefabs, add as many as you want.")]
 	public List<Transform> displayAnchors;
 
 	[Tooltip("Scaling to apply to displayed items, set to (1,1,1) to use prefab's original scale.")]
-	public Vector3 displayScaling = Vector3.one;
+	public Vector3 displayScaling;
 
 	[Tooltip("Do the displayed items have a random rotation, snapped to 90 degree increments?")]
-	public bool randomSpawnAngle = true;
+	public bool randomSpawnAngle;
 
 	[Tooltip("Custom weights to determine how much of the display is allocated to each category.")]
 	public List<DisplayCategoryWeight> displayCategoryCustomWeights;
 
-	private Dictionary<ItemCategory, DisplayCategory> displayCategoryDict = new Dictionary<ItemCategory, DisplayCategory>();
+	private Dictionary<ItemCategory, DisplayCategory> displayCategoryDict;
 
-	private Dictionary<ItemDefinition, DisplayCategory> itemCategoryOverrideDict = new Dictionary<ItemDefinition, DisplayCategory>();
+	private Dictionary<ItemDefinition, DisplayCategory> itemCategoryOverrideDict;
 
-	private Dictionary<DisplayCategory, float> displayCategoryWeightsDict = new Dictionary<DisplayCategory, float>();
+	private Dictionary<DisplayCategory, float> displayCategoryWeightsDict;
 
 	private EntityRef<BaseEntity> cachedPrivilege;
 
-	private HashSet<BasePlayer> openAccessPlayers = new HashSet<BasePlayer>();
+	private HashSet<BasePlayer> openAccessPlayers;
 
 	private List<float> cachedResourceProportions;
 
-	private bool dirtyCache = true;
+	private bool dirtyCache;
 
-	private List<ulong> cachedAuthPlayers = new List<ulong>();
+	private List<ulong> cachedAuthPlayers;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -155,11 +155,11 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 		base.Save(info);
 		info.msg.displayingBoxStorage = Pool.Get<DisplayingBoxStorage>();
 		bool flag = (Object)(object)info.forConnection?.player != (Object)null && CanShowToPlayer(info.forConnection.player as BasePlayer);
-		if ((info.forDisk || flag) && cachedPrivilege.IsSet)
+		if ((info.forDisk | flag) && cachedPrivilege.IsSet)
 		{
 			info.msg.displayingBoxStorage.privelegeEntityId = cachedPrivilege.uid;
 		}
-		if (!info.forDisk && flag)
+		if (!info.forDisk & flag)
 		{
 			using (TimeWarning.New("DisplayingBoxStorage.SaveResourceProportions"))
 			{
@@ -390,5 +390,20 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 			cachedAuthPlayers.Clear();
 			cachedAuthPlayers.AddRange(authorizedPlayers);
 		}
+	}
+
+	public DisplayingBoxStorage()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		displayScaling = Vector3.one;
+		randomSpawnAngle = true;
+		displayCategoryDict = new Dictionary<ItemCategory, DisplayCategory>();
+		itemCategoryOverrideDict = new Dictionary<ItemDefinition, DisplayCategory>();
+		displayCategoryWeightsDict = new Dictionary<DisplayCategory, float>();
+		openAccessPlayers = new HashSet<BasePlayer>();
+		dirtyCache = true;
+		cachedAuthPlayers = new List<ulong>();
+		base._002Ector();
 	}
 }

@@ -34,8 +34,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private readonly float progressTickRate = 0.1f;
 
-	[SerializeField]
 	[Header("Catapult")]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]
@@ -380,8 +380,8 @@ public class Catapult : BaseSiegeWeapon
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_WantsFire(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -414,8 +414,8 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_OpenAmmo(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -456,10 +456,10 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanReload())

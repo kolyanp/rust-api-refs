@@ -32,6 +32,7 @@ public class PathInterpolator
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		if (points.Length < 2)
 		{
 			throw new ArgumentException("Point list too short.");

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class ItemModRepair : ItemMod
 {
-	public static readonly Phrase RefillItemTitle = new Phrase("refill_item", "Refill");
+	public static readonly Phrase RefillItemTitle;
 
-	public static readonly Phrase RefillItemDesc = new Phrase("refill_item_desc", "Refill the item.");
+	public static readonly Phrase RefillItemDesc;
 
 	public float conditionLost = 0.05f;
 
@@ -41,5 +41,15 @@ public class ItemModRepair : ItemMod
 			}
 			Facepunch.Rust.Analytics.Azure.OnItemRepaired(player, player.GetCachedCraftLevelWorkbench(), item, conditionNormalized, maxConditionNormalized);
 		}
+	}
+
+	static ItemModRepair()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		RefillItemTitle = new Phrase("refill_item", "Refill");
+		RefillItemDesc = new Phrase("refill_item_desc", "Refill the item.");
 	}
 }

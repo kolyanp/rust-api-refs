@@ -340,23 +340,23 @@ public static class ServerProfiler
 
 	public const byte MaxFrames = 10;
 
-	private static bool canBeActivated = false;
+	private static bool canBeActivated;
 
 	private static Action<IList<Profile>, MemoryState> onDoneCallback;
 
-	private static bool isContinuous = false;
+	private static bool isContinuous;
 
 	private static int mainThreadId;
 
-	public static bool ImmediateModeEnabled = false;
+	public static bool ImmediateModeEnabled;
 
-	public static bool ExportAsync = true;
+	public static bool ExportAsync;
 
-	public static int ExportIntervalS = 1800;
+	public static int ExportIntervalS;
 
-	private static bool canExportThisFrame = true;
+	private static bool canExportThisFrame;
 
-	private static RealTimeUntil nextExportUnlock = RealTimeUntil.op_Implicit(0f);
+	private static RealTimeUntil nextExportUnlock;
 
 	private static bool alreadyRecording;
 
@@ -790,5 +790,18 @@ public static class ServerProfiler
 
 	private static void ValidateIsOnMainThread()
 	{
+	}
+
+	static ServerProfiler()
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		canBeActivated = false;
+		isContinuous = false;
+		ImmediateModeEnabled = false;
+		ExportAsync = true;
+		ExportIntervalS = 1800;
+		canExportThisFrame = true;
+		nextExportUnlock = RealTimeUntil.op_Implicit(0f);
 	}
 }

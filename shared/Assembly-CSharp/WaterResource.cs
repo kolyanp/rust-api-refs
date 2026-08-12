@@ -27,8 +27,7 @@ public class WaterResource
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		float num = 1.5f;
-		RaycastHit hitInfo;
-		bool num2 = GamePhysics.Trace(new Ray(pos + Vector3.up * num, Vector3.down), 0f, out hitInfo, 3f, 16, (QueryTriggerInteraction)0);
+		bool num2 = GamePhysics.Trace(new Ray(pos + Vector3.up * num, Vector3.down), 0f, out var hitInfo, 3f, 16, (QueryTriggerInteraction)0);
 		WaterBody result = null;
 		if (num2)
 		{

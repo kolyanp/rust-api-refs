@@ -21,19 +21,19 @@ public class GenerateDungeonBase : ProceduralComponent
 		public int floor;
 	}
 
-	public string EntranceFolder = string.Empty;
+	public string EntranceFolder;
 
-	public string LinkFolder = string.Empty;
+	public string LinkFolder;
 
-	public string EndFolder = string.Empty;
+	public string EndFolder;
 
-	public string TransitionFolder = string.Empty;
+	public string TransitionFolder;
 
-	public InfrastructureType ConnectionType = InfrastructureType.UnderwaterLab;
+	public InfrastructureType ConnectionType;
 
-	private static Vector3 VolumeExtrudePositive = Vector3.one * 0.01f;
+	private static Vector3 VolumeExtrudePositive;
 
-	private static Vector3 VolumeExtrudeNegative = Vector3.one * -0.01f;
+	private static Vector3 VolumeExtrudeNegative;
 
 	private const int MaxCount = int.MaxValue;
 
@@ -41,29 +41,13 @@ public class GenerateDungeonBase : ProceduralComponent
 
 	private const int MaxFloor = 2;
 
-	private List<DungeonSegment> segmentsTotal = new List<DungeonSegment>();
+	private List<DungeonSegment> segmentsTotal;
 
-	private Quaternion[] horizontalRotations = (Quaternion[])(object)new Quaternion[1] { Quaternion.Euler(0f, 0f, 0f) };
+	private Quaternion[] horizontalRotations;
 
-	private Quaternion[] pillarRotations = (Quaternion[])(object)new Quaternion[4]
-	{
-		Quaternion.Euler(0f, 0f, 0f),
-		Quaternion.Euler(0f, 90f, 0f),
-		Quaternion.Euler(0f, 180f, 0f),
-		Quaternion.Euler(0f, 270f, 0f)
-	};
+	private Quaternion[] pillarRotations;
 
-	private Quaternion[] verticalRotations = (Quaternion[])(object)new Quaternion[8]
-	{
-		Quaternion.Euler(0f, 0f, 0f),
-		Quaternion.Euler(0f, 45f, 0f),
-		Quaternion.Euler(0f, 90f, 0f),
-		Quaternion.Euler(0f, 135f, 0f),
-		Quaternion.Euler(0f, 180f, 0f),
-		Quaternion.Euler(0f, 225f, 0f),
-		Quaternion.Euler(0f, 270f, 0f),
-		Quaternion.Euler(0f, 315f, 0f)
-	};
+	private Quaternion[] verticalRotations;
 
 	public override bool RunOnCache => true;
 
@@ -142,13 +126,28 @@ public class GenerateDungeonBase : ProceduralComponent
 					}
 					if (list.Count > 5)
 					{
-						list = list.OrderByDescending((DungeonSegment x) => Vector3Ex.SqrMagnitude2D(x.position - segmentStart.position)).ToList();
+						list = list.OrderByDescending(delegate(DungeonSegment x)
+						{
+							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+							//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+							return Vector3Ex.SqrMagnitude2D(x.position - segmentStart.position);
+						}).ToList();
 						PlaceSegments(ref seed2, 1, 4, 2, attachToFemale: true, attachToMale: false, list, array);
 					}
 					if (list.Count > 25)
 					{
 						DungeonSegment segmentEnd = list[list.Count - 1];
-						list = list.OrderByDescending((DungeonSegment x) => Mathf.Min(Vector3Ex.SqrMagnitude2D(x.position - segmentStart.position), Vector3Ex.SqrMagnitude2D(x.position - segmentEnd.position))).ToList();
+						list = list.OrderByDescending(delegate(DungeonSegment x)
+						{
+							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+							//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+							return Mathf.Min(Vector3Ex.SqrMagnitude2D(x.position - segmentStart.position), Vector3Ex.SqrMagnitude2D(x.position - segmentEnd.position));
+						}).ToList();
 						PlaceSegments(ref seed2, 1, 5, 2, attachToFemale: true, attachToMale: false, list, array);
 					}
 					bool flag = true;
@@ -252,7 +251,7 @@ public class GenerateDungeonBase : ProceduralComponent
 				}
 			}
 		}
-		return flag && flag2;
+		return flag & flag2;
 	}
 
 	private int SocketMatches(List<DungeonSegment> segments, DungeonBaseLink link, Vector3 linkPos, Quaternion linkRot)
@@ -548,7 +547,7 @@ public class GenerateDungeonBase : ProceduralComponent
 			for (int j = 0; j < dungeonSegment.link.Sockets.Count; j++)
 			{
 				DungeonBaseSocket dungeonBaseSocket = dungeonSegment.link.Sockets[(j + num2) % dungeonSegment.link.Sockets.Count];
-				if (!(dungeonBaseSocket.Female && attachToFemale) && !(dungeonBaseSocket.Male && attachToMale))
+				if (!(dungeonBaseSocket.Female & attachToFemale) && !(dungeonBaseSocket.Male & attachToMale))
 				{
 					continue;
 				}
@@ -796,5 +795,73 @@ public class GenerateDungeonBase : ProceduralComponent
 			wakeAIZ.size = ((Bounds)(ref aIInformationZone.bounds)).extents + new Vector3(100f, 100f, 100f);
 			wakeAIZ.Init(aIInformationZone);
 		}
+	}
+
+	public GenerateDungeonBase()
+	{
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
+		EntranceFolder = string.Empty;
+		LinkFolder = string.Empty;
+		EndFolder = string.Empty;
+		TransitionFolder = string.Empty;
+		ConnectionType = InfrastructureType.UnderwaterLab;
+		segmentsTotal = new List<DungeonSegment>();
+		horizontalRotations = (Quaternion[])(object)new Quaternion[1] { Quaternion.Euler(0f, 0f, 0f) };
+		pillarRotations = (Quaternion[])(object)new Quaternion[4]
+		{
+			Quaternion.Euler(0f, 0f, 0f),
+			Quaternion.Euler(0f, 90f, 0f),
+			Quaternion.Euler(0f, 180f, 0f),
+			Quaternion.Euler(0f, 270f, 0f)
+		};
+		verticalRotations = (Quaternion[])(object)new Quaternion[8]
+		{
+			Quaternion.Euler(0f, 0f, 0f),
+			Quaternion.Euler(0f, 45f, 0f),
+			Quaternion.Euler(0f, 90f, 0f),
+			Quaternion.Euler(0f, 135f, 0f),
+			Quaternion.Euler(0f, 180f, 0f),
+			Quaternion.Euler(0f, 225f, 0f),
+			Quaternion.Euler(0f, 270f, 0f),
+			Quaternion.Euler(0f, 315f, 0f)
+		};
+		base._002Ector();
+	}
+
+	static GenerateDungeonBase()
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		VolumeExtrudePositive = Vector3.one * 0.01f;
+		VolumeExtrudeNegative = Vector3.one * -0.01f;
 	}
 }

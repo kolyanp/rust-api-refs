@@ -329,7 +329,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 		if (base.isServer)
 		{
 			bool flag = (next & Flags.Reserved8) == Flags.Reserved8 || DebugMode;
-			if (!IsInvoking(queueScanAction) && flag)
+			if (!IsInvoking(queueScanAction) & flag)
 			{
 				InvokeRepeating(queueScanAction, 0.5f, 0.5f);
 			}
@@ -338,7 +338,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 				CancelInvoke(queueScanAction);
 			}
 			bool flag2 = (next & Flags.Reserved1) == Flags.Reserved1;
-			if (!((PersistentObjectWorkQueue<Hopper>)WorkQueue).Contains(this) && flag2)
+			if (!((PersistentObjectWorkQueue<Hopper>)WorkQueue).Contains(this) & flag2)
 			{
 				((PersistentObjectWorkQueue<Hopper>)WorkQueue).Add(this);
 			}

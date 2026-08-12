@@ -3,7 +3,7 @@ using UnityEngine;
 public class TerrainTopologySet : TerrainModifier
 {
 	[InspectorFlags]
-	public Enum TopologyType = (Enum)512;
+	public Enum TopologyType;
 
 	protected override void Apply(Vector3 position, float opacity, float radius, float fade)
 	{
@@ -14,5 +14,12 @@ public class TerrainTopologySet : TerrainModifier
 		{
 			TerrainMeta.TopologyMap.SetTopology(position, (int)TopologyType, radius, fade);
 		}
+	}
+
+	public TerrainTopologySet()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		TopologyType = (Enum)512;
+		base._002Ector();
 	}
 }

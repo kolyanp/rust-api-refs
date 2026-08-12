@@ -137,7 +137,7 @@ public class ApartmentRoom : BaseEntity
 			val.upkeepSeconds = GetUpkeepSecondsServer(cached: false);
 			val.dailyUpkeepCost = CachedDailyUpkeep;
 		}
-		if (info.forDisk || flag || CanBypassInvisibleBarrier(info.forConnection.userid))
+		if ((info.forDisk | flag) || CanBypassInvisibleBarrier(info.forConnection.userid))
 		{
 			val.owners = Pool.Get<List<ulong>>();
 			val.owners.AddRange(owners);

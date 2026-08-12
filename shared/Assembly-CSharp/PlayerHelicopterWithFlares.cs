@@ -8,8 +8,8 @@ using UnityEngine.Assertions;
 
 public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFlares
 {
-	[SerializeField]
 	[Header("Helicopter Flares")]
+	[SerializeField]
 	private GameObjectRef flareStoragePrefab;
 
 	[SerializeField]
@@ -149,8 +149,8 @@ public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFl
 		base.DoServerDestroy();
 	}
 
-	[RPC_Server.IsVisible(6f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(6f)]
 	public void RPC_OpenStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

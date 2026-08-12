@@ -13,5 +13,12 @@ public class EggHuntNote : MonoBehaviour, IClientComponent
 
 	public SeasonalEventType EventType;
 
-	public static readonly Phrase startsInPhrase = new Phrase("egghunt.start", "Starts in: {0}");
+	public static readonly Phrase startsInPhrase;
+
+	static EggHuntNote()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		startsInPhrase = new Phrase("egghunt.start", "Starts in: {0}");
+	}
 }

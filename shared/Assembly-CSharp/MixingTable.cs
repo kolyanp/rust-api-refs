@@ -183,8 +183,8 @@ public class MixingTable : StorageContainer
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void SV_FillInventoryForRecipe(RPCMessage msg)
 	{
@@ -301,8 +301,8 @@ public class MixingTable : StorageContainer
 		ItemManager.DoRemoves();
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SVSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnMixingTableToggle", this, msg.player) != null)
@@ -330,8 +330,7 @@ public class MixingTable : StorageContainer
 			return;
 		}
 		MixStartingPlayer = player;
-		bool itemsAreContiguous;
-		List<Item> orderedContainerItems = GetOrderedContainerItems(base.inventory, out itemsAreContiguous);
+		List<Item> orderedContainerItems = GetOrderedContainerItems(base.inventory, out var itemsAreContiguous);
 		currentRecipe = RecipeDictionary.GetMatchingRecipeAndQuantity(Recipes, orderedContainerItems, out var quantity);
 		currentQuantity = quantity;
 		if (!((Object)(object)currentRecipe == (Object)null) && itemsAreContiguous && (!currentRecipe.RequiresBlueprint || !((Object)(object)currentRecipe.ProducedItem != (Object)null) || player.blueprints.HasUnlocked(currentRecipe.ProducedItem)))
@@ -382,7 +381,7 @@ public class MixingTable : StorageContainer
 		if (base.isServer)
 		{
 			lastTickTimestamp = Time.realtimeSinceStartup;
-			RemainingMixTime -= 1f;
+			RemainingMixTime--;
 		}
 		SendNetworkUpdateImmediate();
 		if (RemainingMixTime <= 0f)
@@ -543,9 +542,7 @@ public class MixingTable : StorageContainer
 
 	public Recipe GetMatchingInventoryRecipe(ItemContainer container)
 	{
-		bool itemsAreContiguous;
-		int quantity;
-		Recipe matchingRecipeAndQuantity = RecipeDictionary.GetMatchingRecipeAndQuantity(Recipes, GetOrderedContainerItems(container, out itemsAreContiguous), out quantity);
+		Recipe matchingRecipeAndQuantity = RecipeDictionary.GetMatchingRecipeAndQuantity(Recipes, GetOrderedContainerItems(container, out var itemsAreContiguous), out var quantity);
 		if ((Object)(object)matchingRecipeAndQuantity == (Object)null)
 		{
 			return null;
@@ -581,7 +578,7 @@ public class MixingTable : StorageContainer
 		for (int i = 0; i < container.capacity; i++)
 		{
 			Item item = container.GetSlot(i);
-			if (item != null && flag)
+			if ((item != null) & flag)
 			{
 				itemsAreContiguous = false;
 				break;

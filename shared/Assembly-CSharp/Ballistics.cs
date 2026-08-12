@@ -3,13 +3,24 @@ using UnityEngine;
 
 public static class Ballistics
 {
-	private struct TheoreticalProjectile(Vector3 pos, Vector3 forward, float gravity)
+	private struct TheoreticalProjectile
 	{
-		public Vector3 pos = pos;
+		public Vector3 pos;
 
-		public Vector3 forward = forward;
+		public Vector3 forward;
 
-		public float gravity = gravity;
+		public float gravity;
+
+		public TheoreticalProjectile(Vector3 pos, Vector3 forward, float gravity)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			this.pos = pos;
+			this.forward = forward;
+			this.gravity = gravity;
+		}
 	}
 
 	public static Vector3 GetAimToTarget(Vector3 origin, Vector3 target, float speed, float maxAngle, float idealGravity, out float requiredGravity)

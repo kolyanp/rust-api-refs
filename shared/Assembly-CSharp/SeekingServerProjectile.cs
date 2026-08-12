@@ -2,23 +2,23 @@ using UnityEngine;
 
 public class SeekingServerProjectile : ServerProjectile
 {
-	public float courseAdjustRate = 1f;
+	public float courseAdjustRate;
 
-	public float maxTrackDistance = 500f;
+	public float maxTrackDistance;
 
 	public float minLockDot;
 
-	public float flareLockDot = 0.6f;
+	public float flareLockDot;
 
 	public bool autoSeek;
 
-	public float swimAfter = 6f;
+	public float swimAfter;
 
-	public float launchingDuration = 0.15f;
+	public float launchingDuration;
 
-	public float armingDuration = 0.75f;
+	public float armingDuration;
 
-	public float velocityRampUpTime = 6f;
+	public float velocityRampUpTime;
 
 	public Vector3 armingFinalDir;
 
@@ -30,17 +30,17 @@ public class SeekingServerProjectile : ServerProjectile
 
 	public AnimationCurve velocityCurve;
 
-	public float orphanedVectorChangeRate = 30f;
+	public float orphanedVectorChangeRate;
 
 	public SeekerTarget lockedTarget;
 
-	private float nextTargetUpdateTime = float.NegativeInfinity;
+	private float nextTargetUpdateTime;
 
 	private Vector3 seekingDestination;
 
 	private float launchTime;
 
-	private Vector3 initialDir = Vector3.forward;
+	private Vector3 initialDir;
 
 	private bool orphanedProjectile;
 
@@ -229,5 +229,22 @@ public class SeekingServerProjectile : ServerProjectile
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = Vector3.Cross(orphanedTargetVector, Random.onUnitSphere);
 		orphanedRotationAxis = ((Vector3)(ref val)).normalized;
+	}
+
+	public SeekingServerProjectile()
+	{
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		courseAdjustRate = 1f;
+		maxTrackDistance = 500f;
+		flareLockDot = 0.6f;
+		swimAfter = 6f;
+		launchingDuration = 0.15f;
+		armingDuration = 0.75f;
+		velocityRampUpTime = 6f;
+		orphanedVectorChangeRate = 30f;
+		nextTargetUpdateTime = float.NegativeInfinity;
+		initialDir = Vector3.forward;
+		base._002Ector();
 	}
 }

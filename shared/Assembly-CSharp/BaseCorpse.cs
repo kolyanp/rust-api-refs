@@ -255,7 +255,7 @@ public class BaseCorpse : BaseCombatEntity, Hopper.IHopperTarget
 				component3.rigidBody = val2;
 			}
 			Vector3 linearVelocity = Vector3Ex.Range(-1f, 1f);
-			linearVelocity.y += 1f;
+			linearVelocity.y++;
 			val2.linearVelocity = linearVelocity;
 			val2.collisionDetectionMode = (CollisionDetectionMode)3;
 			val2.angularVelocity = Vector3Ex.Range(-10f, 10f);

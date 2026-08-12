@@ -108,19 +108,17 @@ public class RustExtension : Extension
 
 	private async Task<VersionNumber> GetLatestExtensionVersion()
 	{
-		string json = await WebClient.DownloadStringTaskAsync("https://api.github.com/repos/OxideMod/Oxide.Rust/releases");
-		if (string.IsNullOrWhiteSpace(json))
+		string obj = await WebClient.DownloadStringTaskAsync("https://api.github.com/repos/OxideMod/Oxide.Rust/releases");
+		if (string.IsNullOrWhiteSpace(obj))
 		{
 			throw new Exception("Could not retrieve latest Oxide.Rust version from GitHub API");
 		}
-		Array releaseArray = Array.Parse(json);
-		Object latest = releaseArray[0].Obj;
-		string tag = latest.GetString("tag_name", "");
-		if (string.IsNullOrWhiteSpace(tag))
+		string text = Array.Parse(obj)[0].Obj.GetString("tag_name", "");
+		if (string.IsNullOrWhiteSpace(text))
 		{
 			throw new Exception("Tag name is undefined");
 		}
-		return ParseVersionNumber(tag);
+		return ParseVersionNumber(text);
 	}
 
 	private VersionNumber ParseVersionNumber(string versionString)

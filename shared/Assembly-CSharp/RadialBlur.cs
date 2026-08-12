@@ -7,33 +7,45 @@ using UnityEngine.Rendering.PostProcessing;
 public class RadialBlur : PostProcessEffectSettings
 {
 	[Header("Radial Controls")]
-	public Vector2Parameter center = new Vector2Parameter
-	{
-		value = new Vector2(0.5f, 0.5f)
-	};
+	public Vector2Parameter center;
 
 	[Range(0.1f, 2f)]
-	public FloatParameter start = new FloatParameter
-	{
-		value = 1f
-	};
+	public FloatParameter start;
 
 	[Range(0f, 2f)]
-	public FloatParameter amount = new FloatParameter
-	{
-		value = 0f
-	};
+	public FloatParameter amount;
 
 	[Range(0f, 3f)]
 	[Header("Blur Quality")]
-	public FixedIntParameter downsample = new FixedIntParameter
-	{
-		value = 1
-	};
+	public FixedIntParameter downsample;
 
 	[Range(1f, 4f)]
-	public FixedIntParameter iterations = new FixedIntParameter
+	public FixedIntParameter iterations;
+
+	public RadialBlur()
 	{
-		value = 2
-	};
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		center = new Vector2Parameter
+		{
+			value = new Vector2(0.5f, 0.5f)
+		};
+		start = new FloatParameter
+		{
+			value = 1f
+		};
+		amount = new FloatParameter
+		{
+			value = 0f
+		};
+		downsample = new FixedIntParameter
+		{
+			value = 1
+		};
+		iterations = new FixedIntParameter
+		{
+			value = 2
+		};
+		base._002Ector();
+	}
 }

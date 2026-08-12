@@ -252,7 +252,7 @@ public class PlaceMonuments : ProceduralComponent
 							num5++;
 						}
 					}
-					else if (flag3 && flag)
+					else if (flag3 & flag)
 					{
 						flag2 = true;
 						break;

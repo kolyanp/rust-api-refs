@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class AirfieldCallChinookTerminal : ChargeUpIOEntity
 {
-	[Header("Airfield Call Chinook Terminal")]
 	[Tooltip("Only used for reference")]
+	[Header("Airfield Call Chinook Terminal")]
 	public EventSchedule chinookEventPrefab;
 
 	public CH47DropZone associatedDropZone;
@@ -85,10 +85,11 @@ public class AirfieldCallChinookTerminal : ChargeUpIOEntity
 
 	public override void Activate()
 	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
 		base.Activate();
 		isActive = true;
 		selectedChinook = null;
-		selectedChinookDropZone = associatedDropZone;
+		selectedChinookDropZone = (((Object)(object)associatedDropZone != (Object)null) ? associatedDropZone : CH47DropZone.GetClosest(((Component)this).transform.position));
 		if (CH47HelicopterAIController.activeScientistCH47s.Count == 0 || CH47HelicopterAIController.activeScientistCH47s.All((CH47HelicopterAIController c) => !c.CanDropCrate()))
 		{
 			TriggerChinookEvent();

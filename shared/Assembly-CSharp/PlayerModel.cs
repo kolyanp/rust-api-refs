@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using FIMSpace.FProceduralAnimation;
 using UnityEngine;
 
@@ -227,8 +228,8 @@ public class PlayerModel : ListComponent<PlayerModel>
 
 	public SubsurfaceProfile subsurfaceProfile;
 
-	[Range(0f, 1f)]
 	[Header("Parameters")]
+	[Range(0f, 1f)]
 	public float voiceVolume;
 
 	[Range(0f, 1f)]
@@ -272,6 +273,12 @@ public class PlayerModel : ListComponent<PlayerModel>
 	[NonSerialized]
 	public int paintballColor;
 
+	[CompilerGenerated]
+	private Quaternion _003CAimAngles_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003CLookAngles_003Ek__BackingField;
+
 	public ulong overrideSkinSeed { get; private set; }
 
 	public bool IsFemale => skinType == 1;
@@ -292,9 +299,39 @@ public class PlayerModel : ListComponent<PlayerModel>
 		}
 	}
 
-	public Quaternion AimAngles { get; set; }
+	public Quaternion AimAngles
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CAimAngles_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CAimAngles_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion LookAngles { get; set; }
+	public Quaternion LookAngles
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLookAngles_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLookAngles_003Ek__BackingField = value;
+		}
+	}
 
 	public bool IsMannequin { get; set; }
 

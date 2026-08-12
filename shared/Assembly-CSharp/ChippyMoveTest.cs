@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class ChippyMoveTest : MonoBehaviour
 {
-	public Vector3 heading = new Vector3(0f, 1f, 0f);
+	public Vector3 heading;
 
-	public float speed = 0.2f;
+	public float speed;
 
-	public float maxSpeed = 1f;
+	public float maxSpeed;
 
 	private void FixedUpdate()
 	{
@@ -43,5 +43,15 @@ public class ChippyMoveTest : MonoBehaviour
 				transform2.rotation = QuaternionEx.LookRotationForcedUp(forward, ((Vector3)(ref val)).normalized);
 			}
 		}
+	}
+
+	public ChippyMoveTest()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		heading = new Vector3(0f, 1f, 0f);
+		speed = 0.2f;
+		maxSpeed = 1f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

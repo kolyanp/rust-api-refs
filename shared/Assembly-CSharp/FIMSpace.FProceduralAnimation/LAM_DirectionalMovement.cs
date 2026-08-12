@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.FProceduralAnimation;
@@ -10,49 +11,99 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 	[Serializable]
 	public class AnglesSetup
 	{
-		public Vector3 AnglesOn0 = new Vector3(0f, 0f, 0f);
+		public Vector3 AnglesOn0;
 
 		[Tooltip(" Hips rotations on reaching 45 angle movement")]
-		public Vector3 AnglesOn45 = new Vector3(-10f, 14f, -5f);
+		public Vector3 AnglesOn45;
 
 		[Tooltip(" Hips rotations on reaching 90 angle movement")]
-		public Vector3 AnglesOn90 = new Vector3(-7f, 40f, -3f);
+		public Vector3 AnglesOn90;
 
 		[Tooltip(" Hips rotations on reaching 135 angle movement")]
-		public Vector3 AnglesOn135 = new Vector3(-8f, -25f, -4f);
+		public Vector3 AnglesOn135;
 
 		[Tooltip(" Hips rotations on reaching 180 angle movement")]
-		public Vector3 AnglesOn180 = new Vector3(-20f, 0f, 0f);
+		public Vector3 AnglesOn180;
 
 		[Space(8f)]
-		public Vector3 HipsOffsetOn0 = new Vector3(0f, 0f, 0f);
+		public Vector3 HipsOffsetOn0;
 
 		[Tooltip(" Hips position offset on reaching 45 angle movement")]
-		public Vector3 HipsOffsetOn45 = new Vector3(-0.05f, 0f, -0.05f);
+		public Vector3 HipsOffsetOn45;
 
 		[Tooltip(" Hips position offset on reaching 90 angle movement")]
-		public Vector3 HipsOffsetOn90 = new Vector3(-0.1f, 0f, 0.05f);
+		public Vector3 HipsOffsetOn90;
 
 		[Tooltip(" Hips position offset on reaching 135 angle movement")]
-		public Vector3 HipsOffsetOn135 = new Vector3(-0.1f, 0f, 0.1f);
+		public Vector3 HipsOffsetOn135;
 
 		[Tooltip(" Hips position offset on reaching 180 angle movement")]
-		public Vector3 HipsOffsetOn180 = new Vector3(0f, 0.05f, 0.2f);
+		public Vector3 HipsOffsetOn180;
 
 		[Space(8f)]
-		public Vector3 IKsOffsetOn0 = new Vector3(0f, 0f, 0f);
+		public Vector3 IKsOffsetOn0;
 
 		[Tooltip(" Foot IK position offset on reaching 45 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn45 = new Vector3(0f, 0f, -0.04f);
+		public Vector3 IKsOffsetOn45;
 
 		[Tooltip(" Foot IK position offset on reaching 90 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn90 = new Vector3(0f, 0f, -0.08f);
+		public Vector3 IKsOffsetOn90;
 
 		[Tooltip(" Foot IK position offset on reaching 135 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn135 = new Vector3(0f, 0f, 0.08f);
+		public Vector3 IKsOffsetOn135;
 
 		[Tooltip(" Foot IK position offset on reaching 180 angle movement (x on left leg goes negative)")]
-		public Vector3 IKsOffsetOn180 = new Vector3(0f, 0f, 0f);
+		public Vector3 IKsOffsetOn180;
+
+		public AnglesSetup()
+		{
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+			//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+			//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+			//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+			//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+			AnglesOn0 = new Vector3(0f, 0f, 0f);
+			AnglesOn45 = new Vector3(-10f, 14f, -5f);
+			AnglesOn90 = new Vector3(-7f, 40f, -3f);
+			AnglesOn135 = new Vector3(-8f, -25f, -4f);
+			AnglesOn180 = new Vector3(-20f, 0f, 0f);
+			HipsOffsetOn0 = new Vector3(0f, 0f, 0f);
+			HipsOffsetOn45 = new Vector3(-0.05f, 0f, -0.05f);
+			HipsOffsetOn90 = new Vector3(-0.1f, 0f, 0.05f);
+			HipsOffsetOn135 = new Vector3(-0.1f, 0f, 0.1f);
+			HipsOffsetOn180 = new Vector3(0f, 0.05f, 0.2f);
+			IKsOffsetOn0 = new Vector3(0f, 0f, 0f);
+			IKsOffsetOn45 = new Vector3(0f, 0f, -0.04f);
+			IKsOffsetOn90 = new Vector3(0f, 0f, -0.08f);
+			IKsOffsetOn135 = new Vector3(0f, 0f, 0.08f);
+			IKsOffsetOn180 = new Vector3(0f, 0f, 0f);
+			base._002Ector();
+		}
 	}
 
 	private class LegRedirectHelper
@@ -63,13 +114,31 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 
 		internal LegRedirectHelper oppositeHelper;
 
-		private Vector3 computedPosLocal = Vector3.zero;
+		[CompilerGenerated]
+		private Vector3 _003CLastComputedWorldSpaceLegPos_003Ek__BackingField;
 
-		private Quaternion _footRedirCache = Quaternion.identity;
+		private Vector3 computedPosLocal;
+
+		private Quaternion _footRedirCache;
 
 		private LegsAnimator LA => parent.LA;
 
-		public Vector3 LastComputedWorldSpaceLegPos { get; private set; }
+		public Vector3 LastComputedWorldSpaceLegPos
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CLastComputedWorldSpaceLegPos_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CLastComputedWorldSpaceLegPos_003Ek__BackingField = value;
+			}
+		}
 
 		public LegRedirectHelper(LAM_DirectionalMovement parent, LegsAnimator.Leg leg)
 		{
@@ -81,6 +150,9 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 			//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+			computedPosLocal = Vector3.zero;
+			_footRedirCache = Quaternion.identity;
+			base._002Ector();
 			this.parent = parent;
 			this.leg = leg;
 			LastComputedWorldSpaceLegPos = leg.BoneEnd.position;
@@ -219,15 +291,15 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _play_offInAir;
 
-	private int _hash_xDir = -1;
+	private int _hash_xDir;
 
-	private int _hash_zDir = -1;
+	private int _hash_zDir;
 
-	private Vector3 _calc_WorldDir = Vector3.zero;
+	private Vector3 _calc_WorldDir;
 
-	private Vector3 _calc_LocalDir = Vector3.zero;
+	private Vector3 _calc_LocalDir;
 
-	private Quaternion _calc_LocalRotDir = Quaternion.identity;
+	private Quaternion _calc_LocalRotDir;
 
 	private float _localTargetAngle;
 
@@ -257,15 +329,15 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 
 	private float _var_fixFeet;
 
-	private Vector3 _calc_hipsPositionOffsets = Vector3.zero;
+	private Vector3 _calc_hipsPositionOffsets;
 
-	private Vector3 _calc_hipsRotationOffsets = Vector3.zero;
+	private Vector3 _calc_hipsRotationOffsets;
 
-	private Vector3 _calc_hipsStretchOffset = Vector3.zero;
+	private Vector3 _calc_hipsStretchOffset;
 
-	private Vector3 _sd_hipsStretchOff = Vector3.zero;
+	private Vector3 _sd_hipsStretchOff;
 
-	private Vector3 _calc_ikOff = Vector3.zero;
+	private Vector3 _calc_ikOff;
 
 	private List<LegRedirectHelper> legRedirectHelpers;
 
@@ -273,27 +345,27 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 	public Transform SpineBone;
 
 	[NonSerialized]
-	public Vector3 User_MultiplyHipsOffsets = Vector3.one;
+	public Vector3 User_MultiplyHipsOffsets;
 
 	[FPD_Header("Angles setup to drive procedural animation", 6f, 4f, 2)]
 	public AnglesSetup Animation360Angles;
 
 	[NonSerialized]
-	public float User_StretchRotatorAnglePower = 30f;
+	public float User_StretchRotatorAnglePower;
 
 	[NonSerialized]
-	public float User_StretchPositionMultiplier = 1f;
+	public float User_StretchPositionMultiplier;
 
-	private float _mainBlend = 1f;
+	private float _mainBlend;
 
 	private bool _wasUpdated;
 
-	private Vector3 overridingDirection = Vector3.zero;
+	private Vector3 overridingDirection;
 
 	private bool useOverridingDirection;
 
 	[NonSerialized]
-	public float overrideDirectionFadeSpeed = 6f;
+	public float overrideDirectionFadeSpeed;
 
 	private float overrideDirectionBlend;
 
@@ -936,5 +1008,46 @@ public class LAM_DirectionalMovement : LegsAnimatorControlModuleBase
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		val = Vector3.LerpUnclamped(val, to, t);
+	}
+
+	public LAM_DirectionalMovement()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
+		_hash_xDir = -1;
+		_hash_zDir = -1;
+		_calc_WorldDir = Vector3.zero;
+		_calc_LocalDir = Vector3.zero;
+		_calc_LocalRotDir = Quaternion.identity;
+		_calc_hipsPositionOffsets = Vector3.zero;
+		_calc_hipsRotationOffsets = Vector3.zero;
+		_calc_hipsStretchOffset = Vector3.zero;
+		_sd_hipsStretchOff = Vector3.zero;
+		_calc_ikOff = Vector3.zero;
+		User_MultiplyHipsOffsets = Vector3.one;
+		User_StretchRotatorAnglePower = 30f;
+		User_StretchPositionMultiplier = 1f;
+		_mainBlend = 1f;
+		overridingDirection = Vector3.zero;
+		overrideDirectionFadeSpeed = 6f;
+		base._002Ector();
 	}
 }

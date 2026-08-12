@@ -52,9 +52,23 @@ public class AttackHelicopterTurret : StorageContainer
 
 	public GunStatus GunState { get; set; }
 
-	public float GunXAngle => turretVertical.localEulerAngles.x;
+	public float GunXAngle
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return turretVertical.localEulerAngles.x;
+		}
+	}
 
-	public float GunYAngle => turretHorizontal.localEulerAngles.y;
+	public float GunYAngle
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return turretHorizontal.localEulerAngles.y;
+		}
+	}
 
 	public int ClipAmmo => cachedClipAmmo;
 

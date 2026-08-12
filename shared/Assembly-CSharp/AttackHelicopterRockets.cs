@@ -376,8 +376,7 @@ public class AttackHelicopterRockets : StorageContainer
 		{
 			Effect.server.Run(rocketFireTubeFX.resourcePath, this, StringPool.Get(((Object)rocketMuzzlePositions[num]).name), Vector3.zero, Vector3.zero, null, broadcast: true);
 			leftSide = !leftSide;
-			ItemDefinition ammoDef;
-			int arg = (TryGetAmmoDef(out ammoDef) ? ammoDef.itemid : 0);
+			int arg = (TryGetAmmoDef(out var ammoDef) ? ammoDef.itemid : 0);
 			timeSinceRocketFired = TimeSince.op_Implicit(0f);
 			if (rocketsSinceReload < rocketsPerReload)
 			{
@@ -427,8 +426,7 @@ public class AttackHelicopterRockets : StorageContainer
 		if (rocketsSinceReload != 0 && rocketsSinceReload != rocketsPerReload && GetRocketAmount() != 0 && !IsReloading)
 		{
 			rocketsSinceReload = rocketsPerReload;
-			ItemDefinition ammoDef;
-			int arg = (TryGetAmmoDef(out ammoDef) ? ammoDef.itemid : 0);
+			int arg = (TryGetAmmoDef(out var ammoDef) ? ammoDef.itemid : 0);
 			ClientRPC(RpcTarget.NetworkGroup("RPCRocketFired"), (short)GetRocketAmount(), arg, rocketsSinceReload);
 			SendNetworkUpdate();
 		}

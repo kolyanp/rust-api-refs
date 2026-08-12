@@ -58,50 +58,50 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[ServerVar]
-	public static int max_returned = 100;
+	public static int max_returned;
 
 	[ServerVar]
-	public static int max_processed = 10000;
+	public static int max_processed;
 
 	[ServerVar]
-	public static int max_history = 10000;
+	public static int max_history;
 
-	private List<PurchaseDetails> purchaseHistory = new List<PurchaseDetails>();
+	private List<PurchaseDetails> purchaseHistory;
 
-	private Dictionary<ulong, int> uniqueCustomers = new Dictionary<ulong, int>();
+	private Dictionary<ulong, int> uniqueCustomers;
 
 	[Header("VendingMachine")]
-	public static readonly Phrase WaitForVendingMessage = new Phrase("vendingmachine.wait", "Please wait...");
+	public static readonly Phrase WaitForVendingMessage;
 
 	public GameObjectRef adminMenuPrefab;
 
-	public string customerPanel = "";
+	public string customerPanel;
 
 	public SellOrderContainer sellOrders;
 
 	public SoundPlayer buySound;
 
-	public string shopName = "A Shop";
+	public string shopName;
 
-	public int maxCurrencyVolume = 1;
+	public int maxCurrencyVolume;
 
-	public Vector3 localDropPosition = Vector3.zero;
+	public Vector3 localDropPosition;
 
 	public GameObjectRef mapMarkerPrefab;
 
 	public bool IsLocalized;
 
 	[Range(0f, 1f)]
-	public float PoweredFoodSpoilageRateMultiplier = 0.1f;
+	public float PoweredFoodSpoilageRateMultiplier;
 
-	public int PowerConsumption = 5;
+	public int PowerConsumption;
 
 	public bool IsInDeepSeaCached;
 
 	[Header("Drone Prediction")]
 	public DeliveryDroneConfig predictionConfig;
 
-	private HashSet<BasePlayer> purchasingPlayers = new HashSet<BasePlayer>();
+	private HashSet<BasePlayer> purchasingPlayers;
 
 	private Action fullUpdateCached;
 
@@ -121,9 +121,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	private bool industrialItemIncoming;
 
-	private static readonly Phrase NotAdministratingError = new Phrase("error.notadministrating", "Cannot move item: Not administrating!");
+	private static readonly Phrase NotAdministratingError;
 
-	public static readonly Phrase TooManySellOrders = new Phrase("error_toomanysellorders", "Too many sell orders");
+	public static readonly Phrase TooManySellOrders;
 
 	private int __sync_PendingItemId;
 
@@ -834,9 +834,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	public void SV_RequestPurchaseData(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1475,9 +1475,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_CancelVendingSounds"));
 	}
 
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	public void BuyItemRentableShop(RPCMessage rpc)
 	{
 		if (GetParentEntity() is RentableShop)
@@ -1486,8 +1486,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void BuyItem(RPCMessage rpc)
 	{
@@ -1537,8 +1537,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		Decay.RadialDecayTouch(((Component)this).transform.position, 40f, 2097408);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void TransactionStart(RPCMessage rpc)
 	{
 	}
@@ -1795,8 +1795,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_SetSkinMode(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1807,8 +1807,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public virtual void RPC_UpdateShopName(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1891,8 +1891,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		PlayerOpenLoot(ply, panelName);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenShopNoLOS(RPCMessage msg)
 	{
 		if (OccupiedCheck(msg.player))
@@ -1901,8 +1901,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenShop(RPCMessage msg)
 	{
 		if (OccupiedCheck(msg.player) && Interface.CallHook("OnVendingShopOpen", this, msg.player) == null)
@@ -2384,5 +2384,37 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	public VendingMachine()
+	{
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		purchaseHistory = new List<PurchaseDetails>();
+		uniqueCustomers = new Dictionary<ulong, int>();
+		customerPanel = "";
+		shopName = "A Shop";
+		maxCurrencyVolume = 1;
+		localDropPosition = Vector3.zero;
+		PoweredFoodSpoilageRateMultiplier = 0.1f;
+		PowerConsumption = 5;
+		purchasingPlayers = new HashSet<BasePlayer>();
+		base._002Ector();
+	}
+
+	static VendingMachine()
+	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Expected O, but got Unknown
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Expected O, but got Unknown
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Expected O, but got Unknown
+		max_returned = 100;
+		max_processed = 10000;
+		max_history = 10000;
+		WaitForVendingMessage = new Phrase("vendingmachine.wait", "Please wait...");
+		NotAdministratingError = new Phrase("error.notadministrating", "Cannot move item: Not administrating!");
+		TooManySellOrders = new Phrase("error_toomanysellorders", "Too many sell orders");
 	}
 }

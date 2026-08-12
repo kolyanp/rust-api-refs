@@ -97,8 +97,8 @@ public class RustigeEgg : BaseCombatEntity
 		return HasFlag(Flags.Reserved1);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Spin(RPCMessage msg)
 	{
 	}
@@ -129,7 +129,7 @@ public class RustigeEgg : BaseCombatEntity
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
 			flagsUpdateScope.Set(Flags.Open, flag);
-			if (IsSpinning() && flag)
+			if (IsSpinning() & flag)
 			{
 				flagsUpdateScope.Set(Flags.Reserved1, b: false);
 			}

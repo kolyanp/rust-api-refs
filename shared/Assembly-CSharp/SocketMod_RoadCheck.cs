@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class SocketMod_RoadCheck : SocketMod
 {
-	public float sphereRadius = 1f;
+	public float sphereRadius;
 
 	public bool wantsCollide;
 
-	public LayerMask layerMask = LayerMask.op_Implicit(65536);
+	public LayerMask layerMask;
 
 	protected override Phrase ErrorPhrase
 	{
@@ -49,5 +49,14 @@ public class SocketMod_RoadCheck : SocketMod
 			return true;
 		}
 		return false;
+	}
+
+	public SocketMod_RoadCheck()
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		sphereRadius = 1f;
+		layerMask = LayerMask.op_Implicit(65536);
+		base._002Ector();
 	}
 }

@@ -73,7 +73,7 @@ public class WaterBall : BaseEntity
 				bool flag2 = true;
 				bool flag3 = item is PlanterBox;
 				bool flag4 = item is TimedExplosive;
-				if (flag3 || flag4)
+				if (flag3 | flag4)
 				{
 					Vector3 val = Vector3.zero;
 					if (flag3)
@@ -105,7 +105,7 @@ public class WaterBall : BaseEntity
 				{
 					int num4 = 0;
 					BasePlayer basePlayer = item2 as BasePlayer;
-					num4 = ((!(basePlayer != null && funWater)) ? item2.DoSplash(liquidDef, Mathf.Min(amount, num3)) : basePlayer.DoSplashFunWater(liquidDef, Mathf.Min(amount, num3)));
+					num4 = ((!((basePlayer != null) & funWater)) ? item2.DoSplash(liquidDef, Mathf.Min(amount, num3)) : basePlayer.DoSplashFunWater(liquidDef, Mathf.Min(amount, num3)));
 					amount -= num4;
 					if (amount <= 0)
 					{

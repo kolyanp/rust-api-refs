@@ -8,6 +8,7 @@ public class FPD_HorizontalLineAttribute : PropertyAttribute
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		((PropertyAttribute)this)._002Ector();
 		color = new Color(r, g, b, a);
 	}
 }

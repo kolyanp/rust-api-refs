@@ -5,9 +5,9 @@ using UnityEngine.Rendering;
 
 public class RenderTexturePool
 {
-	private readonly Queue<RenderTexture> inactive = new Queue<RenderTexture>();
+	private readonly Queue<RenderTexture> inactive;
 
-	private readonly HashSet<RenderTexture> active = new HashSet<RenderTexture>();
+	private readonly HashSet<RenderTexture> active;
 
 	public RenderTexturePool(int width, int height, GraphicsFormat graphicsFormat, TextureDimension textureDimension, FilterMode filterMode, int capacity)
 	{
@@ -19,6 +19,9 @@ public class RenderTexturePool
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Expected O, but got Unknown
+		inactive = new Queue<RenderTexture>();
+		active = new HashSet<RenderTexture>();
+		base._002Ector();
 		for (int i = 0; i < capacity; i++)
 		{
 			RenderTexture val = new RenderTexture(width, height, 0, graphicsFormat, 0)

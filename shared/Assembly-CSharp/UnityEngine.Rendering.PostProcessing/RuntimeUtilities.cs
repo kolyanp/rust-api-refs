@@ -366,7 +366,15 @@ public static class RuntimeUtilities
 
 	public static RenderTextureFormat defaultHDRRenderTextureFormat => (RenderTextureFormat)9;
 
-	public static bool isLinearColorSpace => (int)QualitySettings.activeColorSpace == 1;
+	public static bool isLinearColorSpace
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Invalid comparison between Unknown and I4
+			return (int)QualitySettings.activeColorSpace == 1;
+		}
+	}
 
 	public static Texture2D GetLutStrip(int size)
 	{

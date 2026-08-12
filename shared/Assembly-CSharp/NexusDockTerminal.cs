@@ -9,11 +9,11 @@ using UnityEngine;
 
 public class NexusDockTerminal : BaseEntity
 {
-	public static readonly Phrase ScheduleSoonPhrase = new Phrase("nexus.dock.schedule.soon", "{0} - Now");
+	public static readonly Phrase ScheduleSoonPhrase;
 
-	public static readonly Phrase ScheduleMinutesPhrase = new Phrase("nexus.dock.schedule.minutes", "{0} - {1} min");
+	public static readonly Phrase ScheduleMinutesPhrase;
 
-	public static readonly Phrase ScheduleUnknownPhrase = new Phrase("nexus.dock.schedule.unknown", "{0} - Unknown");
+	public static readonly Phrase ScheduleUnknownPhrase;
 
 	public float TravelTime = 90f;
 
@@ -21,7 +21,7 @@ public class NexusDockTerminal : BaseEntity
 
 	private List<ScheduleEntry> _scheduleEntries;
 
-	private static readonly HashSet<string> SeenFerries = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+	private static readonly HashSet<string> SeenFerries;
 
 	public override void InitShared()
 	{
@@ -227,5 +227,19 @@ public class NexusDockTerminal : BaseEntity
 		}
 		_scheduleEntries = info.msg.nexusDockTerminal.schedule;
 		info.msg.nexusDockTerminal.schedule = null;
+	}
+
+	static NexusDockTerminal()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		ScheduleSoonPhrase = new Phrase("nexus.dock.schedule.soon", "{0} - Now");
+		ScheduleMinutesPhrase = new Phrase("nexus.dock.schedule.minutes", "{0} - {1} min");
+		ScheduleUnknownPhrase = new Phrase("nexus.dock.schedule.unknown", "{0} - Unknown");
+		SeenFerries = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 	}
 }

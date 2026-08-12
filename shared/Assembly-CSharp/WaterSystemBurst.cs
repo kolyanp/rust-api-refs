@@ -10,9 +10,9 @@ using UnityEngine;
 public class WaterSystemBurst
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void GetHeightArray_Burst_00007085_0024PostfixBurstDelegate(in ReadOnly<Vector2> posUV, ref NativeArray<float> shore, ref NativeArray<float> terrainHeight, in TerrainTexturing.ShoreData shoreData, in TerrainHeightMap.HeightMapQueryStructure terrainHeightMapData, in bool hasHeightMap, in bool hasTerrainTexturing);
+	internal delegate void GetHeightArray_Burst_0000708A_0024PostfixBurstDelegate(in ReadOnly<Vector2> posUV, ref NativeArray<float> shore, ref NativeArray<float> terrainHeight, in TerrainTexturing.ShoreData shoreData, in TerrainHeightMap.HeightMapQueryStructure terrainHeightMapData, in bool hasHeightMap, in bool hasTerrainTexturing);
 
-	internal static class GetHeightArray_Burst_00007085_0024BurstDirectCall
+	internal static class GetHeightArray_Burst_0000708A_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -23,7 +23,7 @@ public class WaterSystemBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<GetHeightArray_Burst_00007085_0024PostfixBurstDelegate>((GetHeightArray_Burst_00007085_0024PostfixBurstDelegate)GetHeightArray_Burst).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<GetHeightArray_Burst_0000708A_0024PostfixBurstDelegate>((GetHeightArray_Burst_0000708A_0024PostfixBurstDelegate)GetHeightArray_Burst).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -51,9 +51,9 @@ public class WaterSystemBurst
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void ComputeOceanSimHeight_Burst_00007086_0024PostfixBurstDelegate(in NativeArray<Vector2> pos, in NativeArray<Vector2> posUV, ref NativeArray<float> shore, ref NativeArray<float> waterHeight, in bool isDeepSea, in bool hasWaterAndTopology, in TerrainTopologyMap.TopologyQueryStructure topologyQueryStructure, in float OceanLevel, in float MaxOceanLevel, in bool hasWaterSystem, in TerrainWaterMap.WaterMapQueryStructure waterMapQueryStruct);
+	internal delegate void ComputeOceanSimHeight_Burst_0000708B_0024PostfixBurstDelegate(in NativeArray<Vector2> pos, in NativeArray<Vector2> posUV, ref NativeArray<float> shore, ref NativeArray<float> waterHeight, in bool isDeepSea, in bool hasWaterAndTopology, in TerrainTopologyMap.TopologyQueryStructure topologyQueryStructure, in float OceanLevel, in float MaxOceanLevel, in bool hasWaterSystem, in TerrainWaterMap.WaterMapQueryStructure waterMapQueryStruct);
 
-	internal static class ComputeOceanSimHeight_Burst_00007086_0024BurstDirectCall
+	internal static class ComputeOceanSimHeight_Burst_0000708B_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -64,7 +64,7 @@ public class WaterSystemBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<ComputeOceanSimHeight_Burst_00007086_0024PostfixBurstDelegate>((ComputeOceanSimHeight_Burst_00007086_0024PostfixBurstDelegate)ComputeOceanSimHeight_Burst).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<ComputeOceanSimHeight_Burst_0000708B_0024PostfixBurstDelegate>((ComputeOceanSimHeight_Burst_0000708B_0024PostfixBurstDelegate)ComputeOceanSimHeight_Burst).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -91,18 +91,18 @@ public class WaterSystemBurst
 		}
 	}
 
+	[MonoPInvokeCallback(typeof(GetHeightArray_Burst_0000708A_0024PostfixBurstDelegate))]
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(GetHeightArray_Burst_00007085_0024PostfixBurstDelegate))]
 	public static void GetHeightArray_Burst(in ReadOnly<Vector2> posUV, ref NativeArray<float> shore, ref NativeArray<float> terrainHeight, in TerrainTexturing.ShoreData shoreData, in TerrainHeightMap.HeightMapQueryStructure terrainHeightMapData, in bool hasHeightMap, in bool hasTerrainTexturing)
 	{
-		GetHeightArray_Burst_00007085_0024BurstDirectCall.Invoke(in posUV, ref shore, ref terrainHeight, in shoreData, in terrainHeightMapData, in hasHeightMap, in hasTerrainTexturing);
+		GetHeightArray_Burst_0000708A_0024BurstDirectCall.Invoke(in posUV, ref shore, ref terrainHeight, in shoreData, in terrainHeightMapData, in hasHeightMap, in hasTerrainTexturing);
 	}
 
+	[MonoPInvokeCallback(typeof(ComputeOceanSimHeight_Burst_0000708B_0024PostfixBurstDelegate))]
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(ComputeOceanSimHeight_Burst_00007086_0024PostfixBurstDelegate))]
 	public static void ComputeOceanSimHeight_Burst(in NativeArray<Vector2> pos, in NativeArray<Vector2> posUV, ref NativeArray<float> shore, ref NativeArray<float> waterHeight, in bool isDeepSea, in bool hasWaterAndTopology, in TerrainTopologyMap.TopologyQueryStructure topologyQueryStructure, in float OceanLevel, in float MaxOceanLevel, in bool hasWaterSystem, in TerrainWaterMap.WaterMapQueryStructure waterMapQueryStruct)
 	{
-		ComputeOceanSimHeight_Burst_00007086_0024BurstDirectCall.Invoke(in pos, in posUV, ref shore, ref waterHeight, in isDeepSea, in hasWaterAndTopology, in topologyQueryStructure, in OceanLevel, in MaxOceanLevel, in hasWaterSystem, in waterMapQueryStruct);
+		ComputeOceanSimHeight_Burst_0000708B_0024BurstDirectCall.Invoke(in pos, in posUV, ref shore, ref waterHeight, in isDeepSea, in hasWaterAndTopology, in topologyQueryStructure, in OceanLevel, in MaxOceanLevel, in hasWaterSystem, in waterMapQueryStruct);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

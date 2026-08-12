@@ -245,7 +245,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		isServer = false;
 		maxStackSize = 0;
 		containerVolume = 0;
-		this.onDirty = null;
+		onDirty = null;
 		canAcceptItem = null;
 		slotIsReserved = null;
 		onItemAddedRemoved = null;
@@ -299,7 +299,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		dirty = true;
 		parent?.MarkDirty();
-		this.onDirty?.Invoke();
+		onDirty?.Invoke();
 	}
 
 	public DroppedItemContainer Drop(string prefab, Vector3 pos, Quaternion rot, float destroyPercent)
@@ -793,7 +793,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 	{
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		parent = null;
-		this.onDirty = null;
+		onDirty = null;
 		canAcceptItem = null;
 		slotIsReserved = null;
 		onItemAddedRemoved = null;
@@ -1478,7 +1478,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 						if (num4 > 1f)
 						{
 							num3++;
-							num4 -= 1f;
+							num4--;
 						}
 						dictionary[item.info] = num4;
 					}

@@ -10,6 +10,6 @@ public static class EAC
 		SecureBoot = 2,
 		KernelCodeIntegrity = 4,
 		IOMMU = 8,
-		Default = 3
+		Default = CryptoProcessor | SecureBoot
 	}
 }

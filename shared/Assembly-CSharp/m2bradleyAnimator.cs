@@ -42,17 +42,17 @@ public class m2bradleyAnimator : MonoBehaviour
 
 	public Transform[] targetSideguns;
 
-	private Vector3 vecTurret = new Vector3(0f, 0f, 0f);
+	private Vector3 vecTurret;
 
-	private Vector3 vecMainCannon = new Vector3(0f, 0f, 0f);
+	private Vector3 vecMainCannon;
 
-	private Vector3 vecCoaxGun = new Vector3(0f, 0f, 0f);
+	private Vector3 vecCoaxGun;
 
-	private Vector3 vecRocketsPitch = new Vector3(0f, 0f, 0f);
+	private Vector3 vecRocketsPitch;
 
-	private Vector3 vecSpotLightBase = new Vector3(0f, 0f, 0f);
+	private Vector3 vecSpotLightBase;
 
-	private Vector3 vecSpotLight = new Vector3(0f, 0f, 0f);
+	private Vector3 vecSpotLight;
 
 	private float sideMGPitchValue;
 
@@ -81,22 +81,22 @@ public class m2bradleyAnimator : MonoBehaviour
 
 	public Vector3[] vecSideGunRotation;
 
-	public float treadConstant = 0.14f;
+	public float treadConstant;
 
-	public float wheelSpinConstant = 80f;
+	public float wheelSpinConstant;
 
 	[Header("Gun Movement speeds")]
-	public float sidegunsTurnSpeed = 30f;
+	public float sidegunsTurnSpeed;
 
-	public float turretTurnSpeed = 6f;
+	public float turretTurnSpeed;
 
-	public float cannonPitchSpeed = 10f;
+	public float cannonPitchSpeed;
 
-	public float rocketPitchSpeed = 20f;
+	public float rocketPitchSpeed;
 
-	public float spotLightTurnSpeed = 60f;
+	public float spotLightTurnSpeed;
 
-	public float machineGunSpeed = 20f;
+	public float machineGunSpeed;
 
 	private float wheelAngle;
 
@@ -394,5 +394,36 @@ public class m2bradleyAnimator : MonoBehaviour
 			return 360f - flYaw;
 		}
 		return flYaw * -1f;
+	}
+
+	public m2bradleyAnimator()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		vecTurret = new Vector3(0f, 0f, 0f);
+		vecMainCannon = new Vector3(0f, 0f, 0f);
+		vecCoaxGun = new Vector3(0f, 0f, 0f);
+		vecRocketsPitch = new Vector3(0f, 0f, 0f);
+		vecSpotLightBase = new Vector3(0f, 0f, 0f);
+		vecSpotLight = new Vector3(0f, 0f, 0f);
+		treadConstant = 0.14f;
+		wheelSpinConstant = 80f;
+		sidegunsTurnSpeed = 30f;
+		turretTurnSpeed = 6f;
+		cannonPitchSpeed = 10f;
+		rocketPitchSpeed = 20f;
+		spotLightTurnSpeed = 60f;
+		machineGunSpeed = 20f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

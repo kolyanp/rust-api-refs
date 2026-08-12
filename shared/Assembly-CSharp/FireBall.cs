@@ -9,9 +9,9 @@ public class FireBall : BaseEntity, ISplashable
 {
 	private const Flags StationaryFlag = Flags.Reserved1;
 
-	public float lifeTimeMin = 20f;
+	public float lifeTimeMin;
 
-	public float lifeTimeMax = 40f;
+	public float lifeTimeMax;
 
 	public ParticleSystem[] movementSystems;
 
@@ -22,23 +22,23 @@ public class FireBall : BaseEntity, ISplashable
 
 	public GameObjectRef spreadSubEntity;
 
-	public float tickRate = 0.5f;
+	public float tickRate;
 
-	public float damagePerSecond = 2f;
+	public float damagePerSecond;
 
-	public float radius = 0.5f;
+	public float radius;
 
-	public int waterToExtinguish = 200;
+	public int waterToExtinguish;
 
 	public bool canMerge;
 
-	public LayerMask AttackLayers = LayerMask.op_Implicit(1220225809);
+	public LayerMask AttackLayers;
 
 	public bool ignoreNPC;
 
-	private readonly float siegeWeaponDamageScale = 0.2f;
+	private readonly float siegeWeaponDamageScale;
 
-	private Vector3 lastPos = Vector3.zero;
+	private Vector3 lastPos;
 
 	private float deathTime;
 
@@ -247,7 +247,7 @@ public class FireBall : BaseEntity, ISplashable
 	public void UpdateIsStationary(bool shouldBeStationary)
 	{
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		if (shouldBeStationary != IsStationary && shouldBeStationary && CanMerge())
+		if (((shouldBeStationary != IsStationary) & shouldBeStationary) && CanMerge())
 		{
 			List<Collider> list = Pool.Get<List<Collider>>();
 			Vis.Colliders<Collider>(((Component)this).transform.position, 0.5f, list, 512, (QueryTriggerInteraction)2);
@@ -299,5 +299,23 @@ public class FireBall : BaseEntity, ISplashable
 	public override bool ShouldInheritNetworkGroup()
 	{
 		return false;
+	}
+
+	public FireBall()
+	{
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		lifeTimeMin = 20f;
+		lifeTimeMax = 40f;
+		tickRate = 0.5f;
+		damagePerSecond = 2f;
+		radius = 0.5f;
+		waterToExtinguish = 200;
+		AttackLayers = LayerMask.op_Implicit(1220225809);
+		siegeWeaponDamageScale = 0.2f;
+		lastPos = Vector3.zero;
+		base._002Ector();
 	}
 }

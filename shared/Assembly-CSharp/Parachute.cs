@@ -12,50 +12,50 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 
 	public Transform DetachedSpawnPoint;
 
-	public float ConditionLossPerUse = 0.2f;
+	public float ConditionLossPerUse;
 
-	public float HurtDeployTime = 1f;
+	public float HurtDeployTime;
 
-	public float HurtAmount = 80f;
+	public float HurtAmount;
 
 	public Animator ColliderAnimator;
 
 	public Animator ColliderWorldAnimator;
 
-	public float UprightLerpForce = 5f;
+	public float UprightLerpForce;
 
-	public float ConstantForwardForce = 2f;
+	public float ConstantForwardForce;
 
-	public ForceMode ForwardForceMode = (ForceMode)5;
+	public ForceMode ForwardForceMode;
 
-	public float TurnForce = 2f;
+	public float TurnForce;
 
-	public ForceMode TurnForceMode = (ForceMode)5;
+	public ForceMode TurnForceMode;
 
-	public float ForwardTiltAcceleration = 2f;
+	public float ForwardTiltAcceleration;
 
-	public float BackInputForceMultiplier = 0.2f;
+	public float BackInputForceMultiplier;
 
-	public float DeployAnimationLength = 3f;
+	public float DeployAnimationLength;
 
-	public float TargetDrag = 1f;
+	public float TargetDrag;
 
-	public float TargetAngularDrag = 1f;
+	public float TargetAngularDrag;
 
-	public AnimationCurve DragCurve = new AnimationCurve();
+	public AnimationCurve DragCurve;
 
-	public AnimationCurve DragDamageCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+	public AnimationCurve DragDamageCurve;
 
-	public AnimationCurve MassDamageCurve = AnimationCurve.Linear(0f, 30f, 1f, 1f);
+	public AnimationCurve MassDamageCurve;
 
-	public AnimationCurve DamageHorizontalVelocityCurve = AnimationCurve.Linear(0f, 5f, 1f, 20f);
+	public AnimationCurve DamageHorizontalVelocityCurve;
 
 	[Range(0f, 1f)]
-	public float DamageTester = 1f;
+	public float DamageTester;
 
-	public float AnimationInputSmoothness = 1f;
+	public float AnimationInputSmoothness;
 
-	public Vector2 AnimationInputScale = new Vector2(0.5f, 0.5f);
+	public Vector2 AnimationInputScale;
 
 	public ParachuteWearable FirstPersonCanopy;
 
@@ -95,15 +95,15 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 
 	public bool collisionDeath;
 
-	public Vector3 collisionImpulse = Vector3.zero;
+	public Vector3 collisionImpulse;
 
 	private float startHeight;
 
 	private float distanceTravelled;
 
-	private Vector3 lastPosition = Vector3.zero;
+	private Vector3 lastPosition;
 
-	private Vector2 lerpedInput = Vector2.zero;
+	private Vector2 lerpedInput;
 
 	public Vector3 collisionLocalPos;
 
@@ -467,11 +467,11 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 zero = Vector2.zero;
-		if (leftDown && rightDown)
+		if (leftDown & rightDown)
 		{
 			leftDown = (rightDown = false);
 		}
-		if (forwardDown && backDown)
+		if (forwardDown & backDown)
 		{
 			forwardDown = (backDown = false);
 		}
@@ -492,5 +492,45 @@ public class Parachute : BaseVehicle, SamSite.ISamSiteTarget
 			zero.x = -1f;
 		}
 		return zero;
+	}
+
+	public Parachute()
+	{
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Expected O, but got Unknown
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		ConditionLossPerUse = 0.2f;
+		HurtDeployTime = 1f;
+		HurtAmount = 80f;
+		UprightLerpForce = 5f;
+		ConstantForwardForce = 2f;
+		ForwardForceMode = (ForceMode)5;
+		TurnForce = 2f;
+		TurnForceMode = (ForceMode)5;
+		ForwardTiltAcceleration = 2f;
+		BackInputForceMultiplier = 0.2f;
+		DeployAnimationLength = 3f;
+		TargetDrag = 1f;
+		TargetAngularDrag = 1f;
+		DragCurve = new AnimationCurve();
+		DragDamageCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+		MassDamageCurve = AnimationCurve.Linear(0f, 30f, 1f, 1f);
+		DamageHorizontalVelocityCurve = AnimationCurve.Linear(0f, 5f, 1f, 20f);
+		DamageTester = 1f;
+		AnimationInputSmoothness = 1f;
+		AnimationInputScale = new Vector2(0.5f, 0.5f);
+		collisionImpulse = Vector3.zero;
+		lastPosition = Vector3.zero;
+		lerpedInput = Vector2.zero;
+		base._002Ector();
 	}
 }

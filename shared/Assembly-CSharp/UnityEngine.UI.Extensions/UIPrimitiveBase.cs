@@ -347,7 +347,7 @@ public class UIPrimitiveBase : MaskableGraphic, ILayoutElement, ICanvasRaycastFi
 				Vector2 val2 = input[i + 1];
 				ResolutionToNativeSize(Vector2.Distance(val, val2));
 				float num = 1f / m_Resolution;
-				for (float num2 = 1f; num2 < m_Resolution; num2 += 1f)
+				for (float num2 = 1f; num2 < m_Resolution; num2++)
 				{
 					outputList.Add(Vector2.Lerp(val, val2, num * num2));
 				}

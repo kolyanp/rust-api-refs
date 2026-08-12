@@ -95,8 +95,7 @@ public class AIInformationGrid : MonoBehaviour
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		pointCount = 0;
-		int cellCount;
-		AIInformationCell[] cellsInRange = GetCellsInRange(position, maxRange, out cellCount);
+		AIInformationCell[] cellsInRange = GetCellsInRange(position, maxRange, out var cellCount);
 		if (cellCount > 0)
 		{
 			for (int i = 0; i < cellCount; i++)
@@ -119,8 +118,7 @@ public class AIInformationGrid : MonoBehaviour
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		pointCount = 0;
-		int cellCount;
-		AIInformationCell[] cellsInRange = GetCellsInRange(position, maxRange, out cellCount);
+		AIInformationCell[] cellsInRange = GetCellsInRange(position, maxRange, out var cellCount);
 		if (cellCount > 0)
 		{
 			for (int i = 0; i < cellCount; i++)

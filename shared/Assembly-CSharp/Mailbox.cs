@@ -189,7 +189,7 @@ public class Mailbox : StorageContainer
 	public void MarkFull(bool full)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved1, shouldMarkAsFull && full);
+		flagsUpdateScope.Set(Flags.Reserved1, shouldMarkAsFull & full);
 	}
 
 	public override bool ItemFilter(Item item, int targetSlot)

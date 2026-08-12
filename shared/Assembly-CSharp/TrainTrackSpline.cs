@@ -714,8 +714,7 @@ public class TrainTrackSpline : WorldSpline
 				}
 				foreach (TrainTrackSpline item2 in list2)
 				{
-					float minSplineDist;
-					float distance = item2.GetDistance(pos, 1f, out minSplineDist);
+					float distance = item2.GetDistance(pos, 1f, out var minSplineDist);
 					if (distance < num)
 					{
 						num = distance;

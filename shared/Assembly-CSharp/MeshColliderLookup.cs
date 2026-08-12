@@ -32,15 +32,25 @@ public class MeshColliderLookup
 		}
 	}
 
-	public struct LookupEntry(MeshColliderInstance instance)
+	public struct LookupEntry
 	{
-		public Transform transform = instance.transform;
+		public Transform transform;
 
-		public Rigidbody rigidbody = instance.rigidbody;
+		public Rigidbody rigidbody;
 
-		public Collider collider = instance.collider;
+		public Collider collider;
 
-		public OBB bounds = instance.bounds;
+		public OBB bounds;
+
+		public LookupEntry(MeshColliderInstance instance)
+		{
+			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+			transform = instance.transform;
+			rigidbody = instance.rigidbody;
+			collider = instance.collider;
+			bounds = instance.bounds;
+		}
 	}
 
 	public LookupGroup src = new LookupGroup();

@@ -632,7 +632,7 @@ public class TexasHoldEmController : CardGameController
 			int scrapInPot = GetScrapInPot();
 			int currentBet = GetCurrentBet();
 			bool flag = AnyoneElseCanBetMore(playerData);
-			if (scrapInPot == 0 || flag || playerData.betThisTurn + scrapAmount <= currentBet)
+			if (((scrapInPot == 0) | flag) || playerData.betThisTurn + scrapAmount <= currentBet)
 			{
 				pokerInputOption |= PokerInputOption.AllIn;
 			}
@@ -645,7 +645,7 @@ public class TexasHoldEmController : CardGameController
 			{
 				pokerInputOption |= PokerInputOption.Call;
 			}
-			if (scrapAmount >= GetCurrentMinRaise(playerData) && (scrapInPot == 0 || flag))
+			if (scrapAmount >= GetCurrentMinRaise(playerData) && ((scrapInPot == 0) | flag))
 			{
 				pokerInputOption = ((BiggestRaiseThisTurn != 0) ? (pokerInputOption | PokerInputOption.Raise) : (pokerInputOption | PokerInputOption.Bet));
 			}

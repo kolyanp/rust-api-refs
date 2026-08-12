@@ -6,16 +6,16 @@ using UnityEngine;
 
 public class ChildrenScreenshot : MonoBehaviour
 {
-	public Vector3 offsetAngle = new Vector3(0f, 0f, 1f);
+	public Vector3 offsetAngle;
 
-	public int width = 512;
+	public int width;
 
-	public int height = 512;
+	public int height;
 
-	public float fieldOfView = 70f;
+	public float fieldOfView;
 
 	[Tooltip("0 = full recursive name, 1 = object name")]
-	public string folder = "screenshots/{0}.png";
+	public string folder;
 
 	[ContextMenu("Create Screenshots")]
 	public void CreateScreenshots()
@@ -103,5 +103,17 @@ public class ChildrenScreenshot : MonoBehaviour
 		float num = ((Vector3)(ref size)).magnitude * 0.5f / Mathf.Tan(cam.fieldOfView * 0.5f * (MathF.PI / 180f));
 		((Component)cam).transform.position = ((Bounds)(ref bounds)).center + obj.transform.TransformVector(((Vector3)(ref offsetAngle)).normalized) * num;
 		((Component)cam).transform.LookAt(((Bounds)(ref bounds)).center);
+	}
+
+	public ChildrenScreenshot()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		offsetAngle = new Vector3(0f, 0f, 1f);
+		width = 512;
+		height = 512;
+		fieldOfView = 70f;
+		folder = "screenshots/{0}.png";
+		((MonoBehaviour)this)._002Ector();
 	}
 }

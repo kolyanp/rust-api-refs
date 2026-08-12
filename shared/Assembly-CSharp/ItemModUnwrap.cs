@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ItemModUnwrap : ItemMod
 {
-	public static readonly Phrase UnwrapGiftTitle = new Phrase("unwrap_gift", "Unwrap");
+	public static readonly Phrase UnwrapGiftTitle;
 
-	public static readonly Phrase UnwrapGiftDesc = new Phrase("unwrap_gift_desc", "Unwrap the gift");
+	public static readonly Phrase UnwrapGiftDesc;
 
 	public Phrase OwnershipPhrase;
 
@@ -44,5 +44,15 @@ public class ItemModUnwrap : ItemMod
 				Effect.server.Run(successEffect.resourcePath, player.eyes.position);
 			}
 		}
+	}
+
+	static ItemModUnwrap()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		UnwrapGiftTitle = new Phrase("unwrap_gift", "Unwrap");
+		UnwrapGiftDesc = new Phrase("unwrap_gift_desc", "Unwrap the gift");
 	}
 }

@@ -25,7 +25,7 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 
 	private Action _doDamageAction;
 
-	private static readonly Vector3 force = new Vector3(15f, 3f, 15f);
+	private static readonly Vector3 force;
 
 	private double startTime;
 
@@ -102,5 +102,12 @@ public class State_AttackWithTracking : State_PlayAnimationRM
 	{
 		Owner.CancelInvoke(DoDamageAction);
 		base.OnStateExit();
+	}
+
+	static State_AttackWithTracking()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		force = new Vector3(15f, 3f, 15f);
 	}
 }

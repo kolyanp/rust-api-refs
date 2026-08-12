@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Facepunch;
 using ProtoBuf;
 using Rust.Ai.Gen2;
@@ -17,11 +18,29 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 
 	public const BaseEntity.Flags FLAG_IS_ALERT = BaseEntity.Flags.Reserved6;
 
+	[CompilerGenerated]
+	private Vector3 _003CLookDirection_003Ek__BackingField;
+
 	private SenseComponent _senses;
 
 	private RustNavMeshAgent _agent;
 
-	public Vector3 LookDirection { get; private set; }
+	public Vector3 LookDirection
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLookDirection_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLookDirection_003Ek__BackingField = value;
+		}
+	}
 
 	public float DesiredSwimDepth { get; private set; }
 
@@ -55,8 +74,7 @@ public class NPCNetworking : EntityComponent<BaseEntity>
 		Matrix4x4 eyeTransform = Senses.GetEyeTransform();
 		LookDirection = ((Matrix4x4)(ref eyeTransform)).rotation * Vector3.forward;
 		DesiredSwimDepth = Agent.desiredSwimDepth.Value;
-		BaseEntity target;
-		bool flag2 = Senses.FindTarget(out target);
+		bool flag2 = Senses.FindTarget(out var _);
 		if (base.baseEntity.net != null && base.baseEntity.net.group != null && base.baseEntity.net.group.subscribers != null && base.baseEntity.net.group.subscribers.Count > 0 && (lookDirection != LookDirection || desiredSwimDepth != DesiredSwimDepth || flag != flag2))
 		{
 			base.baseEntity.SetFlagLocal(BaseEntity.Flags.Reserved6, flag2);

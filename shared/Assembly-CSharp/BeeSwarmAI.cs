@@ -28,9 +28,9 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 	}
 
 	[Header("Settings")]
-	public float moveSpeed = 2f;
+	public float moveSpeed;
 
-	public float stopThreshold = 0.2f;
+	public float stopThreshold;
 
 	[Header("Animation")]
 	public float ReductionAmount;
@@ -45,9 +45,9 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 
 	public ParticleSystemForceField AngerForceField;
 
-	private Vector3 pastPosition = Vector3.one;
+	private Vector3 pastPosition;
 
-	private Vector3 velocity = Vector3.zero;
+	private Vector3 velocity;
 
 	public const Flags IsAngry = Flags.Reserved12;
 
@@ -90,7 +90,7 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 
 	private TimeSince timeSinceEgress;
 
-	private Vector3 egressDirection = Vector3.one;
+	private Vector3 egressDirection;
 
 	public override void OnFlagsChanged(Flags old, Flags next)
 	{
@@ -521,5 +521,21 @@ public class BeeSwarmAI : BaseCombatEntity, ISplashable
 			StartDie();
 		}
 		return amount;
+	}
+
+	public BeeSwarmAI()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		moveSpeed = 2f;
+		stopThreshold = 0.2f;
+		pastPosition = Vector3.one;
+		velocity = Vector3.zero;
+		egressDirection = Vector3.one;
+		base._002Ector();
 	}
 }

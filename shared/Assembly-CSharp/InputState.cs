@@ -2,15 +2,9 @@ using UnityEngine;
 
 public class InputState
 {
-	public InputMessage current = new InputMessage
-	{
-		ShouldPool = false
-	};
+	public InputMessage current;
 
-	public InputMessage previous = new InputMessage
-	{
-		ShouldPool = false
-	};
+	public InputMessage previous;
 
 	private int SwallowedButtons;
 
@@ -130,5 +124,24 @@ public class InputState
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		previous.mouseDelta = d;
 		current.mouseDelta = d;
+	}
+
+	public InputState()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Expected O, but got Unknown
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Expected O, but got Unknown
+		current = new InputMessage
+		{
+			ShouldPool = false
+		};
+		previous = new InputMessage
+		{
+			ShouldPool = false
+		};
+		base._002Ector();
 	}
 }

@@ -49,23 +49,11 @@ public class SatelliteData
 
 	public List<ThrusterInfo> thrusters;
 
-	private static readonly string[] Prefixes = new string[6] { "COBALT", "RUSTSAT", "SCRAP", "RADTOWN", "OUTPOST", "BANDIT" };
+	private static readonly string[] Prefixes;
 
-	private static readonly Phrase[] Payloads = (Phrase[])(object)new Phrase[10]
-	{
-		new Phrase("satellite.payload.comms_relay", "COMMUNICATIONS RELAY"),
-		new Phrase("satellite.payload.surveillance", "SURVEILLANCE PLATFORM"),
-		new Phrase("satellite.payload.solar_observatory", "SOLAR OBSERVATORY"),
-		new Phrase("satellite.payload.weather_station", "WEATHER STATION"),
-		new Phrase("satellite.payload.nav_beacon", "NAVIGATION BEACON"),
-		new Phrase("satellite.payload.sigint", "SIGNALS INTELLIGENCE"),
-		new Phrase("satellite.payload.research_lab", "RESEARCH LABORATORY"),
-		new Phrase("satellite.payload.early_warning", "EARLY WARNING SENSOR"),
-		new Phrase("satellite.payload.fuel_depot", "ORBITAL FUEL DEPOT"),
-		new Phrase("satellite.payload.telescope", "SPACE TELESCOPE")
-	};
+	private static readonly Phrase[] Payloads;
 
-	private static readonly string[] ThrusterLabels = new string[8] { "7-4A", "2-8B", "5-1C", "9-3D", "1-6E", "4-2F", "8-5G", "3-9H" };
+	private static readonly string[] ThrusterLabels;
 
 	private const int SeedSpreadPrime = 7919;
 
@@ -73,11 +61,11 @@ public class SatelliteData
 
 	private const float MediumSizeCumulative = 0.8f;
 
-	private static readonly Phrase SizeSmallPhrase = new Phrase("satellite.size.small", "SMALL");
+	private static readonly Phrase SizeSmallPhrase;
 
-	private static readonly Phrase SizeMediumPhrase = new Phrase("satellite.size.medium", "MEDIUM");
+	private static readonly Phrase SizeMediumPhrase;
 
-	private static readonly Phrase SizeLargePhrase = new Phrase("satellite.size.large", "LARGE");
+	private static readonly Phrase SizeLargePhrase;
 
 	public string name => $"{Prefixes[prefixIndex]}-{nameNumber}";
 
@@ -281,5 +269,53 @@ public class SatelliteData
 			ThrusterEffect.Widen => "OUT", 
 			_ => effect.ToString(), 
 		};
+	}
+
+	static SatelliteData()
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Expected O, but got Unknown
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Expected O, but got Unknown
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Expected O, but got Unknown
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Expected O, but got Unknown
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Expected O, but got Unknown
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Expected O, but got Unknown
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Expected O, but got Unknown
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Expected O, but got Unknown
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Expected O, but got Unknown
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Expected O, but got Unknown
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Expected O, but got Unknown
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Expected O, but got Unknown
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0183: Expected O, but got Unknown
+		Prefixes = new string[6] { "COBALT", "RUSTSAT", "SCRAP", "RADTOWN", "OUTPOST", "BANDIT" };
+		Payloads = (Phrase[])(object)new Phrase[10]
+		{
+			new Phrase("satellite.payload.comms_relay", "COMMUNICATIONS RELAY"),
+			new Phrase("satellite.payload.surveillance", "SURVEILLANCE PLATFORM"),
+			new Phrase("satellite.payload.solar_observatory", "SOLAR OBSERVATORY"),
+			new Phrase("satellite.payload.weather_station", "WEATHER STATION"),
+			new Phrase("satellite.payload.nav_beacon", "NAVIGATION BEACON"),
+			new Phrase("satellite.payload.sigint", "SIGNALS INTELLIGENCE"),
+			new Phrase("satellite.payload.research_lab", "RESEARCH LABORATORY"),
+			new Phrase("satellite.payload.early_warning", "EARLY WARNING SENSOR"),
+			new Phrase("satellite.payload.fuel_depot", "ORBITAL FUEL DEPOT"),
+			new Phrase("satellite.payload.telescope", "SPACE TELESCOPE")
+		};
+		ThrusterLabels = new string[8] { "7-4A", "2-8B", "5-1C", "9-3D", "1-6E", "4-2F", "8-5G", "3-9H" };
+		SizeSmallPhrase = new Phrase("satellite.size.small", "SMALL");
+		SizeMediumPhrase = new Phrase("satellite.size.medium", "MEDIUM");
+		SizeLargePhrase = new Phrase("satellite.size.large", "LARGE");
 	}
 }

@@ -14,6 +14,7 @@ public class NexusEx : Nexus
 	{
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		((Nexus)this)._002Ector();
 		((Nexus)this).NexusId = nexus.NexusId;
 		((Nexus)this).Name = nexus.Name;
 		((Nexus)this).LastReset = nexus.LastReset;

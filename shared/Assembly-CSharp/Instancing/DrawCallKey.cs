@@ -4,15 +4,27 @@ using UnityEngine.Rendering;
 
 namespace Instancing;
 
-public struct DrawCallKey(Material material, ShadowCastingMode shadowMode, bool receiveShadows, LightProbeUsage lightProbes) : IEquatable<DrawCallKey>, IComparable<DrawCallKey>, IComparable
+public struct DrawCallKey : IEquatable<DrawCallKey>, IComparable<DrawCallKey>, IComparable
 {
-	public Material Material = material;
+	public Material Material;
 
-	public ShadowCastingMode ShadowMode = shadowMode;
+	public ShadowCastingMode ShadowMode;
 
-	public bool ReceiveShadows = receiveShadows;
+	public bool ReceiveShadows;
 
-	public LightProbeUsage LightProbes = lightProbes;
+	public LightProbeUsage LightProbes;
+
+	public DrawCallKey(Material material, ShadowCastingMode shadowMode, bool receiveShadows, LightProbeUsage lightProbes)
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		Material = material;
+		ShadowMode = shadowMode;
+		ReceiveShadows = receiveShadows;
+		LightProbes = lightProbes;
+	}
 
 	public int CompareTo(DrawCallKey other)
 	{

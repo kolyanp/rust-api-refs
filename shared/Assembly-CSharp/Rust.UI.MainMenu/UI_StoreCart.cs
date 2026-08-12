@@ -4,12 +4,12 @@ namespace Rust.UI.MainMenu;
 
 public class UI_StoreCart : UI_Window
 {
-	public static readonly Phrase CartEmptyPhrase = new Phrase("store.cart", "Cart");
+	public static readonly Phrase CartEmptyPhrase;
 
-	public static readonly Phrase CartPhrase = new Phrase("store.cart.items", "Cart ({0})");
+	public static readonly Phrase CartPhrase;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private StyleAsset emptyStyle;
 
 	[SerializeField]
@@ -30,8 +30,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform itemParent;
 
 	[SerializeField]
@@ -45,4 +45,14 @@ public class UI_StoreCart : UI_Window
 
 	[SerializeField]
 	private GameObject footer;
+
+	static UI_StoreCart()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		CartEmptyPhrase = new Phrase("store.cart", "Cart");
+		CartPhrase = new Phrase("store.cart.items", "Cart ({0})");
+	}
 }

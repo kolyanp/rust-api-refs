@@ -53,6 +53,7 @@ public class LTBezier
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		this.a = a;
 		aa = -a + 3f * (b - c) + d;
 		bb = 3f * (a + c) - 6f * b;

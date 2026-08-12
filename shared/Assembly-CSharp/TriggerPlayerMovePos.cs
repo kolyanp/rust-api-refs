@@ -4,7 +4,7 @@ public class TriggerPlayerMovePos : TriggerBase, IServerComponent
 {
 	public BoxCollider triggerCollider;
 
-	public Vector3 relativeMoveVector = Vector3.up;
+	public Vector3 relativeMoveVector;
 
 	public bool shouldPauseMarkHostile;
 
@@ -113,5 +113,13 @@ public class TriggerPlayerMovePos : TriggerBase, IServerComponent
 			return false;
 		}
 		return false;
+	}
+
+	public TriggerPlayerMovePos()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		relativeMoveVector = Vector3.up;
+		base._002Ector();
 	}
 }

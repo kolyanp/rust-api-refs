@@ -90,6 +90,6 @@ public class Underwear : ScriptableObject
 		}
 		bool num = (Object)(object)underwear.steamItem == (Object)null || player.blueprints.steamInventory.HasItem(underwear.steamItem.id);
 		bool flag = (Object)(object)underwear.steamDLC == (Object)null || underwear.steamDLC.CanUse(player);
-		return num && flag;
+		return num & flag;
 	}
 }

@@ -8,11 +8,11 @@ public class LTGUI
 		Label
 	}
 
-	public static int RECT_LEVELS = 5;
+	public static int RECT_LEVELS;
 
-	public static int RECTS_PER_LEVEL = 10;
+	public static int RECTS_PER_LEVEL;
 
-	public static int BUTTONS_MAX = 24;
+	public static int BUTTONS_MAX;
 
 	private static LTRect[] levels;
 
@@ -26,11 +26,11 @@ public class LTGUI
 
 	private static LTRect r;
 
-	private static Color color = Color.white;
+	private static Color color;
 
-	private static bool isGUIEnabled = false;
+	private static bool isGUIEnabled;
 
-	private static int global_counter = 0;
+	private static int global_counter;
 
 	public static void init()
 	{
@@ -217,7 +217,7 @@ public class LTGUI
 		bool flag = ((Rect)(ref rect)).x > (float)Screen.width;
 		bool flag2 = ((Rect)(ref rect)).y > (float)Screen.height;
 		bool flag3 = ((Rect)(ref rect)).y + ((Rect)(ref rect)).height < 0f;
-		return !(num || flag || flag2 || flag3);
+		return !(num | flag | flag2 | flag3);
 	}
 
 	public static void destroy(int id)
@@ -394,5 +394,17 @@ public class LTGUI
 			return Vector2.op_Implicit(Input.mousePosition);
 		}
 		return new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+	}
+
+	static LTGUI()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		RECT_LEVELS = 5;
+		RECTS_PER_LEVEL = 10;
+		BUTTONS_MAX = 24;
+		color = Color.white;
+		isGUIEnabled = false;
+		global_counter = 0;
 	}
 }

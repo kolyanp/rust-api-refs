@@ -13,7 +13,7 @@ public class GameTip : SingletonComponent<GameTip>
 		Blue_Short = 3,
 		Server_Event = 4,
 		Error = 5,
-		LAST = 5
+		LAST = Error
 	}
 
 	[Serializable]

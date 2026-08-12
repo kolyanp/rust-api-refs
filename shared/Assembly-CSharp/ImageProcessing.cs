@@ -310,7 +310,7 @@ public static class ImageProcessing
 				if (y > 0)
 				{
 					bool flag3 = check(num, y - 1);
-					if (!flag && flag3)
+					if (!flag & flag3)
 					{
 						stack.Push(new KeyValuePair<int, int>(num, y - 1));
 						flag = true;
@@ -323,7 +323,7 @@ public static class ImageProcessing
 				if (y < len1 - 1)
 				{
 					bool flag4 = check(num, y + 1);
-					if (!flag2 && flag4)
+					if (!flag2 & flag4)
 					{
 						stack.Push(new KeyValuePair<int, int>(num, y + 1));
 						flag2 = true;

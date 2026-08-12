@@ -12,8 +12,8 @@ public struct TransformStartEndTicksJob : IJobFor
 	[NativeDisableParallelForRestriction]
 	public NativeArray<Vector3> Starts;
 
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<Vector3> Ends;
 
 	public ReadOnly<Matrix4x4> Matrices;

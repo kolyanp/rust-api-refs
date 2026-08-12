@@ -14,11 +14,11 @@ public class ScreenBounceFade : BaseScreenShake
 
 	private float bounceTime;
 
-	private Vector3 bounceVelocity = Vector3.zero;
+	private Vector3 bounceVelocity;
 
-	public float maxDistance = 10f;
+	public float maxDistance;
 
-	public float scale = 1f;
+	public float scale;
 
 	public override void Setup()
 	{
@@ -76,5 +76,15 @@ public class ScreenBounceFade : BaseScreenShake
 			ref Vector3 position2 = ref vm.position;
 			position2 += zero * -1f * bounceViewmodel.Evaluate(delta);
 		}
+	}
+
+	public ScreenBounceFade()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		bounceVelocity = Vector3.zero;
+		maxDistance = 10f;
+		scale = 1f;
+		base._002Ector();
 	}
 }

@@ -8,13 +8,22 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Missions/WorldPositionGenerator")]
 public class WorldPositionGenerator : ScriptableObject
 {
-	private struct InputValuesIdentifierData(Vector3 origin, float minDist, float maxDist) : IEquatable<InputValuesIdentifierData>
+	private struct InputValuesIdentifierData : IEquatable<InputValuesIdentifierData>
 	{
-		public Vector3 origin = origin;
+		public Vector3 origin;
 
-		public float minDist = minDist;
+		public float minDist;
 
-		public float maxDist = maxDist;
+		public float maxDist;
+
+		public InputValuesIdentifierData(Vector3 origin, float minDist, float maxDist)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			this.origin = origin;
+			this.minDist = minDist;
+			this.maxDist = maxDist;
+		}
 
 		public bool Equals(InputValuesIdentifierData other)
 		{

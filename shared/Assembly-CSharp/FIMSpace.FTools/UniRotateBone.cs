@@ -1,52 +1,395 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.FTools;
 
 public class UniRotateBone
 {
-	private Vector3 dynamicUpReference = Vector3.up;
+	[CompilerGenerated]
+	private Vector3 _003CinitialLocalPosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003CinitialLocalRotation_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CinitialLocalPositionInRootSpace_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003CinitialLocalRotationInRootSpace_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003Cright_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003Cup_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003Cforward_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003Cdright_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003Cdup_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003Cdforward_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CfromParentForward_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CfromParentCross_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CkeyframedPosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003CkeyframedRotation_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003Cmapping_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003Cdmapping_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CforwardReference_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CupReference_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CrightCrossReference_003Ek__BackingField;
+
+	private Vector3 dynamicUpReference;
 
 	public Transform transform { get; protected set; }
 
-	public Vector3 initialLocalPosition { get; protected set; }
+	public Vector3 initialLocalPosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CinitialLocalPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CinitialLocalPosition_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion initialLocalRotation { get; protected set; }
+	public Quaternion initialLocalRotation
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CinitialLocalRotation_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CinitialLocalRotation_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 initialLocalPositionInRootSpace { get; protected set; }
+	public Vector3 initialLocalPositionInRootSpace
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CinitialLocalPositionInRootSpace_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CinitialLocalPositionInRootSpace_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion initialLocalRotationInRootSpace { get; protected set; }
+	public Quaternion initialLocalRotationInRootSpace
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CinitialLocalRotationInRootSpace_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CinitialLocalRotationInRootSpace_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 right { get; protected set; }
+	public Vector3 right
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cright_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cright_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 up { get; protected set; }
+	public Vector3 up
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cup_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cup_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 forward { get; protected set; }
+	public Vector3 forward
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cforward_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cforward_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 dright { get; protected set; }
+	public Vector3 dright
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cdright_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cdright_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 dup { get; protected set; }
+	public Vector3 dup
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cdup_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cdup_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 dforward { get; protected set; }
+	public Vector3 dforward
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cdforward_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cdforward_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 fromParentForward { get; protected set; }
+	public Vector3 fromParentForward
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CfromParentForward_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CfromParentForward_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 fromParentCross { get; protected set; }
+	public Vector3 fromParentCross
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CfromParentCross_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CfromParentCross_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 keyframedPosition { get; protected set; }
+	public Vector3 keyframedPosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CkeyframedPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CkeyframedPosition_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion keyframedRotation { get; protected set; }
+	public Quaternion keyframedRotation
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CkeyframedRotation_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CkeyframedRotation_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion mapping { get; protected set; }
+	public Quaternion mapping
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cmapping_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cmapping_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion dmapping { get; protected set; }
+	public Quaternion dmapping
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cdmapping_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cdmapping_003Ek__BackingField = value;
+		}
+	}
 
 	public Transform root { get; protected set; }
 
-	public Vector3 forwardReference { get; private set; }
+	public Vector3 forwardReference
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CforwardReference_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CforwardReference_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 upReference { get; private set; }
+	public Vector3 upReference
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CupReference_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CupReference_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 rightCrossReference { get; private set; }
+	public Vector3 rightCrossReference
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CrightCrossReference_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CrightCrossReference_003Ek__BackingField = value;
+		}
+	}
 
 	public UniRotateBone(Transform t, Transform root)
 	{
@@ -104,6 +447,8 @@ public class UniRotateBone
 		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ba: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bf: Unknown result type (might be due to invalid IL or missing references)
+		dynamicUpReference = Vector3.up;
+		base._002Ector();
 		transform = t;
 		initialLocalPosition = transform.localPosition;
 		initialLocalRotation = transform.localRotation;

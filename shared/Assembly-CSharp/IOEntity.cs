@@ -197,15 +197,26 @@ public class IOEntity : DecayEntity
 		public double Time;
 	}
 
-	public struct LineAnchor(WireLineAnchorInfo info)
+	public struct LineAnchor
 	{
-		public EntityRef<Door> entityRef = new EntityRef<Door>(info.parentID);
+		public EntityRef<Door> entityRef;
 
-		public string boneName = info.boneName;
+		public string boneName;
 
-		public int index = (int)info.index;
+		public int index;
 
-		public Vector3 position = info.position;
+		public Vector3 position;
+
+		public LineAnchor(WireLineAnchorInfo info)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+			entityRef = new EntityRef<Door>(info.parentID);
+			boneName = info.boneName;
+			index = (int)info.index;
+			position = info.position;
+		}
 
 		public WireLineAnchorInfo ToInfo()
 		{
@@ -315,24 +326,24 @@ public class IOEntity : DecayEntity
 	[ServerVar]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
-	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
+	[ServerVar]
 	public static float frameBudgetFluidMs = 0.25f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
+	[ServerVar]
 	public static float frameBudgetKineticMs = 1f;
 
-	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
 	public static float frameBudgetGenericMs = 1f;
 
-	[Help("How many milliseconds to budget for processing industrial entities per server frame")]
 	[ServerVar]
+	[Help("How many milliseconds to budget for processing industrial entities per server frame")]
 	public static float frameBudgetIndustrialMs = 0.25f;
 
 	[ServerVar(Help = "(Generated) Minimum interval in seconds between IO entity logic updates; controls how quickly electrical signals propagate through the network")]
@@ -897,8 +908,8 @@ public class IOEntity : DecayEntity
 	}
 
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	private void Server_RequestData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1309,7 +1320,7 @@ public class IOEntity : DecayEntity
 		}
 		bool flag = lastPassthroughEnergy != num;
 		lastPassthroughEnergy = num;
-		if (currentEnergy != lastEnergy || flag)
+		if ((currentEnergy != lastEnergy) | flag)
 		{
 			IOStateChanged(inputAmount, inputSlot);
 			ensureOutputsUpdated = true;

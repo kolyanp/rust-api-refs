@@ -5,10 +5,10 @@ using UnityEngine.Events;
 
 namespace UnityEngine.UI;
 
-[AddComponentMenu("UI/Scroll Rect Ex", 37)]
-[SelectionBase]
-[ExecuteInEditMode]
 [RequireComponent(typeof(RectTransform))]
+[ExecuteInEditMode]
+[SelectionBase]
+[AddComponentMenu("UI/Scroll Rect Ex", 37)]
 public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEventSystemHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IScrollHandler, ICanvasElement, ILayoutGroup, ILayoutController
 {
 	public enum MovementType
@@ -38,25 +38,25 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 	private RectTransform m_Content;
 
 	[SerializeField]
-	private bool m_Horizontal = true;
+	private bool m_Horizontal;
 
 	[SerializeField]
-	private bool m_Vertical = true;
+	private bool m_Vertical;
 
 	[SerializeField]
-	private MovementType m_MovementType = MovementType.Elastic;
+	private MovementType m_MovementType;
 
 	[SerializeField]
-	private float m_Elasticity = 0.1f;
+	private float m_Elasticity;
 
 	[SerializeField]
-	private bool m_Inertia = true;
+	private bool m_Inertia;
 
 	[SerializeField]
-	private float m_DecelerationRate = 0.135f;
+	private float m_DecelerationRate;
 
 	[SerializeField]
-	private float m_ScrollSensitivity = 1f;
+	private float m_ScrollSensitivity;
 
 	[SerializeField]
 	private RectTransform m_Viewport;
@@ -80,11 +80,11 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 	private float m_VerticalScrollbarSpacing;
 
 	[SerializeField]
-	private ScrollRectEvent m_OnValueChanged = new ScrollRectEvent();
+	private ScrollRectEvent m_OnValueChanged;
 
-	private Vector2 m_PointerStartLocalCursor = Vector2.zero;
+	private Vector2 m_PointerStartLocalCursor;
 
-	private Vector2 m_ContentStartPosition = Vector2.zero;
+	private Vector2 m_ContentStartPosition;
 
 	private RectTransform m_ViewRect;
 
@@ -96,7 +96,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 
 	private bool m_Dragging;
 
-	private Vector2 m_PrevPosition = Vector2.zero;
+	private Vector2 m_PrevPosition;
 
 	private Bounds m_PrevContentBounds;
 
@@ -122,7 +122,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 
 	private DrivenRectTransformTracker m_Tracker;
 
-	private readonly Vector3[] m_Corners = (Vector3[])(object)new Vector3[4];
+	private readonly Vector3[] m_Corners;
 
 	public RectTransform content
 	{
@@ -513,13 +513,26 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 
 	protected ScrollRectEx()
 	{
-	}//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-	//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-	//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-	//IL_0059: Unknown result type (might be due to invalid IL or missing references)
-	//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-	//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		m_Horizontal = true;
+		m_Vertical = true;
+		m_MovementType = MovementType.Elastic;
+		m_Elasticity = 0.1f;
+		m_Inertia = true;
+		m_DecelerationRate = 0.135f;
+		m_ScrollSensitivity = 1f;
+		m_OnValueChanged = new ScrollRectEvent();
+		m_PointerStartLocalCursor = Vector2.zero;
+		m_ContentStartPosition = Vector2.zero;
+		m_PrevPosition = Vector2.zero;
+		m_Corners = (Vector3[])(object)new Vector3[4];
+		((UIBehaviour)this)._002Ector();
+	}
 
 	public virtual void Rebuild(CanvasUpdate executing)
 	{
@@ -572,7 +585,7 @@ public class ScrollRectEx : UIBehaviour, IInitializePotentialDragHandler, IEvent
 		bool num = (Object)(object)((Transform)viewRect).parent == (Object)(object)transform;
 		bool flag = !Object.op_Implicit((Object)(object)m_HorizontalScrollbarRect) || (Object)(object)((Transform)m_HorizontalScrollbarRect).parent == (Object)(object)transform;
 		bool flag2 = !Object.op_Implicit((Object)(object)m_VerticalScrollbarRect) || (Object)(object)((Transform)m_VerticalScrollbarRect).parent == (Object)(object)transform;
-		bool flag3 = num && flag && flag2;
+		bool flag3 = num & flag & flag2;
 		m_HSliderExpand = flag3 && Object.op_Implicit((Object)(object)m_HorizontalScrollbarRect) && horizontalScrollbarVisibility == ScrollbarVisibility.AutoHideAndExpandViewport;
 		m_VSliderExpand = flag3 && Object.op_Implicit((Object)(object)m_VerticalScrollbarRect) && verticalScrollbarVisibility == ScrollbarVisibility.AutoHideAndExpandViewport;
 		Rect rect;

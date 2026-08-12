@@ -101,6 +101,9 @@ public class LocalClan : IClan
 
 	private const int MaxChatScrollback = 20;
 
+	[CompilerGenerated]
+	private Color32 _003CColor_003Ek__BackingField;
+
 	private readonly LocalClanBackend _backend;
 
 	private readonly List<ClanRole> _roles;
@@ -129,7 +132,22 @@ public class LocalClan : IClan
 
 	public byte[] Logo { get; private set; }
 
-	public Color32 Color { get; private set; }
+	public Color32 Color
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CColor_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CColor_003Ek__BackingField = value;
+		}
+	}
 
 	public long Score { get; private set; }
 
@@ -145,6 +163,7 @@ public class LocalClan : IClan
 	{
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		_backend = backend ?? throw new ArgumentNullException("backend");
 		ClanId = clanId;
 		_roles = new List<ClanRole>();
@@ -238,7 +257,11 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanValueResult<ClanLogs>> GetLogs(int limit, ulong bySteamId)
 	{
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanAccessLogs))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanAccessLogs;
+		}))
 		{
 			return ClanValueResult<ClanLogs>.op_Implicit((ClanResult)5);
 		}
@@ -257,7 +280,11 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanResult> SetMotd(string newMotd, ulong bySteamId)
 	{
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanSetMotd))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanSetMotd;
+		}))
 		{
 			return (ClanResult)5;
 		}
@@ -276,7 +303,11 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanResult> SetLogo(byte[] newLogo, ulong bySteamId)
 	{
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanSetLogo))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanSetLogo;
+		}))
 		{
 			return (ClanResult)5;
 		}
@@ -298,7 +329,11 @@ public class LocalClan : IClan
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanSetLogo))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanSetLogo;
+		}))
 		{
 			return (ClanResult)5;
 		}
@@ -322,7 +357,11 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)21;
 		}
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanInvite))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanInvite;
+		}))
 		{
 			return (ClanResult)5;
 		}
@@ -338,7 +377,11 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanResult> CancelInvite(ulong steamId, ulong bySteamId)
 	{
-		if (steamId != bySteamId && !CheckRole(bySteamId, (ClanRole r) => r.CanInvite))
+		if (steamId != bySteamId && !CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanInvite;
+		}))
 		{
 			return (ClanResult)5;
 		}
@@ -390,7 +433,11 @@ public class LocalClan : IClan
 		bool flag = steamId == bySteamId;
 		if (!flag)
 		{
-			if (!CheckRole(bySteamId, (ClanRole r) => r.CanKick))
+			if (!CheckRole(bySteamId, delegate(ClanRole r)
+			{
+				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+				return r.CanKick;
+			}))
 			{
 				return (ClanResult)5;
 			}
@@ -435,17 +482,29 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanResult> SetPlayerRole(ulong steamId, int newRoleId, ulong bySteamId)
 	{
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) => m.SteamId), steamId, (IEqualityComparer<ulong>)null);
+		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)delegate(ClanMember m)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return m.SteamId;
+		}, steamId, (IEqualityComparer<ulong>)null);
 		if (!val.HasValue)
 		{
 			return (ClanResult)4;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), val.Value.RoleId, (IEqualityComparer<int>)null);
+		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, val.Value.RoleId, (IEqualityComparer<int>)null);
 		if (!val2.HasValue)
 		{
 			return (ClanResult)0;
 		}
-		ClanRole? val3 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), newRoleId, (IEqualityComparer<int>)null);
+		ClanRole? val3 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, newRoleId, (IEqualityComparer<int>)null);
 		if (!val3.HasValue)
 		{
 			return (ClanResult)4;
@@ -462,7 +521,15 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		if (!((val3.Value.Rank < val2.Value.Rank) ? CheckRole(bySteamId, (ClanRole r) => r.CanPromote) : CheckRole(bySteamId, (ClanRole r) => r.CanDemote)))
+		if (!((val3.Value.Rank < val2.Value.Rank) ? CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanPromote;
+		}) : CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanDemote;
+		})))
 		{
 			return (ClanResult)5;
 		}
@@ -485,11 +552,19 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanResult> SetPlayerNotes(ulong steamId, string newNotes, ulong bySteamId)
 	{
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanSetPlayerNotes))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanSetPlayerNotes;
+		}))
 		{
 			return (ClanResult)5;
 		}
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) => m.SteamId), steamId, (IEqualityComparer<ulong>)null);
+		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)delegate(ClanMember m)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return m.SteamId;
+		}, steamId, (IEqualityComparer<ulong>)null);
 		if (!val.HasValue)
 		{
 			return (ClanResult)4;
@@ -547,7 +622,11 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), role.RoleId, (IEqualityComparer<int>)null);
+		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, role.RoleId, (IEqualityComparer<int>)null);
 		if (!val.HasValue)
 		{
 			return (ClanResult)4;
@@ -581,12 +660,20 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), roleIdA, (IEqualityComparer<int>)null);
+		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, roleIdA, (IEqualityComparer<int>)null);
 		if (!val.HasValue)
 		{
 			return (ClanResult)4;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), roleIdB, (IEqualityComparer<int>)null);
+		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, roleIdB, (IEqualityComparer<int>)null);
 		if (!val2.HasValue)
 		{
 			return (ClanResult)4;
@@ -610,7 +697,11 @@ public class LocalClan : IClan
 		{
 			return (ClanResult)5;
 		}
-		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), roleId, (IEqualityComparer<int>)null);
+		ClanRole? val = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, roleId, (IEqualityComparer<int>)null);
 		if (!val.HasValue)
 		{
 			return (ClanResult)4;
@@ -651,7 +742,11 @@ public class LocalClan : IClan
 
 	public async ValueTask<ClanValueResult<ClanScoreEvents>> GetScoreEvents(int limit, ulong bySteamId)
 	{
-		if (!CheckRole(bySteamId, (ClanRole r) => r.CanAccessScoreEvents))
+		if (!CheckRole(bySteamId, delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.CanAccessScoreEvents;
+		}))
 		{
 			return ClanValueResult<ClanScoreEvents>.op_Implicit((ClanResult)5);
 		}
@@ -738,12 +833,20 @@ public class LocalClan : IClan
 		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) => m.SteamId), steamId, (IEqualityComparer<ulong>)null);
+		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)delegate(ClanMember m)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return m.SteamId;
+		}, steamId, (IEqualityComparer<ulong>)null);
 		if (!val.HasValue)
 		{
 			return false;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), val.Value.RoleId, (IEqualityComparer<int>)null);
+		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, val.Value.RoleId, (IEqualityComparer<int>)null);
 		if (!val2.HasValue)
 		{
 			return false;
@@ -759,13 +862,21 @@ public class LocalClan : IClan
 	{
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)((ClanMember m) => m.SteamId), steamId, (IEqualityComparer<ulong>)null);
+		ClanMember? val = List.TryFindWith<ClanMember, ulong>((IReadOnlyCollection<ClanMember>)_members, (Func<ClanMember, ulong>)delegate(ClanMember m)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return m.SteamId;
+		}, steamId, (IEqualityComparer<ulong>)null);
 		if (!val.HasValue)
 		{
 			rank = int.MaxValue;
 			return false;
 		}
-		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), val.Value.RoleId, (IEqualityComparer<int>)null);
+		ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)_roles, (Func<ClanRole, int>)delegate(ClanRole r)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return r.RoleId;
+		}, val.Value.RoleId, (IEqualityComparer<int>)null);
 		if (!val2.HasValue)
 		{
 			rank = int.MaxValue;

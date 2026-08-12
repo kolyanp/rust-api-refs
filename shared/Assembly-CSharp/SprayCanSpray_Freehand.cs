@@ -11,9 +11,9 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 {
 	public AlignedLineDrawer LineDrawer;
 
-	public List<AlignedLineDrawer.LinePoint> LinePoints = new List<AlignedLineDrawer.LinePoint>();
+	public List<AlignedLineDrawer.LinePoint> LinePoints;
 
-	public Color colour = Color.white;
+	public Color colour;
 
 	public float width;
 
@@ -193,12 +193,12 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		width = lineWidth;
 	}
 
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
 		typeof(Vector3)
 	})]
-	[RPC_Server]
 	private void Server_AddPointMidSpray(RPCMessage msg)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
@@ -245,12 +245,12 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(int),
 		typeof(SprayList)
 	})]
+	[RPC_Server]
 	private void Server_FinishEditing(RPCMessage msg)
 	{
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
@@ -427,5 +427,14 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 	{
 		base.ResetState();
 		editingPlayer.Set(null);
+	}
+
+	public SprayCanSpray_Freehand()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		LinePoints = new List<AlignedLineDrawer.LinePoint>();
+		colour = Color.white;
+		base._002Ector();
 	}
 }

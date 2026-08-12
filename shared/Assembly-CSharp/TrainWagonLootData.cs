@@ -30,8 +30,8 @@ public class TrainWagonLootData : ScriptableObject
 	[SerializeField]
 	private LootOption[] oreOptions;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private LootOption lootWagonContent;
 
 	[SerializeField]
@@ -74,12 +74,14 @@ public class TrainWagonLootData : ScriptableObject
 				num += lootOption.spawnWeighting;
 			}
 			float num2 = Random.value * num;
-			for (index = 0; index < oreOptions.Length; index++)
+			index = 0;
+			while (index < oreOptions.Length)
 			{
 				if ((num2 -= oreOptions[index].spawnWeighting) < 0f)
 				{
 					return oreOptions[index];
 				}
+				index++;
 			}
 			return oreOptions[index];
 		}
@@ -115,12 +117,14 @@ public class TrainWagonLootData : ScriptableObject
 			index = 1001;
 			return true;
 		}
-		for (index = 0; index < oreOptions.Length; index++)
+		index = 0;
+		while (index < oreOptions.Length)
 		{
 			if (oreOptions[index] == lootOption)
 			{
 				return true;
 			}
+			index++;
 		}
 		index = -1;
 		return false;

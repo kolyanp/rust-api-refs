@@ -53,11 +53,18 @@ public class SleepingBagButton : MonoBehaviour
 
 	public Button FavouriteButton;
 
-	public static Phrase toastHoldToUnclaimBag = new Phrase("hold_unclaim_bag", "Hold down the delete button to unclaim a sleeping bag");
+	public static Phrase toastHoldToUnclaimBag;
 
 	public GameObject CorpseRoot;
 
 	public Image CorpseBackground;
 
 	public GameObject DeepSeaRoot;
+
+	static SleepingBagButton()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		toastHoldToUnclaimBag = new Phrase("hold_unclaim_bag", "Hold down the delete button to unclaim a sleeping bag");
+	}
 }

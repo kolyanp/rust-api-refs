@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -5,6 +6,12 @@ namespace Instancing;
 
 public class InstancedMeshRenderer
 {
+	[CompilerGenerated]
+	private readonly ShadowCastingMode _003CCastShadows_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private readonly LightProbeUsage _003CLightProbes_003Ek__BackingField;
+
 	public int RendererId { get; }
 
 	public int DrawCallIndex { get; }
@@ -19,11 +26,27 @@ public class InstancedMeshRenderer
 
 	public Material[] MultidrawMaterials { get; private set; }
 
-	public ShadowCastingMode CastShadows { get; }
+	public ShadowCastingMode CastShadows
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CCastShadows_003Ek__BackingField;
+		}
+	}
 
 	public bool RecieveShadows { get; }
 
-	public LightProbeUsage LightProbes { get; }
+	public LightProbeUsage LightProbes
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLightProbes_003Ek__BackingField;
+		}
+	}
 
 	public int Verticies { get; }
 
@@ -43,9 +66,25 @@ public class InstancedMeshRenderer
 
 	public MultidrawMeshInfo[] MultidrawSubmeshes { get; }
 
-	public bool HasShadow => (int)CastShadows > 0;
+	public bool HasShadow
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Invalid comparison between Unknown and I4
+			return (int)CastShadows > 0;
+		}
+	}
 
-	public bool HasMesh => (int)CastShadows != 3;
+	public bool HasMesh
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Invalid comparison between Unknown and I4
+			return (int)CastShadows != 3;
+		}
+	}
 
 	public Vector3[] BoundsPoints { get; }
 
@@ -91,6 +130,7 @@ public class InstancedMeshRenderer
 		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
 		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		RendererId = rendererIndex;
 		DrawCallIndex = drawCallIndex;
 		Mesh = key.Mesh;

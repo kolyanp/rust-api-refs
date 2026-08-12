@@ -36,13 +36,24 @@ public class TickInterpolatorCache
 		}
 	}
 
-	public struct ReadOnlyState(ReadOnly<Segment> playerSegments, ReadOnly<PlayerInfo> playerInfos, int bufferSize)
+	public struct ReadOnlyState
 	{
-		public readonly ReadOnly<Segment> Segments = playerSegments;
+		public readonly ReadOnly<Segment> Segments;
 
-		public readonly ReadOnly<PlayerInfo> Infos = playerInfos;
+		public readonly ReadOnly<PlayerInfo> Infos;
 
-		public readonly int BufferSize = bufferSize;
+		public readonly int BufferSize;
+
+		public ReadOnlyState(ReadOnly<Segment> playerSegments, ReadOnly<PlayerInfo> playerInfos, int bufferSize)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			Segments = playerSegments;
+			Infos = playerInfos;
+			BufferSize = bufferSize;
+		}
 	}
 
 	public struct PlayerTickIterator
@@ -55,13 +66,42 @@ public class TickInterpolatorCache
 
 		private int segmentIndex;
 
-		public Vector3 CurrentPoint => currPoint;
+		public Vector3 CurrentPoint
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return currPoint;
+			}
+		}
 
-		public Vector3 StartPoint => GetStartPoint(state, playerIndex);
+		public Vector3 StartPoint
+		{
+			get
+			{
+				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+				return GetStartPoint(state, playerIndex);
+			}
+		}
 
-		public Vector3 EndPoint => GetEndPoint(state, playerIndex);
+		public Vector3 EndPoint
+		{
+			get
+			{
+				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+				return GetEndPoint(state, playerIndex);
+			}
+		}
 
-		public float Length => state.Infos[playerIndex].Length;
+		public float Length
+		{
+			get
+			{
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+				return state.Infos[playerIndex].Length;
+			}
+		}
 
 		public PlayerTickIterator(ReadOnlyState state, int playerIndex)
 		{
@@ -111,9 +151,17 @@ public class TickInterpolatorCache
 
 	private NativeArray<PlayerInfo> playerInfos;
 
-	private int bufferSize = 9;
+	private int bufferSize;
 
-	public ReadOnlyState ReadOnly => new ReadOnlyState(playerSegments.AsReadOnly(), playerInfos.AsReadOnly(), bufferSize);
+	public ReadOnlyState ReadOnly
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			return new ReadOnlyState(playerSegments.AsReadOnly(), playerInfos.AsReadOnly(), bufferSize);
+		}
+	}
 
 	public TickInterpolatorCache(int capacity = 32)
 	{
@@ -121,6 +169,8 @@ public class TickInterpolatorCache
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		bufferSize = 9;
+		base._002Ector();
 		playerSegments = new NativeArray<Segment>(bufferSize * capacity, (Allocator)4, (NativeArrayOptions)0);
 		playerInfos = new NativeArray<PlayerInfo>(capacity, (Allocator)4, (NativeArrayOptions)1);
 	}

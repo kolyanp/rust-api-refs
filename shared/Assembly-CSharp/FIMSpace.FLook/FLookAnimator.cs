@@ -34,6 +34,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			Transform = t;
 			if (Object.op_Implicit((Object)(object)t))
 			{
@@ -162,21 +163,29 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 		public Vector3 up;
 
-		public Vector3 initLocalPos = Vector3.zero;
+		public Vector3 initLocalPos;
 
-		public Quaternion initLocalRot = Quaternion.identity;
+		public Quaternion initLocalRot;
 
 		public Vector3 targetDelayPosition;
 
 		public Vector3 animatedDelayPosition;
 
-		public float lookWeight = 1f;
+		public float lookWeight;
 
-		public float lookWeightB = 1f;
+		public float lookWeightB;
 
-		public float motionWeight = 1f;
+		public float motionWeight;
 
-		public Quaternion correctionOffsetQ => Quaternion.Euler(correctionOffset);
+		public Quaternion correctionOffsetQ
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				return Quaternion.Euler(correctionOffset);
+			}
+		}
 
 		public LookBone(Transform t)
 		{
@@ -190,6 +199,12 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 			//IL_005f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 			//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+			initLocalPos = Vector3.zero;
+			initLocalRot = Quaternion.identity;
+			lookWeight = 1f;
+			lookWeightB = 1f;
+			motionWeight = 1f;
+			base._002Ector();
 			Transform = t;
 			correctionOffset = Vector3.zero;
 			if ((Object)(object)t != (Object)null)
@@ -353,32 +368,32 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool birdModeInitialized;
 
-	[Tooltip("Bird mode laggy movement for neck amount, lowering this value will cause crossfade motion of laggy movement and basic follow rotation")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
-	public float LagRotation = 0.85f;
+	[Tooltip("Bird mode laggy movement for neck amount, lowering this value will cause crossfade motion of laggy movement and basic follow rotation")]
+	public float LagRotation;
 
-	[FPD_Suffix(0.1f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	[Tooltip("How often should be acquired new target position for laggy movement, time to trigger it will be slightly randomized")]
-	public float LagEvery = 0.285f;
+	[FPD_Suffix(0.1f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
+	public float LagEvery;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("Bird mode keeping previous position until distance is reached")]
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	public float DelayPosition;
 
 	[Tooltip("How far distance to go back should have head to move (remind movement of pigeons to yourself)")]
-	public float DelayMaxDistance = 0.25111f;
+	public float DelayMaxDistance;
 
-	[Tooltip("How quick head and neck should go back to right position after reaching distance")]
 	[Range(0f, 1f)]
-	public float DelayGoSpeed = 0.6f;
+	[Tooltip("How quick head and neck should go back to right position after reaching distance")]
+	public float DelayGoSpeed;
 
-	public Vector3 BirdTargetPosition = Vector3.forward;
+	public Vector3 BirdTargetPosition;
 
-	private Vector3 birdTargetPositionMemory = Vector3.forward;
+	private Vector3 birdTargetPositionMemory;
 
 	private float lagTimer;
 
-	private float preWeightFaloff = -1f;
+	private float preWeightFaloff;
 
 	private float[] baseWeights;
 
@@ -389,8 +404,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Target on which eyes will look, set to null if target should be the same as for head target")]
 	public Transform EyesTarget;
 
-	[Tooltip("Eyes transforms / bones (origin should be in center of the sphere")]
 	[Space(4f)]
+	[Tooltip("Eyes transforms / bones (origin should be in center of the sphere")]
 	public Transform LeftEye;
 
 	public bool InvertLeftEye;
@@ -405,29 +420,29 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	public Vector3 EyesOffsetRotation;
 
-	public Vector3 LeftEyeOffsetRotation = Vector3.zero;
+	public Vector3 LeftEyeOffsetRotation;
 
-	public Vector3 RightEyeOffsetRotation = Vector3.zero;
+	public Vector3 RightEyeOffsetRotation;
 
 	[Range(0f, 1f)]
 	[Tooltip("How fast eyes should follow target")]
-	public float EyesSpeed = 0.5f;
+	public float EyesSpeed;
 
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
-	public float EyesBlend = 1f;
+	public float EyesBlend;
 
 	[Range(0f, 180f)]
 	[Tooltip("In what angle eyes should go back to deafult position")]
-	public Vector2 EyesXRange = new Vector2(-60f, 60f);
+	public Vector2 EyesXRange;
 
-	public Vector2 EyesYRange = new Vector2(-50f, 50f);
+	public Vector2 EyesYRange;
 
 	[Tooltip("If your eyes don't have baked keyframes in animation this value should be enabled, otherwise eyes would go crazy")]
-	public bool EyesNoKeyframes = true;
+	public bool EyesNoKeyframes;
 
 	public bool CustomEyesLogics;
 
-	private float EyesOutOfRangeBlend = 1f;
+	private float EyesOutOfRangeBlend;
 
 	private Transform[] eyes;
 
@@ -445,11 +460,11 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("When switching targets character will make small nod to make it look more natural, set higher value for toony effect")]
 	public float NoddingTransitions;
 
-	public Vector3 NodAxis = Vector3.right;
+	public Vector3 NodAxis;
 
 	[Range(-1f, 1f)]
 	[Tooltip("Set zero to use only leading bone, set -1 to 1 to spread this motion over backbones")]
-	public float BackBonesNod = 0.15f;
+	public float BackBonesNod;
 
 	private float nodProgress;
 
@@ -457,25 +472,25 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private float nodPower;
 
-	private float nodDuration = 1f;
+	private float nodDuration;
 
 	private float smoothingTimer;
 
-	private float smoothingPower = 1f;
+	private float smoothingPower;
 
-	private float smoothingTime = 1f;
+	private float smoothingTime;
 
-	private float smoothingEffect = 1f;
+	private float smoothingEffect;
 
-	public int ParentalOffsetsV = 2;
+	public int ParentalOffsetsV;
 
 	private Vector3 lookFreezeFocusPoint;
 
-	private Vector3 smoothLookPosition = Vector3.zero;
+	private Vector3 smoothLookPosition;
 
-	private Vector3 _velo_smoothLookPosition = Vector3.zero;
+	private Vector3 _velo_smoothLookPosition;
 
-	private Vector3 finalLookPosition = Vector3.zero;
+	private Vector3 finalLookPosition;
 
 	private bool usingAxisCorrection;
 
@@ -488,7 +503,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Quaternion _parentalBackParentRot;
 
-	private Vector2 _parentalAngles = Vector2.zero;
+	private Vector2 _parentalAngles;
 
 	private bool animatePhysicsWorking;
 
@@ -496,23 +511,23 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private int startAfterTPoseCounter;
 
-	private Vector3 unclampedLookAngles = Vector3.zero;
+	private Vector3 unclampedLookAngles;
 
-	private Vector3 targetLookAngles = Vector3.zero;
+	private Vector3 targetLookAngles;
 
-	private Vector3 animatedLookAngles = Vector3.zero;
+	private Vector3 animatedLookAngles;
 
-	private Vector3 finalLookAngles = Vector3.zero;
+	private Vector3 finalLookAngles;
 
 	private Quaternion lastBaseRotation;
 
-	private Vector3 _preLookAboveLookAngles = Vector3.zero;
+	private Vector3 _preLookAboveLookAngles;
 
-	private Vector3 _velo_animatedLookAngles = Vector3.zero;
+	private Vector3 _velo_animatedLookAngles;
 
 	private float _rememberSideLookHorizontalAngle;
 
-	private Vector3 leadBoneInitLocalOffset = Vector3.zero;
+	private Vector3 leadBoneInitLocalOffset;
 
 	private EFHeadLookState previousState;
 
@@ -527,7 +542,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	private bool isLooking;
 
 	[Tooltip("If moment transform should be destroyed when max distance range is exceed")]
-	public bool DestroyMomentTargetOnMaxDistance = true;
+	public bool DestroyMomentTargetOnMaxDistance;
 
 	private float whenAboveGoBackDuration;
 
@@ -539,8 +554,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Vector2 whenAboveGoBackAngles;
 
-	[Range(0f, 1f)]
 	[Tooltip("If you want to remove animator's keyframes and replace them by look animation")]
+	[Range(0f, 1f)]
 	public float OverrideRotations;
 
 	private bool overrideRefInitialized;
@@ -551,7 +566,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool refreshReferencePose;
 
-	private float monitorTransitionTime = 0.8f;
+	private float monitorTransitionTime;
 
 	private List<Quaternion> _monitorTransitionStart;
 
@@ -566,11 +581,11 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private Quaternion targetLookRotation;
 
-	private float finalMotionWeight = 1f;
+	private float finalMotionWeight;
 
-	private float animatedMotionWeight = 1f;
+	private float animatedMotionWeight;
 
-	private float _velo_animatedMotionWeight = 1f;
+	private float _velo_animatedMotionWeight;
 
 	private float changeTargetSmootherWeight;
 
@@ -580,7 +595,7 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	public bool _editor_hideEyes;
 
-	public string _editor_displayName = "Look Animator 2";
+	public string _editor_displayName;
 
 	public EEditorLookCategory _Editor_Category;
 
@@ -591,9 +606,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public Transform BaseTransform;
 
 	[Tooltip("Faloff value of how weight of animation should be spread over bones")]
-	public float FaloffValue = 0.35f;
+	public float FaloffValue;
 
-	public float FaloffValueB = 1.1f;
+	public float FaloffValueB;
 
 	[Tooltip("When character is looking far back in big angle or far high, you can automate weights falloff value")]
 	public bool BigAngleAutomation;
@@ -602,23 +617,23 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public bool BigAngleAutomationCompensation;
 
 	[Tooltip("If bone weights spread should be computed automatically or by hand")]
-	public bool AutoBackbonesWeights = true;
+	public bool AutoBackbonesWeights;
 
 	[Tooltip("When you want use curve for more custom falloff or define it by simple slider - 'FaloffValue'")]
 	public bool CurveSpread;
 
 	[Tooltip("Configurable rotation weight placed over back bones - when you will use for example spine bones, here you can define how much will they rotate towards target in reference to other animated bones")]
-	public AnimationCurve BackBonesFalloff = AnimationCurve.Linear(0f, 1f, 1f, 0.1f);
+	public AnimationCurve BackBonesFalloff;
 
 	[Header("If you don't want arms to be rotated when spine", order = 1)]
 	[Header("bone is rotated by script (drag & drop here)", order = 3)]
-	public List<CompensationBone> CompensationBones = new List<CompensationBone>();
+	public List<CompensationBone> CompensationBones;
 
 	[Range(0f, 1f)]
-	public float CompensationWeight = 0.5f;
+	public float CompensationWeight;
 
 	[Range(0f, 1f)]
-	public float CompensationWeightB = 0.5f;
+	public float CompensationWeightB;
 
 	[Range(0f, 1f)]
 	public float CompensatePositions;
@@ -626,12 +641,12 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float CompensatePositionsB;
 
-	private float targetCompensationWeight = 0.5f;
+	private float targetCompensationWeight;
 
 	private float targetCompensationPosWeight;
 
 	[Tooltip("Making script start after first frame so initialization will not catch TPose initial bones rotations, which can cause some wrong offsets for rotations")]
-	public bool StartAfterTPose = true;
+	public bool StartAfterTPose;
 
 	[Tooltip("Update with waiting for fixed update clock")]
 	public bool AnimatePhysics;
@@ -650,22 +665,22 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[Tooltip("How fast character should rotate towards focus direction.\n\nRotationSpeed = 2.5 -> Instant rotation\n\nIt is speed of transition for look direction (no bones rotations smoothing)")]
 	[Range(0f, 2.5f)]
-	public float RotationSpeed = 0.65f;
+	public float RotationSpeed;
 
 	private bool instantRotation;
 
-	[Range(0f, 1f)]
 	[Tooltip("This variable is making rotation animation become very smooth (but also slower).\nIt is enabling smooth rotation transition in bone rotations")]
+	[Range(0f, 1f)]
 	public float UltraSmoother;
 
-	[Header("Look forward if this angle is exceeded", order = 1)]
-	[Tooltip("If target is too much after transform's back we smooth rotating head back to default animation's rotation")]
 	[Range(25f, 180f)]
-	public float StopLookingAbove = 180f;
+	[Tooltip("If target is too much after transform's back we smooth rotating head back to default animation's rotation")]
+	[Header("Look forward if this angle is exceeded", order = 1)]
+	public float StopLookingAbove;
 
-	[Range(0.1f, 1f)]
 	[Tooltip("If object in rotation range should be detected only when is nearer than 'StopLookingAbove' to avoid stuttery target changes")]
-	public float StopLookingAboveFactor = 1f;
+	[Range(0.1f, 1f)]
+	public float StopLookingAboveFactor;
 
 	[Tooltip("If your character moves head too fast when loosing / changing target, here you can adjust it")]
 	[Range(0f, 1f)]
@@ -691,8 +706,8 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Offsetting point from which we want to measure distance to target")]
 	public Vector3 DistanceMeasurePoint;
 
-	[Tooltip("Minimum angle needed to trigger head follow movement. Can be useful to make eyes move first and then head when angle is bigger")]
 	[FPD_Suffix(0f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	[Tooltip("Minimum angle needed to trigger head follow movement. Can be useful to make eyes move first and then head when angle is bigger")]
 	public float LookWhenAbove;
 
 	private float animatedLookWhenAbove;
@@ -707,16 +722,16 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[FPD_Suffix(0f, 3f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	public float WhenAboveGoBackAfter;
 
-	[Tooltip("Head going back looking in front of target after this amount of seconds")]
 	[FPD_Suffix(0f, 3f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
+	[Tooltip("Head going back looking in front of target after this amount of seconds")]
 	public float WhenAboveGoBackAfterVertical;
 
 	[FPD_Suffix(0.05f, 1f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "sec", true, 0)]
 	[Tooltip("Head going back looking in front of target after this amount of seconds")]
-	public float WhenAboveGoBackDuration = 0.2f;
+	public float WhenAboveGoBackDuration;
 
-	[Tooltip("Rotating towards target slower when target don't need much angle to look at")]
 	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	[Tooltip("Rotating towards target slower when target don't need much angle to look at")]
 	public float StartLookElasticRangeX;
 
 	[Tooltip("Separated elastic start angle for vertical look axis\n\nIf zero then value will be same like 'StartLookElasticRange'")]
@@ -724,36 +739,36 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public float StartLookElasticRangeY;
 
 	[Header("Limits for rotation | Horizontal: X Vertical: Y")]
-	public Vector2 XRotationLimits = new Vector2(-80f, 80f);
+	public Vector2 XRotationLimits;
 
-	[FPD_Suffix(0f, 60f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
 	[Tooltip("Making clamp ranges elastic, so when it starts to reach clamp value it slows like muscles needs more effort")]
-	public float XElasticRange = 20f;
+	[FPD_Suffix(0f, 60f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
+	public float XElasticRange;
 
 	[Tooltip("When head want go back to default state of looking, it will blend with default animation instead of changing values of rotation variables to go back")]
-	public bool LimitHolder = true;
+	public bool LimitHolder;
 
-	public Vector2 YRotationLimits = new Vector2(-50f, 50f);
+	public Vector2 YRotationLimits;
 
 	[Tooltip("Making clamp ranges elastic, so when it starts to reach clamp value it slows like muscles needs more effort")]
 	[FPD_Suffix(0f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
-	public float YElasticRange = 15f;
+	public float YElasticRange;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("You can use this variable to blend intensity of look animator motion over skeleton animation\n\nValue = 1: Animation with Look Animator motion\nValue = 0: Only skeleton animation")]
-	public float LookAnimatorAmount = 1f;
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
+	public float LookAnimatorAmount;
 
 	[Tooltip("If head look seems to be calculated like it is not looking from center of head but far from bottom or over it - you can adjust it - check scene view gizmos")]
 	public Vector3 StartLookPointOffset;
 
 	[Tooltip("Freezes reference start look position in x and z axes to avoid re-reaching max rotation limits when hips etc. are rotating in animation clip.\n\nIf your character is crouching or so, you would like to have this parameter disabled")]
-	public bool AnchorStartLookPoint = true;
+	public bool AnchorStartLookPoint;
 
 	[Tooltip("In some cases you'll want to refresh anchor position during gameplay to make it more fitting to character's animation poses")]
-	public bool RefreshStartLookPoint = true;
+	public bool RefreshStartLookPoint;
 
 	[Tooltip("[When some of your bones are rotating making circles]\n\nDon't set hard rotations for bones, use animation rotation and add rotation offset to bones so animation's rotations are animated correctly (useful when using attack animations for example)")]
-	public bool SyncWithAnimator = true;
+	public bool SyncWithAnimator;
 
 	[Tooltip("When using above action, we need to keep remembered rotations of animation clip from first frame, with monitoring we will remember root rotations from each new animation played")]
 	public bool MonitorAnimator;
@@ -762,18 +777,18 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	[FPD_Percentage(0f, 3f, true, true, "%", false)]
 	[Tooltip("When you want create strange effects - this variable will overrotate bones")]
-	public float WeightsMultiplier = 1f;
+	public float WeightsMultiplier;
 
-	[Range(0.1f, 2.5f)]
 	[Tooltip("If speed of looking toward target should be limited then lower this value")]
-	public float MaxRotationSpeed = 2.5f;
+	[Range(0.1f, 2.5f)]
+	public float MaxRotationSpeed;
 
 	[Range(0f, 1f)]
 	[Tooltip("When character is rotating and head is rotating with it instead of keep focusing on target, change this value higher")]
 	public float BaseRotationCompensation;
 
 	[Tooltip("If your skeleton have not animated keyframes in animation clip then bones would start doing circles with this option disabled\n\nIn most cases all keyframes are filled, if you're sure for baked keyframes you can disable this option to avoid some not needed calculations")]
-	public bool DetectZeroKeyframes = true;
+	public bool DetectZeroKeyframes;
 
 	[Range(0f, 1f)]
 	[Tooltip("Target position to look can be smoothed out instead of immediate position changes")]
@@ -783,28 +798,28 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public EFDeltaType DeltaType;
 
 	[Tooltip("Multiplier for delta time resulting in changed speed of calculations for Look Animator")]
-	public float SimulationSpeed = 1f;
+	public float SimulationSpeed;
 
 	[Tooltip("It will make head animation stiff but perfectly looking at target")]
 	[Range(0f, 1f)]
 	public float OverrideHeadForPerfectLookDirection;
 
 	[Tooltip("Resetting bones before animators update to avoid bones twisting if bones are not animated using unity animator")]
-	public bool Calibration = true;
+	public bool Calibration;
 
 	[Tooltip("With crazy flipped axes from models done in different modelling softwares, sometimes you have to change axes order for Quaternion.LookRotation to work correctly")]
 	public EFAxisFixOrder FixingPreset;
 
 	[Tooltip("If your model is not facing 'Z' axis (blue) you can adjust it with this value")]
-	public Vector3 ModelForwardAxis = Vector3.forward;
+	public Vector3 ModelForwardAxis;
 
 	[Tooltip("If your model is not pointing up 'Y' axis (green) you can adjust it with this value")]
-	public Vector3 ModelUpAxis = Vector3.up;
+	public Vector3 ModelUpAxis;
 
 	[Tooltip("Defines model specific bones orientation in order to fix Quaternion.LookRotation axis usage")]
-	public Vector3 ManualFromAxis = Vector3.forward;
+	public Vector3 ManualFromAxis;
 
-	public Vector3 ManualToAxis = Vector3.forward;
+	public Vector3 ManualToAxis;
 
 	public Vector3 FromAuto;
 
@@ -817,13 +832,13 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public Vector3 DynamicReferenceUp;
 
 	[Tooltip("Additional degrees of rotations for head look - for simple correction, sometimes you have just to rotate head in y axis by 90 degrees")]
-	public Vector3 RotationOffset = new Vector3(0f, 0f, 0f);
+	public Vector3 RotationOffset;
 
 	[Tooltip("Additional degrees of rotations for backones - for example when you have wolf and his neck is going up in comparison to keyfarmed animation\nVariable name 'BackBonesAddOffset'")]
-	public Vector3 BackBonesAddOffset = new Vector3(0f, 0f, 0f);
+	public Vector3 BackBonesAddOffset;
 
 	[Tooltip("[ADVANCED] Axes multiplier for custom fixing flipped armature rotations")]
-	public Vector3 RotCorrectionMultiplier = new Vector3(1f, 1f, 1f);
+	public Vector3 RotCorrectionMultiplier;
 
 	[Tooltip("View debug rays in scene window")]
 	public bool DebugRays;
@@ -832,9 +847,9 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	public EFAnimationStyle AnimationStyle;
 
 	[Tooltip("Updating reference axis for parental look rotation mode every frame")]
-	public bool ConstantParentalAxisUpdate = true;
+	public bool ConstantParentalAxisUpdate;
 
-	private bool updateLookAnimator = true;
+	private bool updateLookAnimator;
 
 	private bool wasUpdating;
 
@@ -4027,5 +4042,139 @@ public class FLookAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 				PostAnimatingTweaks();
 			}
 		}
+	}
+
+	public FLookAnimator()
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0302: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0322: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0327: Unknown result type (might be due to invalid IL or missing references)
+		//IL_033c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0341: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0356: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035b: Unknown result type (might be due to invalid IL or missing references)
+		LagRotation = 0.85f;
+		LagEvery = 0.285f;
+		DelayMaxDistance = 0.25111f;
+		DelayGoSpeed = 0.6f;
+		BirdTargetPosition = Vector3.forward;
+		birdTargetPositionMemory = Vector3.forward;
+		preWeightFaloff = -1f;
+		LeftEyeOffsetRotation = Vector3.zero;
+		RightEyeOffsetRotation = Vector3.zero;
+		EyesSpeed = 0.5f;
+		EyesBlend = 1f;
+		EyesXRange = new Vector2(-60f, 60f);
+		EyesYRange = new Vector2(-50f, 50f);
+		EyesNoKeyframes = true;
+		EyesOutOfRangeBlend = 1f;
+		NodAxis = Vector3.right;
+		BackBonesNod = 0.15f;
+		nodDuration = 1f;
+		smoothingPower = 1f;
+		smoothingTime = 1f;
+		smoothingEffect = 1f;
+		ParentalOffsetsV = 2;
+		smoothLookPosition = Vector3.zero;
+		_velo_smoothLookPosition = Vector3.zero;
+		finalLookPosition = Vector3.zero;
+		_parentalAngles = Vector2.zero;
+		unclampedLookAngles = Vector3.zero;
+		targetLookAngles = Vector3.zero;
+		animatedLookAngles = Vector3.zero;
+		finalLookAngles = Vector3.zero;
+		_preLookAboveLookAngles = Vector3.zero;
+		_velo_animatedLookAngles = Vector3.zero;
+		leadBoneInitLocalOffset = Vector3.zero;
+		DestroyMomentTargetOnMaxDistance = true;
+		monitorTransitionTime = 0.8f;
+		finalMotionWeight = 1f;
+		animatedMotionWeight = 1f;
+		_velo_animatedMotionWeight = 1f;
+		_editor_displayName = "Look Animator 2";
+		FaloffValue = 0.35f;
+		FaloffValueB = 1.1f;
+		AutoBackbonesWeights = true;
+		BackBonesFalloff = AnimationCurve.Linear(0f, 1f, 1f, 0.1f);
+		CompensationBones = new List<CompensationBone>();
+		CompensationWeight = 0.5f;
+		CompensationWeightB = 0.5f;
+		targetCompensationWeight = 0.5f;
+		StartAfterTPose = true;
+		RotationSpeed = 0.65f;
+		StopLookingAbove = 180f;
+		StopLookingAboveFactor = 1f;
+		WhenAboveGoBackDuration = 0.2f;
+		XRotationLimits = new Vector2(-80f, 80f);
+		XElasticRange = 20f;
+		LimitHolder = true;
+		YRotationLimits = new Vector2(-50f, 50f);
+		YElasticRange = 15f;
+		LookAnimatorAmount = 1f;
+		AnchorStartLookPoint = true;
+		RefreshStartLookPoint = true;
+		SyncWithAnimator = true;
+		WeightsMultiplier = 1f;
+		MaxRotationSpeed = 2.5f;
+		DetectZeroKeyframes = true;
+		SimulationSpeed = 1f;
+		Calibration = true;
+		ModelForwardAxis = Vector3.forward;
+		ModelUpAxis = Vector3.up;
+		ManualFromAxis = Vector3.forward;
+		ManualToAxis = Vector3.forward;
+		RotationOffset = new Vector3(0f, 0f, 0f);
+		BackBonesAddOffset = new Vector3(0f, 0f, 0f);
+		RotCorrectionMultiplier = new Vector3(1f, 1f, 1f);
+		ConstantParentalAxisUpdate = true;
+		updateLookAnimator = true;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

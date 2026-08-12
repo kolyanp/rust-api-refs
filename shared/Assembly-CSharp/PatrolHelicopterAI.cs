@@ -49,7 +49,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 		private float score;
 
-		private float lastActiveTime = Time.realtimeSinceStartup;
+		private float lastActiveTime;
 
 		private const float isStaleTime = 5f;
 
@@ -95,6 +95,8 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+			lastActiveTime = Time.realtimeSinceStartup;
+			base._002Ector();
 			if ((Object)(object)parent == (Object)null)
 			{
 				this.centre = centre;
@@ -152,13 +154,13 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		DEATH
 	}
 
-	public List<targetinfo> _targetList = new List<targetinfo>();
+	public List<targetinfo> _targetList;
 
-	private HashSet<BasePlayer> _targetSet = new HashSet<BasePlayer>();
+	private HashSet<BasePlayer> _targetSet;
 
-	public List<DangerZone> dangerZones = new List<DangerZone>();
+	public List<DangerZone> dangerZones;
 
-	public List<DangerZone> noGoZones = new List<DangerZone>();
+	public List<DangerZone> noGoZones;
 
 	private const int max_zones = 20;
 
@@ -176,9 +178,9 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public float moveSpeed;
 
-	public float maxSpeed = 25f;
+	public float maxSpeed;
 
-	public float courseAdjustLerpTime = 2f;
+	public float courseAdjustLerpTime;
 
 	public Quaternion targetRotation;
 
@@ -186,21 +188,21 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public Vector3 targetWindVec;
 
-	public float windForce = 5f;
+	public float windForce;
 
-	public float windFrequency = 1f;
+	public float windFrequency;
 
 	public float targetThrottleSpeed;
 
 	public float throttleSpeed;
 
-	public float maxRotationSpeed = 90f;
+	public float maxRotationSpeed;
 
 	public float rotationSpeed;
 
-	public float terrainPushForce = 100f;
+	public float terrainPushForce;
 
-	public float obstaclePushForce = 100f;
+	public float obstaclePushForce;
 
 	public HelicopterTurret leftGun;
 
@@ -212,7 +214,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public aiState _currentState;
 
-	public float oceanDepthTargetCutoff = 3f;
+	public float oceanDepthTargetCutoff;
 
 	public AIHelicopterAnimation anim;
 
@@ -224,7 +226,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	private bool aimDoorSide;
 
-	private Vector3 pushVec = Vector3.zero;
+	private Vector3 pushVec;
 
 	private Vector3 _lastPos;
 
@@ -265,7 +267,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	private const float FleeDistance = 130f;
 
-	private float destination_min_dist = 2f;
+	private float destination_min_dist;
 
 	private float currentOrbitDistance;
 
@@ -275,13 +277,13 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	private float orbitStartTime;
 
-	public float maxOrbitDuration = 30f;
+	public float maxOrbitDuration;
 
 	private bool breakingOrbit;
 
 	private int orbitPointsReached;
 
-	private float timeBetweenRocketsOrbit = 0.5f;
+	private float timeBetweenRocketsOrbit;
 
 	private bool didGetToDesination;
 
@@ -297,9 +299,9 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public float lastRocketTime;
 
-	public float timeBetweenRockets = 0.2f;
+	public float timeBetweenRockets;
 
-	public int numRocketsLeft = 12;
+	public int numRocketsLeft;
 
 	public const int maxRockets = 12;
 
@@ -314,7 +316,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 
 	public const float strafe_firing_range = 150f;
 
-	private float get_out_of_strafe_distance = 15f;
+	private float get_out_of_strafe_distance;
 
 	private bool passNapalm;
 
@@ -325,10 +327,10 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 	private bool useNapalm;
 
 	[NonSerialized]
-	public float lastNapalmTime = float.NegativeInfinity;
+	public float lastNapalmTime;
 
 	[NonSerialized]
-	public float lastStrafeTime = float.NegativeInfinity;
+	public float lastStrafeTime;
 
 	private float _lastThinkTime;
 
@@ -366,10 +368,10 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			{
 				UpdateTargetLineOfSightTime(targetinfo3);
 				bool flag2 = (Object.op_Implicit((Object)(object)targetinfo3.ply) ? targetinfo3.ply.IsDead() : (targetinfo3.ent.Health() <= 0f));
-				if (targetinfo3.TimeSinceSeen() >= 6f || flag2)
+				if ((targetinfo3.TimeSinceSeen() >= 6f) | flag2)
 				{
 					bool flag3 = Random.Range(0f, 1f) >= 0f;
-					if ((CanStrafe() || CanUseNapalm()) && IsAlive() && !flag && !flag2 && ((Object)(object)targetinfo3.ply == (Object)(object)leftGun._target || (Object)(object)targetinfo3.ply == (Object)(object)rightGun._target) && flag3)
+					if (((CanStrafe() || CanUseNapalm()) && IsAlive() && !flag && !flag2 && ((Object)(object)targetinfo3.ply == (Object)(object)leftGun._target || (Object)(object)targetinfo3.ply == (Object)(object)rightGun._target)) & flag3)
 					{
 						shouldUseNapalm = !ValidRocketTarget(targetinfo3.ply) || Random.Range(0f, 1f) > 0.75f;
 						flag = true;
@@ -415,7 +417,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			if (PlayerVisible(targ.ply))
 			{
 				targ.lastSeenTime = Time.realtimeSinceStartup;
-				targ.visibleFor += 1f;
+				targ.visibleFor++;
 			}
 			else
 			{
@@ -1257,7 +1259,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			bool flag2 = !num && CanUseNapalm();
 			float num2 = Time.realtimeSinceStartup - lastDamageTime;
 			lastDamageTime = Time.realtimeSinceStartup;
-			if (num2 < timeSinceDamagedThreshold && (Object)(object)basePlayer != (Object)null && (flag || flag2))
+			if (num2 < timeSinceDamagedThreshold && (Object)(object)basePlayer != (Object)null && (flag | flag2))
 			{
 				ExitCurrentState();
 				State_Strafe_Enter(basePlayer, flag2);
@@ -1858,7 +1860,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 				hasEnteredOrbit = true;
 				orbitStartTime = Time.realtimeSinceStartup;
 			}
-			if (_targetList.Count == 0 && !isRetiring && canBreak && orbitPointsReached > 15)
+			if (((_targetList.Count == 0 && !isRetiring) & canBreak) && orbitPointsReached > 15)
 			{
 				StartBreakOrbit();
 				return;
@@ -1873,7 +1875,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			SetTargetDestination(orbitPosition, 2f, minDistForFacingRotation);
 			targetThrottleSpeed = 0.5f;
 		}
-		if (Time.realtimeSinceStartup - orbitStartTime > maxOrbitDuration && !breakingOrbit && canBreak)
+		if ((Time.realtimeSinceStartup - orbitStartTime > maxOrbitDuration && !breakingOrbit) & canBreak)
 		{
 			StartBreakOrbit();
 		}
@@ -2411,7 +2413,7 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 		{
 			strafe_target = strafeTarget;
 			get_out_of_strafe_distance = Random.Range(13f, 17f);
-			if (CanUseNapalm() && shouldUseNapalm)
+			if (CanUseNapalm() & shouldUseNapalm)
 			{
 				passNapalm = shouldUseNapalm;
 				useNapalm = true;
@@ -2658,5 +2660,33 @@ public class PatrolHelicopterAI : BaseMonoBehaviour
 			return 0.05f;
 		}
 		return 0.05f * (1f - distToTarget / 5f);
+	}
+
+	public PatrolHelicopterAI()
+	{
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		_targetList = new List<targetinfo>();
+		_targetSet = new HashSet<BasePlayer>();
+		dangerZones = new List<DangerZone>();
+		noGoZones = new List<DangerZone>();
+		maxSpeed = 25f;
+		courseAdjustLerpTime = 2f;
+		windForce = 5f;
+		windFrequency = 1f;
+		maxRotationSpeed = 90f;
+		terrainPushForce = 100f;
+		obstaclePushForce = 100f;
+		oceanDepthTargetCutoff = 3f;
+		pushVec = Vector3.zero;
+		destination_min_dist = 2f;
+		maxOrbitDuration = 30f;
+		timeBetweenRocketsOrbit = 0.5f;
+		timeBetweenRockets = 0.2f;
+		numRocketsLeft = 12;
+		get_out_of_strafe_distance = 15f;
+		lastNapalmTime = float.NegativeInfinity;
+		lastStrafeTime = float.NegativeInfinity;
+		base._002Ector();
 	}
 }

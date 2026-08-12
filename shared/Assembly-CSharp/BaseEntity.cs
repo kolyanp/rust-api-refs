@@ -165,7 +165,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		Reserved16 = 0x10000000,
 		Reserved17 = 0x20000000,
 		Reserved18 = 0x40000000,
-		Reserved19 = int.MinValue
+		Reserved19 = ~(Placeholder | On | OnFire | Open | Locked | Debugging | Disabled | Reserved1 | Reserved2 | Reserved3 | Reserved4 | Reserved5 | Broken | Busy | Reserved6 | Reserved7 | Reserved8 | Reserved9 | Reserved10 | Reserved11 | InUse | Reserved12 | Reserved13 | Unused23 | Protected | Transferring | Reserved14 | Reserved15 | Reserved16 | Reserved17 | Reserved18)
 	}
 
 	public enum FlagsUpdateMode
@@ -1062,7 +1062,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		Interesting = 8,
 		Food = 0x10,
 		Meat = 0x20,
-		Water = 0x20
+		Water = Meat
 	}
 
 	public static class Util
@@ -1215,10 +1215,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		X = 1,
 		Y = 2,
 		Z = 4,
-		XY = 3,
-		XZ = 5,
-		YZ = 6,
-		XYZ = 7
+		XY = X | Y,
+		XZ = X | Z,
+		YZ = Y | Z,
+		XYZ = XY | Z
 	}
 
 	public enum GiveItemReason
@@ -1235,7 +1235,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	private uint broadcastProtocol;
 
-	public List<EntityLink> links = new List<EntityLink>();
+	public List<EntityLink> links;
 
 	private bool linkedToNeighbours;
 
@@ -1264,15 +1264,15 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	private Action _updateNetworkGroupCallback;
 
-	private int oldPosLSFrame = int.MinValue;
+	private int oldPosLSFrame;
 
-	private Vector3 oldPosLS = Vector3.negativeInfinity;
+	private Vector3 oldPosLS;
 
 	private Axis hasMovedLS;
 
 	private const float EpsilonSqr = 9.9999994E-11f;
 
-	private EntityRef[] entitySlots = new EntityRef[8];
+	private EntityRef[] entitySlots;
 
 	private const float SYNC_VAR_QUEUE_UPDATE_INTERVAL = 0.0333f;
 
@@ -1286,20 +1286,20 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	private Action _forceUpdateTriggersCallback;
 
-	protected bool isVisible = true;
+	protected bool isVisible;
 
-	protected bool isAnimatorVisible = true;
+	protected bool isAnimatorVisible;
 
-	protected bool isShadowVisible = true;
+	protected bool isShadowVisible;
 
-	protected OccludeeSphere localOccludee = new OccludeeSphere(-1);
+	protected OccludeeSphere localOccludee;
 
 	[Header("BaseEntity")]
 	public Bounds bounds;
 
 	public GameObjectRef impactEffect;
 
-	public bool enableSaving = true;
+	public bool enableSaving;
 
 	public bool syncPosition;
 
@@ -1341,7 +1341,14 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public virtual float RealisticMass => 100f;
 
-	protected float TransferProtectionRemaining => TimeUntil.op_Implicit(_transferProtectionRemaining);
+	protected float TransferProtectionRemaining
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return TimeUntil.op_Implicit(_transferProtectionRemaining);
+		}
+	}
 
 	protected Action DisableTransferProtectionAction => _disableTransferProtectionAction ?? (_disableTransferProtectionAction = DisableTransferProtection);
 
@@ -1507,9 +1514,23 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		}
 	}
 
-	public virtual Matrix4x4 WorldToNavMeshSpace => Matrix4x4.identity;
+	public virtual Matrix4x4 WorldToNavMeshSpace
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return Matrix4x4.identity;
+		}
+	}
 
-	public virtual Matrix4x4 NavMeshToWorldSpace => Matrix4x4.identity;
+	public virtual Matrix4x4 NavMeshToWorldSpace
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return Matrix4x4.identity;
+		}
+	}
 
 	bool IPrefabPreProcess.CanRunDuringBundling => false;
 
@@ -2149,7 +2170,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		{
 			return links;
 		}
-		if (!linkedToNeighbours && linkToNeighbours)
+		if (!linkedToNeighbours & linkToNeighbours)
 		{
 			LinkToNeighbours();
 		}
@@ -3700,8 +3721,8 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return axis;
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwnerOrMounted]
+	[RPC_Server]
 	private void BroadcastSignalFromClient(RPCMessage msg)
 	{
 		uint num = StringPool.Get("BroadcastSignalFromClient");
@@ -7315,5 +7336,21 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			ClientRPCSend(netWrite, target.Connections);
 			FreeRPCTarget(target);
 		}
+	}
+
+	public BaseEntity()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		links = new List<EntityLink>();
+		oldPosLSFrame = int.MinValue;
+		oldPosLS = Vector3.negativeInfinity;
+		entitySlots = new EntityRef[8];
+		isVisible = true;
+		isAnimatorVisible = true;
+		isShadowVisible = true;
+		localOccludee = new OccludeeSphere(-1);
+		enableSaving = true;
+		base._002Ector();
 	}
 }

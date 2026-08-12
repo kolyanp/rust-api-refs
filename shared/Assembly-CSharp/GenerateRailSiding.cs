@@ -19,9 +19,9 @@ public class GenerateRailSiding : ProceduralComponent
 
 	public const float TerrainOffset = -0.125f;
 
-	private static Quaternion rotRight = Quaternion.Euler(0f, 90f, 0f);
+	private static Quaternion rotRight;
 
-	private static Quaternion rotLeft = Quaternion.Euler(0f, -90f, 0f);
+	private static Quaternion rotLeft;
 
 	private const int MaxDepth = 250000;
 
@@ -234,5 +234,15 @@ public class GenerateRailSiding : ProceduralComponent
 			item.AdjustPlacementMap(20f);
 		}
 		TerrainMeta.Path.Rails.AddRange(list);
+	}
+
+	static GenerateRailSiding()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		rotRight = Quaternion.Euler(0f, 90f, 0f);
+		rotLeft = Quaternion.Euler(0f, -90f, 0f);
 	}
 }

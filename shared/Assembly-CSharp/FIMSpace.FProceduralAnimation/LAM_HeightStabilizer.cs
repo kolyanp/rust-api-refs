@@ -12,9 +12,9 @@ public class LAM_HeightStabilizer : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _extrV;
 
-	private Vector3 adjustement = Vector3.zero;
+	private Vector3 adjustement;
 
-	private Vector3 sd_adjustement = Vector3.zero;
+	private Vector3 sd_adjustement;
 
 	public override bool AskForSpineBone => true;
 
@@ -79,5 +79,16 @@ public class LAM_HeightStabilizer : LegsAnimatorControlModuleBase
 		adjustement = Vector3.SmoothDamp(adjustement, val2, ref sd_adjustement, Mathf.Lerp(0.4f, 0.005f, _reactV.GetFloat()), 1000000f, base.LA.DeltaTime);
 		LegsAnimator lA = base.LA;
 		lA._Hips_Modules_ExtraWOffset += base.LA.RootToWorldSpaceVec(adjustement);
+	}
+
+	public LAM_HeightStabilizer()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		adjustement = Vector3.zero;
+		sd_adjustement = Vector3.zero;
+		base._002Ector();
 	}
 }

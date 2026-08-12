@@ -10,13 +10,13 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _mulV;
 
-	private Vector3 customVelo = Vector3.zero;
+	private Vector3 customVelo;
 
-	private Vector3 velo = Vector3.zero;
+	private Vector3 velo;
 
-	private Vector3 finalVelo = Vector3.zero;
+	private Vector3 finalVelo;
 
-	private Vector3 _sd_velo = Vector3.zero;
+	private Vector3 _sd_velo;
 
 	private Vector3 lastPos;
 
@@ -102,5 +102,22 @@ public class LAM_StepFurther : LegsAnimatorControlModuleBase
 			LegsAnimator lA = base.LA;
 			lA._Hips_Modules_ExtraWOffset += velo * (_hipsV.GetFloat() * base.EffectBlend);
 		}
+	}
+
+	public LAM_StepFurther()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		customVelo = Vector3.zero;
+		velo = Vector3.zero;
+		finalVelo = Vector3.zero;
+		_sd_velo = Vector3.zero;
+		base._002Ector();
 	}
 }

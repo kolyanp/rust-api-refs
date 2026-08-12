@@ -10,7 +10,7 @@ public class UIIntegerEntry : MonoBehaviour
 
 	public void OnAmountTextChanged()
 	{
-		this.textChanged();
+		textChanged();
 	}
 
 	public void SetAmount(int amount)

@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class BaseRagdoll : BaseMountable
 {
-	[SerializeField]
 	[Header("Ragdolling")]
+	[SerializeField]
 	private Ragdoll Ragdoll;
 
 	[SerializeField]
@@ -270,12 +270,12 @@ public class BaseRagdoll : BaseMountable
 			List<RaycastHit> hits = Pool.Get<List<RaycastHit>>();
 			bool flag4 = flag && ClippedOnPath(start, end, 0.3f, in hits, basePlayer);
 			bool flag5 = ClippedOnPath(start, end, 0f, in hits, basePlayer);
-			flag2 = flag2 || flag4 || flag5;
-			flag3 = flag3 || flag5;
+			flag2 |= flag4 | flag5;
+			flag3 |= flag5;
 			bool flag6 = flag && ClippedOnPath(start2, end2, 0.3f, in hits, basePlayer);
 			bool flag7 = ClippedOnPath(start2, end2, 0f, in hits, basePlayer);
-			flag2 = flag2 || flag6 || flag7;
-			flag3 = flag3 || flag7;
+			flag2 |= flag6 | flag7;
+			flag3 |= flag7;
 			Pool.FreeUnmanaged<RaycastHit>(ref hits);
 			if (!flag2)
 			{

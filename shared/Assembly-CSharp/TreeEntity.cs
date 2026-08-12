@@ -164,7 +164,7 @@ public class TreeEntity : ResourceEntity, IPrefabPreProcess
 			return;
 		}
 		bool flag2 = (Object)(object)xMarker != (Object)null;
-		if ((flag || flag2) && !info.DidGather && info.gatherScale > 0f)
+		if ((flag | flag2) && !info.DidGather && info.gatherScale > 0f)
 		{
 			Vector3 arg;
 			Vector3 arg2;

@@ -100,6 +100,7 @@ public class CopyPaste : ConsoleSystem
 			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 			//IL_009d: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			Resources = request.resources;
 			NPCs = request.npcs;
 			Vehicles = request.vehicles;

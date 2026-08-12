@@ -33,7 +33,7 @@ public class CookingWorkbench : MixingTable
 		{
 			if (array[i].shortname == text)
 			{
-				flagsUpdateScope.Set(Flags.Reserved9, (next & Flags.On) == Flags.On || flag);
+				flagsUpdateScope.Set(Flags.Reserved9, ((next & Flags.On) == Flags.On) | flag);
 				return;
 			}
 		}

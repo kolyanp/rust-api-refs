@@ -13,21 +13,21 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	[Header("ContainerIOEntity")]
 	public ItemDefinition onlyAllowedItem;
 
-	public ItemContainer.ContentsType allowedContents = ItemContainer.ContentsType.Generic;
+	public ItemContainer.ContentsType allowedContents;
 
-	public int maxStackSize = 1;
+	public int maxStackSize;
 
 	public int numSlots;
 
-	public string lootPanelName = "generic";
+	public string lootPanelName;
 
-	public Phrase panelTitle = new Phrase("loot", "Loot");
+	public Phrase panelTitle;
 
 	public bool needsBuildingPrivilegeToUse;
 
 	public bool requireAuthIfNotLocked;
 
-	public bool isLootable = true;
+	public bool isLootable;
 
 	public bool isMonitorable;
 
@@ -478,5 +478,17 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 	public override bool SupportsChildDeployables()
 	{
 		return supportsChildDeployables;
+	}
+
+	public ContainerIOEntity()
+	{
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Expected O, but got Unknown
+		allowedContents = ItemContainer.ContentsType.Generic;
+		maxStackSize = 1;
+		lootPanelName = "generic";
+		panelTitle = new Phrase("loot", "Loot");
+		isLootable = true;
+		base._002Ector();
 	}
 }

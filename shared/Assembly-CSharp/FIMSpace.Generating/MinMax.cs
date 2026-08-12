@@ -24,9 +24,23 @@ public struct MinMax
 
 	public static MinMax zero => new MinMax(0, 0);
 
-	public Vector2 ToVector2 => new Vector2((float)Min, (float)Max);
+	public Vector2 ToVector2
+	{
+		get
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			return new Vector2((float)Min, (float)Max);
+		}
+	}
 
-	public Vector2Int ToVector2Int => new Vector2Int(Min, Max);
+	public Vector2Int ToVector2Int
+	{
+		get
+		{
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			return new Vector2Int(Min, Max);
+		}
+	}
 
 	public MinMax(int min, int max)
 	{

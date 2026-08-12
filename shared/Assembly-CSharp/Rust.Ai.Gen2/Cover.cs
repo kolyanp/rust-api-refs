@@ -14,8 +14,8 @@ public struct Cover : IEquatable<Cover>
 		Left = 1,
 		Right = 2,
 		Up = 4,
-		Sides = 3,
-		All = 7
+		Sides = Left | Right,
+		All = Sides | Up
 	}
 
 	public Vector3 position;

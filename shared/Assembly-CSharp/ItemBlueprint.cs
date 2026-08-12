@@ -7,15 +7,24 @@ using UnityEngine;
 public class ItemBlueprint : MonoBehaviour
 {
 	[Serializable]
-	public struct BlueprintOverride(ItemBlueprint bp)
+	public struct BlueprintOverride
 	{
-		public Era TargetEra = (Era)0;
+		public Era TargetEra;
 
-		public List<ItemAmount> Ingredients = bp.ingredients;
+		public List<ItemAmount> Ingredients;
 
-		public float craftTime = bp.time;
+		public float craftTime;
 
-		public int workbenchLevel = bp.workbenchLevelRequired;
+		public int workbenchLevel;
+
+		public BlueprintOverride(ItemBlueprint bp)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			TargetEra = (Era)0;
+			Ingredients = bp.ingredients;
+			craftTime = bp.time;
+			workbenchLevel = bp.workbenchLevelRequired;
+		}
 	}
 
 	[Serializable]
@@ -26,8 +35,8 @@ public class ItemBlueprint : MonoBehaviour
 
 		public int amount = 1;
 
-		[Tooltip("Chance (0-1) this surplus item is created when crafted at a workbench with the surplus upgrade.")]
 		[Range(0f, 1f)]
+		[Tooltip("Chance (0-1) this surplus item is created when crafted at a workbench with the surplus upgrade.")]
 		public float chance = 0.1f;
 	}
 
@@ -50,8 +59,8 @@ public class ItemBlueprint : MonoBehaviour
 	[Header("Workbench")]
 	public int workbenchLevelRequired;
 
-	[Header("Surplus")]
 	[Tooltip("Items that may be produced as surplus when crafted at a workbench with the surplus upgrade installed. Leave null/empty for no surplus.")]
+	[Header("Surplus")]
 	public List<SurplusEntry> surplusItems;
 
 	[Header("Scrap")]
@@ -59,8 +68,8 @@ public class ItemBlueprint : MonoBehaviour
 
 	public int scrapFromRecycle;
 
-	[Header("Unlocking")]
 	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
+	[Header("Unlocking")]
 	public bool NeedsSteamItem;
 
 	public ItemDefinition RequireUnlockedItem;

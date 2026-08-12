@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class ItemModBlueprintCraft : ItemMod
 {
-	public static readonly Phrase CraftItemTitle = new Phrase("craft_item", "Craft");
+	public static readonly Phrase CraftItemTitle;
 
-	public static readonly Phrase CraftItemDesc = new Phrase("craft_item_desc", "Create the item the blueprint is referring to");
+	public static readonly Phrase CraftItemDesc;
 
-	public static readonly Phrase CraftAllTitle = new Phrase("craft_all", "Craft All");
+	public static readonly Phrase CraftAllTitle;
 
-	public static readonly Phrase CraftAllDesc = new Phrase("craft_all_desc", "Craft all available blueprints into items");
+	public static readonly Phrase CraftAllDesc;
 
 	public GameObjectRef successEffect;
 
@@ -49,5 +49,21 @@ public class ItemModBlueprintCraft : ItemMod
 				Effect.server.Run(successEffect.resourcePath, player.eyes.position);
 			}
 		}
+	}
+
+	static ItemModBlueprintCraft()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		CraftItemTitle = new Phrase("craft_item", "Craft");
+		CraftItemDesc = new Phrase("craft_item_desc", "Create the item the blueprint is referring to");
+		CraftAllTitle = new Phrase("craft_all", "Craft All");
+		CraftAllDesc = new Phrase("craft_all_desc", "Craft all available blueprints into items");
 	}
 }

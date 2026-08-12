@@ -400,40 +400,40 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public ParticleSystemContainer wakeEffect;
 
 	[ServerVar(Help = "(Generated) Duration in seconds after entering the deep sea zone that a player boat has before its engine is powered down")]
-	public static float DeepSeaTransitionPowerDownGraceDuration = 10f;
+	public static float DeepSeaTransitionPowerDownGraceDuration;
 
 	[ServerVar(Help = "(Generated) When enabled, player boat engines are powered down when no players are aboard; prevents runaway unmanned boats")]
-	public static bool PowerdownOnNoPlayers = true;
+	public static bool PowerdownOnNoPlayers;
 
 	[ServerVar(Help = "When enabled, deployables on boats send immediate network updates when orphaned during edit mode to prevent looping sounds from being killed")]
-	public static bool OrphanSendImmediate = true;
+	public static bool OrphanSendImmediate;
 
 	[ServerVar(Help = "(Generated) Interval in seconds between checks to determine whether any players are still aboard the boat")]
-	public static float AboardPlayerCheckInterval = 2f;
+	public static float AboardPlayerCheckInterval;
 
 	[ServerVar(Help = "(Generated) Time in seconds after a boat is anchored before it becomes eligible for shore drift; default 21600s (6 hours)")]
-	public static float AnchoredDriftDelaySeconds = 21600f;
+	public static float AnchoredDriftDelaySeconds;
 
 	[ServerVar(Help = "0 - 1")]
-	public static float SailPositionInfluence = 0.1f;
+	public static float SailPositionInfluence;
 
 	[ServerVar(Help = "0 - 1")]
-	public static float EnginePositionInfluences = 0.05f;
+	public static float EnginePositionInfluences;
 
 	[ServerVar(Help = "(Generated) Maximum angle in degrees from vertical at which building blocks can be placed on a player boat; default 30 degrees")]
-	public static float PlacementUpThreshold = 30f;
+	public static float PlacementUpThreshold;
 
 	[Help("How long until player boat corpses despawn")]
 	[ServerVar]
-	public static float corpseseconds = 1800f;
+	public static float corpseseconds;
 
 	[ServerVar(Help = "How long before a boat loses all its health while outside")]
-	public static float decayminutes = 720f;
+	public static float decayminutes;
 
 	[ServerVar(Help = "How long until decay begins after the boat was last used")]
-	public static float decaystartdelayminutes = 1440f;
+	public static float decaystartdelayminutes;
 
-	public static float CannonHitSlowdownMultiplier = 0f;
+	public static float CannonHitSlowdownMultiplier;
 
 	private bool cachedPlayersAboard;
 
@@ -470,29 +470,29 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	private DragByAngle dragByAngle;
 
 	[ServerVar]
-	public static float DragByAngle_MinDrag = 0.65f;
+	public static float DragByAngle_MinDrag;
 
 	[ServerVar]
-	public static float DragByAngle_MaxDrag = 2.2f;
+	public static float DragByAngle_MaxDrag;
 
 	[ServerVar]
-	public static float DragByAngle_MinContrib = 5f;
+	public static float DragByAngle_MinContrib;
 
 	[ServerVar]
-	public static float DragByAngle_MaxContrib = 50f;
+	public static float DragByAngle_MaxContrib;
 
 	[ServerVar]
-	public static float DragByAngle_Exponent = 0.4f;
+	public static float DragByAngle_Exponent;
 
 	public const Flags Flag_DestructibleWreck = Flags.Reserved18;
 
-	public static Phrase tooFastToEditErrorPhrase = new Phrase("playerboat_too_fast_to_edit", "The boat is moving too fast to edit.");
+	public static Phrase tooFastToEditErrorPhrase;
 
-	public static Phrase recentlyDamagedCantEditPhrase = new Phrase("playerboat_recently_damaged_cant_edit", "The boat has recently been damaged and can't be edited.");
+	public static Phrase recentlyDamagedCantEditPhrase;
 
-	public static Phrase onDeployEditCoolDownPhrase = new Phrase("playerboat_cooldown_phrase", "Deploy & Edit is on cooldown.");
+	public static Phrase onDeployEditCoolDownPhrase;
 
-	public static Phrase invalidDeployLocationPhrase = new Phrase("playerboat_invalid_deploy_location_phrase", "Unable to deploy & edit in this location.");
+	public static Phrase invalidDeployLocationPhrase;
 
 	public ItemDefinition BoatBuildingStationItem;
 
@@ -506,25 +506,25 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public List<ItemAmount> DynamicBuildCost = new List<ItemAmount>();
 
 	[ReplicatedVar]
-	public static bool EditEnabled = true;
+	public static bool EditEnabled;
 
 	[ReplicatedVar]
-	public static bool FinishEditingEnabled = true;
+	public static bool FinishEditingEnabled;
 
 	[ReplicatedVar]
-	public static bool HammerRepairEnabled = true;
+	public static bool HammerRepairEnabled;
 
 	[ReplicatedVar]
-	public static int MaxBlockCount = 180;
+	public static int MaxBlockCount;
 
 	[ReplicatedVar]
-	public static int MaxDeployableCount = 120;
+	public static int MaxDeployableCount;
 
 	[ReplicatedVar]
-	public static bool DestructibleWrecksEnabled = true;
+	public static bool DestructibleWrecksEnabled;
 
 	[ReplicatedVar]
-	public static bool UseDestructibleWreckStability = true;
+	public static bool UseDestructibleWreckStability;
 
 	[Header("Player Boat")]
 	public float MaxEditVelocity = 2f;
@@ -540,7 +540,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public const Flags Flag_Dying = Flags.Broken;
 
 	[ReplicatedVar]
-	public static float VelocityMax = 15f;
+	public static float VelocityMax;
 
 	public CachedBoatParts<BoatBuildingBlock> BoatBuildingBlocks = new CachedBoatParts<BoatBuildingBlock>();
 
@@ -2657,7 +2657,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		}
 		if (IsOnDamagedCoolDown())
 		{
-			if (base.isServer && sendErrorToasts)
+			if (base.isServer & sendErrorToasts)
 			{
 				player.ShowToast(GameTip.Styles.Error, recentlyDamagedCantEditPhrase, false);
 			}
@@ -2894,5 +2894,46 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 	public override EntityBuildCost BuildCost()
 	{
 		return new EntityBuildCost(DynamicBuildCost);
+	}
+
+	static PlayerBoat()
+	{
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Expected O, but got Unknown
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Expected O, but got Unknown
+		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Expected O, but got Unknown
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Expected O, but got Unknown
+		DeepSeaTransitionPowerDownGraceDuration = 10f;
+		PowerdownOnNoPlayers = true;
+		OrphanSendImmediate = true;
+		AboardPlayerCheckInterval = 2f;
+		AnchoredDriftDelaySeconds = 21600f;
+		SailPositionInfluence = 0.1f;
+		EnginePositionInfluences = 0.05f;
+		PlacementUpThreshold = 30f;
+		corpseseconds = 1800f;
+		decayminutes = 720f;
+		decaystartdelayminutes = 1440f;
+		CannonHitSlowdownMultiplier = 0f;
+		DragByAngle_MinDrag = 0.65f;
+		DragByAngle_MaxDrag = 2.2f;
+		DragByAngle_MinContrib = 5f;
+		DragByAngle_MaxContrib = 50f;
+		DragByAngle_Exponent = 0.4f;
+		tooFastToEditErrorPhrase = new Phrase("playerboat_too_fast_to_edit", "The boat is moving too fast to edit.");
+		recentlyDamagedCantEditPhrase = new Phrase("playerboat_recently_damaged_cant_edit", "The boat has recently been damaged and can't be edited.");
+		onDeployEditCoolDownPhrase = new Phrase("playerboat_cooldown_phrase", "Deploy & Edit is on cooldown.");
+		invalidDeployLocationPhrase = new Phrase("playerboat_invalid_deploy_location_phrase", "Unable to deploy & edit in this location.");
+		EditEnabled = true;
+		FinishEditingEnabled = true;
+		HammerRepairEnabled = true;
+		MaxBlockCount = 180;
+		MaxDeployableCount = 120;
+		DestructibleWrecksEnabled = true;
+		UseDestructibleWreckStability = true;
+		VelocityMax = 15f;
 	}
 }

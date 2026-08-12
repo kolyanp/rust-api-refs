@@ -14,7 +14,23 @@ public struct InstancedRendererJobData
 
 	public ShadowCastingMode ShadowMode;
 
-	public bool HasMesh => (int)ShadowMode != 3;
+	public bool HasMesh
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Invalid comparison between Unknown and I4
+			return (int)ShadowMode != 3;
+		}
+	}
 
-	public bool HasShadow => (int)ShadowMode > 0;
+	public bool HasShadow
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Invalid comparison between Unknown and I4
+			return (int)ShadowMode > 0;
+		}
+	}
 }

@@ -28,5 +28,12 @@ public class UI_FriendsListItem : MonoBehaviour
 
 	public GameObject PartyOwnerIcon;
 
-	public static Phrase InvitedToPartyPhrase = new Phrase("party_invite.invited_to_party", "has invited you to a party");
+	public static Phrase InvitedToPartyPhrase;
+
+	static UI_FriendsListItem()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		InvitedToPartyPhrase = new Phrase("party_invite.invited_to_party", "has invited you to a party");
+	}
 }

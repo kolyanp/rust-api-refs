@@ -23,8 +23,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private List<Rust.UI.MainMenu.ServerBrowserHeader> _headers;
 
-	[Header("Filters")]
 	[SerializeField]
+	[Header("Filters")]
 	private RustButton _showEmptyToggle;
 
 	[SerializeField]

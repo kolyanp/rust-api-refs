@@ -17,7 +17,7 @@ public class HelicopterDebris : ServerGib
 
 	public float tooHotUntil;
 
-	private static Phrase TooHotToHarvestPhrase = new Phrase("debris_too_hot", "The debris is too hot to harvest! Wait for it to cool off");
+	private static Phrase TooHotToHarvestPhrase;
 
 	public override void ServerInit()
 	{
@@ -92,5 +92,12 @@ public class HelicopterDebris : ServerGib
 	public override bool ShouldInheritNetworkGroup()
 	{
 		return false;
+	}
+
+	static HelicopterDebris()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		TooHotToHarvestPhrase = new Phrase("debris_too_hot", "The debris is too hot to harvest! Wait for it to cool off");
 	}
 }

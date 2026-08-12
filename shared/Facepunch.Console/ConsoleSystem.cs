@@ -242,7 +242,12 @@ public class ConsoleSystem
 			}
 			if (remove)
 			{
-				Args = Args.Where((StringView x) => x != StringView.op_Implicit(value)).ToArray();
+				Args = Args.Where(delegate(StringView x)
+				{
+					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+					return x != StringView.op_Implicit(value);
+				}).ToArray();
 			}
 			return true;
 		}
@@ -254,7 +259,14 @@ public class ConsoleSystem
 				return false;
 			}
 			int num = Args.Length;
-			Args = Args.Where((StringView x) => x != StringView.op_Implicit("True") && x != StringView.op_Implicit("False")).ToArray();
+			Args = Args.Where(delegate(StringView x)
+			{
+				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+				return x != StringView.op_Implicit("True") && x != StringView.op_Implicit("False");
+			}).ToArray();
 			return Args.Length != num;
 		}
 
@@ -656,7 +668,14 @@ public class ConsoleSystem
 
 		public bool AsBool => StringExtensions.ToBool(String);
 
-		public Vector3 AsVector3 => String.ToVector3();
+		public Vector3 AsVector3
+		{
+			get
+			{
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				return String.ToVector3();
+			}
+		}
 
 		public event Action<Command> OnValueChanged;
 
@@ -675,9 +694,9 @@ public class ConsoleSystem
 			{
 				SendToServer(BuildCommand("setinfo", FullName, String));
 			}
-			if (this.OnValueChanged != null)
+			if (OnValueChanged != null)
 			{
-				this.OnValueChanged(this);
+				OnValueChanged(this);
 			}
 		}
 
@@ -826,7 +845,11 @@ public class ConsoleSystem
 			}
 		}
 
-		private unsafe static readonly Memoized<StringView, StringView> WithGlobal = new Memoized<StringView, StringView>((Func<StringView, StringView>)((StringView s) => StringView.op_Implicit("global." + ((object)(*(StringView*)(&s))/*cast due to constrained. prefix*/).ToString())));
+		private unsafe static readonly Memoized<StringView, StringView> WithGlobal = new Memoized<StringView, StringView>((Func<StringView, StringView>)delegate(StringView s)
+		{
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			return StringView.op_Implicit("global." + ((object)(*(StringView*)(&s))/*cast due to constrained. prefix*/).ToString());
+		});
 
 		public static Command[] All { get; set; }
 
@@ -885,7 +908,7 @@ public class ConsoleSystem
 							Server.Replicated.Add(command2);
 							command2.OnValueChanged += delegate(Command command3)
 							{
-								ConsoleSystem.OnReplicatedVarChanged?.Invoke(command3.FullName, command3.String);
+								OnReplicatedVarChanged?.Invoke(command3.FullName, command3.String);
 							};
 						}
 					}
@@ -1248,13 +1271,13 @@ public class ConsoleSystem
 		string text = BuildCommand(strCommand, args);
 		Arg arg = new Arg(options, text);
 		bool flag = arg.HasPermission();
-		if (!arg.Invalid && flag)
+		if (!arg.Invalid & flag)
 		{
 			Arg currentArgs = CurrentArgs;
 			CurrentArgs = arg;
 			bool flag2 = Internal(arg);
 			CurrentArgs = currentArgs;
-			if (options.PrintOutput && flag2 && arg.Reply != null && arg.Reply.Length > 0)
+			if ((options.PrintOutput & flag2) && arg.Reply != null && arg.Reply.Length > 0)
 			{
 				DebugEx.Log(arg.Reply, (StackTraceLogType)0);
 			}

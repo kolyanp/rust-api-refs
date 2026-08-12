@@ -14,6 +14,6 @@ public class DemoShotPlayback : MonoBehaviour
 		RotationXTilt = 0x20,
 		RotationYPan = 0x40,
 		RotationZRoll = 0x80,
-		All = 0xFD
+		All = Position | Fov | Dof | Parent | RotationXTilt | RotationYPan | RotationZRoll
 	}
 }

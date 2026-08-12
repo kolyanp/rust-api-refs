@@ -825,9 +825,9 @@ public class BaseGameMode : BaseEntity
 		if (string.IsNullOrEmpty(text))
 		{
 			Debug.Log((object)"No Gamemode.");
-			if (BaseGameMode.GameModeChanged != null)
+			if (GameModeChanged != null)
 			{
-				BaseGameMode.GameModeChanged(null);
+				GameModeChanged(null);
 			}
 		}
 		else
@@ -850,9 +850,9 @@ public class BaseGameMode : BaseEntity
 		{
 			newActive.InitScores();
 		}
-		if (BaseGameMode.GameModeChanged != null)
+		if (GameModeChanged != null)
 		{
-			BaseGameMode.GameModeChanged(newActive);
+			GameModeChanged(newActive);
 		}
 		if (serverside)
 		{

@@ -10,10 +10,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
+	[Header("Spawn Info")]
+	[Tooltip("Usually per square km")]
 	[SerializeField]
 	[FormerlySerializedAs("TargetDensity")]
-	[Tooltip("Usually per square km")]
-	[Header("Spawn Info")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -87,9 +87,7 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 			num3 = Mathx.Min(num2, numToFill, num3, sumToSpawn);
 			for (int i = 0; i < num3; i++)
 			{
-				Vector3 spawnPos;
-				Quaternion spawnRot;
-				bool flag = distribution.Sample(out spawnPos, out spawnRot, node, AlignToNormal, ClusterDithering, 0f, Filter, FilterCutoff);
+				bool flag = distribution.Sample(out var spawnPos, out var spawnRot, node, AlignToNormal, ClusterDithering, 0f, Filter, FilterCutoff);
 				if (flag && FilterOutTutorialIslands && ((Bounds)(ref TutorialIsland.WorldBoundsMinusTutorialIslands)).size != Vector3.zero)
 				{
 					flag = ((Bounds)(ref TutorialIsland.WorldBoundsMinusTutorialIslands)).Contains(spawnPos);

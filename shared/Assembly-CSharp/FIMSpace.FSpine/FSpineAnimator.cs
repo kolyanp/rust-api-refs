@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -44,6 +45,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 		public Transform transform;
 
+		[CompilerGenerated]
+		private Vector3 _003CInitialLocalPosition_003Ek__BackingField;
+
+		[CompilerGenerated]
+		private Quaternion _003CInitialLocalRotation_003Ek__BackingField;
+
 		private Vector3 snapshotPoseBaseTrSpacePosition;
 
 		public Vector3 SnapshotPosition;
@@ -56,9 +63,39 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 		public Quaternion SnapshotRotation;
 
-		public Vector3 InitialLocalPosition { get; private set; }
+		public Vector3 InitialLocalPosition
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CInitialLocalPosition_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CInitialLocalPosition_003Ek__BackingField = value;
+			}
+		}
 
-		public Quaternion InitialLocalRotation { get; private set; }
+		public Quaternion InitialLocalRotation
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CInitialLocalRotation_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CInitialLocalRotation_003Ek__BackingField = value;
+			}
+		}
 
 		public HeadBone(Transform t)
 		{
@@ -197,11 +234,11 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Serializable]
 	public class SpineBone
 	{
-		public bool Collide = true;
+		public bool Collide;
 
-		public float CollisionRadius = 1f;
+		public float CollisionRadius;
 
-		public Vector3 ColliderOffset = Vector3.zero;
+		public Vector3 ColliderOffset;
 
 		public Transform transform;
 
@@ -221,15 +258,18 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 		public float TargetStraightenFactor;
 
-		private float boneLengthB = 0.1f;
+		private float boneLengthB;
 
-		private float boneLengthF = 0.1f;
+		private float boneLengthF;
+
+		[CompilerGenerated]
+		private Vector3 _003CBoneLocalOffset_003Ek__BackingField;
 
 		private Vector3 boneLocalOffsetB;
 
 		private Vector3 boneLocalOffsetF;
 
-		public float MotionWeight = 1f;
+		public float MotionWeight;
 
 		public Quaternion FinalRotation;
 
@@ -238,6 +278,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 		public Vector3 ManualPosOffset;
 
 		public Quaternion ManualRotOffset;
+
+		[CompilerGenerated]
+		private Vector3 _003CInitialLocalPosition_003Ek__BackingField;
+
+		[CompilerGenerated]
+		private Quaternion _003CInitialLocalRotation_003Ek__BackingField;
 
 		public Vector3 ReferencePosition;
 
@@ -261,11 +307,56 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 		public float BoneLength { get; private set; }
 
-		public Vector3 BoneLocalOffset { get; private set; }
+		public Vector3 BoneLocalOffset
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CBoneLocalOffset_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CBoneLocalOffset_003Ek__BackingField = value;
+			}
+		}
 
-		public Vector3 InitialLocalPosition { get; private set; }
+		public Vector3 InitialLocalPosition
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CInitialLocalPosition_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CInitialLocalPosition_003Ek__BackingField = value;
+			}
+		}
 
-		public Quaternion InitialLocalRotation { get; private set; }
+		public Quaternion InitialLocalRotation
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CInitialLocalRotation_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CInitialLocalRotation_003Ek__BackingField = value;
+			}
+		}
 
 		public float GetCollisionRadiusScaled()
 		{
@@ -331,6 +422,13 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+			Collide = true;
+			CollisionRadius = 1f;
+			ColliderOffset = Vector3.zero;
+			boneLengthB = 0.1f;
+			boneLengthF = 0.1f;
+			MotionWeight = 1f;
+			base._002Ector();
 			transform = t;
 			ManualPosOffset = Vector3.zero;
 			ColliderOffset = Vector3.zero;
@@ -626,9 +724,9 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
-	public float SpineAnimatorAmount = 1f;
+	public float SpineAnimatorAmount;
 
-	private Quaternion Rotate180 = Quaternion.Euler(0f, 180f, 0f);
+	private Quaternion Rotate180;
 
 	private int initAfterTPoseCounter;
 
@@ -636,7 +734,7 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool lateFixedIsRunning;
 
-	private bool fixedAllow = true;
+	private bool fixedAllow;
 
 	private bool chainReverseFlag;
 
@@ -648,17 +746,17 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private int leadingBoneIndex;
 
-	private int chainIndexDirection = 1;
+	private int chainIndexDirection;
 
-	private int chainIndexOffset = 1;
+	private int chainIndexOffset;
 
-	protected float delta = 0.016f;
+	protected float delta;
 
-	protected float unifiedDelta = 0.016f;
+	protected float unifiedDelta;
 
 	protected float elapsedDeltaHelper;
 
-	protected int updateLoops = 1;
+	protected int updateLoops;
 
 	private bool initialized;
 
@@ -668,19 +766,19 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private List<FSpineBoneConnector> connectors;
 
-	private float referenceDistance = 0.1f;
+	private float referenceDistance;
 
-	public Vector3 ModelForwardAxis = Vector3.forward;
+	public Vector3 ModelForwardAxis;
 
-	public Vector3 ModelForwardAxisScaled = Vector3.forward;
+	public Vector3 ModelForwardAxisScaled;
 
-	public Vector3 ModelUpAxis = Vector3.up;
+	public Vector3 ModelUpAxis;
 
-	public Vector3 ModelUpAxisScaled = Vector3.up;
+	public Vector3 ModelUpAxisScaled;
 
-	internal Vector3 ModelRightAxis = Vector3.right;
+	internal Vector3 ModelRightAxis;
 
-	internal Vector3 ModelRightAxisScaled = Vector3.right;
+	internal Vector3 ModelRightAxisScaled;
 
 	public List<SpineBone> SpineBones;
 
@@ -698,7 +796,7 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	public Transform ForwardReference;
 
 	[Tooltip("If your spine lead bone is in beggining of your hierarchy chain then toggle it.\n\nComponent's gizmos can help you out to define which bone should be leading (check head gizmo when you switch this toggle).")]
-	public bool LastBoneLeading = true;
+	public bool LastBoneLeading;
 
 	[Tooltip("Sometimes spine chain can face in different direction than desired or you want your characters to move backward with spine motion.")]
 	public bool ReverseForward;
@@ -712,16 +810,16 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	public Transform HeadAnchor;
 
 	[Tooltip("Letting head anchor to animate rotation")]
-	public bool AnimateAnchor = true;
+	public bool AnimateAnchor;
 
 	[Tooltip("If you need to offset leading bone rotation.")]
-	public Vector3 LeadBoneRotationOffset = Vector3.zero;
+	public Vector3 LeadBoneRotationOffset;
 
 	[Tooltip("If Lead Bone Rotation Offset should affect reference pose or bone rotation")]
-	public bool LeadBoneOffsetReference = true;
+	public bool LeadBoneOffsetReference;
 
 	[Tooltip("List of bone positioning/rotation fixers if using paws positioning with IK controlls disconnected out of arms/legs in the hierarchy")]
-	public List<SpineAnimator_FixIKControlledBones> BonesFixers = new List<SpineAnimator_FixIKControlledBones>();
+	public List<SpineAnimator_FixIKControlledBones> BonesFixers;
 
 	[Tooltip("Useful when you use few spine animators and want to rely on animated position and rotation by other spine animator.")]
 	public bool UpdateAsLast;
@@ -732,13 +830,13 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	public bool ManualAffectChain;
 
 	[Tooltip("Often when you drop model to scene, it's initial pose is much different than animations, which causes problems, this toggle solves it at start.")]
-	public bool StartAfterTPose = true;
+	public bool StartAfterTPose;
 
 	[Tooltip("If you want spine animator to stop computing when choosed animator is not enabled")]
 	public Animator OptimizeWithAnimator;
 
 	[Tooltip("Delta Time for Spine Animator calculations")]
-	public EFDeltaType DeltaType = EFDeltaType.SafeDelta;
+	public EFDeltaType DeltaType;
 
 	[Tooltip("Making update rate stable for target rate.\nIf this value is = 0 then update rate is unlimited.")]
 	public float UpdateRate;
@@ -747,73 +845,73 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	public bool UseCorrections;
 
 	[Tooltip("Sometimes offsetting model's pivot position gives better results using spine animator, offset forward axis so front legs are in centrum and see the difference (generating additional transform inside hierarchy)")]
-	public Vector3 MainPivotOffset = new Vector3(0f, 0f, 0f);
+	public Vector3 MainPivotOffset;
 
 	[Tooltip("Generating offset runtime only, allows you to adjust it on prefabs on scene")]
-	public bool PivotOffsetOnStart = true;
+	public bool PivotOffsetOnStart;
 
-	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
 	public float PosSmoother;
 
-	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	[Range(0f, 1f)]
+	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	public float RotSmoother;
 
 	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	[Range(0f, 1f)]
-	public float MaxStretching = 1f;
+	public float MaxStretching;
 
-	[Range(0f, 1f)]
 	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
-	public float Slithery = 1f;
+	[Range(0f, 1f)]
+	public float Slithery;
 
 	[Range(1f, 91f)]
 	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
-	public float AngleLimit = 40f;
+	public float AngleLimit;
 
 	[Range(0f, 1f)]
 	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
-	public float LimitSmoother = 0.35f;
+	public float LimitSmoother;
 
 	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
 	[Range(0f, 15f)]
-	public float StraightenSpeed = 7.5f;
+	public float StraightenSpeed;
 
 	public bool TurboStraighten;
 
-	[Range(0f, 1f)]
 	[Tooltip("Spine going back to straight position constantly with choosed speed intensity.")]
+	[Range(0f, 1f)]
 	public float GoBackSpeed;
 
-	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	[Range(0f, 1f)]
+	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	public float Springiness;
 
-	[Tooltip("How much effect on spine chain should have character movement.")]
 	[Range(0f, 1f)]
-	public float MotionInfluence = 1f;
+	[Tooltip("How much effect on spine chain should have character movement.")]
+	public float MotionInfluence;
 
 	[Tooltip("Useful when your creature jumps on moving platform, so when platform moves spine is not reacting, by default world space is used (null).")]
 	public Transform MotionSpace;
 
 	[Tooltip("Fade rotations to sides or rotation up/down with this parameter - can be helpful for character jump handling")]
-	public Vector2 RotationsFade = Vector2.one;
+	public Vector2 RotationsFade;
 
 	[HideInInspector]
 	[SerializeField]
 	private Transform mainPivotOffsetTransform;
 
 	[Tooltip("<! Most models can not need this !> Offset for bones rotations, thanks to that animation is able to rotate to segments in a correct way, like from center of mass.")]
-	public Vector3 SegmentsPivotOffset = new Vector3(0f, 0f, 0f);
+	public Vector3 SegmentsPivotOffset;
 
 	[Tooltip("Multiplies distance value between bones segments - can be useful for use with humanoid skeletons")]
-	public float DistancesMultiplier = 1f;
+	public float DistancesMultiplier;
 
 	[Tooltip("Pushing segments in world direction (should have included ground collider to collide with).")]
-	public Vector3 GravityPower = Vector3.zero;
+	public Vector3 GravityPower;
 
-	protected Vector3 gravityScale = Vector3.zero;
+	protected Vector3 gravityScale;
 
 	[Tooltip("[Experimental] Using some simple calculations to make spine bend on colliders.")]
 	public bool UseCollisions;
@@ -827,17 +925,17 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If disabled Colliders can be offsetted a bit in wrong way - check pink spheres in scene view (playmode, with true positions disabled colliders are fitting to stiff reference pose) - but it gives more stable collision projection! But to avoid stuttery you can increase position smoothing.")]
 	public bool UseTruePosition;
 
-	public Vector3 OffsetAllColliders = Vector3.zero;
+	public Vector3 OffsetAllColliders;
 
-	public AnimationCurve CollidersScale = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+	public AnimationCurve CollidersScale;
 
-	public float CollidersScaleMul = 6.5f;
+	public float CollidersScaleMul;
 
 	[Range(0f, 1f)]
 	public float DifferenceScaleFactor;
 
 	[Tooltip("If you want to continue checking collision if segment collides with one collider (very useful for example when you using gravity power with ground)")]
-	public bool DetailedCollision = true;
+	public bool DetailedCollision;
 
 	[HideInInspector]
 	[SerializeField]
@@ -845,7 +943,7 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool updateSpineAnimator;
 
-	private bool callSpineReposeCalculations = true;
+	private bool callSpineReposeCalculations;
 
 	public string EditorIconPath
 	{
@@ -2721,5 +2819,78 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 			ApplyNewBonesCoordinates();
 			EndUpdate();
 		}
+	}
+
+	public FSpineAnimator()
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
+		SpineAnimatorAmount = 1f;
+		Rotate180 = Quaternion.Euler(0f, 180f, 0f);
+		fixedAllow = true;
+		chainIndexDirection = 1;
+		chainIndexOffset = 1;
+		delta = 0.016f;
+		unifiedDelta = 0.016f;
+		updateLoops = 1;
+		referenceDistance = 0.1f;
+		ModelForwardAxis = Vector3.forward;
+		ModelForwardAxisScaled = Vector3.forward;
+		ModelUpAxis = Vector3.up;
+		ModelUpAxisScaled = Vector3.up;
+		ModelRightAxis = Vector3.right;
+		ModelRightAxisScaled = Vector3.right;
+		LastBoneLeading = true;
+		AnimateAnchor = true;
+		LeadBoneRotationOffset = Vector3.zero;
+		LeadBoneOffsetReference = true;
+		BonesFixers = new List<SpineAnimator_FixIKControlledBones>();
+		StartAfterTPose = true;
+		DeltaType = EFDeltaType.SafeDelta;
+		MainPivotOffset = new Vector3(0f, 0f, 0f);
+		PivotOffsetOnStart = true;
+		MaxStretching = 1f;
+		Slithery = 1f;
+		AngleLimit = 40f;
+		LimitSmoother = 0.35f;
+		StraightenSpeed = 7.5f;
+		MotionInfluence = 1f;
+		RotationsFade = Vector2.one;
+		SegmentsPivotOffset = new Vector3(0f, 0f, 0f);
+		DistancesMultiplier = 1f;
+		GravityPower = Vector3.zero;
+		gravityScale = Vector3.zero;
+		OffsetAllColliders = Vector3.zero;
+		CollidersScale = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+		CollidersScaleMul = 6.5f;
+		DetailedCollision = true;
+		callSpineReposeCalculations = true;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

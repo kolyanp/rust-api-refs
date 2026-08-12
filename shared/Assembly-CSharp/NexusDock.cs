@@ -21,14 +21,14 @@ public class NexusDock : SingletonComponent<NexusDock>
 	public Transform Departure;
 
 	[Header("Ferry")]
-	public float WaitTime = 30f;
+	public float WaitTime;
 
 	[Header("Ejection")]
 	public BoxCollider EjectionZone;
 
-	public float TraceHeight = 100f;
+	public float TraceHeight;
 
-	public LayerMask TraceLayerMask = LayerMask.op_Implicit(1503731969);
+	public LayerMask TraceLayerMask;
 
 	[NonSerialized]
 	public NexusFerry[] QueuedFerries;
@@ -171,5 +171,15 @@ public class NexusDock : SingletonComponent<NexusDock>
 		{
 			CurrentFerry = null;
 		}
+	}
+
+	public NexusDock()
+	{
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		WaitTime = 30f;
+		TraceHeight = 100f;
+		TraceLayerMask = LayerMask.op_Implicit(1503731969);
+		base._002Ector();
 	}
 }

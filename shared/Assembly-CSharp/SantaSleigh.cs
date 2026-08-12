@@ -19,17 +19,17 @@ public class SantaSleigh : BaseEntity
 
 	public SoundPlayer hohoho;
 
-	public float hohohospacing = 4f;
+	public float hohohospacing;
 
-	public float hohoho_additional_spacing = 2f;
+	public float hohoho_additional_spacing;
 
 	public Vector3 swimScale;
 
 	public Vector3 swimSpeed;
 
-	public float appliedSwimScale = 1f;
+	public float appliedSwimScale;
 
-	public float appliedSwimRotation = 20f;
+	public float appliedSwimRotation;
 
 	private Vector3 startPos;
 
@@ -41,7 +41,7 @@ public class SantaSleigh : BaseEntity
 
 	private bool dropped;
 
-	public Vector3 dropPosition = Vector3.zero;
+	public Vector3 dropPosition;
 
 	private float swimRandom;
 
@@ -106,7 +106,7 @@ public class SantaSleigh : BaseEntity
 		{
 			zero = Vector3Ex.Range(0f - x / 3f, x / 3f);
 		}
-		while (filter.GetFactor(zero) == 0f && (num -= 1f) > 0f);
+		while (filter.GetFactor(zero) == 0f && --num > 0f);
 		zero.y = 0f;
 		return zero;
 	}
@@ -272,5 +272,17 @@ public class SantaSleigh : BaseEntity
 				baseEntity.Spawn();
 			}
 		}
+	}
+
+	public SantaSleigh()
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		hohohospacing = 4f;
+		hohoho_additional_spacing = 2f;
+		appliedSwimScale = 1f;
+		appliedSwimRotation = 20f;
+		dropPosition = Vector3.zero;
+		base._002Ector();
 	}
 }

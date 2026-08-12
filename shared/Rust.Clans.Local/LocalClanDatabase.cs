@@ -38,18 +38,23 @@ public class LocalClanDatabase : Database
 	{
 		IntPtr stmHandle = Prepare("SELECT name, created, creator, motd, motd_timestamp, motd_author, logo, logo_timestamp, color, score FROM clans WHERE clan_id = ? AND deleted IS NULL");
 		Database.Bind(stmHandle, 1, clanId);
-		return ExecuteAndReadQueryResult(stmHandle, (IntPtr stm) => new ClanData
+		return ExecuteAndReadQueryResult(stmHandle, delegate(IntPtr stm)
 		{
-			Name = Database.GetColumnValue<string>(stm, 0),
-			Created = Database.GetColumnValue<long>(stm, 1),
-			Creator = Database.GetColumnValue<ulong>(stm, 2),
-			Motd = Database.GetColumnValue<string>(stm, 3),
-			MotdTimestamp = Database.GetColumnValue<long>(stm, 4),
-			MotdAuthor = Database.GetColumnValue<ulong>(stm, 5),
-			Logo = Database.GetColumnValue<byte[]>(stm, 6),
-			LogoTimestamp = Database.GetColumnValue<long>(stm, 7),
-			Color = ColorEx.FromInt32(Database.GetColumnValue<int>(stm, 8)),
-			Score = Database.GetColumnValue<long>(stm, 9)
+			//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanData
+			{
+				Name = Database.GetColumnValue<string>(stm, 0),
+				Created = Database.GetColumnValue<long>(stm, 1),
+				Creator = Database.GetColumnValue<ulong>(stm, 2),
+				Motd = Database.GetColumnValue<string>(stm, 3),
+				MotdTimestamp = Database.GetColumnValue<long>(stm, 4),
+				MotdAuthor = Database.GetColumnValue<ulong>(stm, 5),
+				Logo = Database.GetColumnValue<byte[]>(stm, 6),
+				LogoTimestamp = Database.GetColumnValue<long>(stm, 7),
+				Color = ColorEx.FromInt32(Database.GetColumnValue<int>(stm, 8)),
+				Score = Database.GetColumnValue<long>(stm, 9)
+			};
 		});
 	}
 
@@ -102,11 +107,16 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("SELECT clan_id, name, score FROM clans WHERE deleted IS NULL ORDER BY score DESC LIMIT ?");
 		Database.Bind(stmHandle, 1, Mathf.Clamp(limit, 10, 100));
 		List<ClanLeaderboardEntry> list = Pool.Get<List<ClanLeaderboardEntry>>();
-		ExecuteAndReadQueryResults<ClanLeaderboardEntry>(stmHandle, list, (IntPtr stm) => new ClanLeaderboardEntry
+		ExecuteAndReadQueryResults<ClanLeaderboardEntry>(stmHandle, list, delegate(IntPtr stm)
 		{
-			ClanId = Database.GetColumnValue<long>(stm, 0),
-			Name = Database.GetColumnValue<string>(stm, 1),
-			Score = Database.GetColumnValue<long>(stm, 2)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanLeaderboardEntry
+			{
+				ClanId = Database.GetColumnValue<long>(stm, 0),
+				Name = Database.GetColumnValue<string>(stm, 1),
+				Score = Database.GetColumnValue<long>(stm, 2)
+			};
 		});
 		return list;
 	}
@@ -149,11 +159,16 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("SELECT user_id, recruiter, timestamp FROM invites WHERE clan_id = ? ORDER BY timestamp ASC");
 		Database.Bind(stmHandle, 1, clanId);
 		List<ClanInvite> list = Pool.Get<List<ClanInvite>>();
-		ExecuteAndReadQueryResults<ClanInvite>(stmHandle, list, (IntPtr stm) => new ClanInvite
+		ExecuteAndReadQueryResults<ClanInvite>(stmHandle, list, delegate(IntPtr stm)
 		{
-			SteamId = Database.GetColumnValue<ulong>(stm, 0),
-			Recruiter = Database.GetColumnValue<ulong>(stm, 1),
-			Timestamp = Database.GetColumnValue<long>(stm, 2)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanInvite
+			{
+				SteamId = Database.GetColumnValue<ulong>(stm, 0),
+				Recruiter = Database.GetColumnValue<ulong>(stm, 1),
+				Timestamp = Database.GetColumnValue<long>(stm, 2)
+			};
 		});
 		return list;
 	}
@@ -163,11 +178,16 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("SELECT clan_id, recruiter, timestamp FROM invites WHERE user_id = ? ORDER BY timestamp ASC");
 		Database.Bind(stmHandle, 1, steamId);
 		List<ClanInvitation> list = Pool.Get<List<ClanInvitation>>();
-		ExecuteAndReadQueryResults<ClanInvitation>(stmHandle, list, (IntPtr stm) => new ClanInvitation
+		ExecuteAndReadQueryResults<ClanInvitation>(stmHandle, list, delegate(IntPtr stm)
 		{
-			ClanId = Database.GetColumnValue<long>(stm, 0),
-			Recruiter = Database.GetColumnValue<ulong>(stm, 1),
-			Timestamp = Database.GetColumnValue<long>(stm, 2)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanInvitation
+			{
+				ClanId = Database.GetColumnValue<long>(stm, 0),
+				Recruiter = Database.GetColumnValue<ulong>(stm, 1),
+				Timestamp = Database.GetColumnValue<long>(stm, 2)
+			};
 		});
 		return list;
 	}
@@ -220,14 +240,19 @@ public class LocalClanDatabase : Database
 		Database.Bind(stmHandle, 1, clanId);
 		Database.Bind(stmHandle, 2, Mathf.Clamp(limit, 10, 1000));
 		List<ClanLogEntry> list = Pool.Get<List<ClanLogEntry>>();
-		ExecuteAndReadQueryResults<ClanLogEntry>(stmHandle, list, (IntPtr stm) => new ClanLogEntry
+		ExecuteAndReadQueryResults<ClanLogEntry>(stmHandle, list, delegate(IntPtr stm)
 		{
-			Timestamp = Database.GetColumnValue<long>(stm, 0),
-			EventKey = Database.GetColumnValue<string>(stm, 1),
-			Arg1 = Database.GetColumnValue<string>(stm, 2),
-			Arg2 = Database.GetColumnValue<string>(stm, 3),
-			Arg3 = Database.GetColumnValue<string>(stm, 4),
-			Arg4 = Database.GetColumnValue<string>(stm, 5)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanLogEntry
+			{
+				Timestamp = Database.GetColumnValue<long>(stm, 0),
+				EventKey = Database.GetColumnValue<string>(stm, 1),
+				Arg1 = Database.GetColumnValue<string>(stm, 2),
+				Arg2 = Database.GetColumnValue<string>(stm, 3),
+				Arg3 = Database.GetColumnValue<string>(stm, 4),
+				Arg4 = Database.GetColumnValue<string>(stm, 5)
+			};
 		});
 		return list;
 	}
@@ -254,14 +279,19 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("\r\n            SELECT m.user_id, m.role_id, m.joined, m.seen, m.notes, m.notes_timestamp\r\n            FROM members m\r\n            LEFT JOIN roles r ON r.clan_id = ?1 AND r.role_id = m.role_id\r\n            WHERE m.clan_id = ?1\r\n            ORDER BY r.rank ASC, joined ASC\r\n        ");
 		Database.Bind(stmHandle, 1, clanId);
 		List<ClanMember> list = Pool.Get<List<ClanMember>>();
-		ExecuteAndReadQueryResults<ClanMember>(stmHandle, list, (IntPtr stm) => new ClanMember
+		ExecuteAndReadQueryResults<ClanMember>(stmHandle, list, delegate(IntPtr stm)
 		{
-			SteamId = Database.GetColumnValue<ulong>(stm, 0),
-			RoleId = Database.GetColumnValue<int>(stm, 1),
-			Joined = Database.GetColumnValue<long>(stm, 2),
-			LastSeen = Database.GetColumnValue<long>(stm, 3),
-			Notes = Database.GetColumnValue<string>(stm, 4),
-			NotesTimestamp = Database.GetColumnValue<long>(stm, 5)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanMember
+			{
+				SteamId = Database.GetColumnValue<ulong>(stm, 0),
+				RoleId = Database.GetColumnValue<int>(stm, 1),
+				Joined = Database.GetColumnValue<long>(stm, 2),
+				LastSeen = Database.GetColumnValue<long>(stm, 3),
+				Notes = Database.GetColumnValue<string>(stm, 4),
+				NotesTimestamp = Database.GetColumnValue<long>(stm, 5)
+			};
 		});
 		return list;
 	}
@@ -332,20 +362,25 @@ public class LocalClanDatabase : Database
 		IntPtr stmHandle = Prepare("\r\n            SELECT role_id, rank, name, can_set_motd, can_set_logo, can_invite, can_kick, can_promote, can_demote, can_set_player_notes, can_access_logs, can_access_score_events\r\n            FROM roles\r\n            WHERE clan_id = ?\r\n            ORDER BY rank ASC, role_id ASC\r\n        ");
 		Database.Bind(stmHandle, 1, clanId);
 		List<ClanRole> list = Pool.Get<List<ClanRole>>();
-		ExecuteAndReadQueryResults<ClanRole>(stmHandle, list, (IntPtr stm) => new ClanRole
+		ExecuteAndReadQueryResults<ClanRole>(stmHandle, list, delegate(IntPtr stm)
 		{
-			RoleId = Database.GetColumnValue<int>(stm, 0),
-			Rank = Database.GetColumnValue<int>(stm, 1),
-			Name = Database.GetColumnValue<string>(stm, 2),
-			CanSetMotd = Database.GetColumnValue<bool>(stm, 3),
-			CanSetLogo = Database.GetColumnValue<bool>(stm, 4),
-			CanInvite = Database.GetColumnValue<bool>(stm, 5),
-			CanKick = Database.GetColumnValue<bool>(stm, 6),
-			CanPromote = Database.GetColumnValue<bool>(stm, 7),
-			CanDemote = Database.GetColumnValue<bool>(stm, 8),
-			CanSetPlayerNotes = Database.GetColumnValue<bool>(stm, 9),
-			CanAccessLogs = Database.GetColumnValue<bool>(stm, 10),
-			CanAccessScoreEvents = Database.GetColumnValue<bool>(stm, 11)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanRole
+			{
+				RoleId = Database.GetColumnValue<int>(stm, 0),
+				Rank = Database.GetColumnValue<int>(stm, 1),
+				Name = Database.GetColumnValue<string>(stm, 2),
+				CanSetMotd = Database.GetColumnValue<bool>(stm, 3),
+				CanSetLogo = Database.GetColumnValue<bool>(stm, 4),
+				CanInvite = Database.GetColumnValue<bool>(stm, 5),
+				CanKick = Database.GetColumnValue<bool>(stm, 6),
+				CanPromote = Database.GetColumnValue<bool>(stm, 7),
+				CanDemote = Database.GetColumnValue<bool>(stm, 8),
+				CanSetPlayerNotes = Database.GetColumnValue<bool>(stm, 9),
+				CanAccessLogs = Database.GetColumnValue<bool>(stm, 10),
+				CanAccessScoreEvents = Database.GetColumnValue<bool>(stm, 11)
+			};
 		});
 		return list;
 	}
@@ -461,17 +496,23 @@ public class LocalClanDatabase : Database
 		Database.Bind(stmHandle, 1, clanId);
 		Database.Bind(stmHandle, 2, Mathf.Clamp(limit, 10, 1000));
 		List<ClanScoreEvent> list = Pool.Get<List<ClanScoreEvent>>();
-		ExecuteAndReadQueryResults<ClanScoreEvent>(stmHandle, list, (IntPtr stm) => new ClanScoreEvent
+		ExecuteAndReadQueryResults<ClanScoreEvent>(stmHandle, list, delegate(IntPtr stm)
 		{
-			Timestamp = Database.GetColumnValue<long>(stm, 0),
-			Type = (ClanScoreEventType)Database.GetColumnValue<int>(stm, 1),
-			Score = Database.GetColumnValue<int>(stm, 2),
-			Multiplier = Database.GetColumnValue<int>(stm, 3),
-			SteamId = Database.GetColumnValue<ulong>(stm, 4),
-			OtherSteamId = Database.GetColumnValue<ulong?>(stm, 5),
-			OtherClanId = Database.GetColumnValue<long?>(stm, 6),
-			Arg1 = Database.GetColumnValue<string>(stm, 7),
-			Arg2 = Database.GetColumnValue<string>(stm, 8)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+			return new ClanScoreEvent
+			{
+				Timestamp = Database.GetColumnValue<long>(stm, 0),
+				Type = (ClanScoreEventType)Database.GetColumnValue<int>(stm, 1),
+				Score = Database.GetColumnValue<int>(stm, 2),
+				Multiplier = Database.GetColumnValue<int>(stm, 3),
+				SteamId = Database.GetColumnValue<ulong>(stm, 4),
+				OtherSteamId = Database.GetColumnValue<ulong?>(stm, 5),
+				OtherClanId = Database.GetColumnValue<long?>(stm, 6),
+				Arg1 = Database.GetColumnValue<string>(stm, 7),
+				Arg2 = Database.GetColumnValue<string>(stm, 8)
+			};
 		});
 		return list;
 	}

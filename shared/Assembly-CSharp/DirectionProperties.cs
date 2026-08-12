@@ -5,7 +5,7 @@ public class DirectionProperties : PrefabAttribute
 {
 	private const float radius = 200f;
 
-	public Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
+	public Bounds bounds;
 
 	public ProtectionProperties extraProtection;
 
@@ -121,5 +121,15 @@ public class DirectionProperties : PrefabAttribute
 			return false;
 		}
 		return true;
+	}
+
+	public DirectionProperties()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		bounds = new Bounds(Vector3.zero, Vector3.zero);
+		base._002Ector();
 	}
 }

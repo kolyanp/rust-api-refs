@@ -8,22 +8,22 @@ namespace FIMSpace.GroundFitter;
 public class FGroundFitter_Movement : MonoBehaviour
 {
 	[Header("> Main Tweak Variables <")]
-	public float BaseSpeed = 3f;
+	public float BaseSpeed;
 
-	public float RotateToTargetSpeed = 6f;
+	public float RotateToTargetSpeed;
 
-	public float SprintingSpeed = 10f;
+	public float SprintingSpeed;
 
 	protected float ActiveSpeed;
 
-	public float AccelerationSpeed = 10f;
+	public float AccelerationSpeed;
 
-	public float DecelerationSpeed = 10f;
+	public float DecelerationSpeed;
 
 	[Header("> Additional Options <")]
-	public float JumpPower = 7f;
+	public float JumpPower;
 
-	public float gravity = 15f;
+	public float gravity;
 
 	public bool MultiplySprintAnimation;
 
@@ -33,8 +33,8 @@ public class FGroundFitter_Movement : MonoBehaviour
 	[Tooltip("Protecting from going through walls when slope is very big and ground fitter is jumping into it")]
 	public bool NotFallingThrough;
 
-	[Tooltip("You need collider and rigidbody on object to make it work right - ALSO CHANGE YOUR CAMERA UPDATE CLOCK TO FIXED UPDATE AND USE TIME.fixedDeltaTime - ! For now it can cause errors when jumping, character can go through floor sometimes ! - Will be upgraded in future versions")]
 	[Header("(experimental)")]
+	[Tooltip("You need collider and rigidbody on object to make it work right - ALSO CHANGE YOUR CAMERA UPDATE CLOCK TO FIXED UPDATE AND USE TIME.fixedDeltaTime - ! For now it can cause errors when jumping, character can go through floor sometimes ! - Will be upgraded in future versions")]
 	public bool UsePhysics;
 
 	[Tooltip("Disabling translating object from code and running animation without need to hold minimum movement speed")]
@@ -48,15 +48,15 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	protected float gravitUpOffset;
 
-	internal Vector3 lastNotZeroMoveVector = Vector3.zero;
+	internal Vector3 lastNotZeroMoveVector;
 
-	internal Vector3 MoveVector = Vector3.zero;
+	internal Vector3 MoveVector;
 
 	internal bool Sprint;
 
 	internal float RotationOffset;
 
-	protected string lastAnim = "";
+	protected string lastAnim;
 
 	protected Animator animator;
 
@@ -82,25 +82,25 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	internal static int _hash_animSp = Animator.StringToHash("AnimationSpeed");
 
-	private int _hash_IsGrounded = -1;
+	private int _hash_IsGrounded;
 
-	private int _hash_IsMov = -1;
+	private int _hash_IsMov;
 
 	private bool slidingAssigned;
 
 	private float? yAdjustPos;
 
-	[HideInInspector]
 	[Tooltip("If you want to set some animator parameter during being grounded")]
-	public string SetIsGroundedParam = "";
+	[HideInInspector]
+	public string SetIsGroundedParam;
 
 	[Tooltip("If you want to set some animator parameter during accelerating moving")]
 	[HideInInspector]
-	public string SetIsMovingParam = "";
+	public string SetIsMovingParam;
 
 	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
 	[HideInInspector]
-	public bool UseSlidingMat = true;
+	public bool UseSlidingMat;
 
 	private static PhysicsMaterial pm_Sliding = null;
 
@@ -587,5 +587,29 @@ public class FGroundFitter_Movement : MonoBehaviour
 			}
 		}
 		return false;
+	}
+
+	public FGroundFitter_Movement()
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		BaseSpeed = 3f;
+		RotateToTargetSpeed = 6f;
+		SprintingSpeed = 10f;
+		AccelerationSpeed = 10f;
+		DecelerationSpeed = 10f;
+		JumpPower = 7f;
+		gravity = 15f;
+		lastNotZeroMoveVector = Vector3.zero;
+		MoveVector = Vector3.zero;
+		lastAnim = "";
+		_hash_IsGrounded = -1;
+		_hash_IsMov = -1;
+		SetIsGroundedParam = "";
+		SetIsMovingParam = "";
+		UseSlidingMat = true;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

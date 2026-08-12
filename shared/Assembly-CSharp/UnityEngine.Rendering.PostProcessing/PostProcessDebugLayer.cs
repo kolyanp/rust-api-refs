@@ -164,7 +164,7 @@ public sealed class PostProcessDebugLayer
 		foreach (KeyValuePair<MonitorType, Monitor> monitor in m_Monitors)
 		{
 			bool flag3 = monitor.Value.IsRequestedAndSupported(context);
-			flag = flag || flag3;
+			flag |= flag3;
 			flag2 |= flag3 && monitor.Value.NeedsHalfRes();
 		}
 		if (!flag)

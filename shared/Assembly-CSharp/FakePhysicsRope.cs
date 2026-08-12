@@ -52,7 +52,16 @@ public class FakePhysicsRope : FacepunchBehaviour, IClientComponent
 
 	public float windAmplitude;
 
-	protected Vector3 EndPointPosition => endPoint.position + endPointOffset;
+	protected Vector3 EndPointPosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			return endPoint.position + endPointOffset;
+		}
+	}
 
 	public static Vector3 GetRationalBezierPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t, float w0 = 1f, float w1 = 1f, float w2 = 1f)
 	{

@@ -91,7 +91,7 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 		}
 		instance.persistentMissionEntities.Add(entity);
 		BaseMission.MissionInstance.ObjectiveStatus objectiveStatus = instance.objectiveStatuses[index];
-		objectiveStatus.progressCurrent += 1f;
+		objectiveStatus.progressCurrent++;
 		if (objectiveStatus.progressCurrent >= objectiveStatus.progressTarget)
 		{
 			CompleteObjective(index, instance, playerFor);

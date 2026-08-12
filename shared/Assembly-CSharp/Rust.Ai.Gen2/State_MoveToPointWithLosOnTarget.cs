@@ -66,8 +66,7 @@ public class State_MoveToPointWithLosOnTarget : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		SenseComponent.VisibilityStatus status;
-		bool flag = NpcZoneComponent.IsPointInsideZone(lkp) || (base.Senses.GetVisibilityStatus(target, out status) && status.timeNotVisible < 30f);
+		bool flag = NpcZoneComponent.IsPointInsideZone(lkp) || (base.Senses.GetVisibilityStatus(target, out var status) && status.timeNotVisible < 30f);
 		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
 		try
 		{

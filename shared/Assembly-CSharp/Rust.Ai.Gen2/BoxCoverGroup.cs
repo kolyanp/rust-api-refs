@@ -8,7 +8,7 @@ namespace Rust.Ai.Gen2;
 public class BoxCoverGroup : CoverGroup
 {
 	[SerializeField]
-	private Vector3 size = new Vector3(5f, 1.5f, 1f);
+	private Vector3 size;
 
 	private OBB obb;
 
@@ -161,5 +161,13 @@ public class BoxCoverGroup : CoverGroup
 	{
 		covers.AddRange(base.covers);
 		return base.covers.Count > 0;
+	}
+
+	public BoxCoverGroup()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		size = new Vector3(5f, 1.5f, 1f);
+		base._002Ector();
 	}
 }

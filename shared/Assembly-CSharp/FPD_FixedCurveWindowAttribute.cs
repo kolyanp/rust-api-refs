@@ -16,6 +16,7 @@ public class FPD_FixedCurveWindowAttribute : PropertyAttribute
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		((PropertyAttribute)this)._002Ector();
 		StartTime = startTime;
 		StartValue = startValue;
 		EndTime = endTime;

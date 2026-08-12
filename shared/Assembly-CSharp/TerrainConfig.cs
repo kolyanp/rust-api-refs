@@ -9,60 +9,100 @@ public class TerrainConfig : BaseScriptableObject
 	[Serializable]
 	public class SplatOverlay
 	{
-		public Color Color = new Color(1f, 1f, 1f, 0f);
+		public Color Color;
 
 		[Range(0f, 1f)]
 		public float Smoothness;
 
 		[Range(0f, 1f)]
-		public float NormalIntensity = 1f;
+		public float NormalIntensity;
 
 		[Range(0f, 8f)]
-		public float BlendFactor = 0.5f;
+		public float BlendFactor;
 
 		[Range(0.01f, 32f)]
-		public float BlendFalloff = 0.5f;
+		public float BlendFalloff;
+
+		public SplatOverlay()
+		{
+			//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+			Color = new Color(1f, 1f, 1f, 0f);
+			NormalIntensity = 1f;
+			BlendFactor = 0.5f;
+			BlendFalloff = 0.5f;
+			base._002Ector();
+		}
 	}
 
 	[Serializable]
 	public class SplatType
 	{
-		public string Name = "";
+		public string Name;
 
 		[FormerlySerializedAs("WarmColor")]
-		public Color AridColor = Color.white;
+		public Color AridColor;
 
-		public SplatOverlay AridOverlay = new SplatOverlay();
+		public SplatOverlay AridOverlay;
 
 		[FormerlySerializedAs("Color")]
-		public Color TemperateColor = Color.white;
+		public Color TemperateColor;
 
-		public SplatOverlay TemperateOverlay = new SplatOverlay();
-
-		[FormerlySerializedAs("ColdColor")]
-		public Color TundraColor = Color.white;
-
-		public SplatOverlay TundraOverlay = new SplatOverlay();
+		public SplatOverlay TemperateOverlay;
 
 		[FormerlySerializedAs("ColdColor")]
-		public Color ArcticColor = Color.white;
+		public Color TundraColor;
 
-		public SplatOverlay ArcticOverlay = new SplatOverlay();
+		public SplatOverlay TundraOverlay;
 
-		public Color JungleColor = Color.white;
+		[FormerlySerializedAs("ColdColor")]
+		public Color ArcticColor;
 
-		public SplatOverlay JungleOverlay = new SplatOverlay();
+		public SplatOverlay ArcticOverlay;
+
+		public Color JungleColor;
+
+		public SplatOverlay JungleOverlay;
 
 		public PhysicsMaterial Material;
 
-		public float SplatTiling = 5f;
+		public float SplatTiling;
 
 		[Range(0f, 1f)]
-		public float UVMIXMult = 0.15f;
+		public float UVMIXMult;
 
 		public float UVMIXStart;
 
-		public float UVMIXDist = 100f;
+		public float UVMIXDist;
+
+		public SplatType()
+		{
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+			Name = "";
+			AridColor = Color.white;
+			AridOverlay = new SplatOverlay();
+			TemperateColor = Color.white;
+			TemperateOverlay = new SplatOverlay();
+			TundraColor = Color.white;
+			TundraOverlay = new SplatOverlay();
+			ArcticColor = Color.white;
+			ArcticOverlay = new SplatOverlay();
+			JungleColor = Color.white;
+			JungleOverlay = new SplatOverlay();
+			SplatTiling = 5f;
+			UVMIXMult = 0.15f;
+			UVMIXDist = 100f;
+			base._002Ector();
+		}
 	}
 
 	public enum GroundType
@@ -76,11 +116,11 @@ public class TerrainConfig : BaseScriptableObject
 		Gravel
 	}
 
-	public bool CastShadows = true;
+	public bool CastShadows;
 
-	public LayerMask GroundMask = LayerMask.op_Implicit(0);
+	public LayerMask GroundMask;
 
-	public LayerMask WaterMask = LayerMask.op_Implicit(0);
+	public LayerMask WaterMask;
 
 	public PhysicsMaterial GenericMaterial;
 
@@ -102,23 +142,23 @@ public class TerrainConfig : BaseScriptableObject
 
 	public HoleShapeAsset[] HoleShapeAssets;
 
-	public Texture[] AlbedoArrays = (Texture[])(object)new Texture[3];
+	public Texture[] AlbedoArrays;
 
-	public Texture[] NormalArrays = (Texture[])(object)new Texture[3];
+	public Texture[] NormalArrays;
 
-	public float HeightMapErrorMin = 5f;
+	public float HeightMapErrorMin;
 
-	public float HeightMapErrorMax = 100f;
+	public float HeightMapErrorMax;
 
-	public float BaseMapDistanceMin = 100f;
+	public float BaseMapDistanceMin;
 
-	public float BaseMapDistanceMax = 500f;
+	public float BaseMapDistanceMax;
 
-	public float ShaderLodMin = 100f;
+	public float ShaderLodMin;
 
-	public float ShaderLodMax = 600f;
+	public float ShaderLodMax;
 
-	public SplatType[] Splats = new SplatType[8];
+	public SplatType[] Splats;
 
 	private string snowMatName;
 
@@ -496,5 +536,26 @@ public class TerrainConfig : BaseScriptableObject
 			}
 			return GroundType.HardSurface;
 		}
+	}
+
+	public TerrainConfig()
+	{
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		CastShadows = true;
+		GroundMask = LayerMask.op_Implicit(0);
+		WaterMask = LayerMask.op_Implicit(0);
+		AlbedoArrays = (Texture[])(object)new Texture[3];
+		NormalArrays = (Texture[])(object)new Texture[3];
+		HeightMapErrorMin = 5f;
+		HeightMapErrorMax = 100f;
+		BaseMapDistanceMin = 100f;
+		BaseMapDistanceMax = 500f;
+		ShaderLodMin = 100f;
+		ShaderLodMax = 600f;
+		Splats = new SplatType[8];
+		base._002Ector();
 	}
 }

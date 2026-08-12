@@ -43,7 +43,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 
 	private int lastDestroyedItemTimer;
 
-	private static readonly Phrase PullLockedError = new Phrase("error.pull_locked", "Item is locked in!");
+	private static readonly Phrase PullLockedError;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -346,5 +346,12 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 	public PlayerInventory.CanMoveFromResponse CanMoveFrom(BasePlayer player, Item item)
 	{
 		return new PlayerInventory.CanMoveFromResponse(!lockInventoryWhenItemPresent || (lockOnlyWithPower && !IsPowered()) || !HasPassthroughItem(), PullLockedError);
+	}
+
+	static ItemBasedFlowRestrictor()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		PullLockedError = new Phrase("error.pull_locked", "Item is locked in!");
 	}
 }

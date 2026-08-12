@@ -29,5 +29,12 @@ public class IconSkinPicker : MonoBehaviour
 
 	public RustButton charmsButton;
 
-	public static Phrase defaultSkin = new Phrase("skin.default", "Default");
+	public static Phrase defaultSkin;
+
+	static IconSkinPicker()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		defaultSkin = new Phrase("skin.default", "Default");
+	}
 }

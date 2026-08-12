@@ -14,8 +14,8 @@ public class MissionObjective_MetalDetectorDeepSeaTreasure : MissionObjective
 	[Min(0f)]
 	public int maximumDigAttempts;
 
-	[Range(0f, 1f)]
 	[Tooltip("Random chance of treasure spawning after Minimum Dig Attempts.")]
+	[Range(0f, 1f)]
 	public float successfulDigChange = 0.33f;
 
 	public override bool IsObjectiveValid(int index, BaseMission.MissionInstance instance)
@@ -95,7 +95,7 @@ public class MissionObjective_MetalDetectorDeepSeaTreasure : MissionObjective
 			}
 			else if (DeepSeaManager.IsInsideDeepSea(payload.WorldPosition) && !FloatEx.IsInfinity(instance.objectiveStatuses[index].progressCurrent))
 			{
-				instance.objectiveStatuses[index].progressCurrent += 1f;
+				instance.objectiveStatuses[index].progressCurrent++;
 			}
 			break;
 		case BaseMission.MissionEventType.OPEN_STORAGE:

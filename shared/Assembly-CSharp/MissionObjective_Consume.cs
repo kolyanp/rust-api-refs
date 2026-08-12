@@ -19,7 +19,7 @@ public class MissionObjective_Consume : MissionObjective
 		base.ProcessMissionEvent(playerFor, instance, index, type, payload, amount);
 		if (type == BaseMission.MissionEventType.CONSUME && !IsCompleted(index, instance) && CanProgress(index, instance) && payload.IntIdentifier == TargetItem.itemid)
 		{
-			instance.objectiveStatuses[index].progressCurrent += 1f;
+			instance.objectiveStatuses[index].progressCurrent++;
 			if (instance.objectiveStatuses[index].progressCurrent >= instance.objectiveStatuses[index].progressTarget)
 			{
 				CompleteObjective(index, instance, playerFor);

@@ -1,35 +1,54 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
 public class Jitter
 {
-	private readonly Vector2[] haltonSequence = (Vector2[])(object)new Vector2[16]
-	{
-		new Vector2(0.5f, 0.333333f),
-		new Vector2(0.25f, 0.666667f),
-		new Vector2(0.75f, 0.111111f),
-		new Vector2(0.125f, 0.444444f),
-		new Vector2(0.625f, 0.777778f),
-		new Vector2(0.375f, 0.222222f),
-		new Vector2(0.875f, 0.555556f),
-		new Vector2(0.0625f, 0.888889f),
-		new Vector2(0.5625f, 0.037037f),
-		new Vector2(0.3125f, 0.37037f),
-		new Vector2(0.8125f, 0.703704f),
-		new Vector2(0.1875f, 0.148148f),
-		new Vector2(0.6875f, 0.481481f),
-		new Vector2(0.4375f, 0.814815f),
-		new Vector2(0.9375f, 0.259259f),
-		new Vector2(1f / 32f, 0.592593f)
-	};
+	private readonly Vector2[] haltonSequence;
+
+	[CompilerGenerated]
+	private Vector2 _003COffset_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector2 _003CTexelOffset_003Ek__BackingField;
 
 	public int SampleIndex { get; private set; }
 
-	public int SampleCount { get; private set; } = 8;
+	public int SampleCount { get; private set; }
 
-	public Vector2 Offset { get; private set; } = Vector2.zero;
+	public Vector2 Offset
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003COffset_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003COffset_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector2 TexelOffset { get; private set; } = Vector2.zero;
+	public Vector2 TexelOffset
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CTexelOffset_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CTexelOffset_003Ek__BackingField = value;
+		}
+	}
 
 	public Jitter()
 	{
@@ -69,6 +88,29 @@ public class Jitter
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
+		haltonSequence = (Vector2[])(object)new Vector2[16]
+		{
+			new Vector2(0.5f, 0.333333f),
+			new Vector2(0.25f, 0.666667f),
+			new Vector2(0.75f, 0.111111f),
+			new Vector2(0.125f, 0.444444f),
+			new Vector2(0.625f, 0.777778f),
+			new Vector2(0.375f, 0.222222f),
+			new Vector2(0.875f, 0.555556f),
+			new Vector2(0.0625f, 0.888889f),
+			new Vector2(0.5625f, 0.037037f),
+			new Vector2(0.3125f, 0.37037f),
+			new Vector2(0.8125f, 0.703704f),
+			new Vector2(0.1875f, 0.148148f),
+			new Vector2(0.6875f, 0.481481f),
+			new Vector2(0.4375f, 0.814815f),
+			new Vector2(0.9375f, 0.259259f),
+			new Vector2(1f / 32f, 0.592593f)
+		};
+		SampleCount = 8;
+		Offset = Vector2.zero;
+		TexelOffset = Vector2.zero;
+		base._002Ector();
 		SampleCount = haltonSequence.Length;
 	}
 

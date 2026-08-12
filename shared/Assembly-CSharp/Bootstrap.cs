@@ -36,7 +36,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	public Phrase currentLoadingPhrase;
 
-	private float currentLoadingProgress = -1f;
+	private float currentLoadingProgress;
 
 	public CanvasGroup BootstrapUiCanvas;
 
@@ -48,7 +48,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	private const bool fastBootstrap = false;
 
-	private Phrase openingBundles = new Phrase("bootstrap.openingbundles", "Opening Bundles");
+	private Phrase openingBundles;
 
 	private static string loadingStepName;
 
@@ -248,7 +248,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			}
 			bool num = CommandLine.Full.Contains("-official") || CommandLine.Full.Contains("-server.official") || CommandLine.Full.Contains("+official") || CommandLine.Full.Contains("+server.official");
 			bool flag = CommandLine.Full.Contains("-stats") || CommandLine.Full.Contains("-server.stats") || CommandLine.Full.Contains("+stats") || CommandLine.Full.Contains("+server.stats");
-			ExceptionReporter.Disabled = !(num && flag);
+			ExceptionReporter.Disabled = !(num & flag);
 		}
 		Scope val;
 		Scope val2;
@@ -724,5 +724,14 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 
 	private static void EarlyInitialize()
 	{
+	}
+
+	public Bootstrap()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Expected O, but got Unknown
+		currentLoadingProgress = -1f;
+		openingBundles = new Phrase("bootstrap.openingbundles", "Opening Bundles");
+		base._002Ector();
 	}
 }

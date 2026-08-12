@@ -285,8 +285,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
-	[ReadOnly]
 	[Header("BaseNetworkable")]
+	[ReadOnly]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -409,7 +409,14 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		}
 	}
 
-	public TransformHandle TransformHandle => _transformHandle;
+	public TransformHandle TransformHandle
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _transformHandle;
+		}
+	}
 
 	public static bool UseParallelSaves => ConVar.Server.UsePlayerUpdateJobs >= 4;
 
@@ -902,7 +909,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			}
 			bool flag = ServerOcclusion.OcclusionEnabled && SupportsServerOcclusion();
 			bool stall_position_restrictions = ConVar.AntiHack.stall_position_restrictions;
-			if (flag || stall_position_restrictions)
+			if (flag | stall_position_restrictions)
 			{
 				List<Connection> list2 = Pool.Get<List<Connection>>();
 				foreach (Connection item in list)
@@ -1137,7 +1144,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		bool flag = (byte)num != 0;
 		List<Connection> subscribers2 = newGroup.subscribers;
 		bool flag2 = subscribers2 != null && !CollectionEx.IsEmpty(subscribers2);
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			list = Pool.Get<List<Connection>>();
 			list2 = Pool.Get<List<Connection>>();

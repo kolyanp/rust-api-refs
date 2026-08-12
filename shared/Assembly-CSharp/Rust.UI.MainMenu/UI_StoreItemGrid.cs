@@ -102,19 +102,19 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[Min(0f)]
 	public int cellWidth;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	public int cellHeight;
 
 	public bool fixedGrid;
 
-	public List<Vector2Int> fixedSizes = new List<Vector2Int>();
+	public List<Vector2Int> fixedSizes;
 
 	[SerializeField]
 	private bool autoSizing;
 
 	[SerializeField]
-	private Vector2 baseItemSize = new Vector2(1f, 1f);
+	private Vector2 baseItemSize;
 
 	[SerializeField]
 	private Vector2 featuredItemSize;
@@ -123,23 +123,37 @@ public class UI_StoreItemGrid : MonoBehaviour
 	private ItemSizeSettings[] sizeOverrides;
 
 	[SerializeField]
-	private List<OrderingRule> orderingRules = new List<OrderingRule>();
+	private List<OrderingRule> orderingRules;
 
 	[SerializeField]
-	private List<SteamInventoryItem> whiteListedItems = new List<SteamInventoryItem>();
+	private List<SteamInventoryItem> whiteListedItems;
 
 	[SerializeField]
 	private UI_StoreFakeItemsTakeover fakeAdditionalItems;
 
-	public bool dynamicContent = true;
+	public bool dynamicContent;
 
 	[SerializeField]
-	private RuleMatchMode ruleMatchMode = RuleMatchMode.Any;
+	private RuleMatchMode ruleMatchMode;
 
 	[SerializeField]
-	private List<StoreFilterRule> rules = new List<StoreFilterRule>();
+	private List<StoreFilterRule> rules;
 
 	public FlexGridsElement Grid => grid;
 
 	private UI_Store store => UI_Store.Instance;
+
+	public UI_StoreItemGrid()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		fixedSizes = new List<Vector2Int>();
+		baseItemSize = new Vector2(1f, 1f);
+		orderingRules = new List<OrderingRule>();
+		whiteListedItems = new List<SteamInventoryItem>();
+		dynamicContent = true;
+		ruleMatchMode = RuleMatchMode.Any;
+		rules = new List<StoreFilterRule>();
+		((MonoBehaviour)this)._002Ector();
+	}
 }

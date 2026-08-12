@@ -107,7 +107,7 @@ public class SurvivalFishTrap : WildlifeTrap
 				break;
 			}
 		}
-		return base.ItemFilter(item, targetSlot) && flag;
+		return base.ItemFilter(item, targetSlot) & flag;
 	}
 
 	protected override bool CanAcceptItem(Item item, int slot)

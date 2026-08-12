@@ -27,8 +27,7 @@ public class SliderCookie : MonoBehaviour
 				val.SetMaxValue(Command.AsFloat);
 			}
 		}
-		float result;
-		float num = (float.TryParse(PlayerPrefs.GetString("SliderCookie_" + ((Object)this).name), NumberStyles.Float, CultureInfo.InvariantCulture, out result) ? result : val.ValueInternal);
+		float num = (float.TryParse(PlayerPrefs.GetString("SliderCookie_" + ((Object)this).name), NumberStyles.Float, CultureInfo.InvariantCulture, out var result) ? result : val.ValueInternal);
 		val.ValueInternal = num + 1f;
 		val.Value = num;
 		((UnityEvent<float>)(object)val.OnChanged).AddListener((UnityAction<float>)OnSliderChanged);

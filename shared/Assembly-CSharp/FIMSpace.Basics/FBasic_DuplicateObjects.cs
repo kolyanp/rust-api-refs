@@ -20,16 +20,16 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 	public GameObject ToDuplicate;
 
 	[Tooltip("How many copies in which axis")]
-	public Vector3 DuplicatesCount = new Vector3(3f, 1f, 3f);
+	public Vector3 DuplicatesCount;
 
 	[Tooltip("How far from each other should be created copies")]
-	public Vector3 Offsets = new Vector3(3f, 0f, 3f);
+	public Vector3 Offsets;
 
-	public Vector3 Randomize = new Vector3(0f, 0f, 0f);
+	public Vector3 Randomize;
 
-	public Vector3 RandomRotate = new Vector3(0f, 0f, 0f);
+	public Vector3 RandomRotate;
 
-	public Vector3 RandomScale = new Vector3(0f, 0f, 0f);
+	public Vector3 RandomScale;
 
 	public int Seed;
 
@@ -39,7 +39,7 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 	[Tooltip("Duplicates will be created when entered playmode")]
 	public bool DuplicateAtStart;
 
-	public float GizmosSize = 1f;
+	public float GizmosSize;
 
 	public FEDuplicateDirection DuplicationType;
 
@@ -325,5 +325,26 @@ public class FBasic_DuplicateObjects : MonoBehaviour
 			return Randomize;
 		}
 		return new Vector3(Random.Range(0f - Randomize.x, Randomize.x), Random.Range(0f - Randomize.y, Randomize.y), Random.Range(0f - Randomize.z, Randomize.z));
+	}
+
+	public FBasic_DuplicateObjects()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		DuplicatesCount = new Vector3(3f, 1f, 3f);
+		Offsets = new Vector3(3f, 0f, 3f);
+		Randomize = new Vector3(0f, 0f, 0f);
+		RandomRotate = new Vector3(0f, 0f, 0f);
+		RandomScale = new Vector3(0f, 0f, 0f);
+		GizmosSize = 1f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

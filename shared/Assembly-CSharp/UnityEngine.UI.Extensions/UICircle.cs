@@ -7,15 +7,15 @@ namespace UnityEngine.UI.Extensions;
 public class UICircle : UIPrimitiveBase
 {
 	[Tooltip("The Arc Invert property will invert the construction of the Arc.")]
-	public bool ArcInvert = true;
+	public bool ArcInvert;
 
 	[Range(0f, 1f)]
 	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
-	public float Arc = 1f;
+	public float Arc;
 
-	[Range(0f, 1000f)]
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
-	public int ArcSteps = 100;
+	[Range(0f, 1000f)]
+	public int ArcSteps;
 
 	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	[Range(0f, 360f)]
@@ -27,19 +27,19 @@ public class UICircle : UIPrimitiveBase
 
 	private float _progress;
 
-	public Color ProgressColor = new Color(255f, 255f, 255f, 255f);
+	public Color ProgressColor;
 
-	public bool Fill = true;
+	public bool Fill;
 
-	public float Thickness = 5f;
+	public float Thickness;
 
 	public int Padding;
 
-	private List<int> indices = new List<int>();
+	private List<int> indices;
 
-	private List<UIVertex> vertices = new List<UIVertex>();
+	private List<UIVertex> vertices;
 
-	private Vector2 uvCenter = new Vector2(0.5f, 0.5f);
+	private Vector2 uvCenter;
 
 	protected override void OnPopulateMesh(VertexHelper vh)
 	{
@@ -286,5 +286,23 @@ public class UICircle : UIPrimitiveBase
 	{
 		Thickness = thickness;
 		((Graphic)this).SetVerticesDirty();
+	}
+
+	public UICircle()
+	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		ArcInvert = true;
+		Arc = 1f;
+		ArcSteps = 100;
+		ProgressColor = new Color(255f, 255f, 255f, 255f);
+		Fill = true;
+		Thickness = 5f;
+		indices = new List<int>();
+		vertices = new List<UIVertex>();
+		uvCenter = new Vector2(0.5f, 0.5f);
+		base._002Ector();
 	}
 }

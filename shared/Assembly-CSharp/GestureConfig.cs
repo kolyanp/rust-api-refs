@@ -55,9 +55,9 @@ public class GestureConfig : ScriptableObject
 
 	public AnimationType animationType;
 
-	public float duration = 1.5f;
+	public float duration;
 
-	public bool canCancel = true;
+	public bool canCancel;
 
 	public MovementCapabilities movementMode;
 
@@ -68,17 +68,17 @@ public class GestureConfig : ScriptableObject
 	public VideoClip previewClip;
 
 	[Header("Player model setup")]
-	public PlayerModelLayer playerModelLayer = PlayerModelLayer.UpperBody;
+	public PlayerModelLayer playerModelLayer;
 
 	public GestureType gestureType;
 
-	public bool hideHeldEntity = true;
+	public bool hideHeldEntity;
 
 	public bool unequipHeldEntity;
 
 	public bool canDuckDuringGesture;
 
-	public bool hasViewmodelAnimation = true;
+	public bool hasViewmodelAnimation;
 
 	public float viewmodelHolsterDelay;
 
@@ -91,9 +91,9 @@ public class GestureConfig : ScriptableObject
 	[Header("Interaction")]
 	public bool hasMultiplayerInteraction;
 
-	public Phrase joinPlayerPhrase = new Phrase("", "");
+	public Phrase joinPlayerPhrase;
 
-	public Phrase joinPlayerDescPhrase = new Phrase("", "");
+	public Phrase joinPlayerDescPhrase;
 
 	[Header("Ownership")]
 	public GestureActionType actionType;
@@ -199,5 +199,21 @@ public class GestureConfig : ScriptableObject
 			return false;
 		}
 		return true;
+	}
+
+	public GestureConfig()
+	{
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Expected O, but got Unknown
+		duration = 1.5f;
+		canCancel = true;
+		playerModelLayer = PlayerModelLayer.UpperBody;
+		hideHeldEntity = true;
+		hasViewmodelAnimation = true;
+		joinPlayerPhrase = new Phrase("", "");
+		joinPlayerDescPhrase = new Phrase("", "");
+		((ScriptableObject)this)._002Ector();
 	}
 }

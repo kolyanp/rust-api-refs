@@ -595,7 +595,7 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 			//IL_014d: Unknown result type (might be due to invalid IL or missing references)
 			base.StateThink(delta, brain, entity);
 			bool flag = Time.time - lastDestinationTime > 25f;
-			if ((Vector3.Distance(GetDestination(), ((Component)entity).transform.position) < 2f || flag) && nextRoamPositionTime == -1f)
+			if (((Vector3.Distance(GetDestination(), ((Component)entity).transform.position) < 2f) | flag) && nextRoamPositionTime == -1f)
 			{
 				nextRoamPositionTime = Time.time + Random.Range(5f, 10f);
 			}
@@ -1097,8 +1097,8 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 	}
 
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	private void RequestAIDesign(BaseEntity.RPCMessage msg)
 	{
@@ -1112,9 +1112,9 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 	}
 
 	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.IsVisible(3f)]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
+	[BaseEntity.RPC_Server.IsVisible(3f)]
 	private void SubmitAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (!UseAIDesign || (Object)(object)msg.player == (Object)null || !PlayerCanDesignAI(msg.player))

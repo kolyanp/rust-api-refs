@@ -474,8 +474,7 @@ public class BaseMission : BaseScriptableObject
 					outPosition = Vector3.zero;
 					return false;
 				}
-				Vector3 point;
-				bool num = TryGetRelativeToPosition(instance, depth, out point);
+				bool num = TryGetRelativeToPosition(instance, depth, out var point);
 				outPosition = point;
 				if (!num)
 				{
@@ -730,8 +729,8 @@ public class BaseMission : BaseScriptableObject
 		[FormerlySerializedAs("targetMission")]
 		public BaseMission mission;
 
-		[FilteredEnum(0, 4)]
 		[FormerlySerializedAs("targetMissionDesiredStatus")]
+		[FilteredEnum(0, 4)]
 		public MissionStatus desiredStatus;
 
 		public uint missionID
@@ -825,11 +824,19 @@ public class BaseMission : BaseScriptableObject
 		public string StringIdentifier;
 	}
 
-	public struct MissionIdentifierData(BaseMission mission, NetworkableId missionProviderNetId) : IEquatable<MissionIdentifierData>
+	public struct MissionIdentifierData : IEquatable<MissionIdentifierData>
 	{
-		public BaseMission mission = mission;
+		public BaseMission mission;
 
-		public NetworkableId missionProviderNetId = missionProviderNetId;
+		public NetworkableId missionProviderNetId;
+
+		public MissionIdentifierData(BaseMission mission, NetworkableId missionProviderNetId)
+		{
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			this.mission = mission;
+			this.missionProviderNetId = missionProviderNetId;
+		}
 
 		public bool Equals(MissionIdentifierData other)
 		{
@@ -973,24 +980,24 @@ public class BaseMission : BaseScriptableObject
 		}
 	}
 
-	public static readonly Phrase missionFailedPhrase = new Phrase("missionfailed.message", "You have failed the mission: {0}. Reason: {1}");
+	public static readonly Phrase missionFailedPhrase;
 
-	public static readonly Phrase missionFailedReason_Timeout = new Phrase("missionfailed.reason.timeout", "Mission timeout");
+	public static readonly Phrase missionFailedReason_Timeout;
 
-	public static readonly Phrase missionFailedReason_Disconnect = new Phrase("missionfailed.reason.disconnect", "Disconnected");
+	public static readonly Phrase missionFailedReason_Disconnect;
 
-	public static readonly Phrase missionFailedReason_PlayerStateReset = new Phrase("missionfailed.reason.playerstatereset", "Player state reset");
+	public static readonly Phrase missionFailedReason_PlayerStateReset;
 
-	public static readonly Phrase missionFailedReason_Abandon = new Phrase("missionfailed.reason.abandon", "Mission abandoned");
+	public static readonly Phrase missionFailedReason_Abandon;
 
-	public static readonly Phrase missionFailedReason_ObjectiveFailed = new Phrase("missionfailed.reason.objectivefailed", "Objective failed");
+	public static readonly Phrase missionFailedReason_ObjectiveFailed;
 
-	public static readonly Phrase missionFailedReason_DeepSeaClosed = new Phrase("missionfailed.reason.deepseaclosed", "Deep sea closed");
+	public static readonly Phrase missionFailedReason_DeepSeaClosed;
 
 	[ServerVar(Help = "(Generated) When enabled, missions are available and can be assigned to players; disable to globally suppress mission generation and assignment on the server")]
-	public static bool missionsenabled = true;
+	public static bool missionsenabled;
 
-	public static Dictionary<MissionIdentifierData, MissionValidStateData> server_missionInstanceValidStates = new Dictionary<MissionIdentifierData, MissionValidStateData>();
+	public static Dictionary<MissionIdentifierData, MissionValidStateData> server_missionInstanceValidStates;
 
 	public string shortname;
 
@@ -1010,7 +1017,7 @@ public class BaseMission : BaseScriptableObject
 
 	public MissionObjectiveEntry[] objectives;
 
-	public static Dictionary<MissionInstance, ListHashSet<Vector3>> blockedPoints = new Dictionary<MissionInstance, ListHashSet<Vector3>>();
+	public static Dictionary<MissionInstance, ListHashSet<Vector3>> blockedPoints;
 
 	public GameObjectRef acceptEffect;
 
@@ -1046,25 +1053,25 @@ public class BaseMission : BaseScriptableObject
 	public bool hideRewardsPreview;
 
 	[ServerVar(Help = "How long per frame (ms) to spend processing updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
-	public static float missionValidStateWorkQueueBudget = 0.1f;
+	public static float missionValidStateWorkQueueBudget;
 
 	[ServerVar(Help = "Minimum time (s) between starting runs of updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
-	public static float missionValidStateWorkQueueCooldown = 3f;
+	public static float missionValidStateWorkQueueCooldown;
 
 	[ServerVar(Help = "Minimum time (s) between revalidating individual missions via updateMissionValidStateWorkQueue", Saved = true, ShowInAdminUI = true)]
-	public static float missionPerValidStateCooldown = 3f;
+	public static float missionPerValidStateCooldown;
 
-	public static UpdateMissionValidStateWorkQueue updateMissionValidStateWorkQueue = new UpdateMissionValidStateWorkQueue();
+	public static UpdateMissionValidStateWorkQueue updateMissionValidStateWorkQueue;
 
-	private static ListHashSet<MissionIdentifierData> validStatesToProcess = new ListHashSet<MissionIdentifierData>();
+	private static ListHashSet<MissionIdentifierData> validStatesToProcess;
 
-	private static ListHashSet<BasePlayer> playersRequestingValidStatesUpdate = new ListHashSet<BasePlayer>();
+	private static ListHashSet<BasePlayer> playersRequestingValidStatesUpdate;
 
 	private static float lastServerValidMissionsUpdateTime;
 
 	private static ServerProfiler.ScopeRecorder queueProfilerRecorder;
 
-	private static bool shouldProfileNextWorkQueueRun = false;
+	private static bool shouldProfileNextWorkQueueRun;
 
 	public uint id
 	{
@@ -1819,5 +1826,40 @@ public class BaseMission : BaseScriptableObject
 		assignee.MissionsDirty(saveImmediately: true);
 		Interface.CallHook("OnMissionAssigned", mission, provider, assignee);
 		return true;
+	}
+
+	static BaseMission()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Expected O, but got Unknown
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Expected O, but got Unknown
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Expected O, but got Unknown
+		missionFailedPhrase = new Phrase("missionfailed.message", "You have failed the mission: {0}. Reason: {1}");
+		missionFailedReason_Timeout = new Phrase("missionfailed.reason.timeout", "Mission timeout");
+		missionFailedReason_Disconnect = new Phrase("missionfailed.reason.disconnect", "Disconnected");
+		missionFailedReason_PlayerStateReset = new Phrase("missionfailed.reason.playerstatereset", "Player state reset");
+		missionFailedReason_Abandon = new Phrase("missionfailed.reason.abandon", "Mission abandoned");
+		missionFailedReason_ObjectiveFailed = new Phrase("missionfailed.reason.objectivefailed", "Objective failed");
+		missionFailedReason_DeepSeaClosed = new Phrase("missionfailed.reason.deepseaclosed", "Deep sea closed");
+		missionsenabled = true;
+		server_missionInstanceValidStates = new Dictionary<MissionIdentifierData, MissionValidStateData>();
+		blockedPoints = new Dictionary<MissionInstance, ListHashSet<Vector3>>();
+		missionValidStateWorkQueueBudget = 0.1f;
+		missionValidStateWorkQueueCooldown = 3f;
+		missionPerValidStateCooldown = 3f;
+		updateMissionValidStateWorkQueue = new UpdateMissionValidStateWorkQueue();
+		validStatesToProcess = new ListHashSet<MissionIdentifierData>();
+		playersRequestingValidStatesUpdate = new ListHashSet<BasePlayer>();
+		shouldProfileNextWorkQueueRun = false;
 	}
 }

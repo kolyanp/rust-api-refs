@@ -26,8 +26,8 @@ public class Admin : ConsoleSystem
 		Downgrade
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct PlayerInfo
 	{
 		public string SteamID;
@@ -57,8 +57,8 @@ public class Admin : ConsoleSystem
 		public ulong TeamID;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct PlayerIDInfo
 	{
 		public string SteamID;
@@ -776,8 +776,7 @@ public class Admin : ConsoleSystem
 		}
 		arg.GetFloat(1);
 		string text = arg.GetString(0);
-		string error;
-		BuildingGrade buildingGrade = FindBuildingSkin(text, out error);
+		BuildingGrade buildingGrade = FindBuildingSkin(text, out var error);
 		if ((Object)(object)buildingGrade == (Object)null)
 		{
 			arg.ReplyWith(error);
@@ -796,7 +795,7 @@ public class Admin : ConsoleSystem
 		uint shippingContainerBlockColourForPlayer = BuildingBlock.GetShippingContainerBlockColourForPlayer(basePlayer);
 		foreach (BuildingBlock block in blocks)
 		{
-			if (!block.isClient && (block.grade == buildingGrade.type || changeAnyGrade))
+			if (!block.isClient && ((block.grade == buildingGrade.type) | changeAnyGrade))
 			{
 				block.ChangeGradeAndSkin(buildingGrade.type, buildingGrade.skin, playEffect: false, updateSkin: true, shippingContainerBlockColourForPlayer);
 			}
@@ -853,7 +852,7 @@ public class Admin : ConsoleSystem
 			{
 				flag3 = WallpaperPlanner.Settings.CanUseWallpaper(block);
 			}
-			if (block.HasWallpaper() || flag3)
+			if (block.HasWallpaper() | flag3)
 			{
 				if (skinIdParsed == -1)
 				{
@@ -2178,8 +2177,7 @@ public class Admin : ConsoleSystem
 			break;
 		case "setgrade":
 		{
-			string error;
-			BuildingGrade buildingGrade = FindBuildingSkin(arg.GetString(2), out error);
+			BuildingGrade buildingGrade = FindBuildingSkin(arg.GetString(2), out var _);
 			arg.ReplyWith(ChangeGrade(baseEntity, 0, 0, buildingGrade.type, buildingGrade.skin, arg.GetFloat(3)));
 			break;
 		}
@@ -2592,20 +2590,25 @@ public class Admin : ConsoleSystem
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
 		bool showAddress = arg.Connection == null || arg.Connection.authLevel >= 2;
-		List<PlayerInfo> list = ((IEnumerable<BasePlayer>)BasePlayer.activePlayerList).Select((BasePlayer x) => new PlayerInfo
+		List<PlayerInfo> list = ((IEnumerable<BasePlayer>)BasePlayer.activePlayerList).Select(delegate(BasePlayer x)
 		{
-			SteamID = x.UserIDString,
-			OwnerSteamID = x.OwnerID.ToString(),
-			DisplayName = x.displayName,
-			Ping = Net.sv.GetAveragePing(x.net.connection),
-			Address = (showAddress ? x.net.connection.ipaddress : string.Empty),
-			EntityId = x.net.ID.Value,
-			ConnectedSeconds = (int)x.net.connection.GetSecondsConnected(),
-			ViolationLevel = x.ViolationLevel,
-			Health = x.Health(),
-			Position = ((Component)x).transform.position,
-			IsMuted = x.HasPlayerFlag(BasePlayer.PlayerFlags.ChatMute),
-			TeamID = x.currentTeam
+			//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+			return new PlayerInfo
+			{
+				SteamID = x.UserIDString,
+				OwnerSteamID = x.OwnerID.ToString(),
+				DisplayName = x.displayName,
+				Ping = Net.sv.GetAveragePing(x.net.connection),
+				Address = (showAddress ? x.net.connection.ipaddress : string.Empty),
+				EntityId = x.net.ID.Value,
+				ConnectedSeconds = (int)x.net.connection.GetSecondsConnected(),
+				ViolationLevel = x.ViolationLevel,
+				Health = x.Health(),
+				Position = ((Component)x).transform.position,
+				IsMuted = x.HasPlayerFlag(BasePlayer.PlayerFlags.ChatMute),
+				TeamID = x.currentTeam
+			};
 		}).ToList();
 		if (showBotsInPlayerList)
 		{

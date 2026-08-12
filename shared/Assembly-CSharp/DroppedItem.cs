@@ -46,7 +46,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	public const Flags FLAG_HOPPERANIMATING = Flags.Reserved3;
 
-	private int originalLayer = -1;
+	private int originalLayer;
 
 	[NonSerialized]
 	public DropReasonEnum DropReason;
@@ -90,7 +90,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 
 	private float maxBoundsExtent;
 
-	private readonly Vector3 smallVerticalOffset = new Vector3(0f, 0.05f, 0f);
+	private readonly Vector3 smallVerticalOffset;
 
 	public static DroppedItemUnderwaterQueue underwaterStatusQueue = new DroppedItemUnderwaterQueue();
 
@@ -851,7 +851,7 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		if (!((Object)(object)Rigidbody != (Object)null) || !Rigidbody.IsSleeping())
 		{
 			bool flag = WaterLevel.Test(((Component)this).transform.position, waves: false, volumes: true, this);
-			if (canSplash && flag && !HasFlag(Flags.Reserved2) && splashEffect.isValid)
+			if ((canSplash & flag) && !HasFlag(Flags.Reserved2) && splashEffect.isValid)
 			{
 				Effect.server.Run(splashEffect.resourcePath, ((Component)this).transform.position, Vector3.zero);
 			}
@@ -873,5 +873,14 @@ public class DroppedItem : WorldItem, IContainerSounds, Hopper.IHopperTarget
 		{
 			rB.linearDamping = (HasFlag(Flags.Reserved2) ? 7f : 0.1f);
 		}
+	}
+
+	public DroppedItem()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		originalLayer = -1;
+		smallVerticalOffset = new Vector3(0f, 0.05f, 0f);
+		base._002Ector();
 	}
 }

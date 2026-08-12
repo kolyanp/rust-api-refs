@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
@@ -13,8 +14,8 @@ public sealed class TemporalAntialiasing
 		SolverNoDilate
 	}
 
-	[Range(0.1f, 1f)]
 	[Tooltip("The diameter (in texels) inside which jitter samples are spread. Smaller values result in crisper but more aliased output, while larger values result in more stable, but blurrier, output.")]
+	[Range(0.1f, 1f)]
 	public float jitterSpread = 0.75f;
 
 	[Range(0f, 3f)]
@@ -25,11 +26,17 @@ public sealed class TemporalAntialiasing
 	[Tooltip("The blend coefficient for a stationary fragment. Controls the percentage of history sample blended into the final color.")]
 	public float stationaryBlending = 0.95f;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("The blend coefficient for a fragment with significant motion. Controls the percentage of history sample blended into the final color.")]
+	[Range(0f, 0.99f)]
 	public float motionBlending = 0.85f;
 
 	public Func<Camera, Vector2, Matrix4x4> jitteredMatrixFunc;
+
+	[CompilerGenerated]
+	private Vector2 _003Cjitter_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector2 _003CjitterRaw_003Ek__BackingField;
 
 	private readonly RenderTargetIdentifier[] m_Mrt = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2];
 
@@ -43,9 +50,39 @@ public sealed class TemporalAntialiasing
 
 	private readonly int[] m_HistoryPingPong = new int[2];
 
-	public Vector2 jitter { get; private set; }
+	public Vector2 jitter
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cjitter_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cjitter_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector2 jitterRaw { get; private set; }
+	public Vector2 jitterRaw
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CjitterRaw_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CjitterRaw_003Ek__BackingField = value;
+		}
+	}
 
 	public int sampleIndex { get; private set; }
 

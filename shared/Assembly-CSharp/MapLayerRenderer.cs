@@ -85,8 +85,7 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 					{
 						continue;
 					}
-					Matrix4x4 localToWorldMatrix;
-					Mesh finalLodMesh = rendererLOD.GetFinalLodMesh(out localToWorldMatrix);
+					Mesh finalLodMesh = rendererLOD.GetFinalLodMesh(out var localToWorldMatrix);
 					if (!((Object)(object)finalLodMesh == (Object)null))
 					{
 						int subMeshCount = finalLodMesh.subMeshCount;
@@ -155,8 +154,7 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 			RendererLOD[] mapRendererLods = dungeonGridCell.MapRendererLods;
 			for (int i = 0; i < mapRendererLods.Length; i++)
 			{
-				Matrix4x4 localToWorldMatrix;
-				Mesh finalLodMesh = mapRendererLods[i].GetFinalLodMesh(out localToWorldMatrix);
+				Mesh finalLodMesh = mapRendererLods[i].GetFinalLodMesh(out var localToWorldMatrix);
 				if (!((Object)(object)finalLodMesh == (Object)null))
 				{
 					int subMeshCount = finalLodMesh.subMeshCount;
@@ -235,8 +233,7 @@ public class MapLayerRenderer : SingletonComponent<MapLayerRenderer>
 						}
 						continue;
 					}
-					Matrix4x4 localToWorldMatrix;
-					Mesh finalLodMesh = rendererLOD.GetFinalLodMesh(out localToWorldMatrix);
+					Mesh finalLodMesh = rendererLOD.GetFinalLodMesh(out var localToWorldMatrix);
 					if (!((Object)(object)finalLodMesh == (Object)null))
 					{
 						int subMeshCount = finalLodMesh.subMeshCount;

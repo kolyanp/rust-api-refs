@@ -4,15 +4,15 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rust/Delivery Drone Config")]
 public class DeliveryDroneConfig : BaseScriptableObject
 {
-	public Vector3 vendingMachineOffset = new Vector3(0f, 1f, 1f);
+	public Vector3 vendingMachineOffset;
 
-	public float maxDistanceFromVendingMachine = 1f;
+	public float maxDistanceFromVendingMachine;
 
-	public Vector3 halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
+	public Vector3 halfExtents;
 
-	public float testHeight = 200f;
+	public float testHeight;
 
-	public LayerMask layerMask = LayerMask.op_Implicit(161546496);
+	public LayerMask layerMask;
 
 	public void FindDescentPoints(VendingMachine vendingMachine, float currentY, out Vector3 waitPosition, out Vector3 descendPosition)
 	{
@@ -90,5 +90,21 @@ public class DeliveryDroneConfig : BaseScriptableObject
 			return false;
 		}
 		return vendingMachine.IsVisible(val, 2f);
+	}
+
+	public DeliveryDroneConfig()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		vendingMachineOffset = new Vector3(0f, 1f, 1f);
+		maxDistanceFromVendingMachine = 1f;
+		halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
+		testHeight = 200f;
+		layerMask = LayerMask.op_Implicit(161546496);
+		base._002Ector();
 	}
 }

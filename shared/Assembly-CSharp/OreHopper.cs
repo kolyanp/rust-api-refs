@@ -7,7 +7,7 @@ public class OreHopper : PercentFullStorageContainer
 
 	private float visualPercentFull;
 
-	private Vector3 _oreScale = new Vector3(1f, 0f, 1f);
+	private Vector3 _oreScale;
 
 	protected override void OnPercentFullChanged(float newPercentFull)
 	{
@@ -50,5 +50,13 @@ public class OreHopper : PercentFullStorageContainer
 	{
 		base.ServerInit();
 		SetVisualOreLevel(GetPercentFull());
+	}
+
+	public OreHopper()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		_oreScale = new Vector3(1f, 0f, 1f);
+		base._002Ector();
 	}
 }

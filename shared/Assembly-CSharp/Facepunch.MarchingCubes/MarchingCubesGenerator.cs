@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Facepunch.NativeMeshSimplification;
 using Unity.Collections;
 using Unity.Jobs;
@@ -11,11 +12,20 @@ namespace Facepunch.MarchingCubes;
 
 public class MarchingCubesGenerator : IDisposable
 {
+	[CompilerGenerated]
+	private float3 _003COffset_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private TimeSince _003CSinceLastUse_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Bounds _003CMeshSpaceBounds_003Ek__BackingField;
+
 	public const int MaxMipLevel = 2;
 
 	private readonly NativeMeshSimplifier _simplifier;
 
-	private readonly QuantizedFloatData3DArray[] mips = new QuantizedFloatData3DArray[2];
+	private readonly QuantizedFloatData3DArray[] mips;
 
 	private int3 mipSourceBounds;
 
@@ -25,11 +35,41 @@ public class MarchingCubesGenerator : IDisposable
 
 	public MeshCollider MeshCollider { get; set; }
 
-	public float3 Offset { get; set; }
+	public float3 Offset
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003COffset_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003COffset_003Ek__BackingField = value;
+		}
+	}
 
 	public float Scale { get; set; }
 
-	public TimeSince SinceLastUse { get; set; }
+	public TimeSince SinceLastUse
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CSinceLastUse_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CSinceLastUse_003Ek__BackingField = value;
+		}
+	}
 
 	public bool UsedSinceLastFree { get; set; }
 
@@ -37,7 +77,22 @@ public class MarchingCubesGenerator : IDisposable
 
 	public int CollisionMeshInstanceId => ((Object)MeshForCollision).GetInstanceID();
 
-	public Bounds MeshSpaceBounds { get; private set; }
+	public Bounds MeshSpaceBounds
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CMeshSpaceBounds_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CMeshSpaceBounds_003Ek__BackingField = value;
+		}
+	}
 
 	public static int ClampRenderMeshCount(int count)
 	{
@@ -47,6 +102,8 @@ public class MarchingCubesGenerator : IDisposable
 	public MarchingCubesGenerator(Mesh meshToUpdate, Mesh meshForCollision, MeshCollider meshCollider, float3 vertexOffset, float vertexScale)
 	{
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		mips = new QuantizedFloatData3DArray[2];
+		base._002Ector();
 		Mesh = meshToUpdate;
 		MeshForCollision = meshForCollision;
 		MeshCollider = meshCollider;
@@ -176,16 +233,12 @@ public class MarchingCubesGenerator : IDisposable
 		JobHandle val3 = default(JobHandle);
 		for (int i = 0; i < renderMeshCount; i++)
 		{
-			NativeList<float3> vertices2;
-			NativeList<int> indices2;
-			JobHandle inputDeps2 = ScheduleLevelMarch(source, set.iso, i, out vertices2, out indices2, val);
-			MeshDataArray meshData2;
-			JobHandle val4 = ScheduleMeshWrite(vertices2, indices2, out meshData2, withNormals: true, inputDeps2);
+			JobHandle inputDeps2 = ScheduleLevelMarch(source, set.iso, i, out var vertices2, out var indices2, val);
+			JobHandle val4 = ScheduleMeshWrite(vertices2, indices2, out var meshData2, withNormals: true, inputDeps2);
 			results.Add(ref meshData2);
 			if (flag && i == colliderMipLevel)
 			{
-				MeshDataArray meshData3;
-				JobHandle val5 = ScheduleMeshWrite(vertices2, indices2, out meshData3, withNormals: false, inputDeps2);
+				JobHandle val5 = ScheduleMeshWrite(vertices2, indices2, out var meshData3, withNormals: false, inputDeps2);
 				results[length] = meshData3;
 				val4 = JobHandle.CombineDependencies(val4, val5);
 			}

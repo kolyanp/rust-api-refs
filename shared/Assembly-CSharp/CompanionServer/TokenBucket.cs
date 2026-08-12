@@ -52,7 +52,7 @@ public class TokenBucket : IPooled
 		Update();
 		if (requestedTokens > _tokens)
 		{
-			_tokens -= 1.0;
+			_tokens--;
 			return false;
 		}
 		_tokens -= requestedTokens;

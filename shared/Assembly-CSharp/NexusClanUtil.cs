@@ -22,14 +22,9 @@ public static class NexusClanUtil
 
 	public const string PlayerNoteVariable = "notes";
 
-	public static readonly List<VariableUpdate> DefaultLeaderVariables = new List<VariableUpdate>
-	{
-		new VariableUpdate("can_set_logo", bool.TrueString, (bool?)null, (bool?)null),
-		new VariableUpdate("can_set_motd", bool.TrueString, (bool?)null, (bool?)null),
-		new VariableUpdate("can_set_player_notes", bool.TrueString, (bool?)null, (bool?)null)
-	};
+	public static readonly List<VariableUpdate> DefaultLeaderVariables;
 
-	private static readonly Memoized<string, ulong> SteamIdToPlayerId = new Memoized<string, ulong>((Func<ulong, string>)((ulong steamId) => steamId.ToString("G")));
+	private static readonly Memoized<string, ulong> SteamIdToPlayerId;
 
 	public static string GetPlayerId(ulong steamId)
 	{
@@ -222,5 +217,19 @@ public static class NexusClanUtil
 			return false;
 		}
 		return result;
+	}
+
+	static NexusClanUtil()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		DefaultLeaderVariables = new List<VariableUpdate>
+		{
+			new VariableUpdate("can_set_logo", bool.TrueString, (bool?)null, (bool?)null),
+			new VariableUpdate("can_set_motd", bool.TrueString, (bool?)null, (bool?)null),
+			new VariableUpdate("can_set_player_notes", bool.TrueString, (bool?)null, (bool?)null)
+		};
+		SteamIdToPlayerId = new Memoized<string, ulong>((Func<ulong, string>)((ulong steamId) => steamId.ToString("G")));
 	}
 }

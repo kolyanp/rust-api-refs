@@ -124,8 +124,8 @@ public class StaticInstrument : BaseMountable
 		ClientRPC(RpcTarget.NetworkGroup("Client_PlayNote"), arg, arg2, arg3, arg4);
 	}
 
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	private void Server_StopNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();

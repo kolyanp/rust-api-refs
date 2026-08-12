@@ -2,26 +2,26 @@ using UnityEngine;
 
 public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 {
-	public Vector3 Size = new Vector3(100f, 10f, 100f);
+	public Vector3 Size;
 
-	public bool CopyHeightMap = true;
+	public bool CopyHeightMap;
 
-	public bool CopySplatMap = true;
+	public bool CopySplatMap;
 
-	public bool CopyBiomeMap = true;
+	public bool CopyBiomeMap;
 
-	public bool CopyAlphaMap = true;
+	public bool CopyAlphaMap;
 
-	public bool CopyTopologyMap = true;
+	public bool CopyTopologyMap;
 
-	public bool CopyWaterMap = true;
+	public bool CopyWaterMap;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool _hasCopied;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private bool _isUndo;
 
 	[HideInInspector]
@@ -36,8 +36,8 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[HideInInspector]
 	private Color[] _heightMapData;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _splat0Rect;
 
 	[SerializeField]
@@ -56,28 +56,28 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	[SerializeField]
 	private RectInt _biomeRect;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Color[] _biomeData;
 
 	[SerializeField]
 	[HideInInspector]
 	private RectInt _alphaRect;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Color[] _alphaData;
 
 	[HideInInspector]
 	[SerializeField]
 	private RectInt _topologyRect;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Color[] _topologyData;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private RectInt _waterRect;
 
 	[SerializeField]
@@ -87,4 +87,18 @@ public class TerrainCopyPaste : MonoBehaviour, IEditorComponent
 	public bool HasCopied => _hasCopied;
 
 	public bool IsUndo => _isUndo;
+
+	public TerrainCopyPaste()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		Size = new Vector3(100f, 10f, 100f);
+		CopyHeightMap = true;
+		CopySplatMap = true;
+		CopyBiomeMap = true;
+		CopyAlphaMap = true;
+		CopyTopologyMap = true;
+		CopyWaterMap = true;
+		((MonoBehaviour)this)._002Ector();
+	}
 }

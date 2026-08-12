@@ -11,27 +11,27 @@ using UnityEngine.Assertions;
 public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEntity, ILootableEntity, IInventoryProvider, LootPanel.IHasLootPanel, IContainerSounds, IIndustrialStorageCallbackReceiver, PlayerInventory.ICanMoveFrom
 {
 	[Header("Storage Container")]
-	public static readonly Phrase LockedMessage = new Phrase("storage.locked", "Can't loot right now");
+	public static readonly Phrase LockedMessage;
 
-	public static readonly Phrase InUseMessage = new Phrase("storage.in_use", "Already in use");
+	public static readonly Phrase InUseMessage;
 
-	public int inventorySlots = 6;
+	public int inventorySlots;
 
-	public bool dropsLoot = true;
+	public bool dropsLoot;
 
 	public float dropLootDestroyPercent;
 
 	public bool dropFloats;
 
-	public bool isLootable = true;
+	public bool isLootable;
 
-	public bool isLockable = true;
+	public bool isLockable;
 
 	public bool isMonitorable;
 
-	public string panelName = "generic";
+	public string panelName;
 
-	public Phrase panelTitle = new Phrase("loot", "Loot");
+	public Phrase panelTitle;
 
 	public ItemContainer.ContentsType allowedContents;
 
@@ -52,7 +52,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public bool allowSorting;
 
 	[ServerVar(Help = "(Generated) When enabled, storage containers without a lock can still require tool cupboard auth to access; default false")]
-	public static bool canRequireAuthIfNoLock = false;
+	public static bool canRequireAuthIfNoLock;
 
 	public bool mustBeMountedToUse;
 
@@ -63,9 +63,9 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	[Header("Item Dropping")]
 	public Vector3 dropPosition;
 
-	public Vector3 dropVelocity = Vector3.forward;
+	public Vector3 dropVelocity;
 
-	public ItemCategory onlyAcceptCategory = ItemCategory.All;
+	public ItemCategory onlyAcceptCategory;
 
 	public bool onlyOneUser;
 
@@ -73,7 +73,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	public static bool dropCorpseOnDeath;
 
 	[ServerVar(Help = "(Generated) Fraction of items preserved when a storage container spawns a death corpse; 0.5 = 50% of items survive the container death")]
-	public static float corpseItemsSavedPercent = 0.5f;
+	public static float corpseItemsSavedPercent;
 
 	public ItemContainer _inventory;
 
@@ -609,7 +609,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 
 	public static bool ShouldRequireAuthIfNoCodelock(BaseEntity container, bool containerRequiresAuth)
 	{
-		if (canRequireAuthIfNoLock && containerRequiresAuth)
+		if (canRequireAuthIfNoLock & containerRequiresAuth)
 		{
 			return (Object)(object)container.GetLock() == (Object)null;
 		}
@@ -686,5 +686,34 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 			}
 		}
 		return false;
+	}
+
+	public StorageContainer()
+	{
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		inventorySlots = 6;
+		dropsLoot = true;
+		isLootable = true;
+		isLockable = true;
+		panelName = "generic";
+		panelTitle = new Phrase("loot", "Loot");
+		dropVelocity = Vector3.forward;
+		onlyAcceptCategory = ItemCategory.All;
+		base._002Ector();
+	}
+
+	static StorageContainer()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		LockedMessage = new Phrase("storage.locked", "Can't loot right now");
+		InUseMessage = new Phrase("storage.in_use", "Already in use");
+		canRequireAuthIfNoLock = false;
+		corpseItemsSavedPercent = 0.5f;
 	}
 }

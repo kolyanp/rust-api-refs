@@ -438,7 +438,7 @@ public class HeldEntity : BaseEntity
 			{
 				UpdateVisiblity_Invis();
 			}
-			if (num || bHeld)
+			if (num | bHeld)
 			{
 				UpdateShieldState(bHeld && canBeUsedWithShield);
 			}
@@ -452,21 +452,21 @@ public class HeldEntity : BaseEntity
 	public void UpdateShieldState(bool bHeld)
 	{
 		BasePlayer ownerPlayer = GetOwnerPlayer();
-		if (!((Object)(object)ownerPlayer != (Object)null))
+		if ((Object)(object)ownerPlayer == (Object)null)
 		{
 			return;
 		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		Item anyBackpack = ownerPlayer.inventory.GetAnyBackpack();
 		ItemModShield itemModShield = default(ItemModShield);
-		if (canBeUsedWithShield && anyBackpack != null && ((Component)anyBackpack.info).TryGetComponent<ItemModShield>(ref itemModShield))
+		if (anyBackpack != null && ((Component)anyBackpack.info).TryGetComponent<ItemModShield>(ref itemModShield))
 		{
 			HeldEntity heldEntity = anyBackpack.GetHeldEntity() as HeldEntity;
 			if (anyBackpack.isBroken)
 			{
 				bHeld = false;
 			}
-			if ((Object)(object)heldEntity != (Object)null && bHeld && !ownerPlayer.WantsShieldOnBack())
+			if ((canBeUsedWithShield & bHeld) && (Object)(object)heldEntity != (Object)null && !ownerPlayer.WantsShieldOnBack())
 			{
 				using (FlagsUpdateScope flagsUpdateScope2 = heldEntity.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 				{
@@ -479,10 +479,12 @@ public class HeldEntity : BaseEntity
 			if ((Object)(object)heldEntity != (Object)null)
 			{
 				heldEntity.UpdateVisiblity_Holster();
-				using FlagsUpdateScope flagsUpdateScope3 = heldEntity.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-				flagsUpdateScope3.Set(Flags.Reserved4, b: false);
+				using (FlagsUpdateScope flagsUpdateScope3 = heldEntity.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+				{
+					flagsUpdateScope3.Set(Flags.Reserved4, b: false);
+				}
+				flagsUpdateScope.Set(Flags.Reserved13, b: false);
 			}
-			flagsUpdateScope.Set(Flags.Reserved13, b: false);
 		}
 		else
 		{

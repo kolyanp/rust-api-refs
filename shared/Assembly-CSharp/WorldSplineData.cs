@@ -10,11 +10,19 @@ public class WorldSplineData
 	public class LUTEntry
 	{
 		[Serializable]
-		public struct LUTPoint(float distance, Vector3 pos)
+		public struct LUTPoint
 		{
-			public float distance = distance;
+			public float distance;
 
-			public Vector3 pos = pos;
+			public Vector3 pos;
+
+			public LUTPoint(float distance, Vector3 pos)
+			{
+				//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+				this.distance = distance;
+				this.pos = pos;
+			}
 		}
 
 		public List<LUTPoint> points = new List<LUTPoint>();
@@ -291,8 +299,7 @@ public class WorldSplineData
 			{
 				if ((Object)(object)worldSpline != (Object)null)
 				{
-					Vector3 tangent;
-					Vector3 pointAndTangentCubicHermiteWorld = worldSpline.GetPointAndTangentCubicHermiteWorld(num, out tangent);
+					Vector3 pointAndTangentCubicHermiteWorld = worldSpline.GetPointAndTangentCubicHermiteWorld(num, out var tangent);
 					Debug.DrawRay(pointAndTangentCubicHermiteWorld, tangent, Color.red, 30f);
 					Debug.DrawRay(pointAndTangentCubicHermiteWorld, Vector3.up, Color.red, 30f);
 				}

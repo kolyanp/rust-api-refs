@@ -27,8 +27,7 @@ internal struct TraceAllJob : IJobFor
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		RaycastHit hit;
-		bool flag = Trace(Shapes[index], ray, out hit, forgiveness, maxDist);
+		bool flag = Trace(Shapes[index], ray, out var hit, forgiveness, maxDist);
 		DidHits[index] = flag;
 		Hits[index] = hit;
 	}

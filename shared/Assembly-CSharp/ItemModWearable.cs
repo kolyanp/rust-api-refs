@@ -90,7 +90,7 @@ public class ItemModWearable : ItemMod
 		bool num = ProtectsArea(HitArea.Head);
 		bool flag = ProtectsArea(HitArea.Chest);
 		bool flag2 = ProtectsArea(HitArea.Leg);
-		return num && flag && flag2;
+		return num & flag & flag2;
 	}
 
 	public bool HasProtections()

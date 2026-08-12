@@ -44,19 +44,19 @@ public class FGroundFitter_Input : FGroundFitter_InputBase
 			}
 			if (Input.GetKey((KeyCode)119))
 			{
-				zero.z += 1f;
+				zero.z++;
 			}
 			if (Input.GetKey((KeyCode)97))
 			{
-				zero.x -= 1f;
+				zero.x--;
 			}
 			if (Input.GetKey((KeyCode)100))
 			{
-				zero.x += 1f;
+				zero.x++;
 			}
 			if (Input.GetKey((KeyCode)115))
 			{
-				zero.z -= 1f;
+				zero.z--;
 			}
 			((Vector3)(ref zero)).Normalize();
 			Quaternion val = Quaternion.LookRotation(zero);

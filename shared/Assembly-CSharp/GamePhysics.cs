@@ -24,7 +24,7 @@ public static class GamePhysics
 		None = 0,
 		Terrain = 1,
 		Water = 2,
-		All = 3
+		All = Terrain | Water
 	}
 
 	public const int BufferLength = 32768;

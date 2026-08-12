@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class LeanTween : MonoBehaviour
 {
-	public static bool throwErrors = true;
+	public static bool throwErrors;
 
-	public static float tau = (float)Math.PI * 2f;
+	public static float tau;
 
-	public static float PI_DIV2 = (float)Math.PI / 2f;
+	public static float PI_DIV2;
 
 	private static LTSeq[] sequences;
 
@@ -21,23 +21,23 @@ public class LeanTween : MonoBehaviour
 
 	private static LTDescr tween;
 
-	private static int tweenMaxSearch = -1;
+	private static int tweenMaxSearch;
 
-	private static int maxTweens = 4096;
+	private static int maxTweens;
 
-	private static int maxSequences = 4096;
+	private static int maxSequences;
 
-	private static int frameRendered = -1;
+	private static int frameRendered;
 
 	private static GameObject _tweenEmpty;
 
-	public static float dtEstimated = -1f;
+	public static float dtEstimated;
 
 	public static float dtManual;
 
 	public static float dtActual;
 
-	private static uint global_counter = 0u;
+	private static uint global_counter;
 
 	private static int i;
 
@@ -45,30 +45,13 @@ public class LeanTween : MonoBehaviour
 
 	private static int finishedCnt;
 
-	public static AnimationCurve punch = new AnimationCurve((Keyframe[])(object)new Keyframe[9]
-	{
-		new Keyframe(0f, 0f),
-		new Keyframe(0.112586f, 0.9976035f),
-		new Keyframe(0.3120486f, -0.1720615f),
-		new Keyframe(0.4316337f, 0.07030682f),
-		new Keyframe(0.5524869f, -0.03141804f),
-		new Keyframe(0.6549395f, 0.003909959f),
-		new Keyframe(0.770987f, -0.009817753f),
-		new Keyframe(0.8838775f, 0.001939224f),
-		new Keyframe(1f, 0f)
-	});
+	public static AnimationCurve punch;
 
-	public static AnimationCurve shake = new AnimationCurve((Keyframe[])(object)new Keyframe[4]
-	{
-		new Keyframe(0f, 0f),
-		new Keyframe(0.25f, 1f),
-		new Keyframe(0.75f, -1f),
-		new Keyframe(1f, 0f)
-	});
+	public static AnimationCurve shake;
 
 	private static int maxTweenReached;
 
-	public static int startSearch = 0;
+	public static int startSearch;
 
 	public static LTDescr d;
 
@@ -76,13 +59,13 @@ public class LeanTween : MonoBehaviour
 
 	private static GameObject[] goListeners;
 
-	private static int eventsMaxSearch = 0;
+	private static int eventsMaxSearch;
 
-	public static int EVENTS_MAX = 10;
+	public static int EVENTS_MAX;
 
-	public static int LISTENERS_MAX = 10;
+	public static int LISTENERS_MAX;
 
-	private static int INIT_LISTENERS_MAX = LISTENERS_MAX;
+	private static int INIT_LISTENERS_MAX;
 
 	public static int maxSearch => tweenMaxSearch;
 
@@ -697,7 +680,7 @@ public class LeanTween : MonoBehaviour
 			Vector3 position = arrowTransform.position;
 			Quaternion rotation = arrowTransform.rotation;
 			float num = 0f;
-			for (float num2 = 1f; num2 <= 120f; num2 += 1f)
+			for (float num2 = 1f; num2 <= 120f; num2++)
 			{
 				float num3 = num2 / 120f;
 				Vector3 val5 = ((val2 * num3 + val3) * num3 + val4) * num3 + a;
@@ -707,7 +690,7 @@ public class LeanTween : MonoBehaviour
 				num = num4 + ((Vector3)(ref val6)).magnitude;
 				if (num > 1f)
 				{
-					num -= 1f;
+					num--;
 					arrowTransform.position = val5;
 					arrowTransform.LookAt(val, Vector3.forward);
 					Vector3 val7 = arrowTransform.TransformDirection(Vector3.right);
@@ -724,7 +707,7 @@ public class LeanTween : MonoBehaviour
 		}
 		else
 		{
-			for (float num5 = 1f; num5 <= 30f; num5 += 1f)
+			for (float num5 = 1f; num5 <= 30f; num5++)
 			{
 				float num3 = num5 / 30f;
 				Vector3 val5 = ((val2 * num3 + val3) * num3 + val4) * num3 + a;
@@ -1469,7 +1452,7 @@ public class LeanTween : MonoBehaviour
 		{
 			return diff / 2f * ratioPassed * ratioPassed + start;
 		}
-		ratioPassed -= 1f;
+		ratioPassed--;
 		return (0f - diff) / 2f * (ratioPassed * (ratioPassed - 2f) - 1f) + start;
 	}
 
@@ -1492,7 +1475,7 @@ public class LeanTween : MonoBehaviour
 		{
 			return diff / 2f * ratioPassed * ratioPassed + start;
 		}
-		ratioPassed -= 1f;
+		ratioPassed--;
 		return -diff / 2f * (ratioPassed * (ratioPassed - 2f) - 1f) + start;
 	}
 
@@ -1548,7 +1531,7 @@ public class LeanTween : MonoBehaviour
 		{
 			return end / 2f * val * val + start;
 		}
-		val -= 1f;
+		val--;
 		return (0f - end) / 2f * (val * (val - 2f) - 1f) + start;
 	}
 
@@ -1559,7 +1542,7 @@ public class LeanTween : MonoBehaviour
 		{
 			return diffBy2 * val2 + start;
 		}
-		val -= 1f;
+		val--;
 		return (0f - diffBy2) * (val2 - 2f - 1f) + start;
 	}
 
@@ -1571,7 +1554,7 @@ public class LeanTween : MonoBehaviour
 
 	public static float easeOutCubic(float start, float end, float val)
 	{
-		val -= 1f;
+		val--;
 		end -= start;
 		return end * (val * val * val + 1f) + start;
 	}
@@ -1596,7 +1579,7 @@ public class LeanTween : MonoBehaviour
 
 	public static float easeOutQuart(float start, float end, float val)
 	{
-		val -= 1f;
+		val--;
 		end -= start;
 		return (0f - end) * (val * val * val * val - 1f) + start;
 	}
@@ -1621,7 +1604,7 @@ public class LeanTween : MonoBehaviour
 
 	public static float easeOutQuint(float start, float end, float val)
 	{
-		val -= 1f;
+		val--;
 		end -= start;
 		return end * (val * val * val * val * val + 1f) + start;
 	}
@@ -1676,7 +1659,7 @@ public class LeanTween : MonoBehaviour
 		{
 			return end / 2f * Mathf.Pow(2f, 10f * (val - 1f)) + start;
 		}
-		val -= 1f;
+		val--;
 		return end / 2f * (0f - Mathf.Pow(2f, -10f * val) + 2f) + start;
 	}
 
@@ -1688,7 +1671,7 @@ public class LeanTween : MonoBehaviour
 
 	public static float easeOutCirc(float start, float end, float val)
 	{
-		val -= 1f;
+		val--;
 		end -= start;
 		return end * Mathf.Sqrt(1f - val * val) + start;
 	}
@@ -1802,7 +1785,7 @@ public class LeanTween : MonoBehaviour
 		{
 			overshoot = 1f + (1f - val) / 0.4f * (overshoot - 1f);
 		}
-		val -= 1f;
+		val--;
 		return start - num2 * Mathf.Pow(2f, 10f * val) * Mathf.Sin((val - num) * ((float)Math.PI * 2f) / period) * overshoot;
 	}
 
@@ -1871,10 +1854,10 @@ public class LeanTween : MonoBehaviour
 		}
 		if (val < 1f)
 		{
-			val -= 1f;
+			val--;
 			return start - 0.5f * (num2 * Mathf.Pow(2f, 10f * val) * Mathf.Sin((val - num) * ((float)Math.PI * 2f) / period)) * overshoot;
 		}
-		val -= 1f;
+		val--;
 		return end + start + num2 * Mathf.Pow(2f, -10f * val) * Mathf.Sin((val - num) * ((float)Math.PI * 2f) / period) * 0.5f * overshoot;
 	}
 
@@ -1962,5 +1945,72 @@ public class LeanTween : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	static LeanTween()
+	{
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Expected O, but got Unknown
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0189: Expected O, but got Unknown
+		throwErrors = true;
+		tau = (float)Math.PI * 2f;
+		PI_DIV2 = (float)Math.PI / 2f;
+		tweenMaxSearch = -1;
+		maxTweens = 4096;
+		maxSequences = 4096;
+		frameRendered = -1;
+		dtEstimated = -1f;
+		global_counter = 0u;
+		punch = new AnimationCurve((Keyframe[])(object)new Keyframe[9]
+		{
+			new Keyframe(0f, 0f),
+			new Keyframe(0.112586f, 0.9976035f),
+			new Keyframe(0.3120486f, -0.1720615f),
+			new Keyframe(0.4316337f, 0.07030682f),
+			new Keyframe(0.5524869f, -0.03141804f),
+			new Keyframe(0.6549395f, 0.003909959f),
+			new Keyframe(0.770987f, -0.009817753f),
+			new Keyframe(0.8838775f, 0.001939224f),
+			new Keyframe(1f, 0f)
+		});
+		shake = new AnimationCurve((Keyframe[])(object)new Keyframe[4]
+		{
+			new Keyframe(0f, 0f),
+			new Keyframe(0.25f, 1f),
+			new Keyframe(0.75f, -1f),
+			new Keyframe(1f, 0f)
+		});
+		startSearch = 0;
+		eventsMaxSearch = 0;
+		EVENTS_MAX = 10;
+		LISTENERS_MAX = 10;
+		INIT_LISTENERS_MAX = LISTENERS_MAX;
 	}
 }

@@ -32,12 +32,12 @@ public class TransformLoopPreview : MonoBehaviour
 	[SerializeField]
 	private MovementAxis movementAxis = MovementAxis.PositiveZ;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 originPosition;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool originCaptured;
 
 	[SerializeField]

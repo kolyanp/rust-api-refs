@@ -93,8 +93,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				}
 				if (!lastWaterInfo.HasValue || !lastTimeInWaterUpdated.HasValue || Time.timeAsDouble - lastTimeInWaterUpdated > 1.0)
 				{
-					BaseMountable castedUnityObject;
-					Vector3 val = (BaseNetworkableEx.Is<BaseMountable>((Object)(object)player.GetMounted(), out castedUnityObject) ? (Vector3.down * 0.5f) : Vector3.zero);
+					Vector3 val = (BaseNetworkableEx.Is<BaseMountable>((Object)(object)player.GetMounted(), out BaseMountable _) ? (Vector3.down * 0.5f) : Vector3.zero);
 					lastWaterInfo = WaterLevel.GetWaterInfo(((Component)targetEntity).transform.position + val, waves: false, volumes: false);
 					lastTimeInWaterUpdated = Time.timeAsDouble;
 				}
@@ -228,7 +227,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				lastKnownPosition = lastKnownPositionOverride.Value;
 				predictedPosition = lastKnownPositionOverride.Value;
 			}
-			else if (newVisibility && flag)
+			else if (newVisibility & flag)
 			{
 				lastKnownPosition = ((Component)targetEntity).transform.position;
 				predictedPosition = ((Component)targetEntity).transform.position;
@@ -237,7 +236,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			{
 				predictedPosition = ((Component)targetEntity).transform.position;
 			}
-			if (isFirstAware || (!isAware && flag && ShouldBeSurprised(val)))
+			if (isFirstAware || ((!isAware & flag) && ShouldBeSurprised(val)))
 			{
 				lastTimeSurprised = Time.timeAsDouble;
 			}
@@ -245,7 +244,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 			{
 				lastTimeSurprised = null;
 			}
-			if (!isFirstAware && !isAware && flag && timeNotVisible >= 2f && timeNotVisible < 15f)
+			if (((!isFirstAware && !isAware) & flag) && timeNotVisible >= 2f && timeNotVisible < 15f)
 			{
 				float num = Vector3.Distance(val, lastKnownPosition);
 				IsCamping = num < 6f;
@@ -335,24 +334,24 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 	}
 
 	[SerializeField]
-	private Vector3 LongRangeVisionRectangle = new Vector3(6f, 30f, 60f);
+	private Vector3 LongRangeVisionRectangle;
 
 	[SerializeField]
-	private Cone ShortRangeVisionCone = new Cone(100f, 30f);
+	private Cone ShortRangeVisionCone;
 
 	[SerializeField]
-	private float touchDistance = 6f;
+	private float touchDistance;
 
 	[SerializeField]
-	private float noiseRangeMultiplier = 1f;
+	private float noiseRangeMultiplier;
 
 	[SerializeField]
-	private float hearingRange = 50f;
+	private float hearingRange;
 
 	[SerializeField]
 	private NPCTeam team;
 
-	public ResettableFloat timeToForgetSightings = new ResettableFloat(30f);
+	public ResettableFloat timeToForgetSightings;
 
 	private const float timeToForgetNoises = 5f;
 
@@ -370,9 +369,9 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 
 	private double spawnTime;
 
-	private Dictionary<BaseEntity, double> _alliesWeAreAwareOf = new Dictionary<BaseEntity, double>(3);
+	private Dictionary<BaseEntity, double> _alliesWeAreAwareOf;
 
-	private Dictionary<BaseEntity, VisibilityStatus> entitiesWeAreAwareOf = new Dictionary<BaseEntity, VisibilityStatus>(8);
+	private Dictionary<BaseEntity, VisibilityStatus> entitiesWeAreAwareOf;
 
 	private BaseEntity Target;
 
@@ -402,30 +401,30 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	};
 
-	private HashSet<NpcNoiseEvent> noises = new HashSet<NpcNoiseEvent>();
+	private HashSet<NpcNoiseEvent> noises;
 
 	[SerializeField]
-	private float foodDetectionRange = 30f;
+	private float foodDetectionRange;
 
 	private BaseEntity _nearestFood;
 
 	[SerializeField]
-	private float fireDetectionRange = 20f;
+	private float fireDetectionRange;
 
 	[NonSerialized]
-	public UnityEvent onFireMelee = new UnityEvent();
+	public UnityEvent onFireMelee;
 
 	private BaseEntity _nearestFire;
 
 	private double? lastMeleeTime;
 
 	[SerializeField]
-	private float TargetingCooldown = 5f;
+	private float TargetingCooldown;
 
 	[SerializeField]
-	private float SwitchTargetToFocusAggressorCooldown = 5f;
+	private float SwitchTargetToFocusAggressorCooldown;
 
-	private LockState lockState = new LockState();
+	private LockState lockState;
 
 	private double? lastTargetTime;
 
@@ -480,7 +479,16 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
-	public Vector3 EyeOffset => EyePosition - ((Component)base.baseEntity).transform.position;
+	public Vector3 EyeOffset
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			return EyePosition - ((Component)base.baseEntity).transform.position;
+		}
+	}
 
 	private RustNavMeshAgent Agent => _agent ?? (_agent = ((Component)base.baseEntity).GetComponent<RustNavMeshAgent>());
 
@@ -1246,8 +1254,7 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		float clarity;
-		bool flag = IsInAnyRange(entity, out clarity);
+		bool flag = IsInAnyRange(entity, out var clarity);
 		clarity *= 1f / AI.npcReactionTime;
 		clarity = Mathf.Max(clarity, 0.001f);
 		if (flag && entity.ToNonNpcPlayer(out var player))
@@ -1692,5 +1699,29 @@ public class SenseComponent : EntityComponent<BaseEntity>, IServerComponent
 				((IDisposable)val)?.Dispose();
 			}
 		}
+	}
+
+	public SenseComponent()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Expected O, but got Unknown
+		LongRangeVisionRectangle = new Vector3(6f, 30f, 60f);
+		ShortRangeVisionCone = new Cone(100f, 30f);
+		touchDistance = 6f;
+		noiseRangeMultiplier = 1f;
+		hearingRange = 50f;
+		timeToForgetSightings = new ResettableFloat(30f);
+		_alliesWeAreAwareOf = new Dictionary<BaseEntity, double>(3);
+		entitiesWeAreAwareOf = new Dictionary<BaseEntity, VisibilityStatus>(8);
+		noises = new HashSet<NpcNoiseEvent>();
+		foodDetectionRange = 30f;
+		fireDetectionRange = 20f;
+		onFireMelee = new UnityEvent();
+		TargetingCooldown = 5f;
+		SwitchTargetToFocusAggressorCooldown = 5f;
+		lockState = new LockState();
+		base._002Ector();
 	}
 }

@@ -25,7 +25,7 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	private struct CubemapFaceMatrices
 	{
-		public Matrix4x4 worldToView = Matrix4x4.identity;
+		public Matrix4x4 worldToView;
 
 		public Matrix4x4 viewToWorld;
 
@@ -35,6 +35,7 @@ public class ReflectionProbeEx : MonoBehaviour
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+			worldToView = Matrix4x4.identity;
 			((Matrix4x4)(ref worldToView))[0, 0] = ((Vector3)(ref x))[0];
 			((Matrix4x4)(ref worldToView))[0, 1] = ((Vector3)(ref x))[1];
 			((Matrix4x4)(ref worldToView))[0, 2] = ((Vector3)(ref x))[2];
@@ -70,82 +71,42 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	private Mesh skyboxMesh;
 
-	private static float[] octaVerts = new float[72]
-	{
-		0f, 1f, 0f, 0f, 0f, -1f, 1f, 0f, 0f, 0f,
-		1f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 1f,
-		0f, 0f, 0f, 1f, -1f, 0f, 0f, 0f, 1f, 0f,
-		-1f, 0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 1f,
-		0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f, 0f,
-		1f, 1f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f,
-		0f, 0f, 1f, 0f, -1f, 0f, 0f, 0f, -1f, -1f,
-		0f, 0f
-	};
+	private static float[] octaVerts;
 
-	private static readonly CubemapFaceMatrices[] cubemapFaceMatrices = new CubemapFaceMatrices[6]
-	{
-		new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
-		new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f)),
-		new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f))
-	};
+	private static readonly CubemapFaceMatrices[] cubemapFaceMatrices;
 
-	private static readonly CubemapFaceMatrices[] cubemapFaceMatricesD3D11 = new CubemapFaceMatrices[6]
-	{
-		new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f), new Vector3(-1f, 0f, 0f)),
-		new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f), new Vector3(1f, 0f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, -1f)),
-		new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, 1f))
-	};
+	private static readonly CubemapFaceMatrices[] cubemapFaceMatricesD3D11;
 
-	private static readonly CubemapFaceMatrices[] shadowCubemapFaceMatrices = new CubemapFaceMatrices[6]
-	{
-		new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
-		new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
-		new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f)),
-		new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f))
-	};
+	private static readonly CubemapFaceMatrices[] shadowCubemapFaceMatrices;
 
 	private CubemapFaceMatrices[] platformCubemapFaceMatrices;
 
-	private static readonly int[] tab32 = new int[32]
-	{
-		0, 9, 1, 10, 13, 21, 2, 29, 11, 14,
-		16, 18, 22, 25, 3, 30, 8, 12, 20, 28,
-		15, 17, 24, 7, 19, 27, 23, 6, 26, 5,
-		4, 31
-	};
+	private static readonly int[] tab32;
 
-	public ReflectionProbeRefreshMode refreshMode = (ReflectionProbeRefreshMode)1;
+	public ReflectionProbeRefreshMode refreshMode;
 
 	public bool timeSlicing;
 
-	public int resolution = 128;
+	public int resolution;
 
 	[InspectorName("HDR")]
-	public bool hdr = true;
+	public bool hdr;
 
 	public float shadowDistance;
 
-	public ReflectionProbeClearFlags clearFlags = (ReflectionProbeClearFlags)1;
+	public ReflectionProbeClearFlags clearFlags;
 
-	public Color background = new Color(0.192f, 0.301f, 0.474f);
+	public Color background;
 
-	public float nearClip = 0.3f;
+	public float nearClip;
 
-	public float farClip = 1000f;
+	public float farClip;
 
 	public Transform attachToTarget;
 
 	public Light directionalLight;
 
-	public float textureMipBias = 2f;
+	public float textureMipBias;
 
 	public bool highPrecision;
 
@@ -153,11 +114,11 @@ public class ReflectionProbeEx : MonoBehaviour
 
 	public ConvolutionQuality convolutionQuality;
 
-	public List<RenderListEntry> staticRenderList = new List<RenderListEntry>();
+	public List<RenderListEntry> staticRenderList;
 
 	public Cubemap reflectionCubemap;
 
-	public float reflectionIntensity = 1f;
+	public float reflectionIntensity;
 
 	private void CreateMeshes()
 	{
@@ -554,5 +515,127 @@ public class ReflectionProbeEx : MonoBehaviour
 			obj.Dispose();
 			obj = default(T);
 		}
+	}
+
+	public ReflectionProbeEx()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		refreshMode = (ReflectionProbeRefreshMode)1;
+		resolution = 128;
+		hdr = true;
+		clearFlags = (ReflectionProbeClearFlags)1;
+		background = new Color(0.192f, 0.301f, 0.474f);
+		nearClip = 0.3f;
+		farClip = 1000f;
+		textureMipBias = 2f;
+		staticRenderList = new List<RenderListEntry>();
+		reflectionIntensity = 1f;
+		((MonoBehaviour)this)._002Ector();
+	}
+
+	static ReflectionProbeEx()
+	{
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0231: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0331: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0351: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0365: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0379: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0400: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0414: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0434: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0448: Unknown result type (might be due to invalid IL or missing references)
+		//IL_045c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0490: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_050c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0520: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0534: Unknown result type (might be due to invalid IL or missing references)
+		octaVerts = new float[72]
+		{
+			0f, 1f, 0f, 0f, 0f, -1f, 1f, 0f, 0f, 0f,
+			1f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 1f,
+			0f, 0f, 0f, 1f, -1f, 0f, 0f, 0f, 1f, 0f,
+			-1f, 0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 1f,
+			0f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f, 0f,
+			1f, 1f, 0f, 0f, 0f, -1f, 0f, -1f, 0f, 0f,
+			0f, 0f, 1f, 0f, -1f, 0f, 0f, 0f, -1f, -1f,
+			0f, 0f
+		};
+		cubemapFaceMatrices = new CubemapFaceMatrices[6]
+		{
+			new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
+			new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f)),
+			new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f))
+		};
+		cubemapFaceMatricesD3D11 = new CubemapFaceMatrices[6]
+		{
+			new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, 1f, 0f), new Vector3(-1f, 0f, 0f)),
+			new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f), new Vector3(1f, 0f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, -1f)),
+			new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, 1f, 0f), new Vector3(0f, 0f, 1f))
+		};
+		shadowCubemapFaceMatrices = new CubemapFaceMatrices[6]
+		{
+			new CubemapFaceMatrices(new Vector3(0f, 0f, 1f), new Vector3(0f, -1f, 0f), new Vector3(-1f, 0f, 0f)),
+			new CubemapFaceMatrices(new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f), new Vector3(1f, 0f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 1f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, 0f, -1f), new Vector3(0f, -1f, 0f)),
+			new CubemapFaceMatrices(new Vector3(1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, 1f)),
+			new CubemapFaceMatrices(new Vector3(-1f, 0f, 0f), new Vector3(0f, -1f, 0f), new Vector3(0f, 0f, -1f))
+		};
+		tab32 = new int[32]
+		{
+			0, 9, 1, 10, 13, 21, 2, 29, 11, 14,
+			16, 18, 22, 25, 3, 30, 8, 12, 20, 28,
+			15, 17, 24, 7, 19, 27, 23, 6, 26, 5,
+			4, 31
+		};
 	}
 }

@@ -8,7 +8,7 @@ public class SocketMod_TerrainCheck : SocketMod
 
 	public bool preventWorldLayerInMonuments;
 
-	private static Phrase lastError = new Phrase("", "");
+	private static Phrase lastError;
 
 	protected override Phrase ErrorPhrase => lastError;
 
@@ -122,5 +122,12 @@ public class SocketMod_TerrainCheck : SocketMod
 			lastError = ConstructionErrors.NotInTerrain;
 		}
 		return false;
+	}
+
+	static SocketMod_TerrainCheck()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		lastError = new Phrase("", "");
 	}
 }

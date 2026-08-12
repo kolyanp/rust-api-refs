@@ -31,53 +31,53 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	private RustNavMeshAgent agent;
 
 	[SerializeField]
-	private SteeringMode steeringMode = SteeringMode.LimitedTurnRate;
+	private SteeringMode steeringMode;
 
 	[Header("Speed")]
 	[SerializeField]
-	private float sneakSpeed = 0.6f;
+	private float sneakSpeed;
 
 	[SerializeField]
-	private float walkSpeed = 0.89f;
+	private float walkSpeed;
 
 	[SerializeField]
-	private float jogSpeed = 2.45f;
+	private float jogSpeed;
 
 	[SerializeField]
-	private float runSpeed = 4.4f;
+	private float runSpeed;
 
 	[SerializeField]
-	private float sprintSpeed = 6f;
+	private float sprintSpeed;
 
 	[SerializeField]
-	private float fullSprintSpeed = 9f;
+	private float fullSprintSpeed;
 
 	[SerializeField]
 	public bool canSwim;
 
 	[SerializeField]
-	private float swimSpeed = 0.6f;
+	private float swimSpeed;
 
 	[SerializeField]
-	private float swimSprintSpeed = 0.89f;
+	private float swimSprintSpeed;
 
-	public ResettableFloat desiredSwimDepth = new ResettableFloat(0.7f);
+	public ResettableFloat desiredSwimDepth;
 
-	public ResettableFloat acceleration = new ResettableFloat(10f);
+	public ResettableFloat acceleration;
 
-	public ResettableFloat deceleration = new ResettableFloat(2f);
+	public ResettableFloat deceleration;
 
 	[SerializeField]
-	private float maxTurnRadius = 2f;
+	private float maxTurnRadius;
 
 	[SerializeField]
 	private bool canOpenDoors;
 
 	[SerializeField]
-	private Enum preferedTopology = (Enum)537002081;
+	private Enum preferedTopology;
 
 	[SerializeField]
-	private Enum preferedBiome = (Enum)15;
+	private Enum preferedBiome;
 
 	public const BaseEntity.Flags FLAG_IS_SWIMMING = BaseEntity.Flags.Reserved1;
 
@@ -88,9 +88,9 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	private static RustNavMeshPath path;
 
 	[NonSerialized]
-	public UnityEvent onPathFailed = new UnityEvent();
+	public UnityEvent onPathFailed;
 
-	private LockState movementLock = new LockState();
+	private LockState movementLock;
 
 	private bool isNavMeshReady;
 
@@ -100,7 +100,7 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 	public float currentDeviation;
 
 	[NonSerialized]
-	public bool shouldStopAtDestination = true;
+	public bool shouldStopAtDestination;
 
 	[NonSerialized]
 	public float? overrideAngularSpeed;
@@ -143,7 +143,14 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 		}
 	}
 
-	public Vector3 NavPosition => agent.nextPosition;
+	public Vector3 NavPosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return agent.nextPosition;
+		}
+	}
 
 	public bool IsSprinting => curSpeed >= sprintSpeed;
 
@@ -165,7 +172,7 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 		}
 	}
 
-	public List<Vector3> lastValidPath { get; private set; } = new List<Vector3>();
+	public List<Vector3> lastValidPath { get; private set; }
 
 	private float AngularSpeed
 	{
@@ -887,8 +894,7 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 		using (TimeWarning.New("SamplePosition"))
 		{
 			sample = position;
-			NavMeshHit hitNS;
-			bool num = agent.SamplePosition(position, out hitNS, maxDistance);
+			bool num = agent.SamplePosition(position, out var hitNS, maxDistance);
 			float num2 = 1f;
 			if (num && maxDistance > num2 && Mathf.Abs(((NavMeshHit)(ref hitNS)).position.y - position.y) > num2 && SampleGroundPositionWithPhysics(position, out var hitInfo, 3.5f) && agent.SamplePosition(((RaycastHit)(ref hitInfo)).point, out var hitNS2, num2))
 			{
@@ -939,5 +945,33 @@ public class LimitedTurnNavAgent : EntityComponent<BaseEntity>
 		{
 			return agent.CalculatePath(destination, path);
 		}
+	}
+
+	public LimitedTurnNavAgent()
+	{
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b8: Expected O, but got Unknown
+		steeringMode = SteeringMode.LimitedTurnRate;
+		sneakSpeed = 0.6f;
+		walkSpeed = 0.89f;
+		jogSpeed = 2.45f;
+		runSpeed = 4.4f;
+		sprintSpeed = 6f;
+		fullSprintSpeed = 9f;
+		swimSpeed = 0.6f;
+		swimSprintSpeed = 0.89f;
+		desiredSwimDepth = new ResettableFloat(0.7f);
+		acceleration = new ResettableFloat(10f);
+		deceleration = new ResettableFloat(2f);
+		maxTurnRadius = 2f;
+		preferedTopology = (Enum)537002081;
+		preferedBiome = (Enum)15;
+		onPathFailed = new UnityEvent();
+		movementLock = new LockState();
+		lastValidPath = new List<Vector3>();
+		shouldStopAtDestination = true;
+		base._002Ector();
 	}
 }

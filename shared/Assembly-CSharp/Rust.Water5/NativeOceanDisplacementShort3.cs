@@ -7,13 +7,13 @@ namespace Rust.Water5;
 
 internal struct NativeOceanDisplacementShort3 : IDisposable
 {
-	public readonly struct ReadOnly(ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3s, int spectrumCount, int frameCount)
+	public readonly struct ReadOnly
 	{
-		private readonly ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3S = oceanDisplacementShort3s;
+		private readonly ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3S;
 
-		private readonly int spectrumCount = spectrumCount;
+		private readonly int spectrumCount;
 
-		private readonly int frameCount = frameCount;
+		private readonly int frameCount;
 
 		public OceanDisplacementShort3 this[int x, int y, int z]
 		{
@@ -24,6 +24,15 @@ internal struct NativeOceanDisplacementShort3 : IDisposable
 				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 				return oceanDisplacementShort3S[z * spectrumCount * frameCount + y * spectrumCount + x];
 			}
+		}
+
+		public ReadOnly(ReadOnly<OceanDisplacementShort3> oceanDisplacementShort3s, int spectrumCount, int frameCount)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			oceanDisplacementShort3S = oceanDisplacementShort3s;
+			this.spectrumCount = spectrumCount;
+			this.frameCount = frameCount;
 		}
 	}
 

@@ -279,7 +279,7 @@ public class HackableLockedCrate : LootContainer
 
 	public void HackProgress()
 	{
-		hackSeconds += 1f;
+		hackSeconds++;
 		if (hackSeconds > requiredHackSeconds)
 		{
 			Interface.CallHook("OnCrateHackEnd", this);

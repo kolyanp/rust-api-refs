@@ -11,21 +11,21 @@ using UnityEngine.Assertions;
 
 public class ShutterFrame : PhotoFrame, IFlagNotify
 {
-	[Tooltip("Tiling for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
 	[Header("Shutter Frame")]
-	public Vector2 shutterDefaultTiling = new Vector2(1.15f, 1f);
+	[Tooltip("Tiling for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
+	public Vector2 shutterDefaultTiling;
 
 	[Tooltip("Offsets for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
-	public Vector2 shutterDefaultOffset = new Vector2(-0.07f, -0.2f);
+	public Vector2 shutterDefaultOffset;
 
 	[Tooltip("UV -> V Offsets for the shutter when open and closed respectively")]
-	public Vector2 shutterUVOffsets = new Vector2(0f, -0.48f);
+	public Vector2 shutterUVOffsets;
 
 	public List<Renderer> shutterRenderers;
 
-	public float shutterMoveSpeed = 1f;
+	public float shutterMoveSpeed;
 
-	public AnimationCurve shutterMovementCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+	public AnimationCurve shutterMovementCurve;
 
 	public GameObjectRef IoEntity;
 
@@ -168,9 +168,9 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(6f)]
-	[RPC_Server]
 	public void RPC_ToggleShutter(RPCMessage msg)
 	{
 		IsShutterOpen = !IsShutterOpen;
@@ -290,5 +290,21 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	public ShutterFrame()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		shutterDefaultTiling = new Vector2(1.15f, 1f);
+		shutterDefaultOffset = new Vector2(-0.07f, -0.2f);
+		shutterUVOffsets = new Vector2(0f, -0.48f);
+		shutterMoveSpeed = 1f;
+		shutterMovementCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+		base._002Ector();
 	}
 }

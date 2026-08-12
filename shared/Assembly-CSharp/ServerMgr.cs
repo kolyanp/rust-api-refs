@@ -56,7 +56,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	private string _AssemblyHash;
 
-	private static readonly Memoized<string, (bool Server, bool Player)> _systemConfigTag = new Memoized<string, (bool, bool)>((Func<(bool, bool), string>)(((bool Server, bool Player) t) => (!t.Server && !t.Player) ? null : $",sc{(t.Player ? 2 : 0) | (t.Server ? 1 : 0)}"));
+	private static readonly Memoized<string, (bool Server, bool Player)> _systemConfigTag;
 
 	private GameObject[] proceduralSpawnPoints;
 
@@ -64,9 +64,9 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public IEnumerator restartCoroutine;
 
-	public static readonly Phrase SERVER_RESTARTING = new Phrase("server.restarting", "Server Restarting!");
+	public static readonly Phrase SERVER_RESTARTING;
 
-	public static readonly Phrase RESTART_INTERRUPTED_PHRASE = new Phrase("server.restart_interrupted", "Server Restart interrupted!");
+	public static readonly Phrase RESTART_INTERRUPTED_PHRASE;
 
 	public bool runFrameUpdate { get; private set; }
 
@@ -1045,7 +1045,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				{
 					bool batchsynctransforms = Physics.batchsynctransforms;
 					bool autosynctransforms = Physics.autosynctransforms;
-					if (batchsynctransforms && autosynctransforms)
+					if (batchsynctransforms & autosynctransforms)
 					{
 						Physics.autoSyncTransforms = false;
 					}
@@ -1247,7 +1247,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 						Debug.LogWarning((object)"Server Exception: WaterCatcher.CollectWorkQueue");
 						Debug.LogException(ex23, (Object)(object)this);
 					}
-					if (batchsynctransforms && autosynctransforms)
+					if (batchsynctransforms & autosynctransforms)
 					{
 						Physics.autoSyncTransforms = true;
 					}
@@ -2050,7 +2050,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				return playerSpawn;
 			}
 		}
-		if ((Object)(object)SingletonComponent<SpawnHandler>.Instance != (Object)null && !flag)
+		if (((Object)(object)SingletonComponent<SpawnHandler>.Instance != (Object)null) & !flag)
 		{
 			BasePlayer.SpawnPoint spawnPointForTeam = SpawnHandler.GetSpawnPointForTeam(teamId);
 			if (spawnPointForTeam != null)
@@ -2289,5 +2289,16 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		netWrite.String(value);
 		netWrite.Send(new SendInfo(list));
 		Pool.FreeUnmanaged<Network.Connection>(ref list);
+	}
+
+	static ServerMgr()
+	{
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Expected O, but got Unknown
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Expected O, but got Unknown
+		_systemConfigTag = new Memoized<string, (bool, bool)>((Func<(bool, bool), string>)(((bool Server, bool Player) t) => (!t.Server && !t.Player) ? null : $",sc{(t.Player ? 2 : 0) | (t.Server ? 1 : 0)}"));
+		SERVER_RESTARTING = new Phrase("server.restarting", "Server Restarting!");
+		RESTART_INTERRUPTED_PHRASE = new Phrase("server.restart_interrupted", "Server Restart interrupted!");
 	}
 }

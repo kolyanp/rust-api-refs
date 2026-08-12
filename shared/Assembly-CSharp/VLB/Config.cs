@@ -6,11 +6,11 @@ namespace VLB;
 [HelpURL("http://saladgamer.com/vlb-doc/config/")]
 public class Config : ScriptableObject
 {
-	public int geometryLayerID = 1;
+	public int geometryLayerID;
 
-	public string geometryTag = "Untagged";
+	public string geometryTag;
 
-	public int geometryRenderQueue = 3000;
+	public int geometryRenderQueue;
 
 	public bool forceSinglePass;
 
@@ -18,25 +18,25 @@ public class Config : ScriptableObject
 	[HighlightNull]
 	private Shader beamShader1Pass;
 
-	[FormerlySerializedAs("BeamShader")]
 	[FormerlySerializedAs("beamShader")]
-	[SerializeField]
 	[HighlightNull]
+	[SerializeField]
+	[FormerlySerializedAs("BeamShader")]
 	private Shader beamShader2Pass;
 
-	public int sharedMeshSides = 24;
+	public int sharedMeshSides;
 
-	public int sharedMeshSegments = 5;
+	public int sharedMeshSegments;
 
 	[Range(0.01f, 2f)]
-	public float globalNoiseScale = 0.5f;
+	public float globalNoiseScale;
 
-	public Vector3 globalNoiseVelocity = Consts.NoiseVelocityDefault;
+	public Vector3 globalNoiseVelocity;
 
 	[HighlightNull]
 	public TextAsset noise3DData;
 
-	public int noise3DSize = 64;
+	public int noise3DSize;
 
 	[HighlightNull]
 	public ParticleSystem dustParticlesPrefab;
@@ -55,7 +55,14 @@ public class Config : ScriptableObject
 		}
 	}
 
-	public Vector4 globalNoiseParam => new Vector4(globalNoiseVelocity.x, globalNoiseVelocity.y, globalNoiseVelocity.z, globalNoiseScale);
+	public Vector4 globalNoiseParam
+	{
+		get
+		{
+			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+			return new Vector4(globalNoiseVelocity.x, globalNoiseVelocity.y, globalNoiseVelocity.z, globalNoiseScale);
+		}
+	}
 
 	public static Config Instance
 	{
@@ -108,5 +115,20 @@ public class Config : ScriptableObject
 		((Object)((Component)obj).gameObject).hideFlags = Consts.ProceduralObjectsHideFlags;
 		((Component)obj).gameObject.SetActive(true);
 		return obj;
+	}
+
+	public Config()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		geometryLayerID = 1;
+		geometryTag = "Untagged";
+		geometryRenderQueue = 3000;
+		sharedMeshSides = 24;
+		sharedMeshSegments = 5;
+		globalNoiseScale = 0.5f;
+		globalNoiseVelocity = Consts.NoiseVelocityDefault;
+		noise3DSize = 64;
+		((ScriptableObject)this)._002Ector();
 	}
 }

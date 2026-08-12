@@ -43,7 +43,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public Transform buoyancyPoint;
 
-	public float liftAmount = 10f;
+	public float liftAmount;
 
 	public Transform windSock;
 
@@ -51,7 +51,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public Transform[] AltitudeNeedles;
 
-	public float AltitudeNeedleSpeed = 5f;
+	public float AltitudeNeedleSpeed;
 
 	public GameObject staticBalloonDeflated;
 
@@ -66,14 +66,14 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	public GameObject parentTrigger;
 
 	[Tooltip("Turning off the engine for this long will prevent homing missiles from locking on")]
-	public float engineOffTimeToPreventHomingTarget = 4f;
+	public float engineOffTimeToPreventHomingTarget;
 
 	public float inflationLevel;
 
 	[Header("Fuel")]
 	public GameObjectRef fuelStoragePrefab;
 
-	public float fuelPerSec = 0.25f;
+	public float fuelPerSec;
 
 	[Header("Storage")]
 	public GameObjectRef storageUnitPrefab;
@@ -100,9 +100,9 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public float NextUpgradeTime;
 
-	public float windForce = 30000f;
+	public float windForce;
 
-	public Vector3 currentWindVec = Vector3.zero;
+	public Vector3 currentWindVec;
 
 	public Bounds collapsedBounds;
 
@@ -118,7 +118,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 	[ServerVar]
 	public static float minimumAltitudeTerrain = 25f;
 
-	public Vector3 lastFailedDecayPosition = Vector3.zero;
+	public Vector3 lastFailedDecayPosition;
 
 	public float currentBuoyancy;
 
@@ -128,7 +128,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 
 	public bool grounded;
 
-	public float spawnTime = -1f;
+	public float spawnTime;
 
 	public float safeAreaRadius;
 
@@ -534,8 +534,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void EngineSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnHotAirBalloonToggle", this, msg.player) != null)
@@ -1015,5 +1015,22 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		}
 		SendNetworkUpdate();
 		return true;
+	}
+
+	public HotAirBalloon()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		liftAmount = 10f;
+		AltitudeNeedleSpeed = 5f;
+		engineOffTimeToPreventHomingTarget = 4f;
+		fuelPerSec = 0.25f;
+		windForce = 30000f;
+		currentWindVec = Vector3.zero;
+		lastFailedDecayPosition = Vector3.zero;
+		spawnTime = -1f;
+		base._002Ector();
 	}
 }

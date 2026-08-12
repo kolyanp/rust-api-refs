@@ -15,5 +15,12 @@ public class UI_SettingsKeyBindButton : MonoBehaviour
 
 	public RustText text;
 
-	public static readonly Phrase pressAKeyPhrase = new Phrase("keybinds.presskey", "Press a key");
+	public static readonly Phrase pressAKeyPhrase;
+
+	static UI_SettingsKeyBindButton()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		pressAKeyPhrase = new Phrase("keybinds.presskey", "Press a key");
+	}
 }

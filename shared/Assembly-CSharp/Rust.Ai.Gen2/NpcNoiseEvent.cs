@@ -3,19 +3,33 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-public readonly struct NpcNoiseEvent(int id, BaseEntity initiator, Vector3 position, Vector3 initiatorPosition, NpcNoiseIntensity intensity, double eventTime) : IEquatable<NpcNoiseEvent>
+public readonly struct NpcNoiseEvent : IEquatable<NpcNoiseEvent>
 {
-	public readonly int Id = id;
+	public readonly int Id;
 
-	public readonly BaseEntity Initiator = initiator;
+	public readonly BaseEntity Initiator;
 
-	public readonly Vector3 NoisePosition = position;
+	public readonly Vector3 NoisePosition;
 
-	public readonly Vector3 GuessedInitiatorPosition = initiatorPosition;
+	public readonly Vector3 GuessedInitiatorPosition;
 
-	public readonly NpcNoiseIntensity Intensity = intensity;
+	public readonly NpcNoiseIntensity Intensity;
 
-	public readonly double EventTime = eventTime;
+	public readonly double EventTime;
+
+	public NpcNoiseEvent(int id, BaseEntity initiator, Vector3 position, Vector3 initiatorPosition, NpcNoiseIntensity intensity, double eventTime)
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		Id = id;
+		Initiator = initiator;
+		NoisePosition = position;
+		GuessedInitiatorPosition = initiatorPosition;
+		Intensity = intensity;
+		EventTime = eventTime;
+	}
 
 	public bool Equals(NpcNoiseEvent other)
 	{

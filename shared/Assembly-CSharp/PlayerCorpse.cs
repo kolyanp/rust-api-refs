@@ -18,7 +18,7 @@ public class PlayerCorpse : LootableCorpse
 
 	public const Flags BlockClothingRebuild = Flags.Reserved2;
 
-	public static readonly Phrase CantLootSafeZoneError = new Phrase("error_cantlootsafezone", "Cannot loot other players in safe zones");
+	public static readonly Phrase CantLootSafeZoneError;
 
 	private Vector3 prevLocalPos;
 
@@ -283,5 +283,12 @@ public class PlayerCorpse : LootableCorpse
 	public override string Categorize()
 	{
 		return "playercorpse";
+	}
+
+	static PlayerCorpse()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		CantLootSafeZoneError = new Phrase("error_cantlootsafezone", "Cannot loot other players in safe zones");
 	}
 }

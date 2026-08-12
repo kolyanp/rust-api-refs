@@ -235,8 +235,8 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_MakeNewFile(RPCMessage msg)
 	{
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)

@@ -99,7 +99,7 @@ public class AnalyticsTable
 			MemoryStream result2 = null;
 			if (accumulator.HasPending)
 			{
-				if (WantsUpload || forceConsume)
+				if (WantsUpload | forceConsume)
 				{
 					UpdateNextUploadTime();
 					result2 = accumulator.Consume(this);

@@ -9,7 +9,7 @@ namespace Rust.Ai.Gen2.Nav;
 
 public class IndependantNavmesh : MonoBehaviour, IServerComponent
 {
-	public Vector3 size = Vector3.one * 50f;
+	public Vector3 size;
 
 	public bool canMove;
 
@@ -350,5 +350,14 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		OBB val = new OBB(((Component)this).transform.position, size, ((Component)this).transform.rotation);
 		return ((OBB)(ref val)).ToBounds();
+	}
+
+	public IndependantNavmesh()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		size = Vector3.one * 50f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

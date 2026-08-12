@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 
-[ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
+[ImageEffectAllowedInSceneView]
 [AddComponentMenu("Rendering/Visualize Texture Density")]
 public class VisualizeTexelDensity : MonoBehaviour
 {
@@ -138,7 +138,7 @@ public class VisualizeTexelDensity : MonoBehaviour
 			texelDensityCamera.SetReplacementShader(shader, shaderTag);
 			((Behaviour)texelDensityCamera).enabled = false;
 		}
-		if ((Object)(object)texelDensityRT == (Object)null || screenResized || !texelDensityRT.IsCreated())
+		if ((((Object)(object)texelDensityRT == (Object)null) | screenResized) || !texelDensityRT.IsCreated())
 		{
 			texelDensityCamera.targetTexture = null;
 			SafeDestroyViewTexelDensityRT();

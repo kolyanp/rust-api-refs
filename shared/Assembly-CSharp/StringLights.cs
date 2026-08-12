@@ -72,8 +72,8 @@ public class StringLights : IOEntity
 	[SerializeField]
 	protected bool bulbFaceNormal;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected LineRenderer lineRenderer;
 
 	[SerializeField]
@@ -291,8 +291,8 @@ public class StringLights : IOEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_StartDeploying(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

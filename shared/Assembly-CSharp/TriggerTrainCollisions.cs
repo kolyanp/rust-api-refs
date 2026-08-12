@@ -81,7 +81,7 @@ public class TriggerTrainCollisions : TriggerBase
 				Vector3 center = ((Bounds)(ref bounds)).center;
 				Vector3 val2 = val - center;
 				bool flag = Vector3.Dot(((Component)owner).transform.forward, val2) > 0f;
-				if ((location == Location.Front && !flag) || (location == Location.Rear && flag))
+				if ((location == Location.Front && !flag) || ((location == Location.Rear) & flag))
 				{
 					return;
 				}

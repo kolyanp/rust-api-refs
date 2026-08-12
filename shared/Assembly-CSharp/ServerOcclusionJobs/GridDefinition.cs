@@ -75,12 +75,9 @@ public struct GridDefinition
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		int result;
-		int num = Math.DivRem(x, 8, out result);
-		int result2;
-		int num2 = Math.DivRem(y, 8, out result2);
-		int result3;
-		int num3 = Math.DivRem(z, 8, out result3);
+		int num = Math.DivRem(x, 8, out var result);
+		int num2 = Math.DivRem(y, 8, out var result2);
+		int num3 = Math.DivRem(z, 8, out var result3);
 		int gridIndex = GetGridIndex(num, num2, num3);
 		NativeBitArray val = (NativeBitArray)(IsValidGrid(math.int3(num, num2, num3)) ? OcclusionSubGridBlocked[gridIndex] : default(NativeBitArray));
 		int num4 = result3 * 8 * 8 + result2 * 8 + result;

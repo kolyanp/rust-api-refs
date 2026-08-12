@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class RotateObject : MonoBehaviour
 {
-	public float rotateSpeed_X = 1f;
+	public float rotateSpeed_X;
 
-	public float rotateSpeed_Y = 1f;
+	public float rotateSpeed_Y;
 
-	public float rotateSpeed_Z = 1f;
+	public float rotateSpeed_Z;
 
 	public bool localSpace;
 
 	public bool randomizeRotation;
 
-	public Vector3 randomVariationRange = new Vector3(0.5f, 0.5f, 0.5f);
+	public Vector3 randomVariationRange;
 
 	private void Start()
 	{
@@ -52,5 +52,16 @@ public class RotateObject : MonoBehaviour
 		{
 			((Component)this).transform.Rotate(((Component)this).transform.right, Time.deltaTime * rotateSpeed_Z);
 		}
+	}
+
+	public RotateObject()
+	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		rotateSpeed_X = 1f;
+		rotateSpeed_Y = 1f;
+		rotateSpeed_Z = 1f;
+		randomVariationRange = new Vector3(0.5f, 0.5f, 0.5f);
+		((MonoBehaviour)this)._002Ector();
 	}
 }

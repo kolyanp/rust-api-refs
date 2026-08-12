@@ -137,7 +137,11 @@ public class NexusDB : Database
 	public List<NetworkableId> ReadTransferred()
 	{
 		IntPtr stmHandle = Prepare("SELECT id FROM transferred");
-		return ExecuteAndReadQueryResults(stmHandle, (Func<IntPtr, NetworkableId>)((IntPtr h) => new NetworkableId((ulong)Database.GetColumnValue<uint>(h, 0)))).ToList();
+		return ExecuteAndReadQueryResults(stmHandle, (Func<IntPtr, NetworkableId>)delegate(IntPtr h)
+		{
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			return new NetworkableId((ulong)Database.GetColumnValue<uint>(h, 0));
+		}).ToList();
 	}
 
 	public void ClearTransferred()

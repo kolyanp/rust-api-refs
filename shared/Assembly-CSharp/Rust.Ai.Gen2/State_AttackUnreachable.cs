@@ -57,8 +57,7 @@ public class State_AttackUnreachable : FSMStateBase
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		float radius = BasePlayer.GetRadius();
-		RaycastHit hitInfoNS;
-		bool result = agent.SampleGroundPositionWithPhysics(((Component)targetAsPlayer).transform.position, out hitInfoNS, 2f, radius);
+		bool result = agent.SampleGroundPositionWithPhysics(((Component)targetAsPlayer).transform.position, out var hitInfoNS, 2f, radius);
 		projectedLocation = ((RaycastHit)(ref hitInfoNS)).point;
 		return result;
 	}

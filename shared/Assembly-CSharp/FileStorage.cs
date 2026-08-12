@@ -50,18 +50,22 @@ public class FileStorage : IDisposable
 
 	private FileDatabase db;
 
-	private CRC32 crc = new CRC32();
+	private CRC32 crc;
 
-	private MruDictionary<uint, CacheData> _cache = new MruDictionary<uint, CacheData>(1000, (Action<uint, CacheData>)null);
+	private MruDictionary<uint, CacheData> _cache;
 
 	public static FileStorage server = new FileStorage("sv.files." + 287, server: true);
 
-	private string filePath = string.Empty;
+	private string filePath;
 
 	protected FileStorage(string name, bool server)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Expected O, but got Unknown
+		crc = new CRC32();
+		_cache = new MruDictionary<uint, CacheData>(1000, (Action<uint, CacheData>)null);
+		filePath = string.Empty;
+		base._002Ector();
 		if (server)
 		{
 			string path = (filePath = Server.filesStorageFolder + "/" + name + ".db");
@@ -192,8 +196,12 @@ public class FileStorage : IDisposable
 			{
 				db.Execute("DELETE FROM data WHERE entid = ? AND part = ?", (long)entityid.Value, (int)numid);
 			}
-			uint[] array = (from x in (IEnumerable<KeyValuePair<uint, CacheData>>)_cache
-				where x.Value.entityID == entityid && x.Value.numID == numid
+			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where(delegate(KeyValuePair<uint, CacheData> x)
+				{
+					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+					//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+					return x.Value.entityID == entityid && x.Value.numID == numid;
+				})
 				select x.Key).ToArray();
 			foreach (uint num2 in array)
 			{
@@ -212,8 +220,12 @@ public class FileStorage : IDisposable
 			{
 				db.Execute("DELETE FROM data WHERE entid = ?", (long)entityid.Value);
 			}
-			uint[] array = (from x in (IEnumerable<KeyValuePair<uint, CacheData>>)_cache
-				where x.Value.entityID == entityid
+			uint[] array = (from x in ((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Where(delegate(KeyValuePair<uint, CacheData> x)
+				{
+					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+					//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+					return x.Value.entityID == entityid;
+				})
 				select x.Key).ToArray();
 			foreach (uint num2 in array)
 			{
@@ -246,7 +258,12 @@ public class FileStorage : IDisposable
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		if (((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Count((KeyValuePair<uint, CacheData> x) => x.Value.entityID == id) > 0)
+		if (((IEnumerable<KeyValuePair<uint, CacheData>>)_cache).Count(delegate(KeyValuePair<uint, CacheData> x)
+		{
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			return x.Value.entityID == id;
+		}) > 0)
 		{
 			return true;
 		}

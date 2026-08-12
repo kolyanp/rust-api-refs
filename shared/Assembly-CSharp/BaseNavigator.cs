@@ -50,70 +50,70 @@ public class BaseNavigator : BaseMonoBehaviour
 	[Header("General")]
 	public bool CanNavigateMounted;
 
-	public bool CanUseNavMesh = true;
+	public bool CanUseNavMesh;
 
-	public bool CanUseAStar = true;
+	public bool CanUseAStar;
 
 	public bool CanUseBaseNav;
 
 	public bool CanUseCustomNav;
 
-	public float StoppingDistance = 0.5f;
+	public float StoppingDistance;
 
-	public string DefaultArea = "Walkable";
+	public string DefaultArea;
 
 	public bool CanPathFindToChaseTargetIfNoMovePoint;
 
-	public int PathFindChaseLOSAttemptCount = 5;
+	public int PathFindChaseLOSAttemptCount;
 
-	public float PathFindChaseLOSDistanceMultiplier = 1.5f;
+	public float PathFindChaseLOSDistanceMultiplier;
 
 	[Header("Stuck Detection")]
 	public bool TriggerStuckEvent;
 
-	public float StuckDistance = 1f;
+	public float StuckDistance;
 
 	[Header("Speed")]
-	public float Speed = 5f;
+	public float Speed;
 
-	public float Acceleration = 5f;
+	public float Acceleration;
 
-	public float TurnSpeed = 10f;
+	public float TurnSpeed;
 
-	public NavigationSpeed MoveTowardsSpeed = NavigationSpeed.Normal;
+	public NavigationSpeed MoveTowardsSpeed;
 
 	public bool FaceMoveTowardsTarget;
 
 	[Header("Speed Fractions")]
-	public float SlowestSpeedFraction = 0.16f;
+	public float SlowestSpeedFraction;
 
-	public float SlowSpeedFraction = 0.3f;
+	public float SlowSpeedFraction;
 
-	public float NormalSpeedFraction = 0.5f;
+	public float NormalSpeedFraction;
 
-	public float FastSpeedFraction = 1f;
+	public float FastSpeedFraction;
 
 	public float LowHealthSpeedReductionTriggerFraction;
 
-	public float LowHealthMaxSpeedFraction = 0.5f;
+	public float LowHealthMaxSpeedFraction;
 
-	public float SwimmingSpeedMultiplier = 0.25f;
+	public float SwimmingSpeedMultiplier;
 
 	[Header("AIPoint Usage")]
-	public float BestMovementPointMaxDistance = 10f;
+	public float BestMovementPointMaxDistance;
 
-	public float BestCoverPointMaxDistance = 20f;
+	public float BestCoverPointMaxDistance;
 
-	public float BestRoamPointMaxDistance = 20f;
+	public float BestRoamPointMaxDistance;
 
-	public float MaxRoamDistanceFromHome = -1f;
+	public float MaxRoamDistanceFromHome;
 
 	[Header("Misc")]
-	public float FaceTargetChaseDistance = 10f;
+	public float FaceTargetChaseDistance;
 
 	public bool CanUseRandomMovePointIfNonFound;
 
-	public float MaxWaterDepth = 0.75f;
+	public float MaxWaterDepth;
 
 	public bool SpeedBasedAvoidancePriority;
 
@@ -124,18 +124,21 @@ public class BaseNavigator : BaseMonoBehaviour
 	private int defaultAreaMask;
 
 	[InspectorFlags]
-	public Enum biomePreference = (Enum)12;
+	public Enum biomePreference;
 
 	public bool UseBiomePreference;
 
 	[InspectorFlags]
-	public Enum topologyPreference = (Enum)96;
+	public Enum topologyPreference;
 
 	[InspectorFlags]
 	public Enum topologyPrevent;
 
 	[InspectorFlags]
 	public Enum biomeRequirement;
+
+	[CompilerGenerated]
+	private Vector3 _003CDestination_003Ek__BackingField;
 
 	public float stuckTimer;
 
@@ -151,7 +154,7 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	protected IAIPathNode targetNode;
 
-	protected float currentSpeedFraction = 1f;
+	protected float currentSpeedFraction;
 
 	private float lastSetDestinationTime;
 
@@ -177,7 +180,22 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	public BaseCombatEntity BaseEntity { get; private set; }
 
-	public Vector3 Destination { get; set; }
+	public Vector3 Destination
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CDestination_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CDestination_003Ek__BackingField = value;
+		}
+	}
 
 	public bool Moving => CurrentNavigationType != NavigationType.None;
 
@@ -224,7 +242,14 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	public bool IsOverridingFacingDirection => overrideFacingDirectionMode != OverrideFacingDirectionMode.None;
 
-	public Vector3 FacingDirectionOverride => facingDirectionOverride;
+	public Vector3 FacingDirectionOverride
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return facingDirectionOverride;
+		}
+	}
 
 	public int TopologyPreference()
 	{
@@ -570,8 +595,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		NavigationType navigationType2 = NavigationType.None;
 		if (num)
 		{
-			Vector3 navMeshPos;
-			NavigationType navigationType3 = DetermineNavigationType(((Component)this).transform.position, out navMeshPos);
+			NavigationType navigationType3 = DetermineNavigationType(((Component)this).transform.position, out var navMeshPos);
 			navigationType2 = DetermineNavigationType(pos, out var _);
 			if (navigationType2 == NavigationType.NavMesh && navigationType3 == NavigationType.NavMesh && (CurrentNavigationType == NavigationType.None || CurrentNavigationType == NavigationType.Base))
 			{
@@ -697,8 +721,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		{
 			return NavigationType.Base;
 		}
-		Vector3 position;
-		int result = (GetNearestNavmeshPosition(location + Vector3.up * navTypeHeightOffset, out position, navTypeDistance) ? 1 : 4);
+		int result = (GetNearestNavmeshPosition(location + Vector3.up * navTypeHeightOffset, out var position, navTypeDistance) ? 1 : 4);
 		navMeshPos = position;
 		return (NavigationType)result;
 	}
@@ -1330,5 +1353,38 @@ public class BaseNavigator : BaseMonoBehaviour
 			}
 		}
 		return -1;
+	}
+
+	public BaseNavigator()
+	{
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		CanUseNavMesh = true;
+		CanUseAStar = true;
+		StoppingDistance = 0.5f;
+		DefaultArea = "Walkable";
+		PathFindChaseLOSAttemptCount = 5;
+		PathFindChaseLOSDistanceMultiplier = 1.5f;
+		StuckDistance = 1f;
+		Speed = 5f;
+		Acceleration = 5f;
+		TurnSpeed = 10f;
+		MoveTowardsSpeed = NavigationSpeed.Normal;
+		SlowestSpeedFraction = 0.16f;
+		SlowSpeedFraction = 0.3f;
+		NormalSpeedFraction = 0.5f;
+		FastSpeedFraction = 1f;
+		LowHealthMaxSpeedFraction = 0.5f;
+		SwimmingSpeedMultiplier = 0.25f;
+		BestMovementPointMaxDistance = 10f;
+		BestCoverPointMaxDistance = 20f;
+		BestRoamPointMaxDistance = 20f;
+		MaxRoamDistanceFromHome = -1f;
+		FaceTargetChaseDistance = 10f;
+		MaxWaterDepth = 0.75f;
+		biomePreference = (Enum)12;
+		topologyPreference = (Enum)96;
+		currentSpeedFraction = 1f;
+		base._002Ector();
 	}
 }

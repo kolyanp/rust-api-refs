@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DeployVolumeSphere : DeployVolume
 {
-	public Vector3 center = Vector3.zero;
+	public Vector3 center;
 
-	public float radius = 0.5f;
+	public float radius;
 
 	protected override bool Check(Vector3 position, Quaternion rotation, int mask = -1)
 	{
@@ -59,5 +59,14 @@ public class DeployVolumeSphere : DeployVolume
 			return true;
 		}
 		return false;
+	}
+
+	public DeployVolumeSphere()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		center = Vector3.zero;
+		radius = 0.5f;
+		base._002Ector();
 	}
 }

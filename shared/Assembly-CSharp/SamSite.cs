@@ -59,19 +59,19 @@ public class SamSite : ContainerIOEntity
 
 	public Transform eyePoint;
 
-	public float gearEpislonDegrees = 20f;
+	public float gearEpislonDegrees;
 
-	public float turnSpeed = 1f;
+	public float turnSpeed;
 
-	public float clientLerpSpeed = 1f;
+	public float clientLerpSpeed;
 
-	public Vector3 currentAimDir = Vector3.forward;
+	public Vector3 currentAimDir;
 
-	public Vector3 targetAimDir = Vector3.forward;
+	public Vector3 targetAimDir;
 
-	public float vehicleScanRadius = 350f;
+	public float vehicleScanRadius;
 
-	public float missileScanRadius = 500f;
+	public float missileScanRadius;
 
 	public GameObjectRef projectileTest;
 
@@ -91,21 +91,21 @@ public class SamSite : ContainerIOEntity
 
 	public SoundDefinition yawMovementLoopDef;
 
-	public float yawGainLerp = 8f;
+	public float yawGainLerp;
 
-	public float yawGainMovementSpeedMult = 0.1f;
+	public float yawGainMovementSpeedMult;
 
 	public SoundDefinition pitchMovementLoopDef;
 
-	public float pitchGainLerp = 10f;
+	public float pitchGainLerp;
 
-	public float pitchGainMovementSpeedMult = 0.5f;
+	public float pitchGainMovementSpeedMult;
 
-	public int lowAmmoThreshold = 5;
+	public int lowAmmoThreshold;
 
-	public Flags Flag_TargetMode = Flags.Reserved9;
+	public Flags Flag_TargetMode;
 
-	public Flags Flag_ManuallySetMode = Flags.Reserved10;
+	public Flags Flag_ManuallySetMode;
 
 	public static SamTargetType targetTypeUnknown;
 
@@ -760,5 +760,28 @@ public class SamSite : ContainerIOEntity
 			input1Amount = inputAmount;
 			break;
 		}
+	}
+
+	public SamSite()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		gearEpislonDegrees = 20f;
+		turnSpeed = 1f;
+		clientLerpSpeed = 1f;
+		currentAimDir = Vector3.forward;
+		targetAimDir = Vector3.forward;
+		vehicleScanRadius = 350f;
+		missileScanRadius = 500f;
+		yawGainLerp = 8f;
+		yawGainMovementSpeedMult = 0.1f;
+		pitchGainLerp = 10f;
+		pitchGainMovementSpeedMult = 0.5f;
+		lowAmmoThreshold = 5;
+		Flag_TargetMode = Flags.Reserved9;
+		Flag_ManuallySetMode = Flags.Reserved10;
+		base._002Ector();
 	}
 }

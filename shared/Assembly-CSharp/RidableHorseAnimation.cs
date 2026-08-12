@@ -23,43 +23,43 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3 skiddingHipRotation;
 
+	[SerializeField]
 	[Header("Head")]
 	[Range(0f, 1f)]
-	[SerializeField]
-	private float headBlend = 1f;
+	private float headBlend;
 
 	[ReadOnly]
-	public float headSecondaryBlend = 1f;
+	public float headSecondaryBlend;
 
 	public Transform[] neckBones;
 
 	public AnimationCurve rotationResponsivenessCurve;
 
-	public float yawInertiaFactor = 15f;
+	public float yawInertiaFactor;
 
-	public float maxYawAngle = 10f;
+	public float maxYawAngle;
 
 	public Vector2 minMaxStiffness;
 
 	public Vector2 minMaxDamping;
 
-	public float headTurnSpeed = 3.5f;
+	public float headTurnSpeed;
 
-	public Vector3 headLookOffset = Vector3.zero;
+	public Vector3 headLookOffset;
 
 	[Header("Spine")]
 	[Range(0f, 1f)]
 	[SerializeField]
-	private float spineBlend = 0.5f;
+	private float spineBlend;
 
 	[ReadOnly]
-	public float spineSecondaryBlend = 1f;
+	public float spineSecondaryBlend;
 
 	public Transform[] spineBones;
 
-	public float spineTurnSpeed = 3.5f;
+	public float spineTurnSpeed;
 
-	public float spineYawInertiaFactor = 150f;
+	public float spineYawInertiaFactor;
 
 	[SerializeField]
 	[ReadOnly]
@@ -86,4 +86,21 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	private float HeadBlend => headBlend * headSecondaryBlend;
 
 	private float SpineBlend => spineBlend * spineSecondaryBlend;
+
+	public RidableHorseAnimation()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		headBlend = 1f;
+		headSecondaryBlend = 1f;
+		yawInertiaFactor = 15f;
+		maxYawAngle = 10f;
+		headTurnSpeed = 3.5f;
+		headLookOffset = Vector3.zero;
+		spineBlend = 0.5f;
+		spineSecondaryBlend = 1f;
+		spineTurnSpeed = 3.5f;
+		spineYawInertiaFactor = 150f;
+		base._002Ector();
+	}
 }

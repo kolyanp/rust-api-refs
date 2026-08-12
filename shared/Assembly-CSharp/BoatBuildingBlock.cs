@@ -276,7 +276,7 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 			}
 			bool flag2 = false;
 			BoatConstructionSkin boatConstructionSkin = currentSkin as BoatConstructionSkin;
-			Debug.Assert(Object.op_Implicit((Object)(object)boatConstructionSkin) || flag2);
+			Debug.Assert(Object.op_Implicit((Object)(object)boatConstructionSkin) | flag2);
 			if (parentTriggers == null)
 			{
 				parentTriggers = new List<TriggerParent>();

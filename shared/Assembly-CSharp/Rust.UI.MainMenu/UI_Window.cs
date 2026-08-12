@@ -9,15 +9,15 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _skipAutoFixState;
 
-	[Header("Window - Transitions")]
 	[SerializeField]
+	[Header("Window - Transitions")]
 	private FlexTransition _openTransition;
 
 	[SerializeField]
 	private bool _oneShotTransition;
 
-	[Header("Window - Components")]
 	[SerializeField]
+	[Header("Window - Components")]
 	protected CanvasGroup _group;
 
 	[SerializeField]
@@ -95,7 +95,7 @@ public class UI_Window : BaseMonoBehaviour
 
 	protected virtual void OnOpened()
 	{
-		this.OnOpen?.Invoke();
+		OnOpen?.Invoke();
 		if ((Object)(object)_openTransition != (Object)null)
 		{
 			if (_oneShotTransition)
@@ -111,7 +111,7 @@ public class UI_Window : BaseMonoBehaviour
 
 	protected virtual void OnClosed()
 	{
-		this.OnClose?.Invoke();
+		OnClose?.Invoke();
 		if (Object.op_Implicit((Object)(object)_openTransition))
 		{
 			_openTransition.SwitchState(false, false);

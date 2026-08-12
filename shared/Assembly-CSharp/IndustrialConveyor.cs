@@ -637,7 +637,7 @@ public class IndustrialConveyor : IndustrialEntity
 					}
 					bool flag3 = item6.position >= val.x && item6.position <= val.y;
 					(ItemFilter, int) filter = default((ItemFilter, int));
-					if (filterItems.Count > 0 && flag3)
+					if ((filterItems.Count > 0) & flag3)
 					{
 						if (mode == ConveyorMode.Any || mode == ConveyorMode.And)
 						{
@@ -931,7 +931,7 @@ public class IndustrialConveyor : IndustrialEntity
 					num++;
 				}
 			}
-			if (transfer.ItemTransfers.Count == 0 && hasItems && flag)
+			if ((transfer.ItemTransfers.Count == 0) & hasItems & flag)
 			{
 				hasItems = false;
 			}
@@ -1215,9 +1215,9 @@ public class IndustrialConveyor : IndustrialEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_ChangeFilters(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null || !msg.player.CanBuild())
@@ -1262,9 +1262,9 @@ public class IndustrialConveyor : IndustrialEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void SvSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnSwitchToggle", this, msg.player) == null)
@@ -1388,8 +1388,8 @@ public class IndustrialConveyor : IndustrialEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_RequestUpToDateFilters(RPCMessage msg)
 	{
 		if (!IsOn())

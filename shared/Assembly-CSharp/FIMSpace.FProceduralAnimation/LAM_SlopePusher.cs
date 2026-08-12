@@ -12,9 +12,9 @@ public class LAM_SlopePusher : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _pushBackV;
 
-	private Vector3 offsetV = Vector3.zero;
+	private Vector3 offsetV;
 
-	private Vector3 _Sd_offsetV = Vector3.zero;
+	private Vector3 _Sd_offsetV;
 
 	public override void OnInit(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
 	{
@@ -95,5 +95,16 @@ public class LAM_SlopePusher : LegsAnimatorControlModuleBase
 		offsetV = Vector3.SmoothDamp(offsetV, val, ref _Sd_offsetV, 0.2f - _rapidV.GetFloat() * 0.199f, 1000000f, base.LA.DeltaTime);
 		LegsAnimator lA = base.LA;
 		lA._Hips_Modules_ExtraWOffset += base.LA.RootToWorldSpaceVec(offsetV);
+	}
+
+	public LAM_SlopePusher()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		offsetV = Vector3.zero;
+		_Sd_offsetV = Vector3.zero;
+		base._002Ector();
 	}
 }

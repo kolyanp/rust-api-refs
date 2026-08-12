@@ -130,10 +130,10 @@ public static class CuiHelper
 
 	public static void SetColor(this ICuiColor elem, Color color)
 	{
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		elem.Color = string.Format("{0} {1} {2} {3}", new object[4] { color.r, color.g, color.b, color.a });
 	}
 

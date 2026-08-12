@@ -30,11 +30,19 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		public GameObjectRef alarmEffect;
 	}
 
-	private struct PlacedPoint(Vector2 pos, float radius)
+	private struct PlacedPoint
 	{
-		public Vector2 pos = pos;
+		public Vector2 pos;
 
-		public float radius = radius;
+		public float radius;
+
+		public PlacedPoint(Vector2 pos, float radius)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			this.pos = pos;
+			this.radius = radius;
+		}
 	}
 
 	[NonSerialized]
@@ -48,9 +56,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public List<BaseEntity> vehicleWhitelist;
 
-	public static List<DeepSeaPortal> ServerPortals = new List<DeepSeaPortal>();
+	public static List<DeepSeaPortal> ServerPortals;
 
-	public static List<DeepSeaPortal> ClientPortals = new List<DeepSeaPortal>();
+	public static List<DeepSeaPortal> ClientPortals;
 
 	public static Transform PortalEntranceTransform;
 
@@ -61,24 +69,24 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public static OBB PortalExitBounds;
 
 	[NonSerialized]
-	public static ListHashSet<IslandBillboard> ServerBillboards = new ListHashSet<IslandBillboard>();
+	public static ListHashSet<IslandBillboard> ServerBillboards;
 
 	private readonly HashSet<uint> vehiclePrefabWhitelist = new HashSet<uint>();
 
 	[SerializeField]
 	private WipeStep[] wipeSteps;
 
-	public static Phrase AboutToClose_Phrase = new Phrase("deepsea.abouttoclose", "The deep sea is no longer safe to enter");
+	public static Phrase AboutToClose_Phrase;
 
-	public static Phrase BoatNotStrongEnough_ToDeepSea_Phrase = new Phrase("deepsea.wrongboat-todeepsea", "Your boat cannot survive the journey to the deep sea");
+	public static Phrase BoatNotStrongEnough_ToDeepSea_Phrase;
 
-	public static Phrase BoatNotStrongEnough_ToMainLand_Phrase = new Phrase("deepsea.wrongboat-tomainland", "Your boat cannot survive the journey to the main land");
+	public static Phrase BoatNotStrongEnough_ToMainLand_Phrase;
 
-	public static Phrase NeedBoat_ToDeepSea_Phrase = new Phrase("deepsea.needboat-todeepsea", "You cannot reach the deep sea without a sturdy boat");
+	public static Phrase NeedBoat_ToDeepSea_Phrase;
 
-	public static Phrase NeedBoat_ToMainLand_Phrase = new Phrase("deepsea.needboat-tomainland", "You cannot reach the main land without a sturdy boat");
+	public static Phrase NeedBoat_ToMainLand_Phrase;
 
-	public static Phrase UnauthorizedVehicle_Phrase = new Phrase("deepsea.unauthorizedvehicle", "You cannot reach the deep sea with other vehicles on board");
+	public static Phrase UnauthorizedVehicle_Phrase;
 
 	private Transform serverVolumesParent;
 
@@ -97,16 +105,16 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 	public Material SeaFloorMaterial;
 
 	[NonSerialized]
-	public static ListHashSet<DeepSeaIsland> ServerIslands = new ListHashSet<DeepSeaIsland>();
+	public static ListHashSet<DeepSeaIsland> ServerIslands;
 
 	[NonSerialized]
-	public static ListHashSet<GhostShip> ServerGhostShips = new ListHashSet<GhostShip>();
+	public static ListHashSet<GhostShip> ServerGhostShips;
 
 	[NonSerialized]
-	public static ListHashSet<DeepSeaFloatingCity> ServerFloatingCities = new ListHashSet<DeepSeaFloatingCity>();
+	public static ListHashSet<DeepSeaFloatingCity> ServerFloatingCities;
 
 	[NonSerialized]
-	public static ListHashSet<RHIB> ServerRHIBS = new ListHashSet<RHIB>();
+	public static ListHashSet<RHIB> ServerRHIBS;
 
 	public static WaitForSeconds WaitSpawnGroupInterval;
 
@@ -114,7 +122,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public static WaitForSeconds WaitNavMeshInterval;
 
-	private static readonly List<PlacedPoint> placedPoints = new List<PlacedPoint>();
+	private static readonly List<PlacedPoint> placedPoints;
 
 	private List<int>[,] grid;
 
@@ -130,9 +138,9 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 
 	public AnimationCurve EndWipeRadiationCurve;
 
-	public static Bounds DeepSeaBounds = new Bounds(new Vector3(-5900f, 0f, 0f), new Vector3(4000f, 4000f, 4000f));
+	public static Bounds DeepSeaBounds;
 
-	public static float SeaFloorDepth = -50f;
+	public static float SeaFloorDepth;
 
 	private const float RadVolumeWidth = 250f;
 
@@ -514,7 +522,12 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 				float num3 = Random.Range(0f - num, num);
 				float num4 = Random.Range(0f - num2, num2);
 				lastCandidate = position + val * 2000f + val2 * num3 + portalDirection * Vector3.forward * num4;
-				if (!list.Any((Vector3 p) => Vector3.Distance(p, lastCandidate) < 250f))
+				if (!list.Any(delegate(Vector3 p)
+				{
+					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+					return Vector3.Distance(p, lastCandidate) < 250f;
+				}))
 				{
 					val3 = lastCandidate;
 					break;
@@ -2708,5 +2721,41 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 			2 => true, 
 			_ => base.ShouldInvalidateCache(id), 
 		};
+	}
+
+	static DeepSeaManager()
+	{
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Expected O, but got Unknown
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Expected O, but got Unknown
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Expected O, but got Unknown
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Expected O, but got Unknown
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Expected O, but got Unknown
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Expected O, but got Unknown
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
+		ServerPortals = new List<DeepSeaPortal>();
+		ClientPortals = new List<DeepSeaPortal>();
+		ServerBillboards = new ListHashSet<IslandBillboard>();
+		AboutToClose_Phrase = new Phrase("deepsea.abouttoclose", "The deep sea is no longer safe to enter");
+		BoatNotStrongEnough_ToDeepSea_Phrase = new Phrase("deepsea.wrongboat-todeepsea", "Your boat cannot survive the journey to the deep sea");
+		BoatNotStrongEnough_ToMainLand_Phrase = new Phrase("deepsea.wrongboat-tomainland", "Your boat cannot survive the journey to the main land");
+		NeedBoat_ToDeepSea_Phrase = new Phrase("deepsea.needboat-todeepsea", "You cannot reach the deep sea without a sturdy boat");
+		NeedBoat_ToMainLand_Phrase = new Phrase("deepsea.needboat-tomainland", "You cannot reach the main land without a sturdy boat");
+		UnauthorizedVehicle_Phrase = new Phrase("deepsea.unauthorizedvehicle", "You cannot reach the deep sea with other vehicles on board");
+		ServerIslands = new ListHashSet<DeepSeaIsland>();
+		ServerGhostShips = new ListHashSet<GhostShip>();
+		ServerFloatingCities = new ListHashSet<DeepSeaFloatingCity>();
+		ServerRHIBS = new ListHashSet<RHIB>();
+		placedPoints = new List<PlacedPoint>();
+		DeepSeaBounds = new Bounds(new Vector3(-5900f, 0f, 0f), new Vector3(4000f, 4000f, 4000f));
+		SeaFloorDepth = -50f;
 	}
 }

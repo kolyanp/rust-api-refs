@@ -287,9 +287,9 @@ public class ConsoleInput
 		string obj = inputString;
 		inputString = "";
 		caretPosition = 0;
-		if (this.OnInputText != null)
+		if (OnInputText != null)
 		{
-			this.OnInputText(obj);
+			OnInputText(obj);
 		}
 		RedrawInputLine();
 	}

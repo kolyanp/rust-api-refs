@@ -45,8 +45,7 @@ public class RustServer : IServer
 					}
 					else
 					{
-						WebClient webClient = new WebClient();
-						IPAddress.TryParse(webClient.DownloadString("http://api.ipify.org"), out address);
+						IPAddress.TryParse(new WebClient().DownloadString("http://api.ipify.org"), out address);
 						Interface.Oxide.LogInfo($"IP address from external API: {address}");
 					}
 				}
@@ -119,8 +118,7 @@ public class RustServer : IServer
 			long expiry = -1L;
 			if (duration != TimeSpan.Zero)
 			{
-				DateTime dateTime = DateTime.UtcNow.Add(duration);
-				expiry = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+				expiry = new DateTimeOffset(DateTime.UtcNow.Add(duration)).ToUnixTimeSeconds();
 			}
 			ServerUsers.Set(ulong.Parse(id), ServerUsers.UserGroup.Banned, Name, reason, expiry);
 			ServerUsers.Save();
@@ -129,7 +127,11 @@ public class RustServer : IServer
 
 	public TimeSpan BanTimeRemaining(string id)
 	{
-		return IsBanned(id) ? TimeSpan.MaxValue : TimeSpan.Zero;
+		if (!IsBanned(id))
+		{
+			return TimeSpan.Zero;
+		}
+		return TimeSpan.MaxValue;
 	}
 
 	public bool IsBanned(string id)

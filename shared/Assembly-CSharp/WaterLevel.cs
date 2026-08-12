@@ -153,7 +153,7 @@ public static class WaterLevel
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = pos.y >= info.terrainHeight - 1f && pos.y <= info.surfaceLevel;
-		if (!flag && volumes)
+		if (!flag & volumes)
 		{
 			flag = GetWaterInfoFromVolumes(pos, forEntity).isValid;
 		}
@@ -256,7 +256,7 @@ public static class WaterLevel
 			}
 			bool flag2 = doDeepwaterChecks && (pos.y < waterHeight - 10f || (TerrainMeta.OutOfBounds(pos) && !DeepSeaManager.IsInsideDeepSea(pos)));
 			int num = (Object.op_Implicit((Object)(object)TerrainMeta.TopologyMap) ? TerrainMeta.TopologyMap.GetTopologyFast(posUV) : 0);
-			if ((flag || flag2 || (num & 0x3C180) == 0) && Object.op_Implicit((Object)(object)WaterSystem.Collision) && WaterSystem.Collision.GetIgnore(pos))
+			if (((flag | flag2) || (num & 0x3C180) == 0) && Object.op_Implicit((Object)(object)WaterSystem.Collision) && WaterSystem.Collision.GetIgnore(pos))
 			{
 				return result;
 			}
@@ -301,7 +301,7 @@ public static class WaterLevel
 				result.isValid = false;
 			}
 			bool flag = false;
-			if (!result.isValid && volumes)
+			if (!result.isValid & volumes)
 			{
 				result = GetWaterInfoFromVolumes(pos, forEntity);
 				if (result.isValid)
@@ -349,7 +349,7 @@ public static class WaterLevel
 			{
 				result.isValid = false;
 			}
-			if (!result.isValid && volumes)
+			if (!result.isValid & volumes)
 			{
 				result = GetWaterInfoFromVolumes(bounds, forEntity);
 				if (result.isValid)
@@ -918,7 +918,7 @@ public static class WaterLevel
 			float num3 = GetWaterLevel(val, waves);
 			float num4 = (Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) ? TerrainMeta.HeightMap.GetHeight(val) : 0f);
 			WaterInfo result = InitialValidate(num, num2, num3, num4);
-			if (!result.isValid && volumes)
+			if (!result.isValid & volumes)
 			{
 				result = GetWaterInfoFromVolumes(start, end, radius, forEntity);
 				if (result.isValid)

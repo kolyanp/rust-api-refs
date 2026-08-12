@@ -14,7 +14,7 @@ public class WorldModelRackMountConfig : PrefabAttribute
 		public Vector3 Rotation;
 	}
 
-	public List<WeaponRack.RackType> ExcludedRackTypes = new List<WeaponRack.RackType>();
+	public List<WeaponRack.RackType> ExcludedRackTypes;
 
 	public Vector3 CenterOffsfet;
 
@@ -24,28 +24,28 @@ public class WorldModelRackMountConfig : PrefabAttribute
 
 	public Vector3 VerticalMountLocalOffset;
 
-	public int XSize = 3;
+	public int XSize;
 
-	public int YSize = 2;
+	public int YSize;
 
-	public int ZSize = 1;
+	public int ZSize;
 
-	public List<PegConfig> Pegs = new List<PegConfig>();
+	public List<PegConfig> Pegs;
 
-	public List<PegConfig> VerticalPegs = new List<PegConfig>();
+	public List<PegConfig> VerticalPegs;
 
 	public bool OverrideScale;
 
-	public Vector3 Scale = Vector3.one;
+	public Vector3 Scale;
 
 	public bool UseManualRenderBounds;
 
 	public Bounds ManualRenderBounds;
 
-	public bool CanReloadOnWeaponRack = true;
+	public bool CanReloadOnWeaponRack;
 
 	[Header("Special Rack Types")]
-	public List<CustomPosition> CustomPositions = new List<CustomPosition>();
+	public List<CustomPosition> CustomPositions;
 
 	protected override Type GetIndexedType()
 	{
@@ -92,5 +92,21 @@ public class WorldModelRackMountConfig : PrefabAttribute
 			}
 		}
 		return null;
+	}
+
+	public WorldModelRackMountConfig()
+	{
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		ExcludedRackTypes = new List<WeaponRack.RackType>();
+		XSize = 3;
+		YSize = 2;
+		ZSize = 1;
+		Pegs = new List<PegConfig>();
+		VerticalPegs = new List<PegConfig>();
+		Scale = Vector3.one;
+		CanReloadOnWeaponRack = true;
+		CustomPositions = new List<CustomPosition>();
+		base._002Ector();
 	}
 }

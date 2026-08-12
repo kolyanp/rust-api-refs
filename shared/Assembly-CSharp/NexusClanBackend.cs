@@ -118,12 +118,17 @@ public class NexusClanBackend : IClanBackend, IDisposable
 		List<ClanInvitation> source = default(List<ClanInvitation>);
 		if (val.IsSuccess && val.TryGetResponse(ref source))
 		{
-			List<ClanInvitation> list = ((IEnumerable<ClanInvitation>)source).Select((Func<ClanInvitation, ClanInvitation>)((ClanInvitation i) => new ClanInvitation
+			List<ClanInvitation> list = ((IEnumerable<ClanInvitation>)source).Select((Func<ClanInvitation, ClanInvitation>)delegate(ClanInvitation i)
 			{
-				ClanId = ((ClanInvitation)(ref i)).ClanId,
-				Recruiter = NexusClanUtil.GetSteamId(((ClanInvitation)(ref i)).RecruiterPlayerId),
-				Timestamp = ((ClanInvitation)(ref i)).Timestamp
-			})).ToList();
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+				return new ClanInvitation
+				{
+					ClanId = ((ClanInvitation)(ref i)).ClanId,
+					Recruiter = NexusClanUtil.GetSteamId(((ClanInvitation)(ref i)).RecruiterPlayerId),
+					Timestamp = ((ClanInvitation)(ref i)).Timestamp
+				};
+			}).ToList();
 			return new ClanValueResult<List<ClanInvitation>>(list);
 		}
 		return ClanValueResult<List<ClanInvitation>>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
@@ -135,12 +140,17 @@ public class NexusClanBackend : IClanBackend, IDisposable
 		List<ClanLeaderboardEntry> source = default(List<ClanLeaderboardEntry>);
 		if (val.IsSuccess && val.TryGetResponse(ref source))
 		{
-			List<ClanLeaderboardEntry> list = ((IEnumerable<ClanLeaderboardEntry>)source).Select((Func<ClanLeaderboardEntry, ClanLeaderboardEntry>)((ClanLeaderboardEntry c) => new ClanLeaderboardEntry
+			List<ClanLeaderboardEntry> list = ((IEnumerable<ClanLeaderboardEntry>)source).Select((Func<ClanLeaderboardEntry, ClanLeaderboardEntry>)delegate(ClanLeaderboardEntry c)
 			{
-				ClanId = ((ClanLeaderboardEntry)(ref c)).ClanId,
-				Name = ((ClanLeaderboardEntry)(ref c)).Name,
-				Score = ((ClanLeaderboardEntry)(ref c)).Score
-			})).ToList();
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+				return new ClanLeaderboardEntry
+				{
+					ClanId = ((ClanLeaderboardEntry)(ref c)).ClanId,
+					Name = ((ClanLeaderboardEntry)(ref c)).Name,
+					Score = ((ClanLeaderboardEntry)(ref c)).Score
+				};
+			}).ToList();
 			return new ClanValueResult<List<ClanLeaderboardEntry>>(list);
 		}
 		return ClanValueResult<List<ClanLeaderboardEntry>>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));

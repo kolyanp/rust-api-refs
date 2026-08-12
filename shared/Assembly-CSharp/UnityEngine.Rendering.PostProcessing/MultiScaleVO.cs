@@ -26,29 +26,15 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		DebugOverlay
 	}
 
-	private readonly float[] m_SampleThickness = new float[12]
-	{
-		Mathf.Sqrt(0.96f),
-		Mathf.Sqrt(0.84f),
-		Mathf.Sqrt(0.64f),
-		Mathf.Sqrt(0.35999995f),
-		Mathf.Sqrt(0.91999996f),
-		Mathf.Sqrt(0.79999995f),
-		Mathf.Sqrt(0.59999996f),
-		Mathf.Sqrt(0.31999993f),
-		Mathf.Sqrt(0.67999995f),
-		Mathf.Sqrt(0.47999996f),
-		Mathf.Sqrt(0.19999993f),
-		Mathf.Sqrt(0.27999997f)
-	};
+	private readonly float[] m_SampleThickness;
 
-	private readonly float[] m_InvThicknessTable = new float[12];
+	private readonly float[] m_InvThicknessTable;
 
-	private readonly float[] m_SampleWeightTable = new float[12];
+	private readonly float[] m_SampleWeightTable;
 
-	private readonly int[] m_Widths = new int[7];
+	private readonly int[] m_Widths;
 
-	private readonly int[] m_Heights = new int[7];
+	private readonly int[] m_Heights;
 
 	private AmbientOcclusion m_Settings;
 
@@ -58,11 +44,7 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 
 	private RenderTexture m_AmbientOnlyAO;
 
-	private readonly RenderTargetIdentifier[] m_MRT = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2]
-	{
-		RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)10),
-		RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2)
-	};
+	private readonly RenderTargetIdentifier[] m_MRT;
 
 	public MultiScaleVO(AmbientOcclusion settings)
 	{
@@ -70,6 +52,31 @@ internal sealed class MultiScaleVO : UnityEngine.Rendering.PostProcessing.IAmbie
 		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
+		m_SampleThickness = new float[12]
+		{
+			Mathf.Sqrt(0.96f),
+			Mathf.Sqrt(0.84f),
+			Mathf.Sqrt(0.64f),
+			Mathf.Sqrt(0.35999995f),
+			Mathf.Sqrt(0.91999996f),
+			Mathf.Sqrt(0.79999995f),
+			Mathf.Sqrt(0.59999996f),
+			Mathf.Sqrt(0.31999993f),
+			Mathf.Sqrt(0.67999995f),
+			Mathf.Sqrt(0.47999996f),
+			Mathf.Sqrt(0.19999993f),
+			Mathf.Sqrt(0.27999997f)
+		};
+		m_InvThicknessTable = new float[12];
+		m_SampleWeightTable = new float[12];
+		m_Widths = new int[7];
+		m_Heights = new int[7];
+		m_MRT = (RenderTargetIdentifier[])(object)new RenderTargetIdentifier[2]
+		{
+			RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)10),
+			RenderTargetIdentifier.op_Implicit((BuiltinRenderTextureType)2)
+		};
+		base._002Ector();
 		m_Settings = settings;
 	}
 

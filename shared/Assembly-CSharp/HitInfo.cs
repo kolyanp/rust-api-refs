@@ -13,13 +13,13 @@ public class HitInfo : IPooled, IDisposable
 
 	public AttackEntity Weapon;
 
-	public bool DoHitEffects = true;
+	public bool DoHitEffects;
 
-	public bool DoDecals = true;
+	public bool DoDecals;
 
 	public bool IsPredicting;
 
-	public bool UseProtection = true;
+	public bool UseProtection;
 
 	public bool UseProtectionForNPCs;
 
@@ -67,13 +67,13 @@ public class HitInfo : IPooled, IDisposable
 
 	public DamageProperties damageProperties;
 
-	public DamageTypeList damageTypes = new DamageTypeList();
+	public DamageTypeList damageTypes;
 
 	public bool CanGather;
 
 	public bool DidGather;
 
-	public float gatherScale = 1f;
+	public float gatherScale;
 
 	public BasePlayer InitiatorPlayer
 	{
@@ -329,17 +329,35 @@ public class HitInfo : IPooled, IDisposable
 
 	public HitInfo()
 	{
+		DoHitEffects = true;
+		DoDecals = true;
+		UseProtection = true;
+		damageTypes = new DamageTypeList();
+		gatherScale = 1f;
+		base._002Ector();
 	}
 
 	public HitInfo(BaseEntity attacker, BaseEntity target, DamageType type, float damageAmount, Vector3 vhitPosition)
 	{
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		DoHitEffects = true;
+		DoDecals = true;
+		UseProtection = true;
+		damageTypes = new DamageTypeList();
+		gatherScale = 1f;
+		base._002Ector();
 		Init(attacker, target, type, damageAmount, vhitPosition);
 	}
 
 	public HitInfo(BaseEntity attacker, BaseEntity target, DamageType type, float damageAmount)
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		DoHitEffects = true;
+		DoDecals = true;
+		UseProtection = true;
+		damageTypes = new DamageTypeList();
+		gatherScale = 1f;
+		base._002Ector();
 		Init(attacker, target, type, damageAmount, ((Component)target).transform.position);
 	}
 

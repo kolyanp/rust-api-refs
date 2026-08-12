@@ -694,8 +694,7 @@ public class Database
 			Reset(value, clearBindings: true);
 			return value;
 		}
-		IntPtr ppStmpt;
-		int num = Interop.sqlite3_prepare_v3(_connection, query, query.Length, 1u, out ppStmpt, IntPtr.Zero);
+		int num = Interop.sqlite3_prepare_v3(_connection, query, query.Length, 1u, out var ppStmpt, IntPtr.Zero);
 		if (num != 0)
 		{
 			IntPtr ptr = Interop.sqlite3_errmsg(_connection);

@@ -27,13 +27,13 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 	public const Flags AngryBees = Flags.Reserved14;
 
 	[ServerVar(Help = "How long before a Beehive will update")]
-	public static float updateHiveInterval = 120f;
+	public static float updateHiveInterval;
 
 	[ServerVar(Help = "How long before the Beehive will perform temperature and inside checks")]
-	public static float updateHiveStatsInterval = 120f;
+	public static float updateHiveStatsInterval;
 
 	[ServerVar(Help = "How much the Nucleus's XP should be increased per honeycomb generated")]
-	public static int xpIncreasePerHoneycomb = 2;
+	public static int xpIncreasePerHoneycomb;
 
 	private static Vector3[] outsideLookupDirs;
 
@@ -530,6 +530,9 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		updateHiveInterval = 120f;
+		updateHiveStatsInterval = 120f;
+		xpIncreasePerHoneycomb = 2;
 		Vector3[] array = new Vector3[5];
 		Vector3 val = new Vector3(0f, 1f, 0f);
 		array[0] = ((Vector3)(ref val)).normalized;

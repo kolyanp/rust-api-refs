@@ -10,25 +10,25 @@ namespace Instancing;
 
 internal static class InstancingUtil
 {
-	public static readonly int PositionBufferProperty = Shader.PropertyToID("_PositionBuffer");
+	public static readonly int PositionBufferProperty;
 
-	public static readonly int RenderBufferProperty = Shader.PropertyToID("_PostCullBuffer");
+	public static readonly int RenderBufferProperty;
 
-	public static readonly int IndirectExtraArgProperty = Shader.PropertyToID("_IndirectExtraArgsBuffer");
+	public static readonly int IndirectExtraArgProperty;
 
-	public static readonly int Param_MeshOverrideBuffer = Shader.PropertyToID("_MeshOverrideBuffer");
+	public static readonly int Param_MeshOverrideBuffer;
 
-	public static readonly int Param_RenderSliceIndexes = Shader.PropertyToID("_RenderSliceIndexes");
+	public static readonly int Param_RenderSliceIndexes;
 
-	public static readonly int DrawCallIndexProperty = Shader.PropertyToID("_DrawCallIndex");
+	public static readonly int DrawCallIndexProperty;
 
-	public static readonly int Param_RendererIndex = Shader.PropertyToID("_RendererIndex");
+	public static readonly int Param_RendererIndex;
 
-	public static readonly int Param_Verticies = Shader.PropertyToID("_Verticies");
+	public static readonly int Param_Verticies;
 
-	public static readonly int Param_Triangles = Shader.PropertyToID("_Triangles");
+	public static readonly int Param_Triangles;
 
-	public static readonly GlobalKeyword Keyword_Rust_Procedural_Rendering = GlobalKeyword.Create("RUST_PROCEDURAL_INSTANCING");
+	public static readonly GlobalKeyword Keyword_Rust_Procedural_Rendering;
 
 	public const int CullingGPUThreads = 1024;
 
@@ -90,5 +90,21 @@ internal static class InstancingUtil
 	public static int GetIterationCount(int count, int threads)
 	{
 		return count / threads + ((count % threads != 0) ? 1 : 0);
+	}
+
+	static InstancingUtil()
+	{
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		PositionBufferProperty = Shader.PropertyToID("_PositionBuffer");
+		RenderBufferProperty = Shader.PropertyToID("_PostCullBuffer");
+		IndirectExtraArgProperty = Shader.PropertyToID("_IndirectExtraArgsBuffer");
+		Param_MeshOverrideBuffer = Shader.PropertyToID("_MeshOverrideBuffer");
+		Param_RenderSliceIndexes = Shader.PropertyToID("_RenderSliceIndexes");
+		DrawCallIndexProperty = Shader.PropertyToID("_DrawCallIndex");
+		Param_RendererIndex = Shader.PropertyToID("_RendererIndex");
+		Param_Verticies = Shader.PropertyToID("_Verticies");
+		Param_Triangles = Shader.PropertyToID("_Triangles");
+		Keyword_Rust_Procedural_Rendering = GlobalKeyword.Create("RUST_PROCEDURAL_INSTANCING");
 	}
 }

@@ -7,12 +7,12 @@ namespace UnityEngine.UI.Extensions;
 public class UILineTextureRenderer : UIPrimitiveBase
 {
 	[SerializeField]
-	private Rect m_UVRect = new Rect(0f, 0f, 1f, 1f);
+	private Rect m_UVRect;
 
 	[SerializeField]
 	private Vector2[] m_points;
 
-	public float LineThickness = 2f;
+	public float LineThickness;
 
 	public bool UseMargins;
 
@@ -321,5 +321,14 @@ public class UILineTextureRenderer : UIPrimitiveBase
 		val = Quaternion.Euler(angles) * val;
 		point = val + pivot;
 		return point;
+	}
+
+	public UILineTextureRenderer()
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		m_UVRect = new Rect(0f, 0f, 1f, 1f);
+		LineThickness = 2f;
+		base._002Ector();
 	}
 }

@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 {
-	public Vector3 groundPosition = Vector3.zero;
+	public Vector3 groundPosition;
 
-	public LayerMask layers = LayerMask.op_Implicit(161546240);
+	public LayerMask layers;
 
-	public float radius = 0.1f;
+	public float radius;
 
 	public bool needBuildingBlock;
 
@@ -270,5 +270,17 @@ public class GroundWatch : EntityComponent<BaseEntity>, IServerComponent
 		}
 		Pool.FreeUnmanaged<Collider>(ref list);
 		return false;
+	}
+
+	public GroundWatch()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		groundPosition = Vector3.zero;
+		layers = LayerMask.op_Implicit(161546240);
+		radius = 0.1f;
+		base._002Ector();
 	}
 }

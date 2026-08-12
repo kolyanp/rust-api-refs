@@ -15,7 +15,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	public LootContainer.LootSpawnSlot[] LootSpawnSlots;
 
 	[Header("Damage")]
-	public float aimConeScale = 2f;
+	public float aimConeScale;
 
 	public float lastDismountTime;
 
@@ -30,7 +30,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 
 	private float lastAimSetTime;
 
-	public Vector3 aimOverridePosition = Vector3.zero;
+	public Vector3 aimOverridePosition;
 
 	public ScientistBrain Brain { get; set; }
 
@@ -189,7 +189,7 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 			}
 			CancelBurst();
 		}
-		if (targetAimedDuration >= 0.2f && targetIsLOS)
+		if ((targetAimedDuration >= 0.2f) & targetIsLOS)
 		{
 			bool flag = false;
 			float dist = 0f;
@@ -627,5 +627,14 @@ public class HumanNPC : NPCPlayer, IAISenses, IAIAttack, IThinker
 	public override bool IsOnGround()
 	{
 		return true;
+	}
+
+	public HumanNPC()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		aimConeScale = 2f;
+		aimOverridePosition = Vector3.zero;
+		base._002Ector();
 	}
 }

@@ -23,9 +23,9 @@ public class UICompass : MonoBehaviour
 
 	public CompassBagMarker SleepingBagMarker;
 
-	public static readonly Phrase IslandInfoPhrase = new Phrase("nexus.compass.island_info", "Continue for {distance} to travel to {zone}");
+	public static readonly Phrase IslandInfoPhrase;
 
-	private static readonly int CompassScroll = Shader.PropertyToID("_CompassScroll");
+	private static readonly int CompassScroll;
 
 	public RectTransform IslandInfoContainer;
 
@@ -44,4 +44,12 @@ public class UICompass : MonoBehaviour
 	public Image LeftPingPulse;
 
 	public Image RightPingPulse;
+
+	static UICompass()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		IslandInfoPhrase = new Phrase("nexus.compass.island_info", "Continue for {distance} to travel to {zone}");
+		CompassScroll = Shader.PropertyToID("_CompassScroll");
+	}
 }

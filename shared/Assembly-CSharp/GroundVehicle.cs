@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Rust;
 using UnityEngine;
 
@@ -33,6 +34,9 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 	[SerializeField]
 	private Rigidbody secondaryRigidbody;
 
+	[CompilerGenerated]
+	private Vector3 _003CVelocity_003Ek__BackingField;
+
 	public VehicleEngineController<GroundVehicle> engineController;
 
 	private Dictionary<BaseEntity, float> damageSinceLastTick = new Dictionary<BaseEntity, float>();
@@ -45,7 +49,22 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 
 	private TimeSince timeSinceDragModSet;
 
-	public Vector3 Velocity { get; protected set; }
+	public Vector3 Velocity
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CVelocity_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CVelocity_003Ek__BackingField = value;
+		}
+	}
 
 	public abstract float DriveWheelVelocity { get; }
 

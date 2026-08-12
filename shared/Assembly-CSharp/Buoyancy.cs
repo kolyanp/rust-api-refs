@@ -55,9 +55,9 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 	[Range(0f, 3f)]
 	public float underwaterDrag = 2f;
 
+	[FormerlySerializedAs("flatWaterLerp")]
 	[Range(0f, 1f)]
 	[Tooltip("How much this object will pay attention to the wave system, 0 = flat water, 1 = full waves (default 1)")]
-	[FormerlySerializedAs("flatWaterLerp")]
 	public float wavesEffect = 1f;
 
 	public Action<bool> SubmergedChanged;
@@ -69,8 +69,8 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	public bool FlowForceDisabled;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private BuoyancyPointData[] pointData;
 
 	private bool initedPointArrays;
@@ -178,7 +178,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 			points = new BuoyancyPoint[1];
 			points[0] = buoyancyPoint;
 		}
-		if (pointData == null || pointData.Length != points.Length || forced)
+		if ((pointData == null || pointData.Length != points.Length) | forced)
 		{
 			pointData = new BuoyancyPointData[points.Length];
 			for (int i = 0; i < points.Length; i++)
@@ -323,7 +323,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 		{
 			flag2 = false;
 		}
-		if (((Behaviour)this).enabled && flag2)
+		if (((Behaviour)this).enabled & flag2)
 		{
 			if (_sleepCallback == null)
 			{
@@ -337,7 +337,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 			DoCycle(forced: true);
 		}
 		bool flag3 = !flag || ShouldWake(hasLocalPlayers);
-		if (!((Behaviour)this).enabled && flag3)
+		if (!((Behaviour)this).enabled & flag3)
 		{
 			if (_wakeCallback == null)
 			{
@@ -872,7 +872,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				Vector3 val12 = allPositions[n];
 				WaterLevel.WaterInfo waterInfo3 = pointWaterInfo[n];
 				bool flag2 = waterInfo3.isValid && val12.y < waterInfo3.surfaceLevel;
-				if (buoyancyPoint3.doSplashEffects && ((!buoyancyPoint3.wasSubmergedLastFrame && flag2) || (!flag2 && buoyancyPoint3.wasSubmergedLastFrame)) && flag)
+				if ((buoyancyPoint3.doSplashEffects && ((!buoyancyPoint3.wasSubmergedLastFrame & flag2) || (!flag2 && buoyancyPoint3.wasSubmergedLastFrame))) & flag)
 				{
 					Vector3 relativePointVelocity = val8.GetRelativePointVelocity(localPosition);
 					if (((Vector3)(ref relativePointVelocity)).magnitude > 1f)
@@ -1073,7 +1073,7 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 				AccumulateFlowForce(ref accumForce, in pos, in waterInfo2, Mathf.Abs(pointShoreDistanceArray[j]), ref scaledBuoyancyForce, in FlowForceDisabled, in flowMovementScale);
 				rigidBody.AddForceAtPosition(accumForce, pos, (ForceMode)0);
 			}
-			if (buoyancyPoint.doSplashEffects && ((!buoyancyPoint.wasSubmergedLastFrame && flag3) || (!flag3 && buoyancyPoint.wasSubmergedLastFrame)) && doEffects)
+			if (buoyancyPoint.doSplashEffects && ((!buoyancyPoint.wasSubmergedLastFrame & flag3) || (!flag3 && buoyancyPoint.wasSubmergedLastFrame)) && doEffects)
 			{
 				Vector3 relativePointVelocity = rigidBody.GetRelativePointVelocity(localPosition);
 				if (((Vector3)(ref relativePointVelocity)).magnitude > 1f)

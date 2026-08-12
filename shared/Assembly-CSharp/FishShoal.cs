@@ -378,6 +378,7 @@ public class FishShoal : IDisposable
 		//IL_0090: Expected O, but got Unknown
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Expected O, but got Unknown
+		base._002Ector();
 		this.fishType = fishType;
 		castCommands = new NativeArray<RaycastCommand>(fishType.castsPerFrame, (Allocator)4, (NativeArrayOptions)1);
 		castResults = new NativeArray<RaycastHit>(fishType.castsPerFrame, (Allocator)4, (NativeArrayOptions)1);

@@ -436,23 +436,27 @@ public class Engine : IPooled
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0103: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("PoolPhysics.Engine.Tick.ResolveWallCollisions"))
 		{
 			if (!hasInitialised || walls.Count == 0)
@@ -471,18 +475,19 @@ public class Engine : IPooled
 					Data.Wall wall = walls[j];
 					Vector2 val = ClosestPointOnSegment(Balls[i].Position, Walls[j].A, Walls[j].B);
 					Vector2 val2 = Balls[i].Position - val;
-					float magnitude = ((Vector2)(ref val2)).magnitude;
-					if (magnitude < ball.Radius)
+					if (((Vector2)(ref val2)).magnitude < ball.Radius)
 					{
-						Vector2 normalized = ((Vector2)(ref val2)).normalized;
-						float num = ball.Radius - magnitude;
+						float num = Vector2.Dot(ball.Position - val, wall.Normal);
 						ref Vector2 position = ref ball.Position;
-						position += normalized * num;
-						ball.Velocity = Vector2.Reflect(ball.Velocity, wall.Normal);
-						ref Vector2 velocity = ref ball.Velocity;
-						velocity *= 0.85f;
-						float arg = Vector2.Dot(ball.Velocity, wall.Normal);
-						OnWallCollision?.Invoke(ball.Position, arg);
+						position += wall.Normal * (ball.Radius - num);
+						if (Vector2.Dot(ball.Velocity, wall.Normal) < 0f)
+						{
+							ball.Velocity = Vector2.Reflect(ball.Velocity, wall.Normal);
+							ref Vector2 velocity = ref ball.Velocity;
+							velocity *= 0.85f;
+							float arg = Vector2.Dot(ball.Velocity, wall.Normal);
+							OnWallCollision?.Invoke(ball.Position, arg);
+						}
 						balls[i] = ball;
 					}
 				}

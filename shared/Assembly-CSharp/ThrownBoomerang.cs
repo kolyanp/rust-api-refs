@@ -9,11 +9,11 @@ public class ThrownBoomerang : BaseEntity
 	public ItemDefinition boomerangItem;
 
 	[Header("Settings")]
-	public float timeToReturnOnArc = 3f;
+	public float timeToReturnOnArc;
 
-	public float secondsUntilStartArc = 0.9f;
+	public float secondsUntilStartArc;
 
-	public float lerpSpeed = 20f;
+	public float lerpSpeed;
 
 	private const float CATCH_DISTANCE = 1.5f;
 
@@ -21,7 +21,7 @@ public class ThrownBoomerang : BaseEntity
 
 	private Vector3 lastMoveDirection;
 
-	private Vector3 gravityVelocity = Vector3.zero;
+	private Vector3 gravityVelocity;
 
 	private bool calculated;
 
@@ -35,7 +35,7 @@ public class ThrownBoomerang : BaseEntity
 
 	private Vector3 endLocation;
 
-	private Vector3 spawnLocation = Vector3.zero;
+	private Vector3 spawnLocation;
 
 	private ThrownBoomerangServerProjectile projectile;
 
@@ -411,5 +411,19 @@ public class ThrownBoomerang : BaseEntity
 				KillThrownBoomerang();
 			}
 		}
+	}
+
+	public ThrownBoomerang()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		timeToReturnOnArc = 3f;
+		secondsUntilStartArc = 0.9f;
+		lerpSpeed = 20f;
+		gravityVelocity = Vector3.zero;
+		spawnLocation = Vector3.zero;
+		base._002Ector();
 	}
 }

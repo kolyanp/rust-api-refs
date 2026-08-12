@@ -27,14 +27,14 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public WaterCatcherCollectRate collectionRates;
 
-	public float maxItemToCreate = 10f;
+	public float maxItemToCreate;
 
 	[Header("Outside Test")]
-	public bool requireOutside = true;
+	public bool requireOutside;
 
-	public Vector3 rainTestPosition = new Vector3(0f, 1f, 0f);
+	public Vector3 rainTestPosition;
 
-	public float rainTestSize = 1f;
+	public float rainTestSize;
 
 	public const float collectInterval = 60f;
 
@@ -62,7 +62,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 	[Header("Conditional Spawning Sounds")]
 	public GameObject soundEmitterObject;
 
-	public bool doConditionalSounds = true;
+	public bool doConditionalSounds;
 
 	public SoundDefinition startProductionSound;
 
@@ -401,5 +401,17 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 				flagsUpdateScope.Set(Flags.Reserved10, b: false);
 			}
 		}
+	}
+
+	public WaterCatcher()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		maxItemToCreate = 10f;
+		requireOutside = true;
+		rainTestPosition = new Vector3(0f, 1f, 0f);
+		rainTestSize = 1f;
+		doConditionalSounds = true;
+		base._002Ector();
 	}
 }

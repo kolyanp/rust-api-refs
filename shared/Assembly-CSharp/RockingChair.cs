@@ -271,11 +271,11 @@ public class RockingChair : BaseChair
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
 		Vector2 zero = Vector2.zero;
-		if (leftDown && rightDown)
+		if (leftDown & rightDown)
 		{
 			leftDown = (rightDown = false);
 		}
-		if (forwardDown && backDown)
+		if (forwardDown & backDown)
 		{
 			forwardDown = (backDown = false);
 		}

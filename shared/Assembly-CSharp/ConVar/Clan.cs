@@ -114,7 +114,11 @@ public class Clan : ConsoleSystem
 				val.AddColumns(new string[4] { "steamID", "username", "online", "role" });
 				foreach (ClanMember member in clan.Members)
 				{
-					ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)clan.Roles, (Func<ClanRole, int>)((ClanRole r) => r.RoleId), member.RoleId, (IEqualityComparer<int>)null);
+					ClanRole? val2 = List.TryFindWith<ClanRole, int>((IReadOnlyCollection<ClanRole>)clan.Roles, (Func<ClanRole, int>)delegate(ClanRole r)
+					{
+						//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+						return r.RoleId;
+					}, member.RoleId, (IEqualityComparer<int>)null);
 					string text = SingletonComponent<ServerMgr>.Instance.persistance.GetPlayerName(member.SteamId) ?? "[unknown]";
 					bool flag = (NexusServer.Started ? NexusServer.IsOnline(member.SteamId) : ServerPlayers.IsOnline(member.SteamId));
 					string[] array = new string[4];
@@ -310,7 +314,11 @@ public class Clan : ConsoleSystem
 				IClan clan = await GetPlayerClan(player);
 				if (clan != null)
 				{
-					if (clan.Invites.All((ClanInvite i) => i.SteamId != steamId))
+					if (clan.Invites.All(delegate(ClanInvite i)
+					{
+						//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+						return i.SteamId != steamId;
+					}))
 					{
 						ClanResult val = await clan.Invite(steamId, (ulong)player.userID);
 						if ((int)val != 1)

@@ -8,9 +8,9 @@ public class PlatformEntity : BaseEntity
 
 	private const float radius = 10f;
 
-	private Vector3 targetPosition = Vector3.zero;
+	private Vector3 targetPosition;
 
-	private Quaternion targetRotation = Quaternion.identity;
+	private Quaternion targetRotation;
 
 	protected void FixedUpdate()
 	{
@@ -55,5 +55,16 @@ public class PlatformEntity : BaseEntity
 	public override float GetNetworkTime()
 	{
 		return Time.fixedTime;
+	}
+
+	public PlatformEntity()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		targetPosition = Vector3.zero;
+		targetRotation = Quaternion.identity;
+		base._002Ector();
 	}
 }

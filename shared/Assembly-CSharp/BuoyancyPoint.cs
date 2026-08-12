@@ -22,7 +22,7 @@ public class BuoyancyPoint : MonoBehaviour
 	[NonSerialized]
 	public float nexSplashTime;
 
-	private static readonly Color gizmoColour = new Color(1f, 0f, 0f, 0.25f);
+	private static readonly Color gizmoColour;
 
 	public void Start()
 	{
@@ -35,5 +35,12 @@ public class BuoyancyPoint : MonoBehaviour
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		Gizmos.color = gizmoColour;
 		Gizmos.DrawSphere(((Component)this).transform.position, size * 0.5f);
+	}
+
+	static BuoyancyPoint()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		gizmoColour = new Color(1f, 0f, 0f, 0.25f);
 	}
 }

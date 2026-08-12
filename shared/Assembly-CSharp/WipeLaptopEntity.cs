@@ -9,11 +9,11 @@ using UnityEngine.UI;
 
 public class WipeLaptopEntity : BaseEntity
 {
-	public static Phrase Phrase_Armed = new Phrase("laptop_armed", "Warhead Status: Armed");
+	public static Phrase Phrase_Armed;
 
-	public static Phrase Phrase_Disarmed = new Phrase("laptop_disarmed", "Warhead Status: Disarmed");
+	public static Phrase Phrase_Disarmed;
 
-	public static Flags ArmedFlag = Flags.Reserved1;
+	public static Flags ArmedFlag;
 
 	public float ArmTime = 5f;
 
@@ -173,5 +173,16 @@ public class WipeLaptopEntity : BaseEntity
 		{
 			SendNetworkUpdate();
 		}
+	}
+
+	static WipeLaptopEntity()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		Phrase_Armed = new Phrase("laptop_armed", "Warhead Status: Armed");
+		Phrase_Disarmed = new Phrase("laptop_disarmed", "Warhead Status: Disarmed");
+		ArmedFlag = Flags.Reserved1;
 	}
 }

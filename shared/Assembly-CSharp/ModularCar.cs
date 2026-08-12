@@ -52,7 +52,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	public static HashSet<ModularCar> allCarsList = new HashSet<ModularCar>();
 
-	public readonly ListDictionary<BaseMountable, DriverSeatInputs> driverSeatInputs = new ListDictionary<BaseMountable, DriverSeatInputs>();
+	public readonly ListDictionary<BaseMountable, DriverSeatInputs> driverSeatInputs;
 
 	public CarPhysics<ModularCar> carPhysics;
 
@@ -88,9 +88,9 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 
 	private const float IMMUNE_TIME = 1f;
 
-	public readonly Vector3 groundedCOMMultiplier = new Vector3(0.25f, 0.3f, 0.25f);
+	public readonly Vector3 groundedCOMMultiplier;
 
-	public readonly Vector3 airbourneCOMMultiplier = new Vector3(0.25f, 0.75f, 0.25f);
+	public readonly Vector3 airbourneCOMMultiplier;
 
 	public Vector3 prevCOMMultiplier;
 
@@ -109,7 +109,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	public CarSettings carSettings;
 
 	[SerializeField]
-	public float hurtTriggerMinSpeed = 1f;
+	public float hurtTriggerMinSpeed;
 
 	[SerializeField]
 	public TriggerHurtNotChild hurtTriggerFront;
@@ -126,8 +126,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	private BoxCollider mainChassisCollider;
 
-	[Header("Towing")]
 	[SerializeField]
+	[Header("Towing")]
 	private TriggerTowing towingTrigger;
 
 	[SerializeField]
@@ -136,8 +136,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	public SpawnSettings spawnSettings;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	public MeshRenderer[] damageShowingRenderers;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]
@@ -981,8 +981,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1264,5 +1264,18 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	{
 		base.ModuleEntityRemoved(removedModule);
 		RefreshChassisProtectionState();
+	}
+
+	public ModularCar()
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		driverSeatInputs = new ListDictionary<BaseMountable, DriverSeatInputs>();
+		groundedCOMMultiplier = new Vector3(0.25f, 0.3f, 0.25f);
+		airbourneCOMMultiplier = new Vector3(0.25f, 0.75f, 0.25f);
+		hurtTriggerMinSpeed = 1f;
+		base._002Ector();
 	}
 }

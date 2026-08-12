@@ -42,13 +42,13 @@ public class CodeLock : BaseLock, IReskinCallback
 
 	public const Flags Flag_CodeEntryBlocked = Flags.Reserved11;
 
-	public static readonly Phrase blockwarning = new Phrase("codelock.blockwarning", "Further failed attempts will block code entry for some time");
+	public static readonly Phrase blockwarning;
 
 	[ServerVar(Help = "(Generated) Maximum number of failed code entry attempts on a code lock before the player is locked out; default 8")]
-	public static float maxFailedAttempts = 8f;
+	public static float maxFailedAttempts;
 
 	[ServerVar(Help = "(Generated) Duration in seconds a player is locked out from attempting the code lock after exceeding maxFailedAttempts; default 900s (15 minutes)")]
-	public static float lockoutCooldown = 900f;
+	public static float lockoutCooldown;
 
 	public bool hasGuestCode;
 
@@ -337,8 +337,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void RPC_ChangeCode(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract())
@@ -347,7 +347,7 @@ public class CodeLock : BaseLock, IReskinCallback
 		}
 		string text = rpc.read.String();
 		bool flag = rpc.read.Bit();
-		if (IsLocked() || text.Length != 4 || !StringEx.IsNumeric(text) || (!hasCode && flag) || Interface.CallHook("CanChangeCode", rpc.player, this, text, flag) != null)
+		if (IsLocked() || text.Length != 4 || !StringEx.IsNumeric(text) || (!hasCode & flag) || Interface.CallHook("CanChangeCode", rpc.player, this, text, flag) != null)
 		{
 			return;
 		}
@@ -389,8 +389,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void TryLock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && !IsLocked() && code.Length == 4 && Interface.CallHook("CanLock", rpc.player, this) == null && whitelistPlayers.Contains(rpc.player.userID))
@@ -523,5 +523,14 @@ public class CodeLock : BaseLock, IReskinCallback
 		guestPlayers.AddRange(codeLockPreserve.guestPlayers);
 		Pool.FreeUnmanaged<ulong>(ref codeLockPreserve.whitelistPlayers);
 		Pool.FreeUnmanaged<ulong>(ref codeLockPreserve.guestPlayers);
+	}
+
+	static CodeLock()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		blockwarning = new Phrase("codelock.blockwarning", "Further failed attempts will block code entry for some time");
+		maxFailedAttempts = 8f;
+		lockoutCooldown = 900f;
 	}
 }

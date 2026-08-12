@@ -20,13 +20,13 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		FullSprint
 	}
 
-	public bool letUnityMoveAgentIfPossible = true;
+	public bool letUnityMoveAgentIfPossible;
 
 	private static ListHashSet<RustNavMeshAgent> enabledComponents = new ListHashSet<RustNavMeshAgent>();
 
 	private static RustNavMeshPath tempPath = new RustNavMeshPath();
 
-	private RustNavMeshPath CurPathNS = new RustNavMeshPath();
+	private RustNavMeshPath CurPathNS;
 
 	private NavMeshAgent _agent;
 
@@ -35,7 +35,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	private int? curWaypointIndex;
 
 	[NonSerialized]
-	public readonly List<Vector3> lastValidPath = new List<Vector3>();
+	public readonly List<Vector3> lastValidPath;
 
 	private bool isScientist;
 
@@ -55,7 +55,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	private float _angularSpeed;
 
 	[SerializeField]
-	public ResettableFloat _acceleration = new ResettableFloat(10f);
+	public ResettableFloat _acceleration;
 
 	[SerializeField]
 	private float _stoppingDistance;
@@ -73,18 +73,18 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	private int _areaMask;
 
 	[SerializeField]
-	private bool _updatePosition = true;
+	private bool _updatePosition;
 
 	[SerializeField]
-	private bool _updateRotation = true;
+	private bool _updateRotation;
 
 	private ObstacleAvoidanceType _obstacleAvoidanceType;
 
 	private bool _isStopped;
 
-	private Vector3 _velocityNS = Vector3.zero;
+	private Vector3 _velocityNS;
 
-	private Vector3 _nextPositionNS = Vector3.zero;
+	private Vector3 _nextPositionNS;
 
 	public Vector3? overrideDirectionWS;
 
@@ -93,33 +93,33 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	[Header("Doors")]
 	public bool canOpenDoors;
 
-	private HashSet<object> pausingSources = new HashSet<object>();
+	private HashSet<object> pausingSources;
 
 	[Header("Movement speed")]
-	public float sneakSpeed = 0.6f;
+	public float sneakSpeed;
 
-	public float walkSpeed = 0.89f;
+	public float walkSpeed;
 
-	public float jogSpeed = 2.45f;
+	public float jogSpeed;
 
-	public float runSpeed = 4.4f;
+	public float runSpeed;
 
-	public float sprintSpeed = 6f;
+	public float sprintSpeed;
 
-	public float fullSprintSpeed = 9f;
+	public float fullSprintSpeed;
 
-	public ResettableFloat deceleration = new ResettableFloat(2f);
+	public ResettableFloat deceleration;
 
-	public float emergencyDeceleration = 10f;
+	public float emergencyDeceleration;
 
 	private float currentSpeed;
 
 	private float dampVelocity;
 
 	[Header("Steering")]
-	public bool canSteer = true;
+	public bool canSteer;
 
-	public float maxTurnRadius = 2f;
+	public float maxTurnRadius;
 
 	[NonSerialized]
 	public float currentDeviation;
@@ -127,16 +127,16 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 	[Header("Swimming")]
 	public bool canSwim;
 
-	public float swimSpeed = 0.6f;
+	public float swimSpeed;
 
-	public float swimSprintSpeed = 0.89f;
+	public float swimSprintSpeed;
 
-	public ResettableFloat desiredSwimDepth = new ResettableFloat(0.7f);
+	public ResettableFloat desiredSwimDepth;
 
 	[Header("Terrain Preferences")]
-	public Enum preferedTopology = (Enum)537002081;
+	public Enum preferedTopology;
 
-	public Enum preferedBiome = (Enum)15;
+	public Enum preferedBiome;
 
 	public IndependantNavmesh independantNavmesh { get; private set; }
 
@@ -1108,7 +1108,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 				else
 				{
 					bool reachedEnd = false;
-					if (!NavMeshHelpers.FindNextWayPointIndex(CurPathNS.corners, _nextPositionNS, curWaypointIndex.Value, out var newWaypointIndex, out reachedEnd, num2) || reachedEnd)
+					if (!NavMeshHelpers.FindNextWayPointIndex(CurPathNS.corners, _nextPositionNS, curWaypointIndex.Value, out var newWaypointIndex, out reachedEnd, num2) | reachedEnd)
 					{
 						ResetPath();
 						return;
@@ -1775,8 +1775,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 		using (TimeWarning.New("SamplePositionRobust"))
 		{
 			sample = position;
-			NavMeshHit hitNS;
-			bool num = agent.SamplePosition(position, out hitNS, maxDistance);
+			bool num = agent.SamplePosition(position, out var hitNS, maxDistance);
 			float num2 = 1f;
 			if (num && maxDistance > num2 && Mathf.Abs(((NavMeshHit)(ref hitNS)).position.y - position.y) > num2 && SampleGroundPositionWithPhysics(position, out var hitInfoNS, 3.5f) && agent.SamplePosition(((RaycastHit)(ref hitInfoNS)).point, out var hitNS2, num2))
 			{
@@ -1824,8 +1823,7 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 			}
 			Vector3 val2 = val + Vector3.up * radius * 1.5f;
 			float maxDistance2 = maxDistance + radius * 1.5f;
-			RaycastHit hitInfo;
-			bool num = GamePhysics.TraceRealm(GamePhysics.Realm.Server, new Ray(val2, Vector3.down), radius, out hitInfo, maxDistance2, layerMask, (QueryTriggerInteraction)1);
+			bool num = GamePhysics.TraceRealm(GamePhysics.Realm.Server, new Ray(val2, Vector3.down), radius, out var hitInfo, maxDistance2, layerMask, (QueryTriggerInteraction)1);
 			hitInfoNS = hitInfo;
 			if (!num)
 			{
@@ -1843,5 +1841,40 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 			}
 			return true;
 		}
+	}
+
+	public RustNavMeshAgent()
+	{
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		letUnityMoveAgentIfPossible = true;
+		CurPathNS = new RustNavMeshPath();
+		lastValidPath = new List<Vector3>();
+		_acceleration = new ResettableFloat(10f);
+		_updatePosition = true;
+		_updateRotation = true;
+		_velocityNS = Vector3.zero;
+		_nextPositionNS = Vector3.zero;
+		pausingSources = new HashSet<object>();
+		sneakSpeed = 0.6f;
+		walkSpeed = 0.89f;
+		jogSpeed = 2.45f;
+		runSpeed = 4.4f;
+		sprintSpeed = 6f;
+		fullSprintSpeed = 9f;
+		deceleration = new ResettableFloat(2f);
+		emergencyDeceleration = 10f;
+		canSteer = true;
+		maxTurnRadius = 2f;
+		swimSpeed = 0.6f;
+		swimSprintSpeed = 0.89f;
+		desiredSwimDepth = new ResettableFloat(0.7f);
+		preferedTopology = (Enum)537002081;
+		preferedBiome = (Enum)15;
+		base._002Ector();
 	}
 }

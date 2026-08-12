@@ -75,9 +75,9 @@ public class UI_LoadingScreen : SingletonComponent<UI_LoadingScreen>
 	[Tooltip("Number of ping samples required before showing the warning")]
 	public int requiredPingSampleCount = 10;
 
-	public static Phrase pingWarningPhrase = new Phrase("loading.ping-warning", "<color=#FFF><size=20>PING WARNING</size></color>\nThis server's ping on the server browser ({0} ms) is much lower than the ping you are getting after connecting to the server ({1} ms). This could mean that this server is located far away and you will have a less than ideal playing experience while on this server.");
+	public static Phrase pingWarningPhrase;
 
-	public static Phrase vanillaPhrase = new Phrase("loading.mode.vanilla", "vanilla");
+	public static Phrase vanillaPhrase;
 
 	public static bool isOpen
 	{
@@ -99,5 +99,15 @@ public class UI_LoadingScreen : SingletonComponent<UI_LoadingScreen>
 
 	public static void Update(string strType, string strSubtitle)
 	{
+	}
+
+	static UI_LoadingScreen()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		pingWarningPhrase = new Phrase("loading.ping-warning", "<color=#FFF><size=20>PING WARNING</size></color>\nThis server's ping on the server browser ({0} ms) is much lower than the ping you are getting after connecting to the server ({1} ms). This could mean that this server is located far away and you will have a less than ideal playing experience while on this server.");
+		vanillaPhrase = new Phrase("loading.mode.vanilla", "vanilla");
 	}
 }

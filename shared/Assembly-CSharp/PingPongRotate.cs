@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class PingPongRotate : MonoBehaviour
 {
-	public Vector3 rotationSpeed = Vector3.zero;
+	public Vector3 rotationSpeed;
 
-	public Vector3 offset = Vector3.zero;
+	public Vector3 offset;
 
-	public Vector3 rotationAmount = Vector3.zero;
+	public Vector3 rotationAmount;
 
 	private void Update()
 	{
@@ -51,5 +51,19 @@ public class PingPongRotate : MonoBehaviour
 			break;
 		}
 		return Quaternion.AngleAxis(Mathf.Sin((((Vector3)(ref offset))[index] + Time.time) * ((Vector3)(ref rotationSpeed))[index]) * ((Vector3)(ref rotationAmount))[index], val);
+	}
+
+	public PingPongRotate()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		rotationSpeed = Vector3.zero;
+		offset = Vector3.zero;
+		rotationAmount = Vector3.zero;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.FTools;
@@ -14,15 +15,105 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		[SerializeField]
 		private Vector3 defaultLocalPoleNormal;
 
-		public Vector3 right { get; private set; }
+		[CompilerGenerated]
+		private Vector3 _003Cright_003Ek__BackingField;
 
-		public Vector3 up { get; private set; }
+		[CompilerGenerated]
+		private Vector3 _003Cup_003Ek__BackingField;
 
-		public Vector3 forward { get; private set; }
+		[CompilerGenerated]
+		private Vector3 _003Cforward_003Ek__BackingField;
 
-		public Vector3 srcPosition { get; private set; }
+		[CompilerGenerated]
+		private Vector3 _003CsrcPosition_003Ek__BackingField;
 
-		public Quaternion srcRotation { get; private set; }
+		[CompilerGenerated]
+		private Quaternion _003CsrcRotation_003Ek__BackingField;
+
+		public Vector3 right
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003Cright_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003Cright_003Ek__BackingField = value;
+			}
+		}
+
+		public Vector3 up
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003Cup_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003Cup_003Ek__BackingField = value;
+			}
+		}
+
+		public Vector3 forward
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003Cforward_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003Cforward_003Ek__BackingField = value;
+			}
+		}
+
+		public Vector3 srcPosition
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CsrcPosition_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CsrcPosition_003Ek__BackingField = value;
+			}
+		}
+
+		public Quaternion srcRotation
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CsrcRotation_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CsrcRotation_003Ek__BackingField = value;
+			}
+		}
 
 		public IKBone(Transform t)
 			: base(t)
@@ -139,17 +230,20 @@ public class FimpIK_Limb : FIK_ProcessorBase
 		UnityHumanoidIK
 	}
 
-	[NonSerialized]
-	public float FeetStretchWeight = 1f;
+	[CompilerGenerated]
+	private Quaternion _003CEndBoneMapping_003Ek__BackingField;
 
 	[NonSerialized]
-	public float FeetStretchSensitivity = 1f;
+	public float FeetStretchWeight;
 
 	[NonSerialized]
-	public float FeetStretchLimit = 1f;
+	public float FeetStretchSensitivity;
 
 	[NonSerialized]
-	public float FeetFadeQuicker = 1f;
+	public float FeetStretchLimit;
+
+	[NonSerialized]
+	public float FeetFadeQuicker;
 
 	[NonSerialized]
 	public bool disableFeet;
@@ -166,51 +260,66 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	[NonSerialized]
 	public bool IsRight;
 
-	private bool everyIsChild = true;
+	private bool everyIsChild;
 
 	private bool hasFeet;
 
 	private bool hasRoot;
 
-	[HideInInspector]
 	[Range(0f, 1f)]
+	[HideInInspector]
 	public float ManualHintPositionWeight;
 
 	[HideInInspector]
-	public Vector3 IKManualHintPosition = Vector3.zero;
+	public Vector3 IKManualHintPosition;
 
 	[NonSerialized]
-	public bool UseEndBoneMapping = true;
+	public bool UseEndBoneMapping;
 
-	private float internalRotationWeightMul = 1f;
+	private float internalRotationWeightMul;
 
 	[NonSerialized]
 	[Tooltip("3-Bones limb array")]
 	private IKBone[] IKBones;
 
-	[Space(4f)]
 	[Tooltip("Blend value for goal position")]
+	[Space(4f)]
 	[Range(0f, 1f)]
-	public float IKPositionWeight = 1f;
+	public float IKPositionWeight;
 
 	[Tooltip("Blend value for end bone rotation")]
 	[Range(0f, 1f)]
-	public float FootRotationWeight = 1f;
+	public float FootRotationWeight;
 
 	[Tooltip("Flex style algorithm for different limbs")]
-	public FIK_HintMode AutoHintMode = FIK_HintMode.MiddleForward;
+	public FIK_HintMode AutoHintMode;
 
-	protected Vector3 targetElbowNormal = Vector3.right;
+	protected Vector3 targetElbowNormal;
 
 	protected Quaternion lateEndBoneRotation;
 
 	protected Quaternion postIKAnimatorEndBoneRot;
 
-	public Vector3 ExtraHintAdjustementOffset = Vector3.zero;
+	public Vector3 ExtraHintAdjustementOffset;
 
 	public bool InverseHint;
 
-	public Quaternion EndBoneMapping { get; protected set; }
+	public Quaternion EndBoneMapping
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CEndBoneMapping_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CEndBoneMapping_003Ek__BackingField = value;
+		}
+	}
 
 	public IKBone FeetIKBone => IKBones[3];
 
@@ -390,7 +499,7 @@ public class FimpIK_Limb : FIK_ProcessorBase
 						{
 							num4 = 2f;
 						}
-						num4 -= 1f;
+						num4--;
 						num4 *= num4;
 						num4 = 1f - num4;
 					}
@@ -1033,5 +1142,29 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	public void OnDrawGizmos()
 	{
 		_ = base.Initialized;
+	}
+
+	public FimpIK_Limb()
+	{
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		FeetStretchWeight = 1f;
+		FeetStretchSensitivity = 1f;
+		FeetStretchLimit = 1f;
+		FeetFadeQuicker = 1f;
+		everyIsChild = true;
+		IKManualHintPosition = Vector3.zero;
+		UseEndBoneMapping = true;
+		internalRotationWeightMul = 1f;
+		IKPositionWeight = 1f;
+		FootRotationWeight = 1f;
+		AutoHintMode = FIK_HintMode.MiddleForward;
+		targetElbowNormal = Vector3.right;
+		ExtraHintAdjustementOffset = Vector3.zero;
+		base._002Ector();
 	}
 }

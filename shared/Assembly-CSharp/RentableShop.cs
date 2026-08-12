@@ -113,28 +113,31 @@ public class RentableShop : BaseEntity
 	public const float InitialRentHoursRequired = 12f;
 
 	[ReplicatedVar]
-	public static int ScrapPerHourRent = 10;
+	public static int ScrapPerHourRent;
 
 	[ReplicatedVar]
-	public static int InitialScrapFee = 100;
+	public static int InitialScrapFee;
 
 	[ReplicatedVar]
-	public static float ProtectionFromTakeoverHours = 6f;
+	public static float ProtectionFromTakeoverHours;
 
 	[CompilerGenerated]
 	private float _003CCurrentRentMultiplier_003Ek__BackingField;
 
-	public static readonly Phrase Phrase_BreakInAlreadyAuthed = new Phrase("vm_breakin_already_authed", "You already have access to this Store");
+	public static readonly Phrase Phrase_BreakInAlreadyAuthed;
 
-	public static readonly Phrase Phrase_BreakInUnoccupied = new Phrase("vm_breakin_unoccupied", "This Store is unoccupied");
+	public static readonly Phrase Phrase_BreakInUnoccupied;
 
-	private static Phrase Phrase_ShopClosedNotificationPhrase = new Phrase("rentable_shop_closed", "Your rented shop has been closed. Any remaining belongings can be retrieved from the shop.");
+	private static Phrase Phrase_ShopClosedNotificationPhrase;
 
-	public static readonly Phrase Phrase_BreakInSuccess = new Phrase("vm_breakin_success", "You broke into the Store and have temporary access");
+	public static readonly Phrase Phrase_BreakInSuccess;
 
-	private static Phrase Phrase_OnlyOneShopAllowedPhrase = new Phrase("rentable_shop_one_shop_allowed", "You may only open one shop at a time.");
+	private static Phrase Phrase_OnlyOneShopAllowedPhrase;
 
-	private static ItemDefinition _scrapDef = null;
+	private static ItemDefinition _scrapDef;
+
+	[CompilerGenerated]
+	private TimeSince _003CTimeSinceShopOpened_003Ek__BackingField;
 
 	private Signage cachedChildSign;
 
@@ -144,17 +147,17 @@ public class RentableShop : BaseEntity
 
 	private const float RENT_INTERVAL = 3600f;
 
-	private static ListHashSet<RentableShop> AllShops = new ListHashSet<RentableShop>();
+	private static ListHashSet<RentableShop> AllShops;
 
 	private Dictionary<ulong, TimeSince> breakInStarts;
 
 	private Dictionary<ulong, TimeUntil> intruders;
 
 	[ServerVar(ShowInAdminUI = true, Saved = true, Help = "How long stores should store items (after a shop is closed) for before they are destroyed")]
-	public static int MaxStoredItemsDurationMinutes = 1440;
+	public static int MaxStoredItemsDurationMinutes;
 
 	[ServerVar(Help = "When checking the time to see if items need to be deleted, add this many hours to what it thinks the current time is")]
-	public static int AdditionalCheckTimeHoursDebug = 0;
+	public static int AdditionalCheckTimeHoursDebug;
 
 	private Dictionary<ulong, PlayerStoreContents> savedContent;
 
@@ -260,7 +263,22 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	public TimeSince TimeSinceShopOpened { get; private set; }
+	public TimeSince TimeSinceShopOpened
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CTimeSinceShopOpened_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CTimeSinceShopOpened_003Ek__BackingField = value;
+		}
+	}
 
 	private Signage ShopSign
 	{
@@ -714,9 +732,9 @@ public class RentableShop : BaseEntity
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	private void Server_OpenVendingAdmin(RPCMessage msg)
 	{
 		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
@@ -927,9 +945,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OpenStoreInventory(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && ((ulong)msg.player.userID == ShopOwnerId || IsIntruder(msg.player.userID)))
@@ -942,9 +960,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_RetrieveAllStoredItems(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -965,9 +983,9 @@ public class RentableShop : BaseEntity
 		SendNetworkUpdate();
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	private void Server_Shop(RPCMessage msg)
 	{
 		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
@@ -977,8 +995,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void BreakIn(RPCMessage rpc)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -1096,8 +1114,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void Server_CloseStore(RPCMessage rpc)
 	{
 		if (!((Object)(object)rpc.player == (Object)null) && (ulong)rpc.player.userID == ShopOwnerId)
@@ -1270,7 +1288,7 @@ public class RentableShop : BaseEntity
 		multi = CurrentRentMultiplier;
 		if (IsOn() && ShopOwnerId != (ulong)forPlayer.userID)
 		{
-			multi += 1f;
+			multi++;
 		}
 		total = Mathf.RoundToInt(((float)perHour * 12f + (float)startingFee) * multi);
 	}
@@ -1481,5 +1499,31 @@ public class RentableShop : BaseEntity
 		savedContent = new Dictionary<ulong, PlayerStoreContents>();
 		__sync_CurrentRentMultiplier = 1f;
 		base._002Ector();
+	}
+
+	static RentableShop()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Expected O, but got Unknown
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0040: Expected O, but got Unknown
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Expected O, but got Unknown
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Expected O, but got Unknown
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Expected O, but got Unknown
+		ScrapPerHourRent = 10;
+		InitialScrapFee = 100;
+		ProtectionFromTakeoverHours = 6f;
+		Phrase_BreakInAlreadyAuthed = new Phrase("vm_breakin_already_authed", "You already have access to this Store");
+		Phrase_BreakInUnoccupied = new Phrase("vm_breakin_unoccupied", "This Store is unoccupied");
+		Phrase_ShopClosedNotificationPhrase = new Phrase("rentable_shop_closed", "Your rented shop has been closed. Any remaining belongings can be retrieved from the shop.");
+		Phrase_BreakInSuccess = new Phrase("vm_breakin_success", "You broke into the Store and have temporary access");
+		Phrase_OnlyOneShopAllowedPhrase = new Phrase("rentable_shop_one_shop_allowed", "You may only open one shop at a time.");
+		_scrapDef = null;
+		AllShops = new ListHashSet<RentableShop>();
+		MaxStoredItemsDurationMinutes = 1440;
+		AdditionalCheckTimeHoursDebug = 0;
 	}
 }

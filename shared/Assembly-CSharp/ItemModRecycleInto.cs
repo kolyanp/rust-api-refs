@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class ItemModRecycleInto : ItemMod
 {
-	public static readonly Phrase RecycleIntoTitle = new Phrase("recycle_into", "MISSING RECYCLE INTO PHRASE");
+	public static readonly Phrase RecycleIntoTitle;
 
-	public static readonly Phrase RecycleIntoDesc = new Phrase("recycle_into_desc", "MISSING RECYCLE INTO DESC PHRASE");
+	public static readonly Phrase RecycleIntoDesc;
 
 	public ItemDefinition recycleIntoItem;
 
@@ -42,5 +42,15 @@ public class ItemModRecycleInto : ItemMod
 				Effect.server.Run(successEffect.resourcePath, player.eyes.position);
 			}
 		}
+	}
+
+	static ItemModRecycleInto()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		RecycleIntoTitle = new Phrase("recycle_into", "MISSING RECYCLE INTO PHRASE");
+		RecycleIntoDesc = new Phrase("recycle_into_desc", "MISSING RECYCLE INTO DESC PHRASE");
 	}
 }

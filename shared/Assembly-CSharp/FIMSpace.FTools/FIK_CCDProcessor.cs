@@ -10,16 +10,16 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 	public class CCDIKBone : FIK_IKBoneBase
 	{
 		[Range(0f, 180f)]
-		public float AngleLimit = 45f;
+		public float AngleLimit;
 
 		[Range(0f, 180f)]
-		public float TwistAngleLimit = 5f;
+		public float TwistAngleLimit;
 
 		public Vector3 ForwardOrientation;
 
-		public float FrameWorldLength = 1f;
+		public float FrameWorldLength;
 
-		public Vector2 HingeLimits = Vector2.zero;
+		public Vector2 HingeLimits;
 
 		public Quaternion PreviousHingeRotation;
 
@@ -34,11 +34,15 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		public CCDIKBone IKChild { get; private set; }
 
 		public CCDIKBone(Transform t)
-			: base(t)
 		{
-		}//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-
+			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+			AngleLimit = 45f;
+			TwistAngleLimit = 5f;
+			FrameWorldLength = 1f;
+			HingeLimits = Vector2.zero;
+			base._002Ector(t);
+		}
 
 		public void Init(CCDIKBone child, CCDIKBone parent)
 		{
@@ -217,13 +221,13 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 
 	public CCDIKBone[] IKBones;
 
-	public bool ContinousSolving = true;
+	public bool ContinousSolving;
 
 	[Range(0f, 1f)]
-	public float SyncWithAnimator = 1f;
+	public float SyncWithAnimator;
 
 	[Range(1f, 12f)]
-	public int ReactionQuality = 2;
+	public int ReactionQuality;
 
 	[Range(0f, 1f)]
 	public float Smoothing;
@@ -231,7 +235,7 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 	[Range(0f, 1.5f)]
 	public float StretchToTarget;
 
-	public AnimationCurve StretchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+	public AnimationCurve StretchCurve;
 
 	public bool Use2D;
 
@@ -249,6 +253,11 @@ public class FIK_CCDProcessor : FIK_ProcessorBase
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		ContinousSolving = true;
+		SyncWithAnimator = 1f;
+		ReactionQuality = 2;
+		StretchCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+		base._002Ector();
 		IKBones = new CCDIKBone[bonesChain.Length];
 		FIK_IKBoneBase[] bones = new CCDIKBone[IKBones.Length];
 		base.Bones = bones;

@@ -26,7 +26,7 @@ public class Chat : ConsoleSystem
 		Local = 4,
 		Clan = 5,
 		ExternalDM = 6,
-		MaxValue = 6
+		MaxValue = ExternalDM
 	}
 
 	public struct ChatEntry
@@ -290,7 +290,10 @@ public class Chat : ConsoleSystem
 		{
 			return false;
 		}
-		string strChatText = message.Replace("\n", "").Replace("\r", "").Trim();
+		string strChatText = message.Replace("\n", "").Replace("\r", "").Replace("\v", "")
+			.Replace("\u2028", "")
+			.Replace("\u2029", "")
+			.Trim();
 		if (strChatText.Length > 128)
 		{
 			strChatText = strChatText.Substring(0, 128);

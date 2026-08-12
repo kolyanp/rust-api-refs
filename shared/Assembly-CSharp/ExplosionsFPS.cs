@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ExplosionsFPS : MonoBehaviour
 {
-	private readonly GUIStyle guiStyleHeader = new GUIStyle();
+	private readonly GUIStyle guiStyleHeader;
 
 	private float timeleft;
 
@@ -33,5 +33,13 @@ public class ExplosionsFPS : MonoBehaviour
 			timeleft = 1f;
 			frames = 0;
 		}
+	}
+
+	public ExplosionsFPS()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Expected O, but got Unknown
+		guiStyleHeader = new GUIStyle();
+		((MonoBehaviour)this)._002Ector();
 	}
 }

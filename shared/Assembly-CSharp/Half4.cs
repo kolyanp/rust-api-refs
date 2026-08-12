@@ -1,14 +1,26 @@
 using UnityEngine;
 
-public struct Half4(Vector4 vec)
+public struct Half4
 {
-	public ushort x = Mathf.FloatToHalf(vec.x);
+	public ushort x;
 
-	public ushort y = Mathf.FloatToHalf(vec.y);
+	public ushort y;
 
-	public ushort z = Mathf.FloatToHalf(vec.z);
+	public ushort z;
 
-	public ushort w = Mathf.FloatToHalf(vec.w);
+	public ushort w;
+
+	public Half4(Vector4 vec)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		x = Mathf.FloatToHalf(vec.x);
+		y = Mathf.FloatToHalf(vec.y);
+		z = Mathf.FloatToHalf(vec.z);
+		w = Mathf.FloatToHalf(vec.w);
+	}
 
 	public static explicit operator Vector4(Half4 vec)
 	{

@@ -10,11 +10,11 @@ public class LAM_DesiredDirectionFromTransform : LegsAnimatorControlModuleBase
 
 	private LegsAnimator.Variable _IsMov;
 
-	private Vector3 calculatedVelo = Vector3.zero;
+	private Vector3 calculatedVelo;
 
-	private Vector3 _sd_average = Vector3.zero;
+	private Vector3 _sd_average;
 
-	private Vector3 previousPosition = Vector3.zero;
+	private Vector3 previousPosition;
 
 	public override void OnInit(LegsAnimator.LegsAnimatorCustomModuleHelper helper)
 	{
@@ -64,5 +64,19 @@ public class LAM_DesiredDirectionFromTransform : LegsAnimatorControlModuleBase
 			base.LA.User_SetIsMoving(magnitude > base.LA.ScaleReference * _Thres.GetFloat());
 		}
 		base.LA.User_SetDesiredMovementDirection(calculatedVelo);
+	}
+
+	public LAM_DesiredDirectionFromTransform()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		calculatedVelo = Vector3.zero;
+		_sd_average = Vector3.zero;
+		previousPosition = Vector3.zero;
+		base._002Ector();
 	}
 }

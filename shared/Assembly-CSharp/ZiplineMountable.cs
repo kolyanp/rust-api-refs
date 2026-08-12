@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class ZiplineMountable : BaseMountable
 {
-	public float MoveSpeed = 4f;
+	public float MoveSpeed;
 
-	public float ForwardAdditive = 5f;
+	public float ForwardAdditive;
 
 	public CapsuleCollider ZipCollider;
 
@@ -18,7 +18,7 @@ public class ZiplineMountable : BaseMountable
 
 	public Transform RightHandIkPoint;
 
-	public float SpeedUpTime = 0.6f;
+	public float SpeedUpTime;
 
 	public bool EditorHoldInPlace;
 
@@ -26,11 +26,11 @@ public class ZiplineMountable : BaseMountable
 
 	public const Flags PushForward = Flags.Reserved1;
 
-	public AnimationCurve MountPositionCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+	public AnimationCurve MountPositionCurve;
 
-	public AnimationCurve MountRotationCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+	public AnimationCurve MountRotationCurve;
 
-	public float MountEaseInTime = 0.5f;
+	public float MountEaseInTime;
 
 	public const Flags ShowHandle = Flags.Reserved2;
 
@@ -42,17 +42,17 @@ public class ZiplineMountable : BaseMountable
 
 	private bool hasEnded;
 
-	public List<Collider> ignoreColliders = new List<Collider>();
+	public List<Collider> ignoreColliders;
 
 	private Vector3 lastSafePosition;
 
-	public Vector3 startPosition = Vector3.zero;
+	public Vector3 startPosition;
 
-	public Vector3 endPosition = Vector3.zero;
+	public Vector3 endPosition;
 
-	public Quaternion startRotation = Quaternion.identity;
+	public Quaternion startRotation;
 
-	public Quaternion endRotation = Quaternion.identity;
+	public Quaternion endRotation;
 
 	public float elapsedMoveTime;
 
@@ -396,5 +396,29 @@ public class ZiplineMountable : BaseMountable
 		{
 			Kill();
 		}
+	}
+
+	public ZiplineMountable()
+	{
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		MoveSpeed = 4f;
+		ForwardAdditive = 5f;
+		SpeedUpTime = 0.6f;
+		MountPositionCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+		MountRotationCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+		MountEaseInTime = 0.5f;
+		ignoreColliders = new List<Collider>();
+		startPosition = Vector3.zero;
+		endPosition = Vector3.zero;
+		startRotation = Quaternion.identity;
+		endRotation = Quaternion.identity;
+		base._002Ector();
 	}
 }

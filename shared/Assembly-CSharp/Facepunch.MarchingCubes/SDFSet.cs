@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -27,9 +28,27 @@ public class SDFSet : FacepunchBehaviour, IDisposable
 	[NonSerialized]
 	public List<SDFChunk> CensorChunks;
 
+	[CompilerGenerated]
+	private JobHandle _003CDataDependency_003Ek__BackingField;
+
 	public const float SoftnessFraction = 0.15f;
 
-	public JobHandle DataDependency { get; private set; }
+	public JobHandle DataDependency
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CDataDependency_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CDataDependency_003Ek__BackingField = value;
+		}
+	}
 
 	public bool IsCreated { get; private set; }
 

@@ -17,8 +17,8 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 	public ModelViewer_SkyParameters Sky;
 
 	[Header("                ")]
-	[Header("Junk to clean up:")]
 	[Header("                ")]
+	[Header("Junk to clean up:")]
 	public GameObject ruleOfThirds;
 
 	public GameObject goldenRatio;
@@ -37,7 +37,7 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 
 	public RustText aspectRatioLabel;
 
-	private Vector3 startpos = new Vector3(0f, 130f, 60f);
+	private Vector3 startpos;
 
 	public Camera maincamera;
 
@@ -98,4 +98,12 @@ public class modelviewer : MonoBehaviour, IEditorComponent
 	public float cameraZoom;
 
 	public Vector3 orbitVectorPosition;
+
+	public modelviewer()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		startpos = new Vector3(0f, 130f, 60f);
+		((MonoBehaviour)this)._002Ector();
+	}
 }

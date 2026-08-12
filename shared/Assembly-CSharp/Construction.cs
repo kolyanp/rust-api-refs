@@ -54,7 +54,7 @@ public class Construction : PrefabAttribute
 			//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 			//IL_004f: Unknown result type (might be due to invalid IL or missing references)
 			Quaternion val = socket.rotation;
-			if (socket.male && socket.female && female)
+			if ((socket.male && socket.female) & female)
 			{
 				val = socket.rotation * Quaternion.Euler(180f, 0f, 180f);
 			}
@@ -158,7 +158,7 @@ public class Construction : PrefabAttribute
 
 	public bool canBypassBuildingPermission;
 
-	public bool showBuildingBlockedPreview = true;
+	public bool showBuildingBlockedPreview;
 
 	[InspectorName("Can Bypass Road Checks")]
 	public bool canPlaceOnRoads;
@@ -185,9 +185,9 @@ public class Construction : PrefabAttribute
 
 	public LayerMask additionalPlacementLayer;
 
-	public Vector3 rotationAmount = new Vector3(0f, 90f, 0f);
+	public Vector3 rotationAmount;
 
-	public Vector3 applyStartingRotation = Vector3.zero;
+	public Vector3 applyStartingRotation;
 
 	public Transform deployOffset;
 
@@ -209,19 +209,19 @@ public class Construction : PrefabAttribute
 
 	public Vector3[] alternativeLOSPositions;
 
-	public bool canUseLastValidPosition = true;
+	public bool canUseLastValidPosition;
 
 	[Range(0f, 10f)]
-	public float healthMultiplier = 1f;
+	public float healthMultiplier;
 
 	[Range(0f, 10f)]
-	public float costMultiplier = 1f;
+	public float costMultiplier;
 
 	[Range(1f, 50f)]
-	public float maxplaceDistance = 4f;
+	public float maxplaceDistance;
 
 	[Range(0f, 10f)]
-	public float minPlaceDistance = 1f;
+	public float minPlaceDistance;
 
 	public Mesh guideMesh;
 
@@ -828,5 +828,22 @@ public class Construction : PrefabAttribute
 			}
 		}
 		return false;
+	}
+
+	public Construction()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		showBuildingBlockedPreview = true;
+		rotationAmount = new Vector3(0f, 90f, 0f);
+		applyStartingRotation = Vector3.zero;
+		canUseLastValidPosition = true;
+		healthMultiplier = 1f;
+		costMultiplier = 1f;
+		maxplaceDistance = 4f;
+		minPlaceDistance = 1f;
+		base._002Ector();
 	}
 }

@@ -17,17 +17,17 @@ public class RustNavmesh : IDisposable
 
 	private static Vector3[] PathBuffer = (Vector3[])(object)new Vector3[256];
 
-	public NavMeshBuildParams BuildParams = new NavMeshBuildParams(true);
+	public NavMeshBuildParams BuildParams;
 
-	public NavMeshBuildParams BuildParamsHiRes = new NavMeshBuildParams(true);
+	public NavMeshBuildParams BuildParamsHiRes;
 
-	public int PathfindingMaxIterations = 1000;
+	public int PathfindingMaxIterations;
 
 	public Bounds CurrentNavmeshBounds;
 
 	public Tile[] tiles;
 
-	public IntPtr NavMeshHandle = IntPtr.Zero;
+	public IntPtr NavMeshHandle;
 
 	private float cachedMaxBorderMeters;
 
@@ -64,6 +64,11 @@ public class RustNavmesh : IDisposable
 		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
+		BuildParams = new NavMeshBuildParams(true);
+		BuildParamsHiRes = new NavMeshBuildParams(true);
+		PathfindingMaxIterations = 1000;
+		NavMeshHandle = IntPtr.Zero;
+		base._002Ector();
 		if (AI.useUnityNavmesh)
 		{
 			return;
@@ -491,8 +496,7 @@ public class RustNavmesh : IDisposable
 		{
 			return false;
 		}
-		int pathLength;
-		DtStatus dtStatus = RecastWrapper.FindPath(NavMeshHandle, in start, in end, PathBuffer, out pathLength, PathfindingMaxIterations);
+		DtStatus dtStatus = RecastWrapper.FindPath(NavMeshHandle, in start, in end, PathBuffer, out var pathLength, PathfindingMaxIterations);
 		if (((uint)dtStatus & 0x80000000u) == 2147483648u)
 		{
 			return false;

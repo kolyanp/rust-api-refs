@@ -58,13 +58,13 @@ public static class FGenerators
 		}
 	}
 
-	private static Random random = new Random();
+	private static Random random;
 
-	public static string lastPath = "";
+	public static string lastPath;
 
 	private static float _editorUiScaling;
 
-	public static readonly Color Color_Remove = new Color(1f, 0.825f, 0.825f, 1f);
+	public static readonly Color Color_Remove;
 
 	public static Random GlobalRandomInstance => random;
 
@@ -550,5 +550,14 @@ public static class FGenerators
 	public static float GetEditorUIScale()
 	{
 		return 1f;
+	}
+
+	static FGenerators()
+	{
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		random = new Random();
+		lastPath = "";
+		Color_Remove = new Color(1f, 0.825f, 0.825f, 1f);
 	}
 }

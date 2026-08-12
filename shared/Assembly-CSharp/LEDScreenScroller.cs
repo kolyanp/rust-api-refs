@@ -11,8 +11,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 		public Mesh Mesh;
 	}
 
-	[Header("Glyphs")]
 	[Tooltip("One pre-made mesh plane per supported letter/number, UV mapped into the shared atlas. Matching is case-insensitive.")]
+	[Header("Glyphs")]
 	public CharacterGlyph[] Glyphs;
 
 	[Tooltip("Shown for spaces and any character with no entry in Glyphs (e.g. punctuation).")]
@@ -21,8 +21,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Shared material/atlas used by every glyph slot.")]
 	public Material GlyphMaterial;
 
-	[Header("Layout")]
 	[Tooltip("Horizontal distance between glyph centers, in local units.")]
+	[Header("Layout")]
 	public float GlyphSlotWidth = 0.1f;
 
 	[Tooltip("Visible width of the LED screen, in local units. Determines how many glyph slots are pooled.")]
@@ -32,8 +32,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Extra blank glyph slots inserted between repeats of the text so it doesn't run into itself when it loops.")]
 	public int LoopGapSlots = 3;
 
-	[Tooltip("Local units per second.")]
 	[Header("Scrolling")]
+	[Tooltip("Local units per second.")]
 	public float ScrollSpeed = 0.05f;
 
 	[Tooltip("Flip travel direction (left-to-right instead of right-to-left) without touching letter order.")]

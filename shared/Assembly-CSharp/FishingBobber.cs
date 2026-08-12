@@ -162,7 +162,7 @@ public class FishingBobber : BaseCombatEntity
 		{
 			val2 += -((Component)this).transform.forward * (Time.deltaTime * PullAwayMoveSpeed * bobberForcePingPong * fishableModifier.MoveMultiplier * (inputBack ? 0.5f : 1f));
 		}
-		if (inputLeft || inputRight)
+		if (inputLeft | inputRight)
 		{
 			float num = 0.8f;
 			if ((inputLeft && state == BaseFishingRod.FishState.PullingRight) || (inputRight && state == BaseFishingRod.FishState.PullingLeft))

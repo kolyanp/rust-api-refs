@@ -27,13 +27,13 @@ public class TreeMarkerData : PrefabAttribute, IServerComponent
 
 	public MarkerLocation[] Markers;
 
-	public Vector3 GenerationStartPoint = Vector3.up * 2f;
+	public Vector3 GenerationStartPoint;
 
-	public float GenerationRadius = 2f;
+	public float GenerationRadius;
 
-	public float MaxY = 1.7f;
+	public float MaxY;
 
-	public float MinY = 0.2f;
+	public float MinY;
 
 	public bool ProcessAngleChecks;
 
@@ -165,5 +165,17 @@ public class TreeMarkerData : PrefabAttribute, IServerComponent
 		closestPoint = default(Vector3);
 		normal = default(Vector3);
 		return false;
+	}
+
+	public TreeMarkerData()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		GenerationStartPoint = Vector3.up * 2f;
+		GenerationRadius = 2f;
+		MaxY = 1.7f;
+		MinY = 0.2f;
+		base._002Ector();
 	}
 }

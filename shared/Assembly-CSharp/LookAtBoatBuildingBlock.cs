@@ -31,5 +31,12 @@ public class LookAtBoatBuildingBlock : FacepunchBehaviour
 
 	public Transform HelpParent;
 
-	private static readonly Phrase missingPrefixPhrase = new Phrase("boatbuilding.missing_prefix", "Missing: {0}");
+	private static readonly Phrase missingPrefixPhrase;
+
+	static LookAtBoatBuildingBlock()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		missingPrefixPhrase = new Phrase("boatbuilding.missing_prefix", "Missing: {0}");
+	}
 }

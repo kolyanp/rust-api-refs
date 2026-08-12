@@ -324,7 +324,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	{
 		CancelInvoke(UpdateRaidableFlag);
 		bool flag = Softcore.raidwindow_fresh_tc_seconds > 0f && timePlaced > 0f && Time.time - timePlaced <= Softcore.raidwindow_fresh_tc_seconds;
-		bool flag2 = Softcore.raidwindow_enabled && (RaidWindow.IsWindowOpenNow() || flag);
+		bool flag2 = Softcore.raidwindow_enabled && (RaidWindow.IsWindowOpenNow() | flag);
 		if (HasFlag(Flags.Reserved7) != flag2)
 		{
 			SetFlagLocal(Flags.Reserved7, flag2);
@@ -1073,8 +1073,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		return baseLock.OnTryToOpen(player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player))

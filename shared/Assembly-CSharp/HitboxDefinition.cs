@@ -19,7 +19,7 @@ public class HitboxDefinition : MonoBehaviour
 	public PhysicsMaterial physicMaterial;
 
 	[SerializeField]
-	private Vector3 scale = Vector3.one;
+	private Vector3 scale;
 
 	public Vector3 Scale
 	{
@@ -39,7 +39,18 @@ public class HitboxDefinition : MonoBehaviour
 		}
 	}
 
-	public Matrix4x4 LocalMatrix => Matrix4x4.TRS(center, Quaternion.Euler(rotation), scale);
+	public Matrix4x4 LocalMatrix
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			return Matrix4x4.TRS(center, Quaternion.Euler(rotation), scale);
+		}
+	}
 
 	private void OnValidate()
 	{
@@ -155,5 +166,13 @@ public class HitboxDefinition : MonoBehaviour
 			Gizmos.matrix = Matrix4x4.identity;
 			break;
 		}
+	}
+
+	public HitboxDefinition()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		scale = Vector3.one;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

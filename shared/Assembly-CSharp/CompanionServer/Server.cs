@@ -145,10 +145,10 @@ public static class Server
 			if (TryLoadServerRegistration(out var _, out var serverToken))
 			{
 				StringContent refreshContent = new StringContent(serverToken, Encoding.UTF8, "text/plain");
-				HttpResponseMessage val = await AutoRetry(() => WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/server/refresh", (HttpContent)(object)refreshContent));
-				if (val.IsSuccessStatusCode)
+				HttpResponseMessage httpResponseMessage = await AutoRetry(() => WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/server/refresh", refreshContent));
+				if (httpResponseMessage.IsSuccessStatusCode)
 				{
-					SetServerRegistration(await val.Content.ReadAsStringAsync());
+					SetServerRegistration(await httpResponseMessage.Content.ReadAsStringAsync());
 					return;
 				}
 				Debug.LogWarning((object)"Failed to refresh server ID - registering a new one");
@@ -229,7 +229,7 @@ public static class Server
 				SetServerId(null);
 			}
 			StringContent testContent = new StringContent("", Encoding.UTF8, "text/plain");
-			HttpResponseMessage testResponse = await AutoRetry(() => WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/server" + $"/test_connection?address={publicIp}&port={App.port}", (HttpContent)(object)testContent));
+			HttpResponseMessage testResponse = await AutoRetry(() => WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/server" + $"/test_connection?address={publicIp}&port={App.port}", testContent));
 			string text = await testResponse.Content.ReadAsStringAsync();
 			TestConnectionResponse testConnectionResponse = null;
 			try
@@ -271,13 +271,13 @@ public static class Server
 		{
 			try
 			{
-				HttpResponseMessage val = await action();
-				int statusCode = (int)val.StatusCode;
+				HttpResponseMessage httpResponseMessage = await action();
+				int statusCode = (int)httpResponseMessage.StatusCode;
 				if (statusCode != 555 && statusCode >= 500 && statusCode <= 599 && i < 4)
 				{
-					val.EnsureSuccessStatusCode();
+					httpResponseMessage.EnsureSuccessStatusCode();
 				}
-				return val;
+				return httpResponseMessage;
 			}
 			catch (Exception ex)
 			{

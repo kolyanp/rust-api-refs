@@ -10,7 +10,7 @@ public class Mortar : Cannon
 {
 	[SerializeField]
 	[Header("Mortar")]
-	private Vector2 minMaxDistance = new Vector2(0f, 200f);
+	private Vector2 minMaxDistance;
 
 	[SerializeField]
 	private AnimationCurve distanceRandomnessCurve;
@@ -22,7 +22,7 @@ public class Mortar : Cannon
 	private AnimationCurve distanceRandomnessZCurve;
 
 	[SerializeField]
-	private Vector2 shotPitchRecoilMinMax = new Vector2(0f, 2.5f);
+	private Vector2 shotPitchRecoilMinMax;
 
 	[Header("Mortar Animation")]
 	public ChildAnimatorSubSystem mortarAnim;
@@ -66,8 +66,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private AnimationCurve handleMinMaxRotation;
 
-	[SerializeField]
 	[Header("Display")]
+	[SerializeField]
 	private MortarDisplay mortarDisplayPrefab;
 
 	[ClientVar(ClientAdmin = true)]
@@ -443,5 +443,16 @@ public class Mortar : Cannon
 			}
 		}
 		return (num8 - num3) / magnitude2;
+	}
+
+	public Mortar()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		minMaxDistance = new Vector2(0f, 200f);
+		shotPitchRecoilMinMax = new Vector2(0f, 2.5f);
+		base._002Ector();
 	}
 }

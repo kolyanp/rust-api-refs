@@ -10,14 +10,14 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 	}
 
 	[Header("MonumentInfo")]
-	public MonumentType Type = MonumentType.Building;
+	public MonumentType Type;
 
 	[InspectorFlags]
-	public MonumentTier Tier = (MonumentTier)(-1);
+	public MonumentTier Tier;
 
 	public int MinWorldSize;
 
-	public Bounds Bounds = new Bounds(Vector3.zero, Vector3.zero);
+	public Bounds Bounds;
 
 	public bool HasNavmesh;
 
@@ -303,5 +303,17 @@ public class MonumentInfo : LandmarkInfo, IPrefabPreProcess
 			return displayPhrase.token.ToLower().Contains("power_plant");
 		}
 		return false;
+	}
+
+	public MonumentInfo()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		Type = MonumentType.Building;
+		Tier = (MonumentTier)(-1);
+		Bounds = new Bounds(Vector3.zero, Vector3.zero);
+		base._002Ector();
 	}
 }

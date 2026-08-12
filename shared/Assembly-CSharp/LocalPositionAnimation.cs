@@ -6,21 +6,41 @@ public class LocalPositionAnimation : MonoBehaviour, IClientComponent
 
 	public bool worldSpace;
 
-	public float scaleX = 1f;
+	public float scaleX;
 
-	public float timeScaleX = 1f;
+	public float timeScaleX;
 
-	public AnimationCurve movementX = new AnimationCurve();
+	public AnimationCurve movementX;
 
-	public float scaleY = 1f;
+	public float scaleY;
 
-	public float timeScaleY = 1f;
+	public float timeScaleY;
 
-	public AnimationCurve movementY = new AnimationCurve();
+	public AnimationCurve movementY;
 
-	public float scaleZ = 1f;
+	public float scaleZ;
 
-	public float timeScaleZ = 1f;
+	public float timeScaleZ;
 
-	public AnimationCurve movementZ = new AnimationCurve();
+	public AnimationCurve movementZ;
+
+	public LocalPositionAnimation()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Expected O, but got Unknown
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Expected O, but got Unknown
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Expected O, but got Unknown
+		scaleX = 1f;
+		timeScaleX = 1f;
+		movementX = new AnimationCurve();
+		scaleY = 1f;
+		timeScaleY = 1f;
+		movementY = new AnimationCurve();
+		scaleZ = 1f;
+		timeScaleZ = 1f;
+		movementZ = new AnimationCurve();
+		((MonoBehaviour)this)._002Ector();
+	}
 }

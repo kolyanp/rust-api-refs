@@ -128,7 +128,7 @@ public class RFReceiver : IOEntity, IRFObject
 
 	public void RFSignalUpdate(bool on)
 	{
-		if (!base.IsDestroyed && IsOn() != on && !(!IsPowered() && on))
+		if (!base.IsDestroyed && IsOn() != on && !(!IsPowered() & on))
 		{
 			SetFlagLocal(Flags.On, on);
 			SendNetworkUpdate_Flags();
@@ -203,8 +203,8 @@ public class RFReceiver : IOEntity, IRFObject
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_RequestOpenPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

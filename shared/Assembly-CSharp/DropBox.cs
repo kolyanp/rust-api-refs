@@ -23,7 +23,7 @@ public class DropBox : Mailbox
 		Vector3 val = ((Component)player).transform.position - ((Component)this).transform.position;
 		float num = Vector3.Dot(forward, ((Vector3)(ref val)).normalized);
 		bool flag = GamePhysics.LineOfSight(player.eyes.position, EyePoint.position, 2162688);
-		return num <= 0f && flag;
+		return (num <= 0f) & flag;
 	}
 
 	public bool PlayerInfront(BasePlayer player)

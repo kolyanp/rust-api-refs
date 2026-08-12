@@ -843,7 +843,14 @@ public class NetworkVisibilityGrid : MonoBehaviour, Provider
 					num3 += 2;
 				}
 			}
-			foreach (Vector2i item in hashSet.OrderBy((Vector2i v) => v.x * v.x + v.y * v.y))
+			foreach (Vector2i item in hashSet.OrderBy(delegate(Vector2i v)
+			{
+				//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+				return v.x * v.x + v.y * v.y;
+			}))
 			{
 				val.Add(item);
 			}

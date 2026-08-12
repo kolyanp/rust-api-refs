@@ -10,7 +10,7 @@ public class SeekerTarget
 		LOW = 100,
 		MEDIUM = 200,
 		HIGH = 1000,
-		HIGHEST = 1000
+		HIGHEST = HIGH
 	}
 
 	public interface ISeekerTargetOwner

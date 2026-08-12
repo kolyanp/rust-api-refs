@@ -54,7 +54,12 @@ public static class UnityProfiler
 		}
 		List<ProfilerRecorderHandle> list = new List<ProfilerRecorderHandle>();
 		ProfilerRecorderHandle.GetAvailable(list);
-		foreach (ProfilerRecorderDescription item2 in list.Select((ProfilerRecorderHandle x) => ProfilerRecorderHandle.GetDescription(x)).ToList())
+		foreach (ProfilerRecorderDescription item2 in list.Select(delegate(ProfilerRecorderHandle x)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return ProfilerRecorderHandle.GetDescription(x);
+		}).ToList())
 		{
 			ProfilerRecorderDescription current = item2;
 			if ((int)((ProfilerRecorderDescription)(ref current)).UnitType == 1 && ProfilerCategory.op_Implicit(((ProfilerRecorderDescription)(ref current)).Category) == ProfilerCategory.op_Implicit(ProfilerCategory.Scripts))

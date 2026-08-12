@@ -25,8 +25,8 @@ public class Climate : SingletonComponent<Climate>
 		[Horizontal(4, -1)]
 		public Float4 FogAmbientIntensity = Float4.One();
 
-		[Horizontal(4, -1)]
 		[Range(0f, 1f)]
+		[Horizontal(4, -1)]
 		public Float4 FogAmbientSaturation = Float4.One();
 
 		[Horizontal(4, -1)]
@@ -132,12 +132,12 @@ public class Climate : SingletonComponent<Climate>
 
 	private const int weatherFadeHours = 6;
 
-	public float BiomeFogShoreDistanceFalloff = -25f;
+	public float BiomeFogShoreDistanceFalloff;
 
 	[Range(0f, 1f)]
-	public float BlendingSpeed = 1f;
+	public float BlendingSpeed;
 
-	public float FogDarknessDistance = 200f;
+	public float FogDarknessDistance;
 
 	public bool DebugLUTBlending;
 
@@ -165,7 +165,7 @@ public class Climate : SingletonComponent<Climate>
 
 	public float UndergroundFogDensity;
 
-	public Color UndergroundFogColor = Color.black;
+	public Color UndergroundFogColor;
 
 	public VolumeCloudsConfig[] DefaultCloudConfigs;
 
@@ -191,7 +191,14 @@ public class Climate : SingletonComponent<Climate>
 
 	public long RainGraceStartTicks { get; set; }
 
-	private ConsoleSystem.Command RainGraceActiveCommand => _rainGraceActiveCommand ?? (_rainGraceActiveCommand = ConsoleSystem.Index.Server.Find(StringView.op_Implicit("weather.rain_grace_active")));
+	private ConsoleSystem.Command RainGraceActiveCommand
+	{
+		get
+		{
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			return _rainGraceActiveCommand ?? (_rainGraceActiveCommand = ConsoleSystem.Index.Server.Find(StringView.op_Implicit("weather.rain_grace_active")));
+		}
+	}
 
 	public WeatherPreset WeatherStatePrevious { get; set; }
 
@@ -528,9 +535,7 @@ public class Climate : SingletonComponent<Climate>
 		{
 			return 15f;
 		}
-		ClimateParameters src;
-		ClimateParameters dst;
-		float num = SingletonComponent<Climate>.Instance.FindBlendParameters(position, out src, out dst);
+		float num = SingletonComponent<Climate>.Instance.FindBlendParameters(position, out var src, out var dst);
 		if (src == null || dst == null)
 		{
 			return 15f;
@@ -675,5 +680,16 @@ public class Climate : SingletonComponent<Climate>
 		src = climateLookup[TerrainBiome.TypeToIndex(biomeMaxType)];
 		dst = climateLookup[TerrainBiome.TypeToIndex(biomeMaxType2)];
 		return TerrainMeta.BiomeMap.GetBiome(pos, biomeMaxType2);
+	}
+
+	public Climate()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		BiomeFogShoreDistanceFalloff = -25f;
+		BlendingSpeed = 1f;
+		FogDarknessDistance = 200f;
+		UndergroundFogColor = Color.black;
+		base._002Ector();
 	}
 }

@@ -44,9 +44,9 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 
 	public SoundDefinition fuseExpendedSound;
 
-	public static readonly Phrase CannotRemoveFusePhrase = new Phrase("fusebox.cannotremove", "Fuses can only be removed via an item swap");
+	public static readonly Phrase CannotRemoveFusePhrase;
 
-	public static readonly Phrase CannotSwapFusePhrase = new Phrase("fusebox.cannotswap", "A replacement fuse must be of higher condition");
+	public static readonly Phrase CannotSwapFusePhrase;
 
 	private ItemContainer inventory;
 
@@ -181,18 +181,18 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		return false;
 	}
 
-	public void Server_DeteriorateFuse(Item item, float deltaTime, bool forceFastDeterioration = false)
+	public void Server_DeteriorateFuse(Item item, float deltaTime, float decayRateScale)
 	{
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
 		int position = item.position;
 		if (position < 0 || position >= fuses.Length)
 		{
@@ -210,8 +210,12 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		{
 			return;
 		}
-		float normalizedCondition = item.conditionNormalized;
-		float num = GetFuseNormalizedConditionLossPerSecond() * max;
+		float fuseLifespanSeconds = Powergrid.fuseLifespanSeconds;
+		if (fuseLifespanSeconds <= 0f || decayRateScale <= 0f)
+		{
+			return;
+		}
+		float num = max / fuseLifespanSeconds * decayRateScale;
 		item.LoseCondition(num * deltaTime);
 		if (item.isBroken)
 		{
@@ -220,30 +224,6 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 				item.Drop(((Component)this).transform.position + ((Component)this).transform.forward * 0.5f, GetInheritedDropVelocity() + ((Component)this).transform.forward * 2f);
 			}
 			ClientRPC(RpcTarget.NetworkGroup("Client_FuseExpended"), position);
-		}
-		float GetFuseNormalizedConditionLossPerSecond()
-		{
-			if (Powergrid.fuseLifespanSeconds <= 0f)
-			{
-				return 0f;
-			}
-			float num2 = Mathf.Clamp01(Powergrid.fuseFastDeteriorationThreshold);
-			float num3 = Mathf.Max(Powergrid.fuseFastDeteriorationScale, 0f);
-			bool flag = forceFastDeterioration || normalizedCondition <= num2;
-			if (num3 <= 0f)
-			{
-				if (!flag)
-				{
-					return (1f - num2) / Powergrid.fuseLifespanSeconds;
-				}
-				return 0f;
-			}
-			float num4 = (1f - num2 + num2 / num3) / Powergrid.fuseLifespanSeconds;
-			if (!flag)
-			{
-				return num4;
-			}
-			return num4 * num3;
 		}
 	}
 
@@ -386,5 +366,15 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 	public int GetMaxNoOfFuses()
 	{
 		return fuses.Length;
+	}
+
+	static PowergridFuseBox()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		CannotRemoveFusePhrase = new Phrase("fusebox.cannotremove", "Fuses can only be removed via an item swap");
+		CannotSwapFusePhrase = new Phrase("fusebox.cannotswap", "A replacement fuse must be of higher condition");
 	}
 }

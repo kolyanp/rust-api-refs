@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.GroundFitter;
@@ -9,11 +10,29 @@ public abstract class FGroundFitter_InputBase : MonoBehaviour
 
 	protected FGroundFitter_Movement controller;
 
+	[CompilerGenerated]
+	private Vector3 _003CMoveVector_003Ek__BackingField;
+
 	public float RotationOffset { get; protected set; }
 
 	public bool Sprint { get; protected set; }
 
-	public Vector3 MoveVector { get; protected set; }
+	public Vector3 MoveVector
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CMoveVector_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CMoveVector_003Ek__BackingField = value;
+		}
+	}
 
 	public virtual void Start()
 	{

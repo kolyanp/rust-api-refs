@@ -21,7 +21,7 @@ public class SleepingBag : DecayEntity
 		Allowed = 0,
 		TeamAndFriendlyContacts = 1,
 		None = 2,
-		LAST = 2
+		LAST = None
 	}
 
 	public enum BagResultType
@@ -49,34 +49,34 @@ public class SleepingBag : DecayEntity
 	}
 
 	[ReplicatedVar]
-	public static bool UseTeamLabels = true;
+	public static bool UseTeamLabels;
 
 	[NonSerialized]
 	public ulong deployerUserID;
 
-	public bool CountsTowardsBagLimit = true;
+	public bool CountsTowardsBagLimit;
 
 	public GameObject renameDialog;
 
 	public GameObject assignDialog;
 
-	public float secondsBetweenReuses = 300f;
+	public float secondsBetweenReuses;
 
 	public bool perPlayerRespawnCooldown;
 
-	private Dictionary<ulong, float> playerCooldowns = new Dictionary<ulong, float>();
+	private Dictionary<ulong, float> playerCooldowns;
 
-	public string niceName = "Unnamed Bag";
+	public string niceName;
 
-	public Vector3 spawnOffset = Vector3.zero;
+	public Vector3 spawnOffset;
 
-	public RespawnType RespawnType = (RespawnType)1;
+	public RespawnType RespawnType;
 
 	public bool isStatic;
 
 	public bool canBePublic;
 
-	public bool canReassignToFriends = true;
+	public bool canReassignToFriends;
 
 	public bool clearHostile;
 
@@ -84,33 +84,33 @@ public class SleepingBag : DecayEntity
 
 	public const Flags DestroyAfterUseFlag = Flags.Reserved14;
 
-	public static Phrase bagLimitPhrase = new Phrase("bag_limit_update", "You are now at {0}/{1} bags");
+	public static Phrase bagLimitPhrase;
 
-	public static Phrase bagLimitReachedPhrase = new Phrase("bag_limit_reached", "You have reached your bag limit!");
+	public static Phrase bagLimitReachedPhrase;
 
-	public static Phrase teammateBagPhrase = new Phrase("teammate_bag", "{0}'s bag");
+	public static Phrase teammateBagPhrase;
 
-	public Phrase assignOtherBagPhrase = new Phrase("assigned_other_bag_limit", "You have assigned {0} a bag, they are now at {0}/{1} bags");
+	public Phrase assignOtherBagPhrase;
 
-	public Phrase assignedBagPhrase = new Phrase("assigned_bag_limit", "You have been assigned a bag, you are now at {0}/{1} bags");
+	public Phrase assignedBagPhrase;
 
-	public Phrase cannotAssignBedNoPlayerPhrase = new Phrase("cannot_assign_bag_limit_noplayer", "You cannot assign a bag to this player, they have reached their bag limit!");
+	public Phrase cannotAssignBedNoPlayerPhrase;
 
-	public Phrase cannotAssignBedPhrase = new Phrase("cannot_assign_bag_limit", "You cannot assign {0} a bag, they have reached their bag limit!");
+	public Phrase cannotAssignBedPhrase;
 
-	public Phrase cannotMakeBedPhrase = new Phrase("cannot_make_bed_limit", "You cannot take ownership of the bed, you are at your bag limit");
+	public Phrase cannotMakeBedPhrase;
 
-	public Phrase bedAssigningBlocked = new Phrase("bag_assign_blocked", "That player has blocked bag assignment");
+	public Phrase bedAssigningBlocked;
 
-	public static Phrase tutorialPhrase = new Phrase("bag_assign_tutorial", "Cannot assign bags to players mid-tutorial");
+	public static Phrase tutorialPhrase;
 
 	public float unlockTime;
 
 	private bool notifyPlayerOnServerInit;
 
-	public static ListHashSet<SleepingBag> sleepingBags = new ListHashSet<SleepingBag>();
+	public static ListHashSet<SleepingBag> sleepingBags;
 
-	private static Dictionary<ulong, List<SleepingBag>> bagsPerPlayer = new Dictionary<ulong, List<SleepingBag>>();
+	private static Dictionary<ulong, List<SleepingBag>> bagsPerPlayer;
 
 	public bool showOnCompass { get; private set; }
 
@@ -1095,8 +1095,8 @@ public class SleepingBag : DecayEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void Rename(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -1247,8 +1247,8 @@ public class SleepingBag : DecayEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_MakeBed(RPCMessage msg)
 	{
 		if (!canBePublic || !IsPublic() || !msg.player.CanInteract())
@@ -1315,8 +1315,8 @@ public class SleepingBag : DecayEntity
 		NotifyPlayer(deployerUserID);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_ShowOnCompass(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && deployerUserID == (ulong)msg.player.userID)
@@ -1462,5 +1462,57 @@ public class SleepingBag : DecayEntity
 			return (ulong)player.userID == deployerUserID;
 		}
 		return false;
+	}
+
+	public SleepingBag()
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Expected O, but got Unknown
+		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Expected O, but got Unknown
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Expected O, but got Unknown
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Expected O, but got Unknown
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Expected O, but got Unknown
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Expected O, but got Unknown
+		CountsTowardsBagLimit = true;
+		secondsBetweenReuses = 300f;
+		playerCooldowns = new Dictionary<ulong, float>();
+		niceName = "Unnamed Bag";
+		spawnOffset = Vector3.zero;
+		RespawnType = (RespawnType)1;
+		canReassignToFriends = true;
+		assignOtherBagPhrase = new Phrase("assigned_other_bag_limit", "You have assigned {0} a bag, they are now at {0}/{1} bags");
+		assignedBagPhrase = new Phrase("assigned_bag_limit", "You have been assigned a bag, you are now at {0}/{1} bags");
+		cannotAssignBedNoPlayerPhrase = new Phrase("cannot_assign_bag_limit_noplayer", "You cannot assign a bag to this player, they have reached their bag limit!");
+		cannotAssignBedPhrase = new Phrase("cannot_assign_bag_limit", "You cannot assign {0} a bag, they have reached their bag limit!");
+		cannotMakeBedPhrase = new Phrase("cannot_make_bed_limit", "You cannot take ownership of the bed, you are at your bag limit");
+		bedAssigningBlocked = new Phrase("bag_assign_blocked", "That player has blocked bag assignment");
+		base._002Ector();
+	}
+
+	static SleepingBag()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Expected O, but got Unknown
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Expected O, but got Unknown
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Expected O, but got Unknown
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Expected O, but got Unknown
+		UseTeamLabels = true;
+		bagLimitPhrase = new Phrase("bag_limit_update", "You are now at {0}/{1} bags");
+		bagLimitReachedPhrase = new Phrase("bag_limit_reached", "You have reached your bag limit!");
+		teammateBagPhrase = new Phrase("teammate_bag", "{0}'s bag");
+		tutorialPhrase = new Phrase("bag_assign_tutorial", "Cannot assign bags to players mid-tutorial");
+		sleepingBags = new ListHashSet<SleepingBag>();
+		bagsPerPlayer = new Dictionary<ulong, List<SleepingBag>>();
 	}
 }

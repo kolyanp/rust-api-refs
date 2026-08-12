@@ -143,7 +143,7 @@ public class TriggerSafeZone : TriggerBase
 				break;
 			}
 		}
-		if (flag && checkCombatZones)
+		if (flag & checkCombatZones)
 		{
 			foreach (TriggerSafeZoneOverride allHostileZone in TriggerSafeZoneOverride.allHostileZones)
 			{

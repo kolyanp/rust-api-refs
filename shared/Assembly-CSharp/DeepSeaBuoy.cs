@@ -7,11 +7,11 @@ public class DeepSeaBuoy : MonoBehaviour
 
 	[ColorUsage(true, true)]
 	[SerializeField]
-	private Color colorOpen = Color.green;
+	private Color colorOpen;
 
-	[ColorUsage(true, true)]
 	[SerializeField]
-	private Color colorClosed = Color.red;
+	[ColorUsage(true, true)]
+	private Color colorClosed;
 
 	[SerializeField]
 	private GameObject lightClosed;
@@ -57,5 +57,16 @@ public class DeepSeaBuoy : MonoBehaviour
 				((Renderer)val).SetPropertyBlock(propertyBlock);
 			}
 		}
+	}
+
+	public DeepSeaBuoy()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		colorOpen = Color.green;
+		colorClosed = Color.red;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

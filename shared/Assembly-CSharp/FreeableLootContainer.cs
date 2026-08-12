@@ -138,7 +138,7 @@ public class FreeableLootContainer : LootContainer
 			BaseMelee component = ((Component)info.Weapon).GetComponent<BaseMelee>();
 			if (Object.op_Implicit((Object)(object)component) && component.canUntieCrates && IsTiedDown())
 			{
-				base.health -= 1f;
+				base.health--;
 				info.DidGather = true;
 				if (base.health <= 0f)
 				{
@@ -178,8 +178,8 @@ public class FreeableLootContainer : LootContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_FreeCrate(RPCMessage msg)
 	{
 		if (IsTiedDown() && !(Mathf.Abs(startUntieTime + 6f - Time.realtimeSinceStartup) > ConVar.AntiHack.rpc_timer_forgiveness))
@@ -189,8 +189,8 @@ public class FreeableLootContainer : LootContainer
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_FreeCrateTimer(RPCMessage msg)
 	{
 		if (IsTiedDown())

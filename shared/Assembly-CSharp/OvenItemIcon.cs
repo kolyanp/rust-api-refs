@@ -24,9 +24,9 @@ public class OvenItemIcon : MonoBehaviour
 
 	public OvenSlotType SlotType;
 
-	public Phrase EmptyPhrase = new Phrase("empty", "empty");
+	public Phrase EmptyPhrase;
 
-	public List<OvenSlotConfig> SlotConfigs = new List<OvenSlotConfig>();
+	public List<OvenSlotConfig> SlotConfigs;
 
 	public float DisabledAlphaScale;
 
@@ -64,5 +64,14 @@ public class OvenItemIcon : MonoBehaviour
 		{
 			itemLabel.SetPhrase((_item == null) ? EmptyPhrase : _item.info.displayName, Array.Empty<object>());
 		}
+	}
+
+	public OvenItemIcon()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Expected O, but got Unknown
+		EmptyPhrase = new Phrase("empty", "empty");
+		SlotConfigs = new List<OvenSlotConfig>();
+		((MonoBehaviour)this)._002Ector();
 	}
 }

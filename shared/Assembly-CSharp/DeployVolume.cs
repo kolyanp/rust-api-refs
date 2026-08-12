@@ -19,7 +19,7 @@ public abstract class DeployVolume : PrefabAttribute
 		Ignore
 	}
 
-	public LayerMask layers = LayerMask.op_Implicit(537001984);
+	public LayerMask layers;
 
 	[InspectorFlags]
 	public ColliderInfo.Flags ignore;
@@ -174,7 +174,7 @@ public abstract class DeployVolume : PrefabAttribute
 			{
 				Type type = ((object)baseEntity).GetType();
 				bool flag = types.Contains(type);
-				if ((filterMode == TypeFilterMode.Include && !flag) || (filterMode == TypeFilterMode.Ignore && flag))
+				if ((filterMode == TypeFilterMode.Include && !flag) || ((filterMode == TypeFilterMode.Ignore) & flag))
 				{
 					continue;
 				}
@@ -265,5 +265,13 @@ public abstract class DeployVolume : PrefabAttribute
 			return flag;
 		}
 		return !flag;
+	}
+
+	protected DeployVolume()
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		layers = LayerMask.op_Implicit(537001984);
+		base._002Ector();
 	}
 }

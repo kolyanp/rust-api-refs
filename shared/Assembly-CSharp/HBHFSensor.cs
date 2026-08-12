@@ -204,7 +204,7 @@ public class HBHFSensor : BaseDetector
 				Vector3 val4 = val2 + normalized * 0.5f;
 				bool flag3 = basePlayer.IsVisible(val, val2, range);
 				bool flag4 = flag3 && basePlayer.CanSee(val2, val4);
-				bool num2 = flag3 && flag4;
+				bool num2 = flag3 & flag4;
 				if (DebugDraw)
 				{
 					DebugDrawPlayer(val, basePlayer, val2, val4, flag3, flag4);

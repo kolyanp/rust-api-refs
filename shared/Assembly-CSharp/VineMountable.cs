@@ -53,13 +53,13 @@ public class VineMountable : BaseMountable
 	public float moveSpeed;
 
 	[Header("Rotation Settings")]
-	public float rotationSpeed = 0.5f;
+	public float rotationSpeed;
 
-	public float descendSpeed = 5f;
+	public float descendSpeed;
 
 	public Vector3 WorldSpaceAnchorPoint;
 
-	private List<VinePoint> destinations = new List<VinePoint>();
+	private List<VinePoint> destinations;
 
 	private VinePoint origin;
 
@@ -73,7 +73,7 @@ public class VineMountable : BaseMountable
 
 	public ViewModel VineViewModel;
 
-	public float DismountViewmodelHoldTime = 0.2f;
+	public float DismountViewmodelHoldTime;
 
 	public GameObjectRef VineWorldModel;
 
@@ -102,7 +102,7 @@ public class VineMountable : BaseMountable
 
 	private VineMountable chainTarget;
 
-	private Vector3 lastValidLocation = Vector3.zero;
+	private Vector3 lastValidLocation;
 
 	private TimeSince lastValidLocationTime;
 
@@ -887,5 +887,17 @@ public class VineMountable : BaseMountable
 		}
 		foundAngle = num;
 		return result;
+	}
+
+	public VineMountable()
+	{
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		rotationSpeed = 0.5f;
+		descendSpeed = 5f;
+		destinations = new List<VinePoint>();
+		DismountViewmodelHoldTime = 0.2f;
+		lastValidLocation = Vector3.zero;
+		base._002Ector();
 	}
 }

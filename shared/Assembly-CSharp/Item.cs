@@ -266,7 +266,7 @@ public class Item : IPooled
 		}
 	}
 
-	public bool HasOnCycle => this.onCycle != null;
+	public bool HasOnCycle => onCycle != null;
 
 	public BaseEntity.TraitFlag Traits => info.Traits;
 
@@ -451,8 +451,8 @@ public class Item : IPooled
 		parent = null;
 		heldEntity = default(EntityRef);
 		worldEnt = default(EntityRef);
-		this.onCycle = null;
-		this.OnDirty = null;
+		onCycle = null;
+		OnDirty = null;
 		_condition = 0f;
 		_maxCondition = 100f;
 		if (ownershipShares != null)
@@ -548,9 +548,9 @@ public class Item : IPooled
 		{
 			parent.MarkDirty();
 		}
-		if (this.OnDirty != null)
+		if (OnDirty != null)
 		{
-			this.OnDirty(this);
+			OnDirty(this);
 		}
 	}
 
@@ -599,7 +599,7 @@ public class Item : IPooled
 
 	public void OnItemCreated()
 	{
-		this.onCycle = null;
+		onCycle = null;
 		ItemMod[] itemMods = info.itemMods;
 		for (int i = 0; i < itemMods.Length; i++)
 		{
@@ -1127,7 +1127,7 @@ public class Item : IPooled
 						return false;
 					}
 				}
-				if (parent != null && allowSwap && slot2 != null)
+				if (((parent != null) & allowSwap) && slot2 != null)
 				{
 					ItemContainer itemContainer2 = parent;
 					int iTargetPos2 = position;
@@ -1366,7 +1366,7 @@ public class Item : IPooled
 			}
 		}
 		removeTime = Time.time + fTime;
-		this.OnDirty = null;
+		OnDirty = null;
 		position = -1;
 		amount = 0;
 		ItemManager.RemoveItem(this, fTime);
@@ -1375,7 +1375,7 @@ public class Item : IPooled
 	public void DoRemove()
 	{
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		this.OnDirty = null;
+		OnDirty = null;
 		if (isServer && ((ItemId)(ref uid)).IsValid && Net.sv != null)
 		{
 			Net.sv.ReturnUID(uid.Value);
@@ -1389,7 +1389,7 @@ public class Item : IPooled
 		{
 			RemoveFromWorld();
 			RemoveFromContainer();
-			this.onCycle = null;
+			onCycle = null;
 		}
 		BaseEntity baseEntity = GetHeldEntity();
 		if (baseEntity.IsValid())
@@ -1744,9 +1744,9 @@ public class Item : IPooled
 
 	public void OnCycle(float delta)
 	{
-		if (this.onCycle != null)
+		if (onCycle != null)
 		{
-			this.onCycle(this, delta);
+			onCycle(this, delta);
 		}
 	}
 
@@ -2018,7 +2018,7 @@ public class Item : IPooled
 			val.conditionData.maxCondition = _maxCondition;
 			val.conditionData.condition = _condition;
 		}
-		if (contents != null && bIncludeContainer)
+		if ((contents != null) & bIncludeContainer)
 		{
 			val.contents = contents.Save(bIncludeContainer);
 		}

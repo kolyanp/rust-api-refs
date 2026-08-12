@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace FIMSpace.GroundFitter;
 
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
-	[Range(1f, 30f)]
-	[Tooltip("How quick rotation should be corrected to target")]
-	[Space(4f, order = 1)]
 	[Header("> Main Variables <", order = 0)]
-	public float FittingSpeed = 6f;
+	[Space(4f, order = 1)]
+	[Tooltip("How quick rotation should be corrected to target")]
+	[Range(1f, 30f)]
+	public float FittingSpeed;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing whole rotation motion")]
+	[Range(0f, 1f)]
 	public float TotalSmoother;
 
 	[Space(3f)]
@@ -25,15 +26,15 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Space(3f)]
 	public bool GlueToGround;
 
-	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
-	[Range(0f, 1f)]
-	[Space(4f, order = 1)]
 	[Header("> Tweaking Settings <", order = 0)]
+	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
+	[Space(4f, order = 1)]
+	[Range(0f, 1f)]
 	public float MildForwardValue;
 
-	[Range(0f, 90f)]
 	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
-	public float MaxForwardRotation = 90f;
+	[Range(0f, 90f)]
+	public float MaxForwardRotation;
 
 	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
 	[Space(5f)]
@@ -42,29 +43,29 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 
 	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	[Range(0f, 90f)]
-	public float MaxHorizontalRotation = 90f;
+	public float MaxHorizontalRotation;
 
-	[Header("> Advanced settings <", order = 0)]
 	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
 	[Space(4f, order = 1)]
-	public float RaycastHeightOffset = 0.5f;
+	[Header("> Advanced settings <", order = 0)]
+	public float RaycastHeightOffset;
 
 	[Tooltip("How far ray should cast to check if ground is under feet")]
-	public float RaycastCheckRange = 5f;
+	public float RaycastCheckRange;
 
 	[Tooltip("If value is not equal 0 there will be casted second ray in front or back of gameObject")]
 	public float LookAheadRaycast;
 
 	[Tooltip("Blending with predicted forward raycast rotation")]
-	public float AheadBlend = 0.5f;
+	public float AheadBlend;
 
 	[HideInInspector]
 	[Tooltip("Offset over ground")]
 	public float UpOffset;
 
-	[Tooltip("What collision layers should be included by algorithm")]
 	[Space(8f)]
-	public LayerMask GroundLayerMask = LayerMask.op_Implicit(1);
+	[Tooltip("What collision layers should be included by algorithm")]
+	public LayerMask GroundLayerMask;
 
 	[Tooltip("When casting down vector should adjust with transform's rotation")]
 	public bool RelativeLookUp;
@@ -72,45 +73,117 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Range(0f, 1f)]
 	public float RelativeLookUpBias;
 
-	internal Vector3 WorldUp = Vector3.up;
+	internal Vector3 WorldUp;
 
 	[Space(8f)]
 	[Tooltip("Casting more raycsts under object to detect ground more precisely, then we use average from all casts to set new rotation")]
 	public bool ZoneCast;
 
-	public Vector2 ZoneCastDimensions = new Vector2(0.3f, 0.5f);
+	public Vector2 ZoneCastDimensions;
 
-	public Vector3 ZoneCastOffset = Vector3.zero;
+	public Vector3 ZoneCastOffset;
 
 	[Range(0f, 10f)]
 	public float ZoneCastBias;
 
 	[Range(0f, 1f)]
 	[Tooltip("More precision = more raycasts = lower performance")]
-	public float ZoneCastPrecision = 0.25f;
+	public float ZoneCastPrecision;
+
+	[CompilerGenerated]
+	private RaycastHit _003CLastRaycast_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CLastRaycastOrigin_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private RaycastHit _003CLastTransformRaycast_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Quaternion _003CLastRotation_003Ek__BackingField;
 
 	[NonSerialized]
 	public float UpAxisRotation;
 
-	protected Quaternion helperRotation = Quaternion.identity;
+	protected Quaternion helperRotation;
 
 	protected Collider selfCollider;
 
-	protected Vector3 castOffset = Vector3.zero;
+	protected Vector3 castOffset;
 
 	protected float deltaTime;
 
-	internal bool ApplyRotation = true;
+	internal bool ApplyRotation;
 
-	internal Quaternion targetRotationToApply = Quaternion.identity;
+	internal Quaternion targetRotationToApply;
 
-	public RaycastHit LastRaycast { get; protected set; }
+	public RaycastHit LastRaycast
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastRaycast_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastRaycast_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 LastRaycastOrigin { get; protected set; }
+	public Vector3 LastRaycastOrigin
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastRaycastOrigin_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastRaycastOrigin_003Ek__BackingField = value;
+		}
+	}
 
-	public RaycastHit LastTransformRaycast { get; protected set; }
+	public RaycastHit LastTransformRaycast
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastTransformRaycast_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastTransformRaycast_003Ek__BackingField = value;
+		}
+	}
 
-	public Quaternion LastRotation { get; protected set; }
+	public Quaternion LastRotation
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastRotation_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastRotation_003Ek__BackingField = value;
+		}
+	}
 
 	protected virtual void Start()
 	{
@@ -480,5 +553,39 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		LastRaycast = LastTransformRaycast;
+	}
+
+	protected FGroundFitter_Base()
+	{
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		FittingSpeed = 6f;
+		MaxForwardRotation = 90f;
+		MaxHorizontalRotation = 90f;
+		RaycastHeightOffset = 0.5f;
+		RaycastCheckRange = 5f;
+		AheadBlend = 0.5f;
+		GroundLayerMask = LayerMask.op_Implicit(1);
+		WorldUp = Vector3.up;
+		ZoneCastDimensions = new Vector2(0.3f, 0.5f);
+		ZoneCastOffset = Vector3.zero;
+		ZoneCastPrecision = 0.25f;
+		helperRotation = Quaternion.identity;
+		castOffset = Vector3.zero;
+		ApplyRotation = true;
+		targetRotationToApply = Quaternion.identity;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

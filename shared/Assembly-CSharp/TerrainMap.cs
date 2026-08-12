@@ -619,7 +619,14 @@ public abstract class TerrainMap<T> : TerrainMap, IDisposable where T : unmanage
 
 	internal NativeArray<T> dst;
 
-	public ReadOnly<T> Data => src.AsReadOnly();
+	public ReadOnly<T> Data
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return src.AsReadOnly();
+		}
+	}
 
 	public void InitArrays(int size)
 	{

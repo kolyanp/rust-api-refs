@@ -15,27 +15,27 @@ public class ReactiveTarget : Signage
 
 	public GameObjectRef knockdownEffect;
 
-	public float activationPowerTime = 0.5f;
+	public float activationPowerTime;
 
-	public int activationPowerAmount = 1;
+	public int activationPowerAmount;
 
-	public string mainBoneCollider = "target_collider";
+	public string mainBoneCollider;
 
-	public string bullseyeBoneCollider = "target_collider_bullseye";
+	public string bullseyeBoneCollider;
 
 	public bool isPaintableTarget;
 
 	public Transform movableColliderRoot;
 
-	public Vector3 movableColliderKnockedDownAngle = new Vector3(-55f, 0f, 0f);
+	public Vector3 movableColliderKnockedDownAngle;
 
 	public GameObject movablePlayerForceTrigger;
 
-	private float lastToggleTime = float.NegativeInfinity;
+	private float lastToggleTime;
 
 	public const Flags Flag_KnockedDown = Flags.Reserved1;
 
-	public float knockdownHealth = 100f;
+	public float knockdownHealth;
 
 	private int inputAmountReset;
 
@@ -340,5 +340,19 @@ public class ReactiveTarget : Signage
 		{
 			SetCollidersUpright();
 		}
+	}
+
+	public ReactiveTarget()
+	{
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		activationPowerTime = 0.5f;
+		activationPowerAmount = 1;
+		mainBoneCollider = "target_collider";
+		bullseyeBoneCollider = "target_collider_bullseye";
+		movableColliderKnockedDownAngle = new Vector3(-55f, 0f, 0f);
+		lastToggleTime = float.NegativeInfinity;
+		knockdownHealth = 100f;
+		base._002Ector();
 	}
 }

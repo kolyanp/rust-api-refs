@@ -19,15 +19,32 @@ public class FoliageGridMeshData
 
 		public Vector4 uv2;
 
-		public static readonly VertexAttributeDescriptor[] VertexLayout = (VertexAttributeDescriptor[])(object)new VertexAttributeDescriptor[6]
+		public static readonly VertexAttributeDescriptor[] VertexLayout;
+
+		static FoliageVertex()
 		{
-			new VertexAttributeDescriptor((VertexAttribute)0, (VertexAttributeFormat)0, 3, 0),
-			new VertexAttributeDescriptor((VertexAttribute)1, (VertexAttributeFormat)0, 3, 0),
-			new VertexAttributeDescriptor((VertexAttribute)2, (VertexAttributeFormat)0, 4, 0),
-			new VertexAttributeDescriptor((VertexAttribute)3, (VertexAttributeFormat)2, 4, 0),
-			new VertexAttributeDescriptor((VertexAttribute)4, (VertexAttributeFormat)0, 2, 0),
-			new VertexAttributeDescriptor((VertexAttribute)6, (VertexAttributeFormat)0, 4, 0)
-		};
+			//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+			//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+			VertexLayout = (VertexAttributeDescriptor[])(object)new VertexAttributeDescriptor[6]
+			{
+				new VertexAttributeDescriptor((VertexAttribute)0, (VertexAttributeFormat)0, 3, 0),
+				new VertexAttributeDescriptor((VertexAttribute)1, (VertexAttributeFormat)0, 3, 0),
+				new VertexAttributeDescriptor((VertexAttribute)2, (VertexAttributeFormat)0, 4, 0),
+				new VertexAttributeDescriptor((VertexAttribute)3, (VertexAttributeFormat)2, 4, 0),
+				new VertexAttributeDescriptor((VertexAttribute)4, (VertexAttributeFormat)0, 2, 0),
+				new VertexAttributeDescriptor((VertexAttribute)6, (VertexAttributeFormat)0, 4, 0)
+			};
+		}
 	}
 
 	public List<FoliageVertex> vertices;

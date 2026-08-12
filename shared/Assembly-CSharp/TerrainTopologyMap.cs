@@ -73,7 +73,12 @@ public class TerrainTopologyMap : TerrainMap<int>
 
 	private bool _generatedTopologyTexture;
 
-	private ThreadLocal<NativeReference<int>> topoNative = new ThreadLocal<NativeReference<int>>(() => new NativeReference<int>(0, AllocatorHandle.op_Implicit((Allocator)4)), trackAllValues: true);
+	private ThreadLocal<NativeReference<int>> topoNative = new ThreadLocal<NativeReference<int>>(delegate
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		return new NativeReference<int>(0, AllocatorHandle.op_Implicit((Allocator)4));
+	}, trackAllValues: true);
 
 	public override void Setup()
 	{

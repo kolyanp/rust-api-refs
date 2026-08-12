@@ -40,7 +40,7 @@ public class CompleteTrain : IDisposable
 
 	public const float MIN_COLLISION_FORCE = 70000f;
 
-	public float lastMovingTime = float.MinValue;
+	public float lastMovingTime;
 
 	public const float SLEEP_SPEED = 0.1f;
 
@@ -74,21 +74,21 @@ public class CompleteTrain : IDisposable
 
 	private Vector3 shuntDirection;
 
-	private Vector2 shuntStartPos2D = Vector2.zero;
+	private Vector2 shuntStartPos2D;
 
-	private Vector2 shuntTargetPos2D = Vector2.zero;
+	private Vector2 shuntTargetPos2D;
 
 	private TrainCar shuntTarget;
 
 	public StaticCollisionState staticCollidingAtFront;
 
-	private HashSet<GameObject> monitoredStaticContentF = new HashSet<GameObject>();
+	private HashSet<GameObject> monitoredStaticContentF;
 
 	public StaticCollisionState staticCollidingAtRear;
 
-	private HashSet<GameObject> monitoredStaticContentR = new HashSet<GameObject>();
+	private HashSet<GameObject> monitoredStaticContentR;
 
-	public Dictionary<Rigidbody, float> prevTrackSpeeds = new Dictionary<Rigidbody, float>();
+	public Dictionary<Rigidbody, float> prevTrackSpeeds;
 
 	public TrainCar PrimaryTrainCar { get; set; }
 
@@ -100,7 +100,7 @@ public class CompleteTrain : IDisposable
 
 	public int NumTrainCars => trainCars.Count;
 
-	public int LinedUpToUnload { get; private set; } = -1;
+	public int LinedUpToUnload { get; private set; }
 
 	public bool IsLinedUpToUnload => LinedUpToUnload >= 0;
 
@@ -122,6 +122,14 @@ public class CompleteTrain : IDisposable
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		LinedUpToUnload = -1;
+		lastMovingTime = float.MinValue;
+		shuntStartPos2D = Vector2.zero;
+		shuntTargetPos2D = Vector2.zero;
+		monitoredStaticContentF = new HashSet<GameObject>();
+		monitoredStaticContentR = new HashSet<GameObject>();
+		prevTrackSpeeds = new Dictionary<Rigidbody, float>();
+		base._002Ector();
 		List<TrainCar> list = Pool.Get<List<TrainCar>>();
 		list.Add(trainCar);
 		Init(list);
@@ -133,6 +141,14 @@ public class CompleteTrain : IDisposable
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		LinedUpToUnload = -1;
+		lastMovingTime = float.MinValue;
+		shuntStartPos2D = Vector2.zero;
+		shuntTargetPos2D = Vector2.zero;
+		monitoredStaticContentF = new HashSet<GameObject>();
+		monitoredStaticContentR = new HashSet<GameObject>();
+		prevTrackSpeeds = new Dictionary<Rigidbody, float>();
+		base._002Ector();
 		Init(allTrainCars);
 	}
 
@@ -474,7 +490,7 @@ public class CompleteTrain : IDisposable
 				TotalMass += trainCar2.rigidBody.mass * 0.4f;
 			}
 		}
-		if (isShunting && flag)
+		if (isShunting & flag)
 		{
 			EndShunting(CoalingTower.ActionAttemptStatus.TrainHasThrottle);
 		}
@@ -1073,8 +1089,7 @@ public class CompleteTrain : IDisposable
 			float totalPushingMass = GetTotalPushingMass(val, forwardVector, ref prevTrains);
 			trackSpeed = ((!(totalPushingMass < 0f)) ? HandleRigidbodyCollision(front, trackSpeed, forwardVector, TotalMass, theirTrain.rigidBody, theirTrain.GetLocalVelocityServer(), totalPushingMass, deltaTime, calcSecondaryForces: false) : HandleStaticCollisions(staticColliding: true, front, trackSpeed, ref wasStaticColliding));
 			prevTrains.Clear();
-			float nextTrainTrackSpeed;
-			float num3 = GetTotalPushingForces(val, forwardVector, ref prevTrains, out nextTrainTrackSpeed);
+			float num3 = GetTotalPushingForces(val, forwardVector, ref prevTrains, out var nextTrainTrackSpeed);
 			if (!front)
 			{
 				num3 *= -1f;

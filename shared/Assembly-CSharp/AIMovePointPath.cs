@@ -15,11 +15,11 @@ public class AIMovePointPath : MonoBehaviour
 		Backwards
 	}
 
-	public Color DebugPathColor = Color.green;
+	public Color DebugPathColor;
 
 	public Mode LoopMode;
 
-	public List<AIMovePoint> Points = new List<AIMovePoint>();
+	public List<AIMovePoint> Points;
 
 	public void Clear()
 	{
@@ -145,5 +145,14 @@ public class AIMovePointPath : MonoBehaviour
 	{
 		Points = new List<AIMovePoint>();
 		Points.AddRange(((Component)this).GetComponentsInChildren<AIMovePoint>());
+	}
+
+	public AIMovePointPath()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		DebugPathColor = Color.green;
+		Points = new List<AIMovePoint>();
+		((MonoBehaviour)this)._002Ector();
 	}
 }

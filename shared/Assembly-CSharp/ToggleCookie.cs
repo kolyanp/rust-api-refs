@@ -14,8 +14,7 @@ public class ToggleCookie : MonoBehaviour
 		RustButton val = default(RustButton);
 		if (((Component)this).TryGetComponent<RustButton>(ref val))
 		{
-			bool result;
-			bool flag = (bool.TryParse(PlayerPrefs.GetString("ToggleCookie_" + ((Object)this).name), out result) ? result : val.Value);
+			bool flag = (bool.TryParse(PlayerPrefs.GetString("ToggleCookie_" + ((Object)this).name), out var result) ? result : val.Value);
 			val.Toggle(flag, true, true);
 			val.OnPressed.AddListener(new UnityAction(OnPressed));
 			val.OnReleased.AddListener(new UnityAction(OnReleased));

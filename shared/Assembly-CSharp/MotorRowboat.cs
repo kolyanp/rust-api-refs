@@ -439,7 +439,7 @@ public class MotorRowboat : BaseBoat
 	{
 		bool num = fuelStoragePrefab.isValid && !fuelSystem.HasValidInstance(base.isServer);
 		bool flag = storageUnitPrefab.isValid && !storageUnitInstance.IsValid(base.isServer);
-		if (num || flag)
+		if (num | flag)
 		{
 			Debug.Log((object)"Destroying invalid boat ");
 			Invoke(ActualDeath, 1f);
@@ -696,7 +696,14 @@ public class MotorRowboat : BaseBoat
 			if (list.Count > 0)
 			{
 				Vector3 pos = ((Component)player).transform.position;
-				list.Sort((Vector3 a, Vector3 b) => Vector3.Distance(a, pos).CompareTo(Vector3.Distance(b, pos)));
+				list.Sort(delegate(Vector3 a, Vector3 b)
+				{
+					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+					//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+					return Vector3.Distance(a, pos).CompareTo(Vector3.Distance(b, pos));
+				});
 				res = list[0];
 				Pool.FreeUnmanaged<Vector3>(ref list);
 				return true;

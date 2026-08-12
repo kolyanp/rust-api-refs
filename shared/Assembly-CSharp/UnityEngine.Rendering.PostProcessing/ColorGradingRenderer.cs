@@ -39,7 +39,7 @@ internal sealed class ColorGradingRenderer : PostProcessEffectRenderer<ColorGrad
 		{
 			RenderExternalPipeline3D(context);
 		}
-		else if (value == GradingMode.HighDefinitionRange && flag)
+		else if ((value == GradingMode.HighDefinitionRange) & flag)
 		{
 			RenderHDRPipeline3D(context);
 		}

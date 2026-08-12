@@ -10,7 +10,7 @@ public class State_DeadlyAttack : State_Attack
 
 	public SoundDefinition impactSound;
 
-	private static readonly Vector3 force = new Vector3(15f, 3f, 15f);
+	private static readonly Vector3 force;
 
 	protected override void DoDamage()
 	{
@@ -53,5 +53,12 @@ public class State_DeadlyAttack : State_Attack
 			Vector3 val = ((Vector3.Dot(((Component)Owner).transform.right, Vector3Ex.NormalizeXZ(((Component)player).transform.position - ((Component)Owner).transform.position)) > 0f) ? ((Component)Owner).transform.right : (-((Component)Owner).transform.right));
 			player.DoPush(((Component)Owner).transform.forward * force.z + val * force.x + Vector3.up * force.y);
 		}
+	}
+
+	static State_DeadlyAttack()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		force = new Vector3(15f, 3f, 15f);
 	}
 }

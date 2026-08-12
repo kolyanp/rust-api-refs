@@ -11,9 +11,9 @@ public class SpawnDistribution
 
 	private WorldSpaceGrid<int> grid;
 
-	private Dictionary<uint, int> dict = new Dictionary<uint, int>();
+	private Dictionary<uint, int> dict;
 
-	private ByteQuadtree quadtree = new ByteQuadtree();
+	private ByteQuadtree quadtree;
 
 	private Vector3 origin;
 
@@ -29,6 +29,9 @@ public class SpawnDistribution
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		dict = new Dictionary<uint, int>();
+		quadtree = new ByteQuadtree();
+		base._002Ector();
 		Handler = handler;
 		quadtree.UpdateValues(baseValues);
 		this.origin = origin;

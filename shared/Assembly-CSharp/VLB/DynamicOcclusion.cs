@@ -4,9 +4,9 @@ using UnityEngine;
 namespace VLB;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(VolumetricLightBeam))]
-[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
 [ExecuteInEditMode]
+[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
+[RequireComponent(typeof(VolumetricLightBeam))]
 public class DynamicOcclusion : MonoBehaviour
 {
 	private enum Direction
@@ -17,25 +17,25 @@ public class DynamicOcclusion : MonoBehaviour
 		Left
 	}
 
-	public LayerMask layerMask = LayerMask.op_Implicit(-1);
+	public LayerMask layerMask;
 
 	public float minOccluderArea;
 
-	public int waitFrameCount = 3;
+	public int waitFrameCount;
 
-	public float minSurfaceRatio = 0.5f;
+	public float minSurfaceRatio;
 
-	public float maxSurfaceDot = 0.25f;
+	public float maxSurfaceDot;
 
 	public PlaneAlignment planeAlignment;
 
-	public float planeOffset = 0.1f;
+	public float planeOffset;
 
 	private VolumetricLightBeam m_Master;
 
 	private int m_FrameCountToWait;
 
-	private float m_RangeMultiplier = 1f;
+	private float m_RangeMultiplier;
 
 	private uint m_PrevNonSubHitDirectionId;
 
@@ -251,5 +251,18 @@ public class DynamicOcclusion : MonoBehaviour
 	private void SetClippingPlaneOff()
 	{
 		m_Master.SetClippingPlaneOff();
+	}
+
+	public DynamicOcclusion()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		layerMask = LayerMask.op_Implicit(-1);
+		waitFrameCount = 3;
+		minSurfaceRatio = 0.5f;
+		maxSurfaceDot = 0.25f;
+		planeOffset = 0.1f;
+		m_RangeMultiplier = 1f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

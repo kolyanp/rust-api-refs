@@ -6,15 +6,15 @@ public class MissionObjective_HurtEntityType : MissionObjective
 {
 	public BaseEntityRef[] targetEntities;
 
-	public LayerMask targetLayerMask = LayerMask.op_Implicit(-1);
+	public LayerMask targetLayerMask;
 
-	public float targetDamage = 1f;
+	public float targetDamage;
 
-	public bool shouldUpdateMissionLocation = true;
+	public bool shouldUpdateMissionLocation;
 
 	private bool isInitalized;
 
-	private readonly HashSet<uint> targetPrefabIDs = new HashSet<uint>();
+	private readonly HashSet<uint> targetPrefabIDs;
 
 	private void EnsureInitialized()
 	{
@@ -80,5 +80,16 @@ public class MissionObjective_HurtEntityType : MissionObjective
 			}
 			playerFor.MissionsDirty(saveImmediately: true);
 		}
+	}
+
+	public MissionObjective_HurtEntityType()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		targetLayerMask = LayerMask.op_Implicit(-1);
+		targetDamage = 1f;
+		shouldUpdateMissionLocation = true;
+		targetPrefabIDs = new HashSet<uint>();
+		base._002Ector();
 	}
 }

@@ -51,8 +51,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		public List<GameObjectRecursiveData> Children = new List<GameObjectRecursiveData>();
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
 	public static void dumpAnimators(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -373,7 +373,12 @@ public class DiagnosticsConSys : ConsoleSystem
 				item.Count(),
 				item.Count((Rigidbody x) => !x.IsSleeping()),
 				item.Count((Rigidbody x) => x.isKinematic),
-				item.Count((Rigidbody x) => (int)x.collisionDetectionMode > 0)
+				item.Count(delegate(Rigidbody x)
+				{
+					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0007: Invalid comparison between Unknown and I4
+					return (int)x.collisionDetectionMode > 0;
+				})
 			});
 			stringBuilder.AppendLine();
 			foreach (Rigidbody item2 in item)
@@ -834,8 +839,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		args.ReplyWith("Dumped system information to: " + targetFolder + "System.Info.txt");
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
 	[ServerVar(Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
 	public static void dumppreprocess(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

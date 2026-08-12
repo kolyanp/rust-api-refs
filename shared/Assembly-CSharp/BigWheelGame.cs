@@ -206,7 +206,7 @@ public class BigWheelGame : SpinnerWheel
 					flag2 = true;
 				}
 			}
-			if (flag || flag2)
+			if (flag | flag2)
 			{
 				terminal.ClientRPC(RpcTarget.NetworkGroup("WinOrLoseSound"), flag);
 			}

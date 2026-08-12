@@ -8,11 +8,11 @@ namespace UnityEngine;
 
 public static class CoroutineEx
 {
-	public static WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+	public static WaitForEndOfFrame waitForEndOfFrame;
 
-	public static WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+	public static WaitForFixedUpdate waitForFixedUpdate;
 
-	private static Dictionary<float, WaitForSeconds> waitForSecondsBuffer = new Dictionary<float, WaitForSeconds>();
+	private static Dictionary<float, WaitForSeconds> waitForSecondsBuffer;
 
 	public static WaitForSeconds waitForSeconds(float seconds)
 	{
@@ -67,5 +67,16 @@ public static class CoroutineEx
 			yield return coroutine;
 			tcs.SetResult(null);
 		}
+	}
+
+	static CoroutineEx()
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Expected O, but got Unknown
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		waitForEndOfFrame = new WaitForEndOfFrame();
+		waitForFixedUpdate = new WaitForFixedUpdate();
+		waitForSecondsBuffer = new Dictionary<float, WaitForSeconds>();
 	}
 }

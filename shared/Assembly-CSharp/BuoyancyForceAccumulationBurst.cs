@@ -41,9 +41,9 @@ public static class BuoyancyForceAccumulationBurst
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void Compute_000057DC_0024PostfixBurstDelegate(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results);
+	internal delegate void Compute_000057DD_0024PostfixBurstDelegate(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results);
 
-	internal static class Compute_000057DC_0024BurstDirectCall
+	internal static class Compute_000057DD_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -54,7 +54,7 @@ public static class BuoyancyForceAccumulationBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<Compute_000057DC_0024PostfixBurstDelegate>((Compute_000057DC_0024PostfixBurstDelegate)Compute).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<Compute_000057DD_0024PostfixBurstDelegate>((Compute_000057DD_0024PostfixBurstDelegate)Compute).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -81,11 +81,11 @@ public static class BuoyancyForceAccumulationBurst
 		}
 	}
 
+	[MonoPInvokeCallback(typeof(Compute_000057DD_0024PostfixBurstDelegate))]
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(Compute_000057DC_0024PostfixBurstDelegate))]
 	public static void Compute(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results)
 	{
-		Compute_000057DC_0024BurstDirectCall.Invoke(in instances, in allPositions3D, in pointShoreDistance, in pointWaterInfo, in pointSize, in pointBuoyancyForce, in pointRandomOffset, in pointWaveFrequency, in pointWaveScale, in pointFlowDirection, time, ref results);
+		Compute_000057DD_0024BurstDirectCall.Invoke(in instances, in allPositions3D, in pointShoreDistance, in pointWaterInfo, in pointSize, in pointBuoyancyForce, in pointRandomOffset, in pointWaveFrequency, in pointWaveScale, in pointFlowDirection, time, ref results);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

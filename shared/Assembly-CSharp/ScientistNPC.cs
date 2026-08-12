@@ -15,15 +15,15 @@ public class ScientistNPC : HumanNPC, IAIMounted
 
 	public GameObjectRef[] DeathEffects;
 
-	public string deathStatName = "kill_scientist";
+	public string deathStatName;
 
-	public static readonly Phrase ScientistName = new Phrase("npc_scientist", "Scientist");
+	public static readonly Phrase ScientistName;
 
-	public Vector2 IdleChatterRepeatRange = new Vector2(10f, 15f);
+	public Vector2 IdleChatterRepeatRange;
 
 	public RadioChatterType radioChatterType;
 
-	public float lastAlertedTime = -100f;
+	public float lastAlertedTime;
 
 	private Action _playRadioChatter;
 
@@ -176,5 +176,22 @@ public class ScientistNPC : HumanNPC, IAIMounted
 	public bool IsMounted()
 	{
 		return base.isMounted;
+	}
+
+	public ScientistNPC()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		deathStatName = "kill_scientist";
+		IdleChatterRepeatRange = new Vector2(10f, 15f);
+		lastAlertedTime = -100f;
+		base._002Ector();
+	}
+
+	static ScientistNPC()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		ScientistName = new Phrase("npc_scientist", "Scientist");
 	}
 }

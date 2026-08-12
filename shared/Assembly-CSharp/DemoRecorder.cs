@@ -18,5 +18,12 @@ public class DemoRecorder : SingletonComponent<DemoRecorder>
 
 	private bool autoFill;
 
-	public static readonly Phrase overwritePhrase = new Phrase("demo.overwrite", "You are about to overwrite a demo with the same name as {0} - proceed?");
+	public static readonly Phrase overwritePhrase;
+
+	static DemoRecorder()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		overwritePhrase = new Phrase("demo.overwrite", "You are about to overwrite a demo with the same name as {0} - proceed?");
+	}
 }

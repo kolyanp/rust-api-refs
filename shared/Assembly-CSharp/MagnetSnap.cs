@@ -10,6 +10,7 @@ public class MagnetSnap
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		this.snapLocation = snapLocation;
 		prevSnapLocation = snapLocation.position;
 	}

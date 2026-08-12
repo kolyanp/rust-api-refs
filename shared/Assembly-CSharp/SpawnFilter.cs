@@ -5,13 +5,13 @@ using UnityEngine;
 public class SpawnFilter
 {
 	[InspectorFlags]
-	public Enum SplatType = (Enum)(-1);
+	public Enum SplatType;
 
 	[InspectorFlags]
-	public Enum BiomeType = (Enum)(-1);
+	public Enum BiomeType;
 
 	[InspectorFlags]
-	public Enum TopologyAny = (Enum)(-1);
+	public Enum TopologyAny;
 
 	[InspectorFlags]
 	public Enum TopologyAll;
@@ -109,5 +109,16 @@ public class SpawnFilter
 			break;
 		}
 		return 1f;
+	}
+
+	public SpawnFilter()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		SplatType = (Enum)(-1);
+		BiomeType = (Enum)(-1);
+		TopologyAny = (Enum)(-1);
+		base._002Ector();
 	}
 }

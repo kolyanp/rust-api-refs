@@ -46,11 +46,25 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 
 	public string ContentString => string.Empty;
 
-	public Vector2i TextureSize => new Vector2i(1024, 1024);
+	public Vector2i TextureSize
+	{
+		get
+		{
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			return new Vector2i(1024, 1024);
+		}
+	}
 
 	public int TextureCount => 1;
 
-	public NetworkableId NetworkID => net.ID;
+	public NetworkableId NetworkID
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return net.ID;
+		}
+	}
 
 	public FileStorage.Type FileType => FileStorage.Type.jpg;
 
@@ -144,8 +158,8 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void UpdatePoster(RPCMessage msg)
 	{

@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 public class CustomDoorManipulator : DoorManipulator
 {
-	public static Phrase pairAttemptPhrase = new Phrase("doorcontroller.unlock", "Door must be unlocked for pairing!");
+	public static Phrase pairAttemptPhrase;
 
 	private int inputOpenAmount;
 
@@ -126,8 +126,8 @@ public class CustomDoorManipulator : DoorManipulator
 		return null;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_DoPair(RPCMessage msg)
 	{
 		Door door = targetDoor;
@@ -181,7 +181,7 @@ public class CustomDoorManipulator : DoorManipulator
 		{
 			bool flag = IsPowered();
 			base.UpdateFromInput(inputAmount, inputSlot);
-			if (inputAmount == 0 && flag && inputOpenAmount == 0)
+			if (((inputAmount == 0) & flag) && inputOpenAmount == 0)
 			{
 				DoAction(DoorEffect.Close);
 			}
@@ -229,5 +229,12 @@ public class CustomDoorManipulator : DoorManipulator
 	{
 		base.Load(info);
 		targetDoor = entityRef.Get(base.isServer) as Door;
+	}
+
+	static CustomDoorManipulator()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		pairAttemptPhrase = new Phrase("doorcontroller.unlock", "Door must be unlocked for pairing!");
 	}
 }

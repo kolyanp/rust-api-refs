@@ -494,7 +494,12 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 
 	public override void ApplyChange(MetabolismAttribute.Type type, float amount, float time)
 	{
-		FindAttribute(type)?.Add(amount);
+		MetabolismAttribute metabolismAttribute = FindAttribute(type);
+		if (metabolismAttribute != null)
+		{
+			metabolismAttribute.Add(amount);
+			isDirty = true;
+		}
 	}
 
 	public bool CanConsume()
@@ -681,6 +686,7 @@ public class PlayerMetabolism : BaseMetabolism<BasePlayer>
 		{
 			float num = metabolismAttribute.value - amount;
 			metabolismAttribute.Add(0f - num);
+			isDirty = true;
 		}
 	}
 

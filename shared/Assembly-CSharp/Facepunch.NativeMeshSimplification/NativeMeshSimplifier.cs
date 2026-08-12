@@ -129,6 +129,7 @@ public class NativeMeshSimplifier : IDisposable
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		_vertices = new NativeList<Vertex>(AllocatorHandle.op_Implicit((Allocator)4));
 		_triangles = new NativeList<Triangle>(AllocatorHandle.op_Implicit((Allocator)4));
 		_refs = new NativeList<Ref>(AllocatorHandle.op_Implicit((Allocator)4));

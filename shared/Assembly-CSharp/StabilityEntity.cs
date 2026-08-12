@@ -384,8 +384,7 @@ public class StabilityEntity : DecayEntity
 				flag = true;
 			}
 		}
-		StabilityEntity supportEntity;
-		float num3 = SupportValue(out supportEntity);
+		float num3 = SupportValue(out var supportEntity);
 		if (Mathf.Abs(cachedStability - num3) > Stability.accuracy)
 		{
 			if (Stability.log_stability_updates)

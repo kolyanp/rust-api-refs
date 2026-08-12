@@ -207,7 +207,7 @@ public static class RaidWindow
 		using (TimeWarning.New("RaidWindow.BlocksDamage"))
 		{
 			bool flag = victim is DecayEntity && IsFrameInsert(victim);
-			if (!(victim is BuildingBlock || victim is Door || flag))
+			if (!((victim is BuildingBlock || victim is Door) | flag))
 			{
 				return false;
 			}
@@ -221,7 +221,7 @@ public static class RaidWindow
 			}
 			BuildingBlock buildingBlock = victim as BuildingBlock;
 			bool flag2 = (Object)(object)buildingBlock != (Object)null && buildingBlock.grade == BuildingGrade.Enum.Twigs;
-			if (Softcore.raidwindow_allow_twig && flag2)
+			if (Softcore.raidwindow_allow_twig & flag2)
 			{
 				return false;
 			}

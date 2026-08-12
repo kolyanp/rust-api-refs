@@ -564,7 +564,7 @@ public class SimpleShark : BaseCombatEntity
 		{
 			bool flag = Vector3.Distance(target.eyes.position, ((Component)this).transform.position) > aggroRange * 2f;
 			bool flag2 = Time.realtimeSinceStartup > lastSeenTargetTime + 4f;
-			if (!ValidTarget(target) || flag || flag2)
+			if (!ValidTarget(target) | flag | flag2)
 			{
 				ClearTarget();
 			}

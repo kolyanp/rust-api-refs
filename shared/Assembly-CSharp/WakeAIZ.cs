@@ -6,11 +6,11 @@ using UnityEngine;
 public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 {
 	[Header("Base")]
-	public float sleepDelaySeconds = 30f;
+	public float sleepDelaySeconds;
 
 	public bool isBox;
 
-	public Vector3 size = Vector3.one * 30f;
+	public Vector3 size;
 
 	public List<AIInformationZone> zones;
 
@@ -172,7 +172,7 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = BaseEntity.Query.Server.AnyPlayersInSphereFast(spherePos, radius, out foundEmptyCoarseGrid, gridIgnoreFilter, gridQueryFilter);
-		if (!hadContents && flag)
+		if (!hadContents & flag)
 		{
 			if (sleepAI == null)
 			{
@@ -260,5 +260,15 @@ public class WakeAIZ : EntityComponent<BaseEntity>, IServerComponent
 	private void SleepAI()
 	{
 		SetZonesSleeping(flag: true);
+	}
+
+	public WakeAIZ()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		sleepDelaySeconds = 30f;
+		size = Vector3.one * 30f;
+		base._002Ector();
 	}
 }

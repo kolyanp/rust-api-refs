@@ -10,10 +10,10 @@ namespace Rust.Ai.Gen2;
 public class State_TryAmbushUnderwater : FSMStateBase
 {
 	[SerializeField]
-	private Vector2 distanceRange = new Vector2(10f, 20f);
+	private Vector2 distanceRange;
 
 	[SerializeField]
-	private float maxDistFromDivingPoint = 50f;
+	private float maxDistFromDivingPoint;
 
 	private const float desiredDepth = 3f;
 
@@ -118,5 +118,14 @@ public class State_TryAmbushUnderwater : FSMStateBase
 		{
 			((IDisposable)val)?.Dispose();
 		}
+	}
+
+	public State_TryAmbushUnderwater()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		distanceRange = new Vector2(10f, 20f);
+		maxDistFromDivingPoint = 50f;
+		base._002Ector();
 	}
 }

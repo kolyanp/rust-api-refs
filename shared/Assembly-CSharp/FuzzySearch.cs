@@ -81,11 +81,11 @@ public static class FuzzySearch
 	{
 		bool flag = string.IsNullOrEmpty(source);
 		bool flag2 = string.IsNullOrEmpty(target);
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			return true;
 		}
-		if (flag || flag2)
+		if (flag | flag2)
 		{
 			return false;
 		}

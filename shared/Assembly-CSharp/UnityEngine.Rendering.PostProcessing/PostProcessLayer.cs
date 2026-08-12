@@ -7,11 +7,11 @@ using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
-[ExecuteAlways]
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Rendering/Post-process Layer", 1000)]
-[DisallowMultipleComponent]
 [ImageEffectAllowedInSceneView]
+[DisallowMultipleComponent]
+[ExecuteAlways]
 public class PostProcessLayer : MonoBehaviour
 {
 	private enum ScalingMode
@@ -41,7 +41,7 @@ public class PostProcessLayer : MonoBehaviour
 
 	public LayerMask volumeLayer;
 
-	public bool stopNaNPropagation = true;
+	public bool stopNaNPropagation;
 
 	public bool finalBlitToCameraTarget;
 
@@ -59,11 +59,11 @@ public class PostProcessLayer : MonoBehaviour
 
 	public PostProcessDebugLayer debugLayer;
 
-	public RenderTextureFormat intermediateFormat = (RenderTextureFormat)9;
+	public RenderTextureFormat intermediateFormat;
 
-	private RenderTextureFormat prevIntermediateFormat = (RenderTextureFormat)9;
+	private RenderTextureFormat prevIntermediateFormat;
 
-	private bool supportsIntermediateFormat = true;
+	private bool supportsIntermediateFormat;
 
 	[SerializeField]
 	private PostProcessResources m_Resources;
@@ -105,7 +105,7 @@ public class PostProcessLayer : MonoBehaviour
 
 	private UnityEngine.Rendering.PostProcessing.LogHistogram m_LogHistogram;
 
-	private bool m_SettingsUpdateNeeded = true;
+	private bool m_SettingsUpdateNeeded;
 
 	private bool m_IsRenderingInSceneView;
 
@@ -113,9 +113,9 @@ public class PostProcessLayer : MonoBehaviour
 
 	private bool m_NaNKilled;
 
-	private readonly List<PostProcessEffectRenderer> m_ActiveEffects = new List<PostProcessEffectRenderer>(32);
+	private readonly List<PostProcessEffectRenderer> m_ActiveEffects;
 
-	private readonly List<RenderTargetIdentifier> m_Targets = new List<RenderTargetIdentifier>(8);
+	private readonly List<RenderTargetIdentifier> m_Targets;
 
 	public Dictionary<PostProcessEvent, List<SerializedBundleRef>> sortedBundles { get; private set; }
 
@@ -455,7 +455,7 @@ public class PostProcessLayer : MonoBehaviour
 		UnityEngine.Rendering.PostProcessing.AmbientOcclusionRenderer ambientOcclusionRenderer = bundle.CastRenderer<UnityEngine.Rendering.PostProcessing.AmbientOcclusionRenderer>();
 		bool flag = ambientOcclusion.IsEnabledAndSupported(currentContext);
 		bool flag2 = ambientOcclusionRenderer.IsAmbientOnly(currentContext);
-		bool flag3 = flag && flag2;
+		bool flag3 = flag & flag2;
 		bool flag4 = flag && !flag2;
 		PostProcessBundle bundle2 = GetBundle<ScreenSpaceReflections>();
 		PostProcessEffectSettings settings = bundle2.settings;
@@ -531,7 +531,7 @@ public class PostProcessLayer : MonoBehaviour
 		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
 		int num = -1;
 		bool flag = !m_NaNKilled && stopNaNPropagation && RuntimeUtilities.isFloatingPointFormat(sourceFormat);
-		if (RequiresInitialBlit(m_Camera, context) || flag)
+		if (RequiresInitialBlit(m_Camera, context) | flag)
 		{
 			num = m_TargetPool.Get();
 			context.GetScreenSpaceTemporaryRT(m_LegacyCmdBuffer, num, 0, sourceFormat, (RenderTextureReadWrite)2, (FilterMode)1);
@@ -699,7 +699,7 @@ public class PostProcessLayer : MonoBehaviour
 			bool flag = item.bundle.settings.IsEnabledAndSupported(context);
 			if (context.isSceneView)
 			{
-				if (item.bundle.attribute.allowInSceneView && flag)
+				if (item.bundle.attribute.allowInSceneView & flag)
 				{
 					return true;
 				}
@@ -1206,6 +1206,20 @@ public class PostProcessLayer : MonoBehaviour
 	{
 		bool num = GetBundle<AutoExposure>().settings.IsEnabledAndSupported(context);
 		bool flag = debugLayer.lightMeter.IsRequestedAndSupported(context);
-		return num || flag;
+		return num | flag;
+	}
+
+	public PostProcessLayer()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		stopNaNPropagation = true;
+		intermediateFormat = (RenderTextureFormat)9;
+		prevIntermediateFormat = (RenderTextureFormat)9;
+		supportsIntermediateFormat = true;
+		m_SettingsUpdateNeeded = true;
+		m_ActiveEffects = new List<PostProcessEffectRenderer>(32);
+		m_Targets = new List<RenderTargetIdentifier>(8);
+		((MonoBehaviour)this)._002Ector();
 	}
 }

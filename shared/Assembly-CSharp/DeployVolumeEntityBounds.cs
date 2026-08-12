@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DeployVolumeEntityBounds : DeployVolume
 {
-	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
+	public Bounds bounds;
 
 	protected override bool Check(Vector3 position, Quaternion rotation, int mask = -1)
 	{
@@ -44,5 +44,15 @@ public class DeployVolumeEntityBounds : DeployVolume
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		bounds = rootObj.GetComponent<BaseEntity>().bounds;
+	}
+
+	public DeployVolumeEntityBounds()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		bounds = new Bounds(Vector3.zero, Vector3.one);
+		base._002Ector();
 	}
 }

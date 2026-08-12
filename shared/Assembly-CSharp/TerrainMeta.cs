@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Facepunch;
 using Oxide.Core;
 using Unity.Burst;
@@ -68,7 +69,22 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 	[HideInInspector]
 	public PaintMode currentPaintMode;
 
-	public static readonly SharedStatic<BurstData> sharedBurstData = SharedStatic<BurstData>.GetOrCreateUnsafe(0u, 5411825963348367585L, -2546176521858529784L);
+	public static readonly SharedStatic<BurstData> sharedBurstData;
+
+	[CompilerGenerated]
+	private static Vector3 _003CPosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private static Vector3 _003CSize_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private static Vector3 _003COneOverSize_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private static Vector3 _003CHighestPoint_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private static Vector3 _003CLowestPoint_003Ek__BackingField;
 
 	public static TerrainConfig Config { get; private set; }
 
@@ -78,19 +94,113 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 
 	public static TerrainData TerrainData { get; private set; }
 
-	public static Vector3 Position { get; private set; }
+	public static Vector3 Position
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003CPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003CPosition_003Ek__BackingField = value;
+		}
+	}
 
-	public static Vector3 Size { get; private set; }
+	public static Vector3 Size
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003CSize_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003CSize_003Ek__BackingField = value;
+		}
+	}
 
-	public static Vector3 Center => Position + Size * 0.5f;
+	public static Vector3 Center
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+			return Position + Size * 0.5f;
+		}
+	}
 
-	public static Vector3 Max => Position + Size;
+	public static Vector3 Max
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			return Position + Size;
+		}
+	}
 
-	public static Vector3 OneOverSize { get; private set; }
+	public static Vector3 OneOverSize
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003COneOverSize_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003COneOverSize_003Ek__BackingField = value;
+		}
+	}
 
-	public static Vector3 HighestPoint { get; set; }
+	public static Vector3 HighestPoint
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003CHighestPoint_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003CHighestPoint_003Ek__BackingField = value;
+		}
+	}
 
-	public static Vector3 LowestPoint { get; set; }
+	public static Vector3 LowestPoint
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLowestPoint_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			_003CLowestPoint_003Ek__BackingField = value;
+		}
+	}
 
 	public static float LootAxisAngle { get; private set; }
 
@@ -134,7 +244,15 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 
 	public static TerrainHoleRenderer HoleRenderer { get; private set; }
 
-	public static Vector3 MarginSize => Size * 3f;
+	public static Vector3 MarginSize
+	{
+		get
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			return Size * 3f;
+		}
+	}
 
 	public static void SetReflectionProbeUsage(ReflectionProbeUsage value)
 	{
@@ -763,5 +881,12 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 				material.DisableKeyword("_TERRAIN_VERTEX_NORMALS");
 			}
 		}
+	}
+
+	static TerrainMeta()
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		sharedBurstData = SharedStatic<BurstData>.GetOrCreateUnsafe(0u, 5411825963348367585L, -2546176521858529784L);
 	}
 }

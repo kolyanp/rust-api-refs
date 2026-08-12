@@ -28,11 +28,11 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 
 	public GameObjectRef[] doubleBoxPrefabs;
 
-	public int boxesAmount = 12;
+	public int boxesAmount;
 
 	public Transform boxesParent;
 
-	public Vector3 boxSpacing = new Vector3(0.33f, 0.3f, 0.3f);
+	public Vector3 boxSpacing;
 
 	public ToolSetting[] toolSettings;
 
@@ -85,5 +85,14 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 	{
 		base.Load(info);
 		_ = info.msg.buildingPrivilegeRetro;
+	}
+
+	public BuildingPrivilegeRetro()
+	{
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		boxesAmount = 12;
+		boxSpacing = new Vector3(0.33f, 0.3f, 0.3f);
+		base._002Ector();
 	}
 }

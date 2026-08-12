@@ -771,8 +771,7 @@ public class BackgroundTileBuilder : IDisposable
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.Cancelled);
 			}
-			int dataSize;
-			IntPtr intPtr5 = RecastWrapper.CreateNavData(in buildRequest.buildParams, buildRequest.tx, buildRequest.ty, intPtr3, intPtr4, out dataSize);
+			IntPtr intPtr5 = RecastWrapper.CreateNavData(in buildRequest.buildParams, buildRequest.tx, buildRequest.ty, intPtr3, intPtr4, out var dataSize);
 			if (intPtr5 == IntPtr.Zero)
 			{
 				return new TileBuildResult(in buildRequest, TileBuildResult.ResultCode.CreateAndAddNavDataError);
@@ -821,10 +820,9 @@ public class BackgroundTileBuilder : IDisposable
 		while ((MAX_BUILD_QUEUE <= 0 || backgroundWorkQueue.Count < MAX_BUILD_QUEUE) && collectMainThreadWorkQueue.TryDequeue(out collectRequest))
 		{
 			(RustNavmesh, int, int) key = (collectRequest.navmesh, collectRequest.tx, collectRequest.ty);
-			TileCancellation value;
-			bool flag = tileCancellations.TryGetValue(key, out value) && value == collectRequest.cancellation;
+			bool flag = tileCancellations.TryGetValue(key, out var value) && value == collectRequest.cancellation;
 			bool isCancellationRequested = collectRequest.cancellation.IsCancellationRequested;
-			if (!flag || isCancellationRequested)
+			if (!flag | isCancellationRequested)
 			{
 				if (flag)
 				{
@@ -846,15 +844,14 @@ public class BackgroundTileBuilder : IDisposable
 	private bool AddSingleBuiltTileOnMainThread(ref TileBuildResult buildResult)
 	{
 		(RustNavmesh, int, int) key = (buildResult.navmesh, buildResult.tx, buildResult.ty);
-		TileCancellation value;
-		bool num = tileCancellations.TryGetValue(key, out value) && value == buildResult.cancellation;
+		bool num = tileCancellations.TryGetValue(key, out var value) && value == buildResult.cancellation;
 		bool isCancellationRequested = buildResult.cancellation.IsCancellationRequested;
 		buildResult.cancellation = null;
 		if (num)
 		{
 			tileCancellations.Remove(key);
 		}
-		if (!num || isCancellationRequested || buildResult.resultCode != TileBuildResult.ResultCode.Success)
+		if ((!num | isCancellationRequested) || buildResult.resultCode != TileBuildResult.ResultCode.Success)
 		{
 			if (buildResult.tileBytes != IntPtr.Zero)
 			{

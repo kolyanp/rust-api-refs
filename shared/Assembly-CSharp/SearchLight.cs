@@ -22,7 +22,7 @@ public class SearchLight : IOEntity
 
 	public SoundPlayer turnLoop;
 
-	public bool needsBuildingPrivilegeToUse = true;
+	public bool needsBuildingPrivilegeToUse;
 
 	[SerializeField]
 	private GameObject lightParent;
@@ -51,7 +51,7 @@ public class SearchLight : IOEntity
 	[SerializeField]
 	private AnimationCurve lightLerpCurve;
 
-	public Vector3 aimDir = Vector3.zero;
+	public Vector3 aimDir;
 
 	[ClientVar(ClientAdmin = true)]
 	public static bool debugVolumetrics;
@@ -242,5 +242,14 @@ public class SearchLight : IOEntity
 		{
 			aimDir = info.msg.autoturret.aimDir;
 		}
+	}
+
+	public SearchLight()
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		needsBuildingPrivilegeToUse = true;
+		aimDir = Vector3.zero;
+		base._002Ector();
 	}
 }

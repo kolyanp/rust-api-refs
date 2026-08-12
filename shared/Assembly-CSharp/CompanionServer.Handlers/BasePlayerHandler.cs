@@ -19,8 +19,7 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 		{
 			return validationResult;
 		}
-		bool locked;
-		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(base.Request.playerId, out locked);
+		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(base.Request.playerId, out var locked);
 		if (base.Request.playerId == 0L || base.Request.playerToken != orGenerateAppToken)
 		{
 			return ValidationResult.NotFound;

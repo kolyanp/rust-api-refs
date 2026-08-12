@@ -10,11 +10,11 @@ using UnityEngine.Assertions;
 
 public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 {
-	public static readonly Phrase OpenLootTitle = new Phrase("open_loot", "Open");
+	public static readonly Phrase OpenLootTitle;
 
-	public static readonly Phrase PickUpTitle = new Phrase("pick_up", "Pick Up");
+	public static readonly Phrase PickUpTitle;
 
-	public static readonly Phrase HoldToPickupPhrase = new Phrase("hold_use_to_pickup", "Hold [USE] to pickup");
+	public static readonly Phrase HoldToPickupPhrase;
 
 	private float pickupStartTime;
 
@@ -24,7 +24,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 
 	protected float caloriesPerSecond = 1f;
 
-	private static readonly Phrase NotYourBackPackError = new Phrase("error.notyourbackpack", "Cannot move item: Not your backpack!");
+	private static readonly Phrase NotYourBackPackError;
 
 	[Header("WorldItem")]
 	public bool allowPickup = true;
@@ -289,8 +289,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (item == null || item.contents == null)
@@ -413,5 +413,21 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 			}
 		}
 		return _name;
+	}
+
+	static WorldItem()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		OpenLootTitle = new Phrase("open_loot", "Open");
+		PickUpTitle = new Phrase("pick_up", "Pick Up");
+		HoldToPickupPhrase = new Phrase("hold_use_to_pickup", "Hold [USE] to pickup");
+		NotYourBackPackError = new Phrase("error.notyourbackpack", "Cannot move item: Not your backpack!");
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -45,29 +46,69 @@ public class BaseCombatEntity : BaseEntity
 
 	public static class PickupErrors
 	{
-		public static readonly Phrase ItemMustBeEmpty = new Phrase("pickuperror_itemmustbeempty", "{0} must be empty");
+		public static readonly Phrase ItemMustBeEmpty;
 
-		public static readonly Phrase ItemInventoryMustBeEmpty = new Phrase("pickuperror_iteminventorymustbeempty", "{0} inventory must be empty");
+		public static readonly Phrase ItemInventoryMustBeEmpty;
 
-		public static readonly Phrase ItemIsBeingUsed = new Phrase("pickuperrors_itemisbeingused", "{0} is being used");
+		public static readonly Phrase ItemIsBeingUsed;
 
-		public static readonly Phrase ItemHasCloser = new Phrase("pickuperrors_itemhascloser", "{0} has closer");
+		public static readonly Phrase ItemHasCloser;
 
-		public static readonly Phrase ItemHasLock = new Phrase("pickuperrors_itemhaslock", "{0} has lock");
+		public static readonly Phrase ItemHasLock;
 
-		public static readonly Phrase ItemHasStorageAdaptor = new Phrase("pickuperrors_itemhasstorageadaptor", "{0} has storage adaptor");
+		public static readonly Phrase ItemHasStorageAdaptor;
 
-		public static readonly Phrase ItemHasStorageMonitor = new Phrase("pickuperrors_itemhasstoragemonitor", "{0} has storage monitor");
+		public static readonly Phrase ItemHasStorageMonitor;
 
-		public static readonly Phrase ItemHasDecoration = new Phrase("pickuperrors_itemhasdecoration", "{0} has decoration");
+		public static readonly Phrase ItemHasDecoration;
 
-		public static readonly Phrase ItemHasAttachment = new Phrase("pickuperrors_itemhasattachment", "{0} has attachment");
+		public static readonly Phrase ItemHasAttachment;
 
-		public static readonly Phrase ItemIsOnline = new Phrase("pickuperrors_itemisonline", "{0} is online");
+		public static readonly Phrase ItemIsOnline;
 
-		public static readonly Phrase ItemIsArmed = new Phrase("pickuperrors_itemisarmed", "{0} is armed");
+		public static readonly Phrase ItemIsArmed;
 
-		public static readonly Phrase ItemIsOccupied = new Phrase("pickuperror_itemisoccupied", "{0} is occupied");
+		public static readonly Phrase ItemIsOccupied;
+
+		static PickupErrors()
+		{
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0014: Expected O, but got Unknown
+			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0028: Expected O, but got Unknown
+			//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+			//IL_003c: Expected O, but got Unknown
+			//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0050: Expected O, but got Unknown
+			//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0064: Expected O, but got Unknown
+			//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0078: Expected O, but got Unknown
+			//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+			//IL_008c: Expected O, but got Unknown
+			//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00a0: Expected O, but got Unknown
+			//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00b4: Expected O, but got Unknown
+			//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00c8: Expected O, but got Unknown
+			//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00dc: Expected O, but got Unknown
+			//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f0: Expected O, but got Unknown
+			ItemMustBeEmpty = new Phrase("pickuperror_itemmustbeempty", "{0} must be empty");
+			ItemInventoryMustBeEmpty = new Phrase("pickuperror_iteminventorymustbeempty", "{0} inventory must be empty");
+			ItemIsBeingUsed = new Phrase("pickuperrors_itemisbeingused", "{0} is being used");
+			ItemHasCloser = new Phrase("pickuperrors_itemhascloser", "{0} has closer");
+			ItemHasLock = new Phrase("pickuperrors_itemhaslock", "{0} has lock");
+			ItemHasStorageAdaptor = new Phrase("pickuperrors_itemhasstorageadaptor", "{0} has storage adaptor");
+			ItemHasStorageMonitor = new Phrase("pickuperrors_itemhasstoragemonitor", "{0} has storage monitor");
+			ItemHasDecoration = new Phrase("pickuperrors_itemhasdecoration", "{0} has decoration");
+			ItemHasAttachment = new Phrase("pickuperrors_itemhasattachment", "{0} has attachment");
+			ItemIsOnline = new Phrase("pickuperrors_itemisonline", "{0} is online");
+			ItemIsArmed = new Phrase("pickuperrors_itemisarmed", "{0} is armed");
+			ItemIsOccupied = new Phrase("pickuperror_itemisoccupied", "{0} is occupied");
+		}
 	}
 
 	[Serializable]
@@ -136,8 +177,8 @@ public class BaseCombatEntity : BaseEntity
 		Horror
 	}
 
-	[Header("Deployable Corpse")]
 	[InspectorName("Spawn Corpse")]
+	[Header("Deployable Corpse")]
 	public bool spawnDeployableCorpseOnDeath;
 
 	[InspectorName("Corpse Prefab")]
@@ -150,9 +191,9 @@ public class BaseCombatEntity : BaseEntity
 
 	private const float MAX_HEALTH_REPAIR = 50f;
 
-	public static readonly Phrase RecentlyDamagedError = new Phrase("error_recentlydamaged", "Recently damaged, repairable in {0} seconds");
+	public static readonly Phrase RecentlyDamagedError;
 
-	public static readonly Phrase NotDamagedError = new Phrase("error_notdamaged", "Not damaged");
+	public static readonly Phrase NotDamagedError;
 
 	[NonSerialized]
 	public DamageType lastDamage;
@@ -169,6 +210,9 @@ public class BaseCombatEntity : BaseEntity
 	public DirectionProperties[] propDirection;
 
 	public float unHostileTime;
+
+	[CompilerGenerated]
+	private Vector3 _003CLastNoisePosition_003Ek__BackingField;
 
 	public float lastNoiseTime;
 
@@ -212,6 +256,9 @@ public class BaseCombatEntity : BaseEntity
 	[NonSerialized]
 	public float lastAttackedTime = float.NegativeInfinity;
 
+	[CompilerGenerated]
+	private Vector3 _003CLastAttackedDir_003Ek__BackingField;
+
 	[NonSerialized]
 	public float lastDealtDamageTime = float.NegativeInfinity;
 
@@ -221,7 +268,22 @@ public class BaseCombatEntity : BaseEntity
 
 	public ActionVolume LastNoiseVolume { get; private set; }
 
-	public Vector3 LastNoisePosition { get; private set; }
+	public Vector3 LastNoisePosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastNoisePosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastNoisePosition_003Ek__BackingField = value;
+		}
+	}
 
 	public float SecondsSinceAttacked
 	{
@@ -235,7 +297,22 @@ public class BaseCombatEntity : BaseEntity
 		}
 	}
 
-	public Vector3 LastAttackedDir { get; set; }
+	public Vector3 LastAttackedDir
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastAttackedDir_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastAttackedDir_003Ek__BackingField = value;
+		}
+	}
 
 	public float SecondsSinceDealtDamage => Time.time - lastDealtDamageTime;
 
@@ -458,10 +535,9 @@ public class BaseCombatEntity : BaseEntity
 	{
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		bool parentIsBoat;
-		bool flag = PlayerBoat.HasPermissionToPickup(player, this, out parentIsBoat);
-		bool flag2 = pickup.enabled && (!pickup.requireBuildingPrivilege || player.CanBuild() || flag) && (!pickup.requireHammer || player.IsHoldingEntity<Hammer>()) && (Object)(object)player != (Object)null && !player.IsInTutorial;
-		if (flag2 && !flag && parentIsBoat)
+		bool flag = PlayerBoat.HasPermissionToPickup(player, this, out var parentIsBoat);
+		bool flag2 = pickup.enabled && ((!pickup.requireBuildingPrivilege || player.CanBuild()) | flag) && (!pickup.requireHammer || player.IsHoldingEntity<Hammer>()) && (Object)(object)player != (Object)null && !player.IsInTutorial;
+		if ((flag2 && !flag) & parentIsBoat)
 		{
 			flag2 = false;
 		}
@@ -810,7 +886,7 @@ public class BaseCombatEntity : BaseEntity
 					bool num3 = this is BasePlayer basePlayer && (Object)(object)basePlayer.inventory != (Object)null && basePlayer.inventory.containerWear != null && basePlayer.inventory.containerWear.HasItem(PaintballColorLookup.instance.overallsItemDefinition);
 					bool flag = (Object)(object)info.InitiatorPlayer != (Object)null && (Object)(object)info.InitiatorPlayer.inventory != (Object)null && info.InitiatorPlayer.inventory.containerWear != null && info.InitiatorPlayer.inventory.containerWear.HasItem(PaintballColorLookup.instance.overallsItemDefinition);
 					bool flag2 = info.Initiator is AutoTurret;
-					num2 = ((!num3 || !(flag || flag2)) ? ConVar.Server.paintballstandarddamage : (30f * ConVar.Server.paintballoverallsdamage));
+					num2 = ((!num3 || !(flag | flag2)) ? ConVar.Server.paintballstandarddamage : (30f * ConVar.Server.paintballoverallsdamage));
 				}
 				else
 				{
@@ -957,7 +1033,7 @@ public class BaseCombatEntity : BaseEntity
 		{
 			for (int i = 0; i < base.Components.Count; i++)
 			{
-				if (!((Object)(object)base.Components[i] == (Object)null) && !base.Components[i].OnDied(info) && flag)
+				if (!((Object)(object)base.Components[i] == (Object)null) && (!base.Components[i].OnDied(info) & flag))
 				{
 					flag = false;
 				}
@@ -1377,5 +1453,15 @@ public class BaseCombatEntity : BaseEntity
 			}
 		}
 		base.OnAttacked(info);
+	}
+
+	static BaseCombatEntity()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		RecentlyDamagedError = new Phrase("error_recentlydamaged", "Recently damaged, repairable in {0} seconds");
+		NotDamagedError = new Phrase("error_notdamaged", "Not damaged");
 	}
 }

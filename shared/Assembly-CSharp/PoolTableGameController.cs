@@ -35,37 +35,37 @@ public class PoolTableGameController
 
 	public const int EightBallId = 8;
 
-	private static readonly Phrase PottedYou = new Phrase("pooltable.potted.you", "You potted a ball");
+	private static readonly Phrase PottedYou;
 
-	private static readonly Phrase PottedOpponent = new Phrase("pooltable.potted.opponent", "Opponent potted a ball");
+	private static readonly Phrase PottedOpponent;
 
-	private static readonly Phrase PottedCueYou = new Phrase("pooltable.potted.cue.you", "You potted the cue ball");
+	private static readonly Phrase PottedCueYou;
 
-	private static readonly Phrase PottedCueOpponent = new Phrase("pooltable.potted.cue.opponent", "Opponent potted the cue ball");
+	private static readonly Phrase PottedCueOpponent;
 
-	private static readonly Phrase PottedWrongYou = new Phrase("pooltable.potted.wrong.you", "You potted your opponent's ball");
+	private static readonly Phrase PottedWrongYou;
 
-	private static readonly Phrase PottedWrongOpponent = new Phrase("pooltable.potted.wrong.opponent", "Opponent potted your ball");
+	private static readonly Phrase PottedWrongOpponent;
 
-	private static readonly Phrase ScratchYou = new Phrase("pooltable.scratch.you", "Scratch! Turn passes");
+	private static readonly Phrase ScratchYou;
 
-	private static readonly Phrase ScratchOpponent = new Phrase("pooltable.scratch.opponent", "Opponent scratched - your turn");
+	private static readonly Phrase ScratchOpponent;
 
-	private static readonly Phrase WinYou = new Phrase("pooltable.win", "You win!");
+	private static readonly Phrase WinYou;
 
-	private static readonly Phrase LoseYou = new Phrase("pooltable.lose", "You lose");
+	private static readonly Phrase LoseYou;
 
-	private static readonly Phrase SoloWin = new Phrase("pooltable.solo.win", "{0} win!");
+	private static readonly Phrase SoloWin;
 
-	private static readonly Phrase YourTurn = new Phrase("pooltable.turn.you", "Your turn");
+	private static readonly Phrase YourTurn;
 
-	private static readonly Phrase YourTurnGroup = new Phrase("pooltable.turn.you.group", "Your turn ({0})");
+	private static readonly Phrase YourTurnGroup;
 
-	private static readonly Phrase OpponentTurn = new Phrase("pooltable.turn.opponent", "Opponent's turn");
+	private static readonly Phrase OpponentTurn;
 
-	private static readonly Phrase JoinedYou = new Phrase("pooltable.join.you", "You joined as {0}");
+	private static readonly Phrase JoinedYou;
 
-	private static readonly Phrase JoinedOther = new Phrase("pooltable.join.other", "{0} joined as {1}");
+	private static readonly Phrase JoinedOther;
 
 	public GameState State { get; private set; }
 
@@ -721,5 +721,57 @@ public class PoolTableGameController
 			text += $",{((List<int>)(object)pocketedThisShot)[i]}";
 		}
 		return text;
+	}
+
+	static PoolTableGameController()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Expected O, but got Unknown
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Expected O, but got Unknown
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Expected O, but got Unknown
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Expected O, but got Unknown
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Expected O, but got Unknown
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Expected O, but got Unknown
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Expected O, but got Unknown
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Expected O, but got Unknown
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Expected O, but got Unknown
+		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0118: Expected O, but got Unknown
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Expected O, but got Unknown
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Expected O, but got Unknown
+		PottedYou = new Phrase("pooltable.potted.you", "You potted a ball");
+		PottedOpponent = new Phrase("pooltable.potted.opponent", "Opponent potted a ball");
+		PottedCueYou = new Phrase("pooltable.potted.cue.you", "You potted the cue ball");
+		PottedCueOpponent = new Phrase("pooltable.potted.cue.opponent", "Opponent potted the cue ball");
+		PottedWrongYou = new Phrase("pooltable.potted.wrong.you", "You potted your opponent's ball");
+		PottedWrongOpponent = new Phrase("pooltable.potted.wrong.opponent", "Opponent potted your ball");
+		ScratchYou = new Phrase("pooltable.scratch.you", "Scratch! Turn passes");
+		ScratchOpponent = new Phrase("pooltable.scratch.opponent", "Opponent scratched - your turn");
+		WinYou = new Phrase("pooltable.win", "You win!");
+		LoseYou = new Phrase("pooltable.lose", "You lose");
+		SoloWin = new Phrase("pooltable.solo.win", "{0} win!");
+		YourTurn = new Phrase("pooltable.turn.you", "Your turn");
+		YourTurnGroup = new Phrase("pooltable.turn.you.group", "Your turn ({0})");
+		OpponentTurn = new Phrase("pooltable.turn.opponent", "Opponent's turn");
+		JoinedYou = new Phrase("pooltable.join.you", "You joined as {0}");
+		JoinedOther = new Phrase("pooltable.join.other", "{0} joined as {1}");
 	}
 }

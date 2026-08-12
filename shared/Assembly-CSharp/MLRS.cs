@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Network;
@@ -48,7 +49,7 @@ public class MLRS : BaseMountable
 
 	public Vector3 trueTargetHitPos;
 
-	public static readonly Phrase RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
+	public static readonly Phrase RaidWindowBlockedToast;
 
 	[SerializeField]
 	[Header("MLRS Components")]
@@ -57,8 +58,8 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	private GameObjectRef dashboardStoragePrefab;
 
-	[Header("MLRS Rotation")]
 	[SerializeField]
+	[Header("MLRS Rotation")]
 	private Transform hRotator;
 
 	[SerializeField]
@@ -95,8 +96,8 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public RocketTube[] rocketTubes;
 
-	[Header("MLRS Dashboard/FX")]
 	[SerializeField]
+	[Header("MLRS Dashboard/FX")]
 	private GameObject screensChild;
 
 	[SerializeField]
@@ -133,7 +134,13 @@ public class MLRS : BaseMountable
 	private ParticleSystem bottomScreenShutdown;
 
 	[ServerVar(Help = "How many minutes before the MLRS recovers from use and can be used again")]
-	public static float brokenDownMinutes = 20f;
+	public static float brokenDownMinutes;
+
+	[CompilerGenerated]
+	private Vector3 _003CUserTargetHitPos_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CTrueHitPos_003Ek__BackingField;
 
 	public const Flags FLAG_FIRING_ROCKETS = Flags.Reserved6;
 
@@ -149,9 +156,39 @@ public class MLRS : BaseMountable
 
 	private bool isInitialLoad = true;
 
-	public Vector3 UserTargetHitPos { get; set; }
+	public Vector3 UserTargetHitPos
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CUserTargetHitPos_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CUserTargetHitPos_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 TrueHitPos { get; set; }
+	public Vector3 TrueHitPos
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CTrueHitPos_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CTrueHitPos_003Ek__BackingField = value;
+		}
+	}
 
 	public bool HasAimingModule => HasFlag(Flags.Reserved8);
 
@@ -673,8 +710,7 @@ public class MLRS : BaseMountable
 		radiusModIndex++;
 		Vector2 val = Random.insideUnitCircle * (targetAreaRadius - RocketDamageRadius) * num;
 		Vector3 target = TrueHitPos + new Vector3(val.x, 0f, val.y);
-		float requiredGravity;
-		Vector3 aimToTarget = Ballistics.GetAimToTarget(firingPoint.position, target, rocketSpeed, vRotMax, rocketBaseGravity, minRange, out requiredGravity);
+		Vector3 aimToTarget = Ballistics.GetAimToTarget(firingPoint.position, target, rocketSpeed, vRotMax, rocketBaseGravity, minRange, out var requiredGravity);
 		if (TryFireProjectile(rocketContainer, (AmmoTypes)2048, firingPos, aimToTarget, rocketOwnerRef.Get(serverside: true) as BasePlayer, 0f, 0f, out var projectile))
 		{
 			projectile.gravityModifier = requiredGravity / (0f - Physics.gravity.y);
@@ -689,8 +725,7 @@ public class MLRS : BaseMountable
 
 	private void UpdateStorageState()
 	{
-		Item item;
-		bool b = TryGetAimingModule(out item);
+		bool b = TryGetAimingModule(out var _);
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved8, b);
@@ -715,9 +750,9 @@ public class MLRS : BaseMountable
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -758,8 +793,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open_Dashboard(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -953,5 +988,13 @@ public class MLRS : BaseMountable
 			num2 = fallbackV;
 		}
 		return num2;
+	}
+
+	static MLRS()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		RaidWindowBlockedToast = new Phrase("mlrs.raidwindowblocked", "The MLRS can only be fired during the raid window");
+		brokenDownMinutes = 20f;
 	}
 }

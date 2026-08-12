@@ -14,7 +14,7 @@ public class ChippyArcadeGame : BaseArcadeGame
 
 	public Transform respawnPoint;
 
-	public Vector2 mouseAim = new Vector2(0f, 1f);
+	public Vector2 mouseAim;
 
 	public TextArcadeEntity levelIndicator;
 
@@ -37,4 +37,12 @@ public class ChippyArcadeGame : BaseArcadeGame
 	public int selectedButtonIndex;
 
 	public bool OnHighScores;
+
+	public ChippyArcadeGame()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		mouseAim = new Vector2(0f, 1f);
+		base._002Ector();
+	}
 }

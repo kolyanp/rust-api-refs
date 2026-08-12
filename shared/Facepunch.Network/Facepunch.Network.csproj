@@ -5,7 +5,7 @@
     <TargetFramework>net40</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>15.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -20,11 +20,13 @@
       <HintPath>../../../../../../../tmp/oxide-extract/RustDedicated_Data/Managed/Facepunch.UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UniTask" />
-    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http">
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Net.Http.dll</HintPath>
+    </Reference>
     <Reference Include="websocket-sharp" />
     <Reference Include="BouncyCastle.Cryptography" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="Oxide.Core">

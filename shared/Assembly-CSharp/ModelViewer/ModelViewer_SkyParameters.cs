@@ -11,8 +11,8 @@ public class ModelViewer_SkyParameters
 	public float skyBrightness = 1f;
 
 	[Header("Time of Day")]
-	[Tooltip("Current hour of the day.")]
 	[Header("                ")]
+	[Tooltip("Current hour of the day.")]
 	public float Hour = 9f;
 
 	[Tooltip("Current day of the month.")]
@@ -25,12 +25,12 @@ public class ModelViewer_SkyParameters
 	[Tooltip("Current year.")]
 	public int Year = 2000;
 
-	[Range(-90f, 90f)]
 	[Tooltip("Latitude of the current location in degrees.")]
+	[Range(-90f, 90f)]
 	public float Latitude = -10f;
 
-	[Range(-180f, 180f)]
 	[Tooltip("Longitude of the current location in degrees.")]
+	[Range(-180f, 180f)]
 	public float Longitude = -25f;
 
 	[Tooltip("UTC/GMT time zone of the current location in hours.")]

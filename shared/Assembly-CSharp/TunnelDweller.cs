@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TunnelDweller : HumanNPC
 {
-	public static readonly Phrase TunnelDwellerName = new Phrase("npc_tunneldweller", "Tunnel Dweller");
+	public static readonly Phrase TunnelDwellerName;
 
 	private const string DWELLER_KILL_STAT = "dweller_kills_while_moving";
 
@@ -17,5 +17,12 @@ public class TunnelDweller : HumanNPC
 			p.stats.Add("dweller_kills_while_moving", 1, Stats.All);
 			p.stats.Save(forceSteamSave: true);
 		}
+	}
+
+	static TunnelDweller()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		TunnelDwellerName = new Phrase("npc_tunneldweller", "Tunnel Dweller");
 	}
 }

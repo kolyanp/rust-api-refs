@@ -3,11 +3,11 @@ namespace UnityEngine.UI.Extensions;
 [AddComponentMenu("UI/Extensions/Primitives/Cut Corners")]
 public class UICornerCut : UIPrimitiveBase
 {
-	public Vector2 cornerSize = new Vector2(16f, 16f);
+	public Vector2 cornerSize;
 
-	[Header("Corners to cut")]
 	[SerializeField]
-	private bool m_cutUL = true;
+	[Header("Corners to cut")]
+	private bool m_cutUL;
 
 	[SerializeField]
 	private bool m_cutUR;
@@ -18,8 +18,8 @@ public class UICornerCut : UIPrimitiveBase
 	[SerializeField]
 	private bool m_cutLR;
 
-	[SerializeField]
 	[Tooltip("Up-Down colors become Left-Right colors")]
+	[SerializeField]
 	private bool m_makeColumns;
 
 	[Header("Color the cut bars differently")]
@@ -204,7 +204,7 @@ public class UICornerCut : UIPrimitiveBase
 		bool flag2 = m_cutLL | m_cutLR;
 		bool flag3 = m_cutLL | m_cutUL;
 		bool flag4 = m_cutLR | m_cutUR;
-		if (!(flag || flag2) || !(((Vector2)(ref cornerSize)).sqrMagnitude > 0f))
+		if (!(flag | flag2) || !(((Vector2)(ref cornerSize)).sqrMagnitude > 0f))
 		{
 			return;
 		}
@@ -323,5 +323,14 @@ public class UICornerCut : UIPrimitiveBase
 		((Vector2)(ref val))._002Ector(Mathf.InverseLerp(((Rect)(ref area)).xMin, ((Rect)(ref area)).xMax, x), Mathf.InverseLerp(((Rect)(ref area)).yMin, ((Rect)(ref area)).yMax, y));
 		vh.AddVert(new Vector3(x, y), color32, Vector4.op_Implicit(val));
 		return vh.currentVertCount - 1;
+	}
+
+	public UICornerCut()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		cornerSize = new Vector2(16f, 16f);
+		m_cutUL = true;
+		base._002Ector();
 	}
 }

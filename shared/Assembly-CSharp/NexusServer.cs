@@ -114,7 +114,7 @@ public static class NexusServer
 
 	private static RealTimeSince _lastCompanionRefresh;
 
-	private static readonly Dictionary<string, List<(string Zone, FerryStatus Status)>> FerryEntries = new Dictionary<string, List<(string, FerryStatus)>>(StringComparer.InvariantCultureIgnoreCase);
+	private static readonly Dictionary<string, List<(string Zone, FerryStatus Status)>> FerryEntries;
 
 	private static bool _updatingFerries;
 
@@ -126,9 +126,9 @@ public static class NexusServer
 
 	private const int MapRenderVersion = 5;
 
-	private static readonly HashSet<ulong> PlayerManifest = new HashSet<ulong>();
+	private static readonly HashSet<ulong> PlayerManifest;
 
-	private static readonly Dictionary<string, ZonePlayerManifest> ZonePlayerManifests = new Dictionary<string, ZonePlayerManifest>(StringComparer.InvariantCultureIgnoreCase);
+	private static readonly Dictionary<string, ZonePlayerManifest> ZonePlayerManifests;
 
 	private static RealTimeSince _lastPlayerManifestBroadcast;
 
@@ -136,11 +136,11 @@ public static class NexusServer
 
 	private static RealTimeSince _lastPlayerManifestRebuild;
 
-	private static readonly Dictionary<Uuid, PendingCall> PendingCalls = new Dictionary<Uuid, PendingCall>();
+	private static readonly Dictionary<Uuid, PendingCall> PendingCalls;
 
-	private static RealTimeSince _sinceLastRpcTimeoutCheck = RealTimeSince.op_Implicit(0f);
+	private static RealTimeSince _sinceLastRpcTimeoutCheck;
 
-	private static readonly Dictionary<string, ServerStatus> ZoneStatuses = new Dictionary<string, ServerStatus>(StringComparer.InvariantCultureIgnoreCase);
+	private static readonly Dictionary<string, ServerStatus> ZoneStatuses;
 
 	private static bool _isRefreshingZoneStatus;
 
@@ -150,9 +150,9 @@ public static class NexusServer
 
 	private const string CopyFromKey = "$copyFrom";
 
-	private static readonly Memoized<string, ulong> SteamIdToString = new Memoized<string, ulong>((Func<ulong, string>)((ulong i) => i.ToString("G")));
+	private static readonly Memoized<string, ulong> SteamIdToString;
 
-	private static readonly MemoryStream WriterStream = new MemoryStream();
+	private static readonly MemoryStream WriterStream;
 
 	private static NexusDB _database;
 
@@ -873,10 +873,7 @@ public static class NexusServer
 			}
 			Debug.Log((object)"Rendering map image to upload to nexus...");
 			int oceanMargin = 0;
-			int imageWidth;
-			int imageHeight;
-			Color background;
-			byte[] array = MapImageRenderer.Render(out imageWidth, out imageHeight, out background, Nexus.mapImageScale, lossy: false, transparent: true, oceanMargin);
+			byte[] array = MapImageRenderer.Render(out var _, out var _, out var _, Nexus.mapImageScale, lossy: false, transparent: true, oceanMargin);
 			Debug.Log((object)"Uploading map image to nexus...");
 			await ZoneClient.UploadMap(key, array);
 			Debug.Log((object)"Map image was updated in the nexus");
@@ -1994,5 +1991,19 @@ public static class NexusServer
 		_database?.ClearJournal();
 		_database?.ClearTransferred();
 		_lastUnsavedTransfer = null;
+	}
+
+	static NexusServer()
+	{
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		FerryEntries = new Dictionary<string, List<(string, FerryStatus)>>(StringComparer.InvariantCultureIgnoreCase);
+		PlayerManifest = new HashSet<ulong>();
+		ZonePlayerManifests = new Dictionary<string, ZonePlayerManifest>(StringComparer.InvariantCultureIgnoreCase);
+		PendingCalls = new Dictionary<Uuid, PendingCall>();
+		_sinceLastRpcTimeoutCheck = RealTimeSince.op_Implicit(0f);
+		ZoneStatuses = new Dictionary<string, ServerStatus>(StringComparer.InvariantCultureIgnoreCase);
+		SteamIdToString = new Memoized<string, ulong>((Func<ulong, string>)((ulong i) => i.ToString("G")));
+		WriterStream = new MemoryStream();
 	}
 }

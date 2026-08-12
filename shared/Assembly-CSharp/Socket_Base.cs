@@ -11,7 +11,7 @@ public class Socket_Base : PrefabAttribute
 		public bool FemaleDummy;
 	}
 
-	public bool male = true;
+	public bool male;
 
 	public bool maleDummy;
 
@@ -31,9 +31,9 @@ public class Socket_Base : PrefabAttribute
 
 	private Type cachedType;
 
-	public Vector3 selectSize = new Vector3(2f, 0.1f, 2f);
+	public Vector3 selectSize;
 
-	public Vector3 selectCenter = new Vector3(0f, 0f, 1f);
+	public Vector3 selectCenter;
 
 	[ReadOnly]
 	public string socketName;
@@ -49,6 +49,10 @@ public class Socket_Base : PrefabAttribute
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		male = true;
+		selectSize = new Vector3(2f, 0.1f, 2f);
+		selectCenter = new Vector3(0f, 0f, 1f);
+		base._002Ector();
 		cachedType = ((object)this).GetType();
 	}
 

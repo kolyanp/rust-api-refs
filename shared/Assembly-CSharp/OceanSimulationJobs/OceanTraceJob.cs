@@ -28,8 +28,8 @@ internal struct OceanTraceJob : IJobParallelForDefer
 
 	public ReadOnly<float> MaxDists;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<bool> HitResults;
 
 	[WriteOnly]
@@ -70,8 +70,7 @@ internal struct OceanTraceJob : IJobParallelForDefer
 		int num = Indices[indicesIndex];
 		Ray ray = Rays[num];
 		float maxDist = MaxDists[num];
-		Vector3 result;
-		bool flag = Trace(in ray, maxDist, out result);
+		bool flag = Trace(in ray, maxDist, out var result);
 		HitResults[num] = flag;
 		HitPositions[num] = result;
 	}

@@ -21,13 +21,12 @@ public abstract class RustPlugin : CSharpPlugin
 
 	public override void HandleAddedToManager(PluginManager manager)
 	{
-		//IL_02d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
 		FieldInfo[] fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
 		foreach (FieldInfo fieldInfo in fields)
 		{
-			object[] customAttributes = fieldInfo.GetCustomAttributes(typeof(OnlinePlayersAttribute), inherit: true);
-			if (customAttributes.Length != 0)
+			if (fieldInfo.GetCustomAttributes(typeof(OnlinePlayersAttribute), inherit: true).Length != 0)
 			{
 				PluginFieldInfo pluginFieldInfo = new PluginFieldInfo(this, fieldInfo);
 				if (pluginFieldInfo.GenericArguments.Length != 2 || pluginFieldInfo.GenericArguments[0] != typeof(BasePlayer))
@@ -59,17 +58,17 @@ public abstract class RustPlugin : CSharpPlugin
 		MethodInfo[] methods = GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
 		foreach (MethodInfo methodInfo in methods)
 		{
-			object[] customAttributes2 = methodInfo.GetCustomAttributes(typeof(ConsoleCommandAttribute), inherit: true);
-			if (customAttributes2.Length != 0)
+			object[] customAttributes = methodInfo.GetCustomAttributes(typeof(ConsoleCommandAttribute), inherit: true);
+			if (customAttributes.Length != 0)
 			{
-				if (customAttributes2[0] is ConsoleCommandAttribute consoleCommandAttribute)
+				if (customAttributes[0] is ConsoleCommandAttribute consoleCommandAttribute)
 				{
 					cmd.AddConsoleCommand(consoleCommandAttribute.Command, this, methodInfo.Name);
 				}
 				continue;
 			}
-			customAttributes2 = methodInfo.GetCustomAttributes(typeof(ChatCommandAttribute), inherit: true);
-			if (customAttributes2.Length != 0 && customAttributes2[0] is ChatCommandAttribute chatCommandAttribute)
+			customAttributes = methodInfo.GetCustomAttributes(typeof(ChatCommandAttribute), inherit: true);
+			if (customAttributes.Length != 0 && customAttributes[0] is ChatCommandAttribute chatCommandAttribute)
 			{
 				cmd.AddChatCommand(chatCommandAttribute.Command, this, methodInfo.Name);
 			}
@@ -203,10 +202,10 @@ public abstract class RustPlugin : CSharpPlugin
 
 	protected void ForcePlayerPosition(BasePlayer player, Vector3 destination)
 	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		player.MovePosition(destination);
 		if (!player.IsSpectating() || (double)Vector3.Distance(((Component)player).transform.position, destination) > 25.0)
 		{

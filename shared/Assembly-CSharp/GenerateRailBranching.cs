@@ -21,7 +21,7 @@ public class GenerateRailBranching : ProceduralComponent
 
 	public const float TerrainOffset = -0.125f;
 
-	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
+	private static Quaternion rot90;
 
 	private const int MaxDepth = 250000;
 
@@ -305,11 +305,11 @@ public class GenerateRailBranching : ProceduralComponent
 					{
 						flag = true;
 					}
-					if (flag && !flag2 && blocked)
+					if ((flag && !flag2) & blocked)
 					{
 						flag2 = true;
 					}
-					if (flag && flag2 && !blocked)
+					if ((flag & flag2) && !blocked)
 					{
 						list4.Clear();
 						break;
@@ -346,5 +346,12 @@ public class GenerateRailBranching : ProceduralComponent
 			rail.AdjustPlacementMap(20f);
 		}
 		TerrainMeta.Path.Rails.AddRange(list);
+	}
+
+	static GenerateRailBranching()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		rot90 = Quaternion.Euler(0f, 90f, 0f);
 	}
 }

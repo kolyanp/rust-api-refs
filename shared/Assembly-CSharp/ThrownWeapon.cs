@@ -11,17 +11,17 @@ public class ThrownWeapon : AttackEntity
 	[Header("Throw Weapon")]
 	public GameObjectRef prefabToThrow;
 
-	public float maxThrowVelocity = 10f;
+	public float maxThrowVelocity;
 
 	public float tumbleVelocity;
 
-	public Vector3 overrideAngle = Vector3.zero;
+	public Vector3 overrideAngle;
 
-	public bool canStick = true;
+	public bool canStick;
 
-	public bool canThrowUnderwater = true;
+	public bool canThrowUnderwater;
 
-	public bool canThrowFromHelicopter = true;
+	public bool canThrowFromHelicopter;
 
 	public GameObject throwObjectRoot;
 
@@ -224,8 +224,8 @@ public class ThrownWeapon : AttackEntity
 		return Mathf.Sqrt(0.5f * y3 * magnitude * magnitude / (magnitude2 * (magnitude2 * y - y2 * magnitude)));
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void DoThrow(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -348,8 +348,8 @@ public class ThrownWeapon : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void DoDrop(RPCMessage msg)
 	{
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
@@ -431,5 +431,17 @@ public class ThrownWeapon : AttackEntity
 
 	protected virtual void SetUpThrownWeapon(BaseEntity ent, Item ownerItem)
 	{
+	}
+
+	public ThrownWeapon()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		maxThrowVelocity = 10f;
+		overrideAngle = Vector3.zero;
+		canStick = true;
+		canThrowUnderwater = true;
+		canThrowFromHelicopter = true;
+		base._002Ector();
 	}
 }

@@ -14,7 +14,14 @@ public class ManualCoverPoint : FacepunchBehaviour
 
 	public CoverPoint.CoverType NormalCoverType;
 
-	public Vector3 Position => ((Component)this).transform.position;
+	public Vector3 Position
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.position;
+		}
+	}
 
 	public float DirectionMagnitude
 	{

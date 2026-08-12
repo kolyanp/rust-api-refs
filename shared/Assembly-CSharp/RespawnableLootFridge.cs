@@ -15,23 +15,23 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 	public LootContainer.LootSpawnSlot[] fullLootSpawnSlots;
 
 	[Tooltip("Minimum seconds between refreshes. Each refresh is a reduced spawn, apart from every Nth one (controlled by reducedRefreshesForFullRefresh) which is a full spawn instead.")]
-	public float minSecondsBetweenRefresh = 900f;
+	public float minSecondsBetweenRefresh;
 
 	[Tooltip("Maximum seconds between refreshes.")]
-	public float maxSecondsBetweenRefresh = 900f;
+	public float maxSecondsBetweenRefresh;
 
-	[Min(1f)]
 	[Tooltip("A full spawn replaces every Nth reduced refresh.")]
-	public int refreshesForFullRefresh = 4;
+	[Min(1f)]
+	public int refreshesForFullRefresh;
 
 	[Tooltip("Do a full loot spawn as soon as the fridge spawns (ignored when restoring from a save).")]
-	public bool initialLootSpawn = true;
+	public bool initialLootSpawn;
 
 	public bool blockPlayerItemInput;
 
 	public bool requiresPowerToOpen;
 
-	public ClanScoreEventType clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
+	public ClanScoreEventType clanScoreEventForFirstLooter;
 
 	[NonSerialized]
 	public bool HasBeenLooted;
@@ -354,5 +354,16 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 				StartLootRefreshCountdown();
 			}
 		}
+	}
+
+	public RespawnableLootFridge()
+	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		minSecondsBetweenRefresh = 900f;
+		maxSecondsBetweenRefresh = 900f;
+		refreshesForFullRefresh = 4;
+		initialLootSpawn = true;
+		clanScoreEventForFirstLooter = (ClanScoreEventType)(-1);
+		base._002Ector();
 	}
 }

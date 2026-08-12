@@ -231,46 +231,46 @@ public class NexusFerry : BaseEntity
 
 	private Vector3 _velocity;
 
-	public static readonly Phrase RetiringPhrase = new Phrase("ferry.not_in_service", "Not In Service");
+	public static readonly Phrase RetiringPhrase;
 
 	[Header("NexusFerry")]
-	public float TravelVelocity = 20f;
+	public float TravelVelocity;
 
-	public float ApproachVelocity = 5f;
+	public float ApproachVelocity;
 
-	public float StoppingVelocity = 1f;
+	public float StoppingVelocity;
 
-	public float AccelerationSpeed = 1f;
+	public float AccelerationSpeed;
 
-	public float TurnSpeed = 1f;
+	public float TurnSpeed;
 
-	public float VelocityPreservationOnTurn = 0.1f;
+	public float VelocityPreservationOnTurn;
 
-	public float TargetDistanceThreshold = 10f;
+	public float TargetDistanceThreshold;
 
 	public GameObjectRef hornEffect;
 
 	public Transform hornEffectTransform;
 
-	public float departureHornLeadTime = 5f;
+	public float departureHornLeadTime;
 
 	[Header("Pathing")]
 	public SphereCollider SphereCaster;
 
-	public int CastSweepDegrees = 16;
+	public int CastSweepDegrees;
 
 	[Range(0f, 1f)]
-	public float CastSweepNoise = 0.25f;
+	public float CastSweepNoise;
 
-	public LayerMask CastLayers = LayerMask.op_Implicit(134283264);
+	public LayerMask CastLayers;
 
-	public float CastInterval = 1f;
+	public float CastInterval;
 
-	public float CastHitProtection = 5f;
+	public float CastHitProtection;
 
-	public int PathLookahead = 4;
+	public int PathLookahead;
 
-	public int PathLookaheadThreshold = 5;
+	public int PathLookaheadThreshold;
 
 	[Header("UI")]
 	public RustText[] NextZoneLabels;
@@ -291,7 +291,7 @@ public class NexusFerry : BaseEntity
 
 	private bool _departureHornPlayed;
 
-	public static readonly ListHashSet<NexusFerry> All = new ListHashSet<NexusFerry>();
+	public static readonly ListHashSet<NexusFerry> All;
 
 	private List<NetworkableId> _transferredIds;
 
@@ -344,9 +344,8 @@ public class NexusFerry : BaseEntity
 			return MoveTowardsPositionAvoidObstacles(_targetDock.FerryWaypoint.position);
 		case State.Queued:
 		{
-			bool entered;
-			Transform entryPoint = _targetDock.GetEntryPoint(this, out entered);
-			return MoveTowardsPositionAvoidObstacles(entryPoint.position) && entered;
+			Transform entryPoint = _targetDock.GetEntryPoint(this, out var entered);
+			return MoveTowardsPositionAvoidObstacles(entryPoint.position) & entered;
 		}
 		case State.SailingOut:
 			return MoveTowardsPositionAvoidObstacles(GetIslandTransferPosition());
@@ -434,9 +433,7 @@ public class NexusFerry : BaseEntity
 				int num8 = i / 2 * num7;
 				Quaternion val3 = Quaternion.Euler(0f, num3 + num4 + (float)CastSweepDegrees * 0.5f * (float)num8, 0f);
 				Vector3 val4 = val3 * Vector3.forward;
-				float travelDistance;
-				Vector3 endPosition;
-				bool num9 = SphereCast(val4, num, out travelDistance, out endPosition);
+				bool num9 = SphereCast(val4, num, out var travelDistance, out var endPosition);
 				float item = Mathf.Clamp(Vector3.Dot(forward, val4), 0.5f, 1f);
 				float item2 = (num9 ? Mathf.Clamp01(travelDistance / 30f) : 1f);
 				float num10 = Vector3Ex.Distance2D(val, endPosition);
@@ -1151,7 +1148,7 @@ public class NexusFerry : BaseEntity
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
 		foreach (BaseEntity child in children)
 		{
-			if (!(child is NPCAutoTurret) && (hashSet.Contains(child.net.ID) || forceAll) && (!IsEntityActive(child) || forceAll))
+			if (!(child is NPCAutoTurret) && (hashSet.Contains(child.net.ID) || forceAll) && (!IsEntityActive(child) | forceAll))
 			{
 				list.Add(child);
 			}
@@ -1300,5 +1297,35 @@ public class NexusFerry : BaseEntity
 			return nexusFerry;
 		}
 		return null;
+	}
+
+	public NexusFerry()
+	{
+		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		TravelVelocity = 20f;
+		ApproachVelocity = 5f;
+		StoppingVelocity = 1f;
+		AccelerationSpeed = 1f;
+		TurnSpeed = 1f;
+		VelocityPreservationOnTurn = 0.1f;
+		TargetDistanceThreshold = 10f;
+		departureHornLeadTime = 5f;
+		CastSweepDegrees = 16;
+		CastSweepNoise = 0.25f;
+		CastLayers = LayerMask.op_Implicit(134283264);
+		CastInterval = 1f;
+		CastHitProtection = 5f;
+		PathLookahead = 4;
+		PathLookaheadThreshold = 5;
+		base._002Ector();
+	}
+
+	static NexusFerry()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		RetiringPhrase = new Phrase("ferry.not_in_service", "Not In Service");
+		All = new ListHashSet<NexusFerry>();
 	}
 }

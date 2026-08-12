@@ -8,7 +8,7 @@ public class ItemModReload : ItemMod
 
 	public int workbenchLvlRequired;
 
-	public Phrase reloadPhrase = new Phrase("reload_item", "Reload Item");
+	public Phrase reloadPhrase;
 
 	public bool HasCraftLevel(BasePlayer player = null)
 	{
@@ -42,5 +42,13 @@ public class ItemModReload : ItemMod
 				Effect.server.Run(successEffect.resourcePath, player.eyes.position);
 			}
 		}
+	}
+
+	public ItemModReload()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Expected O, but got Unknown
+		reloadPhrase = new Phrase("reload_item", "Reload Item");
+		base._002Ector();
 	}
 }

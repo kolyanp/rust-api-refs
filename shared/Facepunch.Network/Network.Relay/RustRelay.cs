@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -293,8 +292,6 @@ public static class RustRelay
 
 	static RustRelay()
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000a: Expected O, but got Unknown
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Expected O, but got Unknown
@@ -340,7 +337,7 @@ public static class RustRelay
 		using CancellationTokenSource cts = new CancellationTokenSource(timeout);
 		try
 		{
-			return await ((HttpMessageInvoker)Client).SendAsync(request, cts.Token).ConfigureAwait(continueOnCapturedContext: false);
+			return await Client.SendAsync(request, cts.Token).ConfigureAwait(continueOnCapturedContext: false);
 		}
 		catch (OperationCanceledException) when (cts.IsCancellationRequested)
 		{
@@ -831,21 +828,14 @@ public static class RustRelay
 				Failover("[Rust Relay] Auth Token Not Provided");
 				return;
 			}
-			string text = JsonConvert.SerializeObject((object)stringPool);
-			StringContent content = new StringContent(text, Encoding.UTF8, "application/json");
-			try
+			string content = JsonConvert.SerializeObject((object)stringPool);
+			using StringContent content2 = new StringContent(content, Encoding.UTF8, "application/json");
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, StringPoolUrl)
 			{
-				HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, StringPoolUrl)
-				{
-					Content = (HttpContent)(object)content
-				};
-				AddRelayHeaders(val);
-				await SendWithTimeoutAsync(val, ApiTimeout).ConfigureAwait(continueOnCapturedContext: false);
-			}
-			finally
-			{
-				((IDisposable)content)?.Dispose();
-			}
+				Content = content2
+			};
+			AddRelayHeaders(request);
+			await SendWithTimeoutAsync(request, ApiTimeout).ConfigureAwait(continueOnCapturedContext: false);
 		}
 		catch (Exception ex)
 		{
@@ -876,21 +866,14 @@ public static class RustRelay
 				Failover("[RustRelay] Auth Token not provided");
 				return;
 			}
-			string text = JsonConvert.SerializeObject((object)manifestPayload);
-			StringContent content = new StringContent(text, Encoding.UTF8, "application/json");
-			try
+			string content = JsonConvert.SerializeObject((object)manifestPayload);
+			using StringContent content2 = new StringContent(content, Encoding.UTF8, "application/json");
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, ManifestUrl)
 			{
-				HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, ManifestUrl)
-				{
-					Content = (HttpContent)(object)content
-				};
-				AddRelayHeaders(val);
-				await SendWithTimeoutAsync(val, ApiTimeout).ConfigureAwait(continueOnCapturedContext: false);
-			}
-			finally
-			{
-				((IDisposable)content)?.Dispose();
-			}
+				Content = content2
+			};
+			AddRelayHeaders(request);
+			await SendWithTimeoutAsync(request, ApiTimeout).ConfigureAwait(continueOnCapturedContext: false);
 		}
 		catch (Exception ex)
 		{
@@ -926,45 +909,24 @@ public static class RustRelay
 			string path2 = Path.ChangeExtension(path, ".dat");
 			bool flag = File.Exists(path2);
 			using FileStream mapStream = File.OpenRead(path);
-			StreamContent mapContent = new StreamContent((Stream)mapStream);
-			try
+			using StreamContent mapContent = new StreamContent(mapStream);
+			using MultipartFormDataContent content = new MultipartFormDataContent();
+			content.Add(mapContent, "map", Path.GetFileName(path));
+			using FileStream datStream = (flag ? File.OpenRead(path2) : null);
+			using StreamContent datContent = ((datStream != null) ? new StreamContent(datStream) : null);
+			if (datContent != null)
 			{
-				MultipartFormDataContent content = new MultipartFormDataContent();
-				try
-				{
-					content.Add((HttpContent)(object)mapContent, "map", Path.GetFileName(path));
-					using FileStream datStream = (flag ? File.OpenRead(path2) : null);
-					StreamContent datContent = ((datStream == null) ? ((StreamContent)null) : new StreamContent((Stream)datStream));
-					try
-					{
-						if (datContent != null)
-						{
-							content.Add((HttpContent)(object)datContent, "dat", Path.GetFileName(path2));
-						}
-						HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, MapSnapshotUrl)
-						{
-							Content = (HttpContent)(object)content
-						};
-						AddRelayHeaders(val);
-						HttpResponseMessage val2 = await SendWithTimeoutAsync(val, UploadTimeout).ConfigureAwait(continueOnCapturedContext: false);
-						if (!val2.IsSuccessStatusCode)
-						{
-							Failover($"Map snapshot upload failed: {(int)val2.StatusCode} {val2.ReasonPhrase}");
-						}
-					}
-					finally
-					{
-						((IDisposable)datContent)?.Dispose();
-					}
-				}
-				finally
-				{
-					((IDisposable)content)?.Dispose();
-				}
+				content.Add(datContent, "dat", Path.GetFileName(path2));
 			}
-			finally
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, MapSnapshotUrl)
 			{
-				((IDisposable)mapContent)?.Dispose();
+				Content = content
+			};
+			AddRelayHeaders(request);
+			HttpResponseMessage httpResponseMessage = await SendWithTimeoutAsync(request, UploadTimeout).ConfigureAwait(continueOnCapturedContext: false);
+			if (!httpResponseMessage.IsSuccessStatusCode)
+			{
+				Failover($"Map snapshot upload failed: {(int)httpResponseMessage.StatusCode} {httpResponseMessage.ReasonPhrase}");
 			}
 		}
 		catch (Exception ex)
@@ -1012,23 +974,16 @@ public static class RustRelay
 				}
 			}
 			using FileStream stream = File.OpenRead(path);
-			StreamContent content = new StreamContent((Stream)stream);
-			try
+			using StreamContent content = new StreamContent(stream);
+			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, SnapshotUrl)
 			{
-				HttpRequestMessage val = new HttpRequestMessage(HttpMethod.Post, SnapshotUrl)
-				{
-					Content = (HttpContent)(object)content
-				};
-				AddRelayHeaders(val);
-				HttpResponseMessage val2 = await SendWithTimeoutAsync(val, UploadTimeout).ConfigureAwait(continueOnCapturedContext: false);
-				if (!val2.IsSuccessStatusCode)
-				{
-					Failover($"Snapshot upload failed: {(int)val2.StatusCode} {val2.ReasonPhrase}");
-				}
-			}
-			finally
+				Content = content
+			};
+			AddRelayHeaders(request);
+			HttpResponseMessage httpResponseMessage = await SendWithTimeoutAsync(request, UploadTimeout).ConfigureAwait(continueOnCapturedContext: false);
+			if (!httpResponseMessage.IsSuccessStatusCode)
 			{
-				((IDisposable)content)?.Dispose();
+				Failover($"Snapshot upload failed: {(int)httpResponseMessage.StatusCode} {httpResponseMessage.ReasonPhrase}");
 			}
 		}
 		catch (Exception ex2)
@@ -1066,17 +1021,17 @@ public static class RustRelay
 
 	private static void AddRelayHeaders(HttpRequestMessage request)
 	{
-		((HttpHeaders)request.Headers).Remove("X-Server-Time");
-		((HttpHeaders)request.Headers).Remove("X-Wipe-Id");
-		((HttpHeaders)request.Headers).Remove("Authorization");
+		request.Headers.Remove("X-Server-Time");
+		request.Headers.Remove("X-Wipe-Id");
+		request.Headers.Remove("Authorization");
 		long ticks = DateTime.UtcNow.Ticks;
 		DateTime unixEpoch = DateTime.UnixEpoch;
-		string text = (ticks - unixEpoch.Ticks).ToString();
-		((HttpHeaders)request.Headers).Add("X-Server-Time", text);
-		((HttpHeaders)request.Headers).Add("X-Wipe-Id", RelayWipeId);
+		string value = (ticks - unixEpoch.Ticks).ToString();
+		request.Headers.Add("X-Server-Time", value);
+		request.Headers.Add("X-Wipe-Id", RelayWipeId);
 		if (!string.IsNullOrWhiteSpace(Config.AuthToken))
 		{
-			((HttpHeaders)request.Headers).Add("Authorization", "Bearer " + Config.AuthToken);
+			request.Headers.Add("Authorization", "Bearer " + Config.AuthToken);
 		}
 	}
 
@@ -1359,67 +1314,45 @@ public static class RustRelay
 	{
 		_aesKeyParameter = null;
 		string clientPublicKey = Bech32.Encode("rk", _localPublicKey);
-		string text = JsonConvert.SerializeObject((object)new KeyExchangeRequest
+		string content = JsonConvert.SerializeObject((object)new KeyExchangeRequest
 		{
 			WipeId = wipeId,
 			ClientPublicKey = clientPublicKey
 		});
-		StringContent content = new StringContent(text, Encoding.UTF8, "application/json");
+		using StringContent content2 = new StringContent(content, Encoding.UTF8, "application/json");
+		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, KeyExchangeUrl);
+		request.Content = content2;
+		AddRelayHeaders(request);
+		using HttpResponseMessage response = await SendWithTimeoutAsync(request, ApiTimeout).ConfigureAwait(continueOnCapturedContext: false);
+		response.EnsureSuccessStatusCode();
+		KeyExchangeResponse keyExchangeResponse = JsonConvert.DeserializeObject<KeyExchangeResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(continueOnCapturedContext: false));
+		if (keyExchangeResponse == null || string.IsNullOrWhiteSpace(keyExchangeResponse.ServerPublicKey))
+		{
+			throw new InvalidOperationException("Relay key exchange response did not include a server public key.");
+		}
+		byte[] array = Bech32.Decode(keyExchangeResponse.ServerPublicKey, out var hrp);
+		if (hrp != "rk")
+		{
+			throw new Exception("invalid public key");
+		}
+		_remotePublicKey = new X25519PublicKeyParameters(array, 0);
+		byte[] array2 = new byte[32];
+		_localPrivateKey.GenerateSecret(_remotePublicKey, array2, 0);
 		try
 		{
-			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, KeyExchangeUrl);
-			try
+			using SHA256 sHA = SHA256.Create();
+			if (!sHA.TryComputeHash(array2, _aesKey, out var bytesWritten) || bytesWritten != 32)
 			{
-				request.Content = (HttpContent)(object)content;
-				AddRelayHeaders(request);
-				HttpResponseMessage response = await SendWithTimeoutAsync(request, ApiTimeout).ConfigureAwait(continueOnCapturedContext: false);
-				try
-				{
-					response.EnsureSuccessStatusCode();
-					KeyExchangeResponse keyExchangeResponse = JsonConvert.DeserializeObject<KeyExchangeResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(continueOnCapturedContext: false));
-					if (keyExchangeResponse == null || string.IsNullOrWhiteSpace(keyExchangeResponse.ServerPublicKey))
-					{
-						throw new InvalidOperationException("Relay key exchange response did not include a server public key.");
-					}
-					string hrp;
-					byte[] array = Bech32.Decode(keyExchangeResponse.ServerPublicKey, out hrp);
-					if (hrp != "rk")
-					{
-						throw new Exception("invalid public key");
-					}
-					_remotePublicKey = new X25519PublicKeyParameters(array, 0);
-					byte[] array2 = new byte[32];
-					_localPrivateKey.GenerateSecret(_remotePublicKey, array2, 0);
-					try
-					{
-						using SHA256 sHA = SHA256.Create();
-						if (!sHA.TryComputeHash(array2, _aesKey, out var bytesWritten) || bytesWritten != 32)
-						{
-							throw new CryptographicException("Failed to derive AES key.");
-						}
-					}
-					finally
-					{
-						CryptographicOperations.ZeroMemory((Span<byte>)array2);
-					}
-					_aesKeyParameter = new KeyParameter((byte[])_aesKey.Clone());
-					_keyExchangeWipeId = wipeId;
-					_keyExchangeToken = token;
-				}
-				finally
-				{
-					((IDisposable)response)?.Dispose();
-				}
-			}
-			finally
-			{
-				((IDisposable)request)?.Dispose();
+				throw new CryptographicException("Failed to derive AES key.");
 			}
 		}
 		finally
 		{
-			((IDisposable)content)?.Dispose();
+			CryptographicOperations.ZeroMemory((Span<byte>)array2);
 		}
+		_aesKeyParameter = new KeyParameter((byte[])_aesKey.Clone());
+		_keyExchangeWipeId = wipeId;
+		_keyExchangeToken = token;
 	}
 
 	private static X25519PrivateKeyParameters CreatePrivateKey()

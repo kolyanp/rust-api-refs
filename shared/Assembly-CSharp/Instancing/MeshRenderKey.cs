@@ -4,17 +4,30 @@ using UnityEngine.Rendering;
 
 namespace Instancing;
 
-public struct MeshRenderKey(Mesh mesh, Material[] materials, ShadowCastingMode castShadows, bool recieveShadows, LightProbeUsage lightProbes) : IEquatable<MeshRenderKey>
+public struct MeshRenderKey : IEquatable<MeshRenderKey>
 {
-	public Mesh Mesh = mesh;
+	public Mesh Mesh;
 
-	public Material[] Materials = materials;
+	public Material[] Materials;
 
-	public ShadowCastingMode CastShadows = castShadows;
+	public ShadowCastingMode CastShadows;
 
-	public bool RecieveShadows = recieveShadows;
+	public bool RecieveShadows;
 
-	public LightProbeUsage LightProbeUsages = lightProbes;
+	public LightProbeUsage LightProbeUsages;
+
+	public MeshRenderKey(Mesh mesh, Material[] materials, ShadowCastingMode castShadows, bool recieveShadows, LightProbeUsage lightProbes)
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		Mesh = mesh;
+		Materials = materials;
+		CastShadows = castShadows;
+		RecieveShadows = recieveShadows;
+		LightProbeUsages = lightProbes;
+	}
 
 	public bool Equals(MeshRenderKey other)
 	{

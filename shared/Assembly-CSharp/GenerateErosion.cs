@@ -9,13 +9,24 @@ using UnityEngine;
 
 public class GenerateErosion : ProceduralComponent
 {
-	public struct SplatPaintingData(NativeArray<float> heightMapDelta, NativeArray<float> angleMap) : IDisposable
+	public struct SplatPaintingData : IDisposable
 	{
-		public bool IsValid = true;
+		public bool IsValid;
 
-		public readonly NativeArray<float> HeightMapDelta = heightMapDelta;
+		public readonly NativeArray<float> HeightMapDelta;
 
-		public readonly NativeArray<float> AngleMap = angleMap;
+		public readonly NativeArray<float> AngleMap;
+
+		public SplatPaintingData(NativeArray<float> heightMapDelta, NativeArray<float> angleMap)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0009: Unknown result type (might be due to invalid IL or missing references)
+			HeightMapDelta = heightMapDelta;
+			AngleMap = angleMap;
+			IsValid = true;
+		}
 
 		public void Dispose()
 		{

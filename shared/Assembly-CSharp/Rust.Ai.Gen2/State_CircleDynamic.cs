@@ -10,22 +10,22 @@ public class State_CircleDynamic : FSMStateBase
 	private RustNavMeshAgent.Speeds minSpeed;
 
 	[SerializeField]
-	private RustNavMeshAgent.Speeds maxSpeed = RustNavMeshAgent.Speeds.Sprint;
+	private RustNavMeshAgent.Speeds maxSpeed;
 
 	[SerializeField]
-	protected Vector2 distanceSpeedRange = new Vector2(10f, 50f);
+	protected Vector2 distanceSpeedRange;
 
 	[SerializeField]
-	private Vector2 angleRange = Vector2.op_Implicit(new Vector3(20f, 80f));
+	private Vector2 angleRange;
 
 	[SerializeField]
-	private Vector2 angleDurationRange = new Vector2(1f, 3f);
+	private Vector2 angleDurationRange;
 
 	[SerializeField]
-	private Vector2 burstDurationRange = new Vector2(1f, 3f);
+	private Vector2 burstDurationRange;
 
 	[SerializeField]
-	private Vector2 burstCooldownRange = new Vector2(1f, 10f);
+	private Vector2 burstCooldownRange;
 
 	private Action _updateBurstAction;
 
@@ -33,7 +33,7 @@ public class State_CircleDynamic : FSMStateBase
 
 	private Action _updateAngleAction;
 
-	private bool clockWise = true;
+	private bool clockWise;
 
 	private int burstSpeedIndexOffset;
 
@@ -118,5 +118,28 @@ public class State_CircleDynamic : FSMStateBase
 	protected virtual void SetSpeed(BaseEntity target, float distToTarget, float normalizedDist)
 	{
 		base.Agent.SetSpeedRatio(normalizedDist, minSpeed, maxSpeed, burstSpeedIndexOffset);
+	}
+
+	public State_CircleDynamic()
+	{
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		maxSpeed = RustNavMeshAgent.Speeds.Sprint;
+		distanceSpeedRange = new Vector2(10f, 50f);
+		angleRange = Vector2.op_Implicit(new Vector3(20f, 80f));
+		angleDurationRange = new Vector2(1f, 3f);
+		burstDurationRange = new Vector2(1f, 3f);
+		burstCooldownRange = new Vector2(1f, 10f);
+		clockWise = true;
+		base._002Ector();
 	}
 }

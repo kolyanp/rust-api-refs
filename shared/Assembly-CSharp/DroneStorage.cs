@@ -12,7 +12,7 @@ public class DroneStorage : StorageContainer
 
 	public float ThrownWeaponDelayMod = 1f;
 
-	private static readonly Phrase FailPhrase = new Phrase("drone_storage.fail", "Drone is stuck, can't access inventory");
+	private static readonly Phrase FailPhrase;
 
 	private const float DroneBoxOffset = 0.14f;
 
@@ -222,5 +222,12 @@ public class DroneStorage : StorageContainer
 				}
 			}
 		}, 2f);
+	}
+
+	static DroneStorage()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		FailPhrase = new Phrase("drone_storage.fail", "Drone is stuck, can't access inventory");
 	}
 }

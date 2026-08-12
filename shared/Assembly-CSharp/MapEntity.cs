@@ -91,8 +91,8 @@ public class MapEntity : HeldEntity
 		info.msg.mapEntity.paintImages.AddRange(paintImages);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	public void ImageUpdate(RPCMessage msg)
 	{

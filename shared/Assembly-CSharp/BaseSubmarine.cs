@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Network;
@@ -36,8 +37,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	private bool wasOnSurface;
 
-	[Header("Submarine Main")]
 	[SerializeField]
+	[Header("Submarine Main")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -93,19 +94,19 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[FormerlySerializedAs("internalAccessFuelTank")]
 	private bool internalAccessStorage;
 
-	[SerializeField]
 	[Header("Submarine Weaponry")]
+	[SerializeField]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
 	public Transform torpedoFiringPoint;
 
-	[SerializeField]
 	[FormerlySerializedAs("maxFireRate")]
+	[SerializeField]
 	public float reloadTime = 1.5f;
 
-	[SerializeField]
 	[Header("Submarine Audio & FX")]
+	[SerializeField]
 	protected SubmarineAudio submarineAudio;
 
 	[SerializeField]
@@ -195,6 +196,9 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[ServerVar(Help = "How long a submarine can stay underwater until players start taking damage from low oxygen")]
 	public static float oxygenminutes = 10f;
 
+	[CompilerGenerated]
+	private Vector3 _003CVelocity_003Ek__BackingField;
+
 	public const Flags Flag_Ammo = Flags.Reserved6;
 
 	private float _throttle;
@@ -225,7 +229,22 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 
 	public VehicleEngineController<BaseSubmarine>.EngineState EngineState => engineController.CurEngineState;
 
-	public Vector3 Velocity { get; private set; }
+	public Vector3 Velocity
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CVelocity_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CVelocity_003Ek__BackingField = value;
+		}
+	}
 
 	public bool LightsAreOn => HasFlag(Flags.Reserved5);
 
@@ -708,7 +727,7 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 						}
 					}
 				}
-				if (!prevPrimaryFireInput && flag && TimeSince.op_Implicit(timeSinceFailRPCSent) > 0.5f)
+				if ((!prevPrimaryFireInput & flag) && TimeSince.op_Implicit(timeSinceFailRPCSent) > 0.5f)
 				{
 					timeSinceFailRPCSent = TimeSince.op_Implicit(0f);
 					ClientRPC(RpcTarget.Player("TorpedoFireFailed", driver));

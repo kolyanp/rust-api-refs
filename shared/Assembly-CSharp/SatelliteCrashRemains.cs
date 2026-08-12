@@ -39,7 +39,7 @@ public class SatelliteCrashRemains : BaseCombatEntity
 
 	private float tooHotUntil;
 
-	private static readonly Phrase TooHotToHarvestPhrase = new Phrase("satcrashremains_too_hot", "The wreckage is too hot to harvest! Wait for it to cool off");
+	private static readonly Phrase TooHotToHarvestPhrase;
 
 	private const string TooHotEffect = "assets/bundled/prefabs/fx/impacts/additive/fire.prefab";
 
@@ -227,5 +227,12 @@ public class SatelliteCrashRemains : BaseCombatEntity
 				ScheduleDespawn(lifetimeRemaining);
 			}
 		}
+	}
+
+	static SatelliteCrashRemains()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		TooHotToHarvestPhrase = new Phrase("satcrashremains_too_hot", "The wreckage is too hot to harvest! Wait for it to cool off");
 	}
 }

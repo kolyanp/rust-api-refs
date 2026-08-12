@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class ServerBrowserTagFilters : MonoBehaviour
 {
-	public UnityEvent TagFiltersChanged = new UnityEvent();
+	public UnityEvent TagFiltersChanged;
 
 	private ServerBrowserTagGroup[] _groups;
 
@@ -111,5 +111,13 @@ public class ServerBrowserTagFilters : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public ServerBrowserTagFilters()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Expected O, but got Unknown
+		TagFiltersChanged = new UnityEvent();
+		((MonoBehaviour)this)._002Ector();
 	}
 }

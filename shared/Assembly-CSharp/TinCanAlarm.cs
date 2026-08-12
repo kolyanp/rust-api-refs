@@ -227,8 +227,7 @@ public class TinCanAlarm : StorageContainer, IDetector
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
 		float maxDistance = Vector3.Distance(wireOrigin.position, position);
 		Vector3 val = position - wireOrigin.position;
-		RaycastHit hitInfo;
-		bool flag = GamePhysics.Trace(new Ray(wireOrigin.position, val), 0f, out hitInfo, maxDistance, 1218519297, (QueryTriggerInteraction)1, this);
+		bool flag = GamePhysics.Trace(new Ray(wireOrigin.position, val), 0f, out var _, maxDistance, 1218519297, (QueryTriggerInteraction)1, this);
 		if (!flag)
 		{
 			flag = GamePhysics.Trace(new Ray(position, -val), 0f, out var _, maxDistance, 1218519297, (QueryTriggerInteraction)1, this);

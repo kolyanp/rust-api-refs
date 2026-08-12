@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
 [DisallowMultipleComponent]
 [ExecuteAlways]
+[RequireComponent(typeof(RectTransform))]
 public class UIBorder : MonoBehaviour
 {
 	private const string ChildName = "_UIBorder";
@@ -22,7 +22,7 @@ public class UIBorder : MonoBehaviour
 	private float left;
 
 	[SerializeField]
-	private Color color = Color.white;
+	private Color color;
 
 	[SerializeField]
 	private float topLeftRadius;
@@ -38,7 +38,7 @@ public class UIBorder : MonoBehaviour
 
 	[Range(1f, 32f)]
 	[SerializeField]
-	private int segmentsPerCorner = 8;
+	private int segmentsPerCorner;
 
 	[HideInInspector]
 	[SerializeField]
@@ -285,5 +285,14 @@ public class UIBorder : MonoBehaviour
 			graphic.SetSides(top, right, bottom, left, color);
 			graphic.SetCorners(topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius, segmentsPerCorner);
 		}
+	}
+
+	public UIBorder()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		color = Color.white;
+		segmentsPerCorner = 8;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

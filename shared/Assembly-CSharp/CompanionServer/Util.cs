@@ -16,19 +16,19 @@ public static class Util
 {
 	public const int OceanMargin = 500;
 
-	public static readonly Phrase NotificationEmpty = new Phrase("app.error.empty", "Notification was not sent because it was missing some content.");
+	public static readonly Phrase NotificationEmpty;
 
-	public static readonly Phrase NotificationDisabled = new Phrase("app.error.disabled", "Rust+ features are disabled on this server.");
+	public static readonly Phrase NotificationDisabled;
 
-	public static readonly Phrase NotificationRateLimit = new Phrase("app.error.ratelimit", "You are sending too many notifications at a time. Please wait and then try again.");
+	public static readonly Phrase NotificationRateLimit;
 
-	public static readonly Phrase NotificationServerError = new Phrase("app.error.servererror", "The companion server failed to send the notification.");
+	public static readonly Phrase NotificationServerError;
 
-	public static readonly Phrase NotificationNoTargets = new Phrase("app.error.notargets", "Open the Rust+ menu in-game to pair your phone with this server.");
+	public static readonly Phrase NotificationNoTargets;
 
-	public static readonly Phrase NotificationTooManySubscribers = new Phrase("app.error.toomanysubs", "There are too many players subscribed to these notifications.");
+	public static readonly Phrase NotificationTooManySubscribers;
 
-	public static readonly Phrase NotificationUnknown = new Phrase("app.error.unknown", "An unknown error occurred sending the notification.");
+	public static readonly Phrase NotificationUnknown;
 
 	public static Vector2 WorldToMap(Vector3 worldPos)
 	{
@@ -154,8 +154,7 @@ public static class Util
 		{
 			return null;
 		}
-		bool locked;
-		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(player.userID, out locked);
+		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(player.userID, out var _);
 		dictionary.Add("playerId", player.UserIDString);
 		dictionary.Add("playerToken", orGenerateAppToken.ToString("G", CultureInfo.InvariantCulture));
 		return dictionary;
@@ -256,5 +255,30 @@ public static class Util
 			NotificationSendResult.TooManySubscribers => NotificationTooManySubscribers, 
 			_ => NotificationUnknown, 
 		});
+	}
+
+	static Util()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Expected O, but got Unknown
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Expected O, but got Unknown
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Expected O, but got Unknown
+		NotificationEmpty = new Phrase("app.error.empty", "Notification was not sent because it was missing some content.");
+		NotificationDisabled = new Phrase("app.error.disabled", "Rust+ features are disabled on this server.");
+		NotificationRateLimit = new Phrase("app.error.ratelimit", "You are sending too many notifications at a time. Please wait and then try again.");
+		NotificationServerError = new Phrase("app.error.servererror", "The companion server failed to send the notification.");
+		NotificationNoTargets = new Phrase("app.error.notargets", "Open the Rust+ menu in-game to pair your phone with this server.");
+		NotificationTooManySubscribers = new Phrase("app.error.toomanysubs", "There are too many players subscribed to these notifications.");
+		NotificationUnknown = new Phrase("app.error.unknown", "An unknown error occurred sending the notification.");
 	}
 }

@@ -35,7 +35,14 @@ public class State_MoveToCoverHiddenFromTarget : FSMStateBase
 
 	private NpcZoneComponent NpcZoneComponent => _npcZoneComponent ?? (_npcZoneComponent = ((Component)Owner).GetComponent<NpcZoneComponent>());
 
-	private AIInformationZone InfoZone => _infoZone ?? (_infoZone = AIInformationZone.GetForPoint(((Component)Owner).transform.position));
+	private AIInformationZone InfoZone
+	{
+		get
+		{
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			return _infoZone ?? (_infoZone = AIInformationZone.GetForPoint(((Component)Owner).transform.position));
+		}
+	}
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{

@@ -19,8 +19,8 @@ using UnityEngine;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("debug")]
+[ResetStaticFields]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
@@ -64,8 +64,8 @@ public class Debugging : ConsoleSystem
 	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
-	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	[ServerVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
+	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
 	public static bool log
 	{
 		get
@@ -86,8 +86,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) Generates and logs a render info report showing draw calls, batch counts, triangle counts, and shadow caster counts for the current frame")]
+	[ClientVar(ClientAdmin = true)]
 	public static void renderinfo(Arg arg)
 	{
 		RenderInfo.GenerateReport();
@@ -452,7 +452,11 @@ public class Debugging : ConsoleSystem
 				{
 					List<Door> list = Pool.Get<List<Door>>();
 					global::Vis.Entities(((Component)newEntity).transform.position, 10f, list, -1, (QueryTriggerInteraction)2);
-					Door door = list.OrderBy((Door x) => x.Distance(((Component)newEntity).transform.position)).FirstOrDefault();
+					Door door = list.OrderBy(delegate(Door x)
+					{
+						//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+						return x.Distance(((Component)newEntity).transform.position);
+					}).FirstOrDefault();
 					if ((Object)(object)door != (Object)null)
 					{
 						doorManipulator.targetDoor = door;
@@ -1368,8 +1372,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	[ServerVar]
+	[Help("Arg0: mission stage (int), Arg1: block objective resetting (bool, default false)")]
 	public static void completeMissionStage(Arg arg)
 	{
 		int num = arg.GetInt(0, -1);
@@ -1995,8 +1999,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
+	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	public static void testerror(Arg arg)
 	{
 		Debug.LogError((object)"Test error message");

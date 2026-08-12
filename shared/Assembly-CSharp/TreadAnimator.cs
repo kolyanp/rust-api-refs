@@ -21,31 +21,48 @@ public class TreadAnimator : MonoBehaviour, IClientComponent
 
 	public Vector3[] wheelBoneOrigin;
 
-	public float wheelBoneDistMax = 0.26f;
+	public float wheelBoneDistMax;
 
 	public TreadRenderer[] treadRenderers;
 
 	public TreadEffects treadEffects;
 
-	public float traceThickness = 0.25f;
+	public float traceThickness;
 
-	public float heightFudge = 0.13f;
+	public float heightFudge;
 
 	public bool useWheelYOrigin;
 
-	public Vector2 treadTextureDirection = new Vector2(1f, 0f);
+	public Vector2 treadTextureDirection;
 
 	public bool isMetallic;
 
-	public float angularTreadConstant = 0.05f;
+	public float angularTreadConstant;
 
-	public float treadConstant = 0.14f;
+	public float treadConstant;
 
-	public float wheelSpinConstant = 80f;
+	public float wheelSpinConstant;
 
-	public float traceLineMin = 0.55f;
+	public float traceLineMin;
 
-	public float traceLineMax = 0.79f;
+	public float traceLineMax;
 
-	public float maxShockDist = 0.26f;
+	public float maxShockDist;
+
+	public TreadAnimator()
+	{
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		wheelBoneDistMax = 0.26f;
+		traceThickness = 0.25f;
+		heightFudge = 0.13f;
+		treadTextureDirection = new Vector2(1f, 0f);
+		angularTreadConstant = 0.05f;
+		treadConstant = 0.14f;
+		wheelSpinConstant = 80f;
+		traceLineMin = 0.55f;
+		traceLineMax = 0.79f;
+		maxShockDist = 0.26f;
+		((MonoBehaviour)this)._002Ector();
+	}
 }

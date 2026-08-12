@@ -43,19 +43,19 @@ public class Shield : HeldEntity
 	private float lastBlockTime;
 
 	[ReplicatedVar]
-	public static bool InfiniteShieldBlock = false;
+	public static bool InfiniteShieldBlock;
 
 	private Action shieldBlockTick;
 
 	private bool serverWantsBlock;
 
-	private static Vector3 MaximumLocalPosition = new Vector3(0.39f, 1.62f, 0.41f);
+	private static Vector3 MaximumLocalPosition;
 
-	private static Vector3 MinimumLocalPosition = new Vector3(-0.66f, 0.66f, -0.44f);
+	private static Vector3 MinimumLocalPosition;
 
-	private static Vector3 MaximumLocalRotation = new Vector3(360f, 360f, 360f);
+	private static Vector3 MaximumLocalRotation;
 
-	private static Vector3 MinimumLocalRotation = new Vector3(2.5f, 2.14f, 0.04f);
+	private static Vector3 MinimumLocalRotation;
 
 	private TimeSince serverSideShieldBlockStarted;
 
@@ -158,9 +158,9 @@ public class Shield : HeldEntity
 		return AssetNameCache.GetName(ShieldCollider.sharedMaterial);
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(10uL)]
 	private void ServerToggleBlock(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -434,5 +434,22 @@ public class Shield : HeldEntity
 	public void SetSideColliderState(bool enable)
 	{
 		sideShieldCollider.enabled = enable;
+	}
+
+	static Shield()
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		InfiniteShieldBlock = false;
+		MaximumLocalPosition = new Vector3(0.39f, 1.62f, 0.41f);
+		MinimumLocalPosition = new Vector3(-0.66f, 0.66f, -0.44f);
+		MaximumLocalRotation = new Vector3(360f, 360f, 360f);
+		MinimumLocalRotation = new Vector3(2.5f, 2.14f, 0.04f);
 	}
 }

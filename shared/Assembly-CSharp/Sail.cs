@@ -69,9 +69,26 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 
 	public bool WindBlocked => HasFlag(Flags.Reserved14);
 
-	public Vector3 ThrustPosition => ((Component)this).transform.position + ((Component)this).transform.up * 1f;
+	public Vector3 ThrustPosition
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.position + ((Component)this).transform.up * 1f;
+		}
+	}
 
-	public Vector3 Direction => ((Component)this).transform.forward;
+	public Vector3 Direction
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.forward;
+		}
+	}
 
 	float IBoatPropulsion.MaxThrust => MaxThrust;
 
@@ -371,7 +388,7 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 			for (int i = 0; i < list.Count; i++)
 			{
 				BaseEntity entity = RaycastHitEx.GetEntity(list[i]);
-				if (!(Object.op_Implicit((Object)(object)entity) && entity.isClient && ignoreClient))
+				if (!((Object.op_Implicit((Object)(object)entity) && entity.isClient) & ignoreClient))
 				{
 					Pool.FreeUnmanaged<RaycastHit>(ref list);
 					return true;
@@ -478,9 +495,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		return DeployVolume.Check(((Component)this).transform.position, ((Component)this).transform.rotation * Quaternion.AngleAxis(180f, Vector3.up), volumes, ~(1 << ((Component)this).gameObject.layer));
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void LowerSail(RPCMessage msg)
 	{
 		Lower(msg.player);
@@ -526,9 +543,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		ToggleColliders();
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	public void RaiseSail(RPCMessage msg)
 	{
 		Raise(msg.player);

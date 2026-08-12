@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class ItemModUpgrade : ItemMod
 {
-	public static readonly Phrase UpgradeItemTitle = new Phrase("upgrade_item", "Upgrade");
+	public static readonly Phrase UpgradeItemTitle;
 
-	public static readonly Phrase UpgradeItemDesc = new Phrase("upgrade_item_desc", "Upgrade item");
+	public static readonly Phrase UpgradeItemDesc;
 
 	public int numForUpgrade = 10;
 
@@ -60,5 +60,15 @@ public class ItemModUpgrade : ItemMod
 				Effect.server.Run(failEffect.resourcePath, player.eyes.position);
 			}
 		}
+	}
+
+	static ItemModUpgrade()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		UpgradeItemTitle = new Phrase("upgrade_item", "Upgrade");
+		UpgradeItemDesc = new Phrase("upgrade_item_desc", "Upgrade item");
 	}
 }

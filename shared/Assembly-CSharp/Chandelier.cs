@@ -38,9 +38,9 @@ public class Chandelier : IOEntity
 
 	private const float baseBoundsSizeY = 0.35f;
 
-	public static Phrase BlockedByObjectPhrase = new Phrase("chandelier.blocked", "Cannot extend through solid objects");
+	public static Phrase BlockedByObjectPhrase;
 
-	public static Phrase MaxLengthPhrase = new Phrase("chandelier.maxlengthreached", "Maximum length reached");
+	public static Phrase MaxLengthPhrase;
 
 	private float __sync_ChandelierLength;
 
@@ -392,5 +392,15 @@ public class Chandelier : IOEntity
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	static Chandelier()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		BlockedByObjectPhrase = new Phrase("chandelier.blocked", "Cannot extend through solid objects");
+		MaxLengthPhrase = new Phrase("chandelier.maxlengthreached", "Maximum length reached");
 	}
 }

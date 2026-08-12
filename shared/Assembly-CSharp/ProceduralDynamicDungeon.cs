@@ -7,15 +7,15 @@ using UnityEngine;
 
 public class ProceduralDynamicDungeon : BaseEntity
 {
-	public int gridResolution = 6;
+	public int gridResolution;
 
-	public float gridSpacing = 12f;
+	public float gridSpacing;
 
 	public bool[] grid;
 
-	public List<GameObjectRef> cellPrefabReferences = new List<GameObjectRef>();
+	public List<GameObjectRef> cellPrefabReferences;
 
-	public List<ProceduralDungeonCell> spawnedCells = new List<ProceduralDungeonCell>();
+	public List<ProceduralDungeonCell> spawnedCells;
 
 	public EnvironmentVolume envVolume;
 
@@ -31,7 +31,7 @@ public class ProceduralDynamicDungeon : BaseEntity
 
 	public uint baseseed;
 
-	public Vector3 mapOffset = Vector3.zero;
+	public Vector3 mapOffset;
 
 	public static readonly List<ProceduralDynamicDungeon> dungeons = new List<ProceduralDynamicDungeon>();
 
@@ -376,7 +376,7 @@ public class ProceduralDynamicDungeon : BaseEntity
 		bool flag = CanSeeEntrance(x, y - 1, ref checkedCells);
 		bool flag2 = CanSeeEntrance(x - 1, y, ref checkedCells);
 		bool flag3 = CanSeeEntrance(x + 1, y, ref checkedCells);
-		return num || flag3 || flag2 || flag;
+		return num | flag3 | flag2 | flag;
 	}
 
 	public bool HasPathToEntrance(int x, int y)
@@ -458,5 +458,17 @@ public class ProceduralDynamicDungeon : BaseEntity
 	public int GetGridIndex(int x, int y)
 	{
 		return y * gridResolution + x;
+	}
+
+	public ProceduralDynamicDungeon()
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		gridResolution = 6;
+		gridSpacing = 12f;
+		cellPrefabReferences = new List<GameObjectRef>();
+		spawnedCells = new List<ProceduralDungeonCell>();
+		mapOffset = Vector3.zero;
+		base._002Ector();
 	}
 }

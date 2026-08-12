@@ -23,29 +23,29 @@ public static class MapImageRenderer
 		}
 	}
 
-	private static readonly Vector4 StartColor = new Vector4(0.28627452f, 23f / 85f, 0.24705884f, 1f);
+	private static readonly Vector4 StartColor;
 
-	private static readonly Vector4 WaterColor = new Vector4(0.16941601f, 0.31755757f, 0.36200002f, 1f);
+	private static readonly Vector4 WaterColor;
 
-	private static readonly Vector4 GravelColor = new Vector4(0.25f, 37f / 152f, 0.22039475f, 1f);
+	private static readonly Vector4 GravelColor;
 
-	private static readonly Vector4 DirtColor = new Vector4(0.6f, 0.47959462f, 0.33f, 1f);
+	private static readonly Vector4 DirtColor;
 
-	private static readonly Vector4 SandColor = new Vector4(0.7f, 0.65968585f, 0.5277487f, 1f);
+	private static readonly Vector4 SandColor;
 
-	private static readonly Vector4 GrassColor = new Vector4(0.35486364f, 0.37f, 0.2035f, 1f);
+	private static readonly Vector4 GrassColor;
 
-	private static readonly Vector4 ForestColor = new Vector4(0.24843751f, 0.3f, 9f / 128f, 1f);
+	private static readonly Vector4 ForestColor;
 
-	private static readonly Vector4 RockColor = new Vector4(0.4f, 0.39379844f, 0.37519377f, 1f);
+	private static readonly Vector4 RockColor;
 
-	private static readonly Vector4 SnowColor = new Vector4(0.86274517f, 0.9294118f, 0.94117653f, 1f);
+	private static readonly Vector4 SnowColor;
 
-	private static readonly Vector4 PebbleColor = new Vector4(7f / 51f, 0.2784314f, 0.2761563f, 1f);
+	private static readonly Vector4 PebbleColor;
 
-	private static readonly Vector4 OffShoreColor = new Vector4(0.04090196f, 0.22060032f, 14f / 51f, 1f);
+	private static readonly Vector4 OffShoreColor;
 
-	private static readonly Vector3 SunDirection = Vector3.Normalize(new Vector3(0.95f, 2.87f, 2.37f));
+	private static readonly Vector3 SunDirection;
 
 	private const float SunPower = 0.65f;
 
@@ -55,7 +55,7 @@ public static class MapImageRenderer
 
 	private const float OceanWaterLevel = 0f;
 
-	private static readonly Vector4 Half = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
+	private static readonly Vector4 Half;
 
 	public static byte[] Render(out int imageWidth, out int imageHeight, out Color background, float scale = 0.5f, bool lossy = true, bool transparent = false, int oceanMargin = 500)
 	{
@@ -70,7 +70,7 @@ public static class MapImageRenderer
 		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
-		if (lossy && transparent)
+		if (lossy & transparent)
 		{
 			throw new ArgumentException("Rendering a transparent map is not possible when using lossy compression (JPG)");
 		}
@@ -284,5 +284,49 @@ public static class MapImageRenderer
 		((Vector2)(ref val2))._002Ector(val.x, val.y);
 		val.z = Mathf.Sqrt(1f - Mathf.Clamp(Vector2.Dot(val2, val2), 0f, 1f));
 		return val;
+	}
+
+	static MapImageRenderer()
+	{
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		StartColor = new Vector4(0.28627452f, 23f / 85f, 0.24705884f, 1f);
+		WaterColor = new Vector4(0.16941601f, 0.31755757f, 0.36200002f, 1f);
+		GravelColor = new Vector4(0.25f, 37f / 152f, 0.22039475f, 1f);
+		DirtColor = new Vector4(0.6f, 0.47959462f, 0.33f, 1f);
+		SandColor = new Vector4(0.7f, 0.65968585f, 0.5277487f, 1f);
+		GrassColor = new Vector4(0.35486364f, 0.37f, 0.2035f, 1f);
+		ForestColor = new Vector4(0.24843751f, 0.3f, 9f / 128f, 1f);
+		RockColor = new Vector4(0.4f, 0.39379844f, 0.37519377f, 1f);
+		SnowColor = new Vector4(0.86274517f, 0.9294118f, 0.94117653f, 1f);
+		PebbleColor = new Vector4(7f / 51f, 0.2784314f, 0.2761563f, 1f);
+		OffShoreColor = new Vector4(0.04090196f, 0.22060032f, 14f / 51f, 1f);
+		SunDirection = Vector3.Normalize(new Vector3(0.95f, 2.87f, 2.37f));
+		Half = new Vector4(0.5f, 0.5f, 0.5f, 0.5f);
 	}
 }

@@ -1,12 +1,22 @@
 using UnityEngine;
 
-public struct Half3(Vector3 vec)
+public struct Half3
 {
-	public ushort x = Mathf.FloatToHalf(vec.x);
+	public ushort x;
 
-	public ushort y = Mathf.FloatToHalf(vec.y);
+	public ushort y;
 
-	public ushort z = Mathf.FloatToHalf(vec.z);
+	public ushort z;
+
+	public Half3(Vector3 vec)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		x = Mathf.FloatToHalf(vec.x);
+		y = Mathf.FloatToHalf(vec.y);
+		z = Mathf.FloatToHalf(vec.z);
+	}
 
 	public static explicit operator Vector3(Half3 vec)
 	{

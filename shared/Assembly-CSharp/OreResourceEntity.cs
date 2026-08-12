@@ -12,7 +12,7 @@ public class OreResourceEntity : StagedResourceEntity
 
 	public GameObjectRef bonusFailEffect;
 
-	public bool useHotspotMinigame = true;
+	public bool useHotspotMinigame;
 
 	public SoundPlayer bonusSound;
 
@@ -26,7 +26,7 @@ public class OreResourceEntity : StagedResourceEntity
 
 	private Action _actionRespawnBonus;
 
-	public Vector3 lastNodeDir = Vector3.zero;
+	public Vector3 lastNodeDir;
 
 	private Ray? spawnBonusHitRay;
 
@@ -95,7 +95,7 @@ public class OreResourceEntity : StagedResourceEntity
 				{
 					num = (((Object)(object)_hotSpot != (Object)null) ? Vector3.Distance(info.HitPositionWorld, ((Component)_hotSpot).transform.position) : float.MaxValue);
 				}
-				if (flag || flag2 || num <= ((Component)_hotSpot).GetComponent<SphereCollider>().radius * 1.5f)
+				if ((flag | flag2) || num <= ((Component)_hotSpot).GetComponent<SphereCollider>().radius * 1.5f)
 				{
 					bonusesKilled++;
 					info.gatherScale = 1f + Mathf.Clamp((float)bonusesKilled * 0.5f, 0f, 2f * num2);
@@ -513,5 +513,14 @@ public class OreResourceEntity : StagedResourceEntity
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
 		return Vector3.zero;
+	}
+
+	public OreResourceEntity()
+	{
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+		useHotspotMinigame = true;
+		lastNodeDir = Vector3.zero;
+		base._002Ector();
 	}
 }

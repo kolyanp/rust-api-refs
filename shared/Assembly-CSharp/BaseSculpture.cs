@@ -20,8 +20,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private Action resetBlockExcludeLayersAction;
 
-	[Header("BaseSculpture")]
 	[SerializeField]
+	[Header("BaseSculpture")]
 	private MeshFilter targetMesh;
 
 	[SerializeField]
@@ -37,7 +37,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	private DamageType carvingDamageType;
 
 	[SerializeField]
-	private Vector3Int gridResolution = new Vector3Int(32, 32, 32);
+	private Vector3Int gridResolution;
 
 	[SerializeField]
 	private Vector3 gridOffset;
@@ -54,8 +54,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	[SerializeField]
 	private CapsuleCollider playerPushCollider;
 
-	[SerializeField]
 	[Header("Mesh Painting")]
+	[SerializeField]
 	private GameObjectRef meshPaintDialogueRef;
 
 	[SerializeField]
@@ -90,13 +90,41 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private static string SculpturePath => ConVar.Server.GetServerFolder("sculptures");
 
-	public Vector3Int GridResolution => gridResolution;
+	public Vector3Int GridResolution
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return gridResolution;
+		}
+	}
 
-	public float3 GridOffset => float3.op_Implicit(gridOffset);
+	public float3 GridOffset
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return float3.op_Implicit(gridOffset);
+		}
+	}
 
 	public float GridScale => gridScale;
 
-	public Bounds GridBounds => new Bounds(-gridOffset * gridScale, Vector3Int.op_Implicit(gridResolution) * gridScale);
+	public Bounds GridBounds
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			return new Bounds(-gridOffset * gridScale, Vector3Int.op_Implicit(gridResolution) * gridScale);
+		}
+	}
 
 	[Sync(Autosave = true, RequireChange = false, InvalidateCache = true, Pack = false)]
 	private uint crc
@@ -123,7 +151,14 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	SDFSet IMarchingCubesTarget.SDFSet => SDFSet;
 
-	Vector3 IMarchingCubesTarget.VertexOffset => gridOffset;
+	Vector3 IMarchingCubesTarget.VertexOffset
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return gridOffset;
+		}
+	}
 
 	float IMarchingCubesTarget.VertexScale => gridScale;
 
@@ -289,8 +324,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_LockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player))
@@ -301,8 +336,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		flagsUpdateScope.Set(Flags.Locked, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_UnlockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player, ignoreLock: true))
@@ -343,8 +378,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ServerUpdateProcessQueue.Clear();
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	private void SV_SendSculptureUpdate(RPCMessage msg)
 	{
@@ -1115,5 +1150,13 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 			return true;
 		}
 		return base.ShouldInvalidateCache(id);
+	}
+
+	public BaseSculpture()
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		gridResolution = new Vector3Int(32, 32, 32);
+		base._002Ector();
 	}
 }

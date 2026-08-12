@@ -4,14 +4,14 @@ namespace FIMSpace.Basics;
 
 public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 {
-	[Header("When you scale object change")]
-	[Header("something in script to apply")]
-	[Space(10f)]
 	[Tooltip("Texture identificator in shader")]
-	public string TextureProperty = "_MainTex";
+	[Header("When you scale object change")]
+	[Space(10f)]
+	[Header("something in script to apply")]
+	public string TextureProperty;
 
 	[Tooltip("How much tiles should be multiplied according to gameObject's scale")]
-	public Vector2 ScaleValues = new Vector2(1f, 1f);
+	public Vector2 ScaleValues;
 
 	[Tooltip("When scale on Y should be same as X")]
 	public bool EqualDimensions;
@@ -41,5 +41,14 @@ public class FBasic_MaterialTiler : FBasic_MaterialScriptBase
 			RendererMaterial.SetTextureScale("_MainTex", scaleValues);
 			ObjectRenderer.material = RendererMaterial;
 		}
+	}
+
+	public FBasic_MaterialTiler()
+	{
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		TextureProperty = "_MainTex";
+		ScaleValues = new Vector2(1f, 1f);
+		base._002Ector();
 	}
 }

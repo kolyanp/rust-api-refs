@@ -44,7 +44,7 @@ public class ProjectileWeaponMod : BaseEntity
 
 	private static TimeSince lastToastTime;
 
-	public static Phrase ToggleZoomToastPhrase = new Phrase("toast.toggle_zoom", "Press [PageUp] and [PageDown] to toggle scope zoom level");
+	public static Phrase ToggleZoomToastPhrase;
 
 	[Header("Weapon Basics")]
 	public Modifier repeatDelay;
@@ -104,29 +104,29 @@ public class ProjectileWeaponMod : BaseEntity
 
 	private bool hasZoomBeenInit;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectDamage = (ProjectileWeaponMod x) => x.projectileDamage;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectDamage;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectDistance = (ProjectileWeaponMod x) => x.projectileDistance;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectDistance;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectVelocity = (ProjectileWeaponMod x) => x.projectileVelocity;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectVelocity;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectMagCap = (ProjectileWeaponMod x) => x.magazineCapacity;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectMagCap;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectSightAimCone = (ProjectileWeaponMod x) => x.sightAimCone;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectSightAimCone;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectHipAimCone = (ProjectileWeaponMod x) => x.hipAimCone;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectHipAimCone;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectRepeatDelay = (ProjectileWeaponMod x) => x.repeatDelay;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectRepeatDelay;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectRecoil = (ProjectileWeaponMod x) => x.recoil;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectRecoil;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectAimSway = (ProjectileWeaponMod x) => x.aimsway;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectAimSway;
 
-	public static readonly Func<ProjectileWeaponMod, Modifier> SelectAimSwaySpeed = (ProjectileWeaponMod x) => x.aimswaySpeed;
+	public static readonly Func<ProjectileWeaponMod, Modifier> SelectAimSwaySpeed;
 
-	public static readonly Func<Modifier, float> SelectOffset = (Modifier x) => x.offset;
+	public static readonly Func<Modifier, float> SelectOffset;
 
-	public static readonly Func<Modifier, float> SelectScalar = (Modifier x) => x.scalar;
+	public static readonly Func<Modifier, float> SelectScalar;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -189,8 +189,8 @@ public class ProjectileWeaponMod : BaseEntity
 		info.msg.projectileWeaponMod.zoomLevel = serverZoomLevel;
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	public void SetZoomLevel(int zoomLevel)
 	{
 		serverZoomLevel = zoomLevel;
@@ -404,7 +404,7 @@ public class ProjectileWeaponMod : BaseEntity
 	{
 		if ((Object)(object)mod != (Object)null)
 		{
-			if (!(!mod.needsOnForEffects || bypassModToggles))
+			if (!(!mod.needsOnForEffects | bypassModToggles))
 			{
 				return mod.HasFlag(Flags.On);
 			}
@@ -427,5 +427,24 @@ public class ProjectileWeaponMod : BaseEntity
 			}
 		}
 		return false;
+	}
+
+	static ProjectileWeaponMod()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		ToggleZoomToastPhrase = new Phrase("toast.toggle_zoom", "Press [PageUp] and [PageDown] to toggle scope zoom level");
+		SelectDamage = (ProjectileWeaponMod x) => x.projectileDamage;
+		SelectDistance = (ProjectileWeaponMod x) => x.projectileDistance;
+		SelectVelocity = (ProjectileWeaponMod x) => x.projectileVelocity;
+		SelectMagCap = (ProjectileWeaponMod x) => x.magazineCapacity;
+		SelectSightAimCone = (ProjectileWeaponMod x) => x.sightAimCone;
+		SelectHipAimCone = (ProjectileWeaponMod x) => x.hipAimCone;
+		SelectRepeatDelay = (ProjectileWeaponMod x) => x.repeatDelay;
+		SelectRecoil = (ProjectileWeaponMod x) => x.recoil;
+		SelectAimSway = (ProjectileWeaponMod x) => x.aimsway;
+		SelectAimSwaySpeed = (ProjectileWeaponMod x) => x.aimswaySpeed;
+		SelectOffset = (Modifier x) => x.offset;
+		SelectScalar = (Modifier x) => x.scalar;
 	}
 }

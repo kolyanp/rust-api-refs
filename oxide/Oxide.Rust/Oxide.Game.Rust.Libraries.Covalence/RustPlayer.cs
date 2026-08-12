@@ -25,23 +25,83 @@ public class RustPlayer : IPlayer, IEquatable<IPlayer>
 
 	public string Id { get; }
 
-	public CultureInfo Language => ((Object)(object)player != (Object)null) ? libPlayer.Language(player) : CultureInfo.GetCultureInfo("en");
+	public CultureInfo Language
+	{
+		get
+		{
+			if (!((Object)(object)player != (Object)null))
+			{
+				return CultureInfo.GetCultureInfo("en");
+			}
+			return libPlayer.Language(player);
+		}
+	}
 
-	public string Address => ((Object)(object)player != (Object)null) ? libPlayer.Address(player) : "0.0.0.0";
+	public string Address
+	{
+		get
+		{
+			if (!((Object)(object)player != (Object)null))
+			{
+				return "0.0.0.0";
+			}
+			return libPlayer.Address(player);
+		}
+	}
 
-	public int Ping => ((Object)(object)player != (Object)null) ? libPlayer.Ping(player) : 0;
+	public int Ping
+	{
+		get
+		{
+			if (!((Object)(object)player != (Object)null))
+			{
+				return 0;
+			}
+			return libPlayer.Ping(player);
+		}
+	}
 
 	public bool IsAdmin => libPlayer.IsAdmin(steamId);
 
 	public bool IsBanned => libPlayer.IsBanned(steamId);
 
-	public bool IsConnected => ((Object)(object)player != (Object)null) ? libPlayer.IsConnected(player) : ((Object)(object)BasePlayer.FindByID(steamId) != (Object)null);
+	public bool IsConnected
+	{
+		get
+		{
+			if (!((Object)(object)player != (Object)null))
+			{
+				return (Object)(object)BasePlayer.FindByID(steamId) != (Object)null;
+			}
+			return libPlayer.IsConnected(player);
+		}
+	}
 
-	public bool IsSleeping => ((Object)(object)player != (Object)null) ? libPlayer.IsSleeping(player) : ((Object)(object)BasePlayer.FindSleeping(steamId) != (Object)null);
+	public bool IsSleeping
+	{
+		get
+		{
+			if (!((Object)(object)player != (Object)null))
+			{
+				return (Object)(object)BasePlayer.FindSleeping(steamId) != (Object)null;
+			}
+			return libPlayer.IsSleeping(player);
+		}
+	}
 
 	public bool IsServer => false;
 
-	public TimeSpan BanTimeRemaining => IsBanned ? TimeSpan.MaxValue : TimeSpan.Zero;
+	public TimeSpan BanTimeRemaining
+	{
+		get
+		{
+			if (!IsBanned)
+			{
+				return TimeSpan.Zero;
+			}
+			return TimeSpan.MaxValue;
+		}
+	}
 
 	public float Health
 	{
@@ -135,11 +195,11 @@ public class RustPlayer : IPlayer, IEquatable<IPlayer>
 
 	public void Position(out float x, out float y, out float z)
 	{
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = libPlayer.Position(player);
 		x = val.x;
 		y = val.y;
@@ -148,11 +208,11 @@ public class RustPlayer : IPlayer, IEquatable<IPlayer>
 
 	public GenericPosition Position()
 	{
-		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = libPlayer.Position(player);
 		return new GenericPosition(val.x, val.y, val.z);
 	}
@@ -227,7 +287,11 @@ public class RustPlayer : IPlayer, IEquatable<IPlayer>
 
 	public override bool Equals(object obj)
 	{
-		return obj is IPlayer && Id == ((IPlayer)obj).Id;
+		if (obj is IPlayer)
+		{
+			return Id == ((IPlayer)obj).Id;
+		}
+		return false;
 	}
 
 	public override int GetHashCode()

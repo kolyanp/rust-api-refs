@@ -53,8 +53,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[Header("References - Queue")]
 	[SerializeField]
+	[Header("References - Queue")]
 	private RustText _queueText;
 
 	[SerializeField]

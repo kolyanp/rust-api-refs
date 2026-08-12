@@ -31,8 +31,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	private const float TIME_BETWEEN_LOCK_REFRESH = 1f;
 
-	[Header("Vehicle Module")]
 	[SerializeField]
+	[Header("Vehicle Module")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -40,8 +40,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public VisualGroup visualGroup;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private VehicleLight[] lights;
 
 	public LODLevel[] lodRenderers;
@@ -75,11 +75,25 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public int FirstSocketIndex { get; private set; } = -1;
 
-	public Vector3 CentreOfMass => centreOfMassTransform.localPosition;
+	public Vector3 CentreOfMass
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return centreOfMassTransform.localPosition;
+		}
+	}
 
 	public float Mass => mass;
 
-	public NetworkableId ID => net.ID;
+	public NetworkableId ID
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return net.ID;
+		}
+	}
 
 	public bool IsOnAVehicle => (Object)(object)Vehicle != (Object)null;
 
@@ -229,8 +243,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Use(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -519,7 +533,7 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 				flag = !flag3;
 				break;
 			case ConditionalObject.AdjacentCondition.BothSame:
-				flag = flag2 && flag3;
+				flag = flag2 & flag3;
 				break;
 			}
 		}

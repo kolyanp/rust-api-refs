@@ -21,11 +21,47 @@ public class Planner : HeldEntity
 		public string[] Arguments;
 	}
 
+	[CompilerGenerated]
+	private Vector3 _003CserverStartDurationPlacementPosition_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private TimeSince _003CserverStartDurationPlacementTime_003Ek__BackingField;
+
 	public BaseEntity[] buildableList;
 
-	public Vector3 serverStartDurationPlacementPosition { get; private set; }
+	public Vector3 serverStartDurationPlacementPosition
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CserverStartDurationPlacementPosition_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CserverStartDurationPlacementPosition_003Ek__BackingField = value;
+		}
+	}
 
-	public TimeSince serverStartDurationPlacementTime { get; private set; }
+	public TimeSince serverStartDurationPlacementTime
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CserverStartDurationPlacementTime_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CserverStartDurationPlacementTime_003Ek__BackingField = value;
+		}
+	}
 
 	public virtual bool isTypeDeployable => (Object)(object)GetModDeployable() != (Object)null;
 
@@ -134,9 +170,9 @@ public class Planner : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartDurationPlace(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)

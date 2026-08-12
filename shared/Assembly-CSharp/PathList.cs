@@ -163,11 +163,11 @@ public class PathList
 		}
 	}
 
-	private static Quaternion rot90 = Quaternion.Euler(0f, 90f, 0f);
+	private static Quaternion rot90;
 
-	private static Quaternion rot180 = Quaternion.Euler(0f, 180f, 0f);
+	private static Quaternion rot180;
 
-	private static Quaternion rot270 = Quaternion.Euler(0f, 270f, 0f);
+	private static Quaternion rot270;
 
 	public const float EndWidthScale = 3f;
 
@@ -217,7 +217,7 @@ public class PathList
 
 	public const float StepSize = 1f;
 
-	private static float[] placements = new float[3] { 0f, -1f, 1f };
+	private static float[] placements;
 
 	public PathList(string name, Vector3[] points)
 	{
@@ -2040,7 +2040,7 @@ public class PathList
 					MeshCache.Data data = array[num7];
 					MeshData meshData3 = meshData;
 					int count = meshData3.vertices.Count;
-					float num8 = ((num7 == 2 && !(flag4 && flag3)) ? 1f : ((!(num7 == 3 && flag2) || flag) ? 0f : 1f));
+					float num8 = ((num7 == 2 && !(flag4 & flag3)) ? 1f : ((!((num7 == 3) & flag2) || flag) ? 0f : 1f));
 					float num9 = ((num7 == 0) ? 1f : 0f);
 					for (int m = 0; m < data.vertices.Length; m++)
 					{
@@ -2145,5 +2145,19 @@ public class PathList
 			baseDepth *= num2;
 		}
 		return Mathf.Lerp(baseDepth, baseDepth * randomScale, Noise.SimplexUnsigned(distance * 0.005f));
+	}
+
+	static PathList()
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		rot90 = Quaternion.Euler(0f, 90f, 0f);
+		rot180 = Quaternion.Euler(0f, 180f, 0f);
+		rot270 = Quaternion.Euler(0f, 270f, 0f);
+		placements = new float[3] { 0f, -1f, 1f };
 	}
 }

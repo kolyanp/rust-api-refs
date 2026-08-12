@@ -12,13 +12,13 @@ public class Vis : ConsoleSystem
 	public static bool damage;
 
 	[Help("Turns on debug display of attacks")]
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool attack;
 
 	[Help("Turns on debug display of protection")]
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool protection;
 
 	[ServerVar]
@@ -29,8 +29,8 @@ public class Vis : ConsoleSystem
 	[Help("Show trigger entries")]
 	public static bool triggers;
 
-	[ServerVar]
 	[Help("Turns on debug display of hitboxes")]
+	[ServerVar]
 	public static bool hitboxes;
 
 	[ServerVar]

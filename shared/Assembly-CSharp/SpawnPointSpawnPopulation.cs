@@ -29,8 +29,7 @@ public class SpawnPointSpawnPopulation : SpawnPopulationBase
 			if ((Object)(object)item != (Object)null && item.IsAvailableTo(prefab.Object))
 			{
 				item.GetLocation(out var pos, out var rot);
-				GameObject spawned;
-				Status status = spawnHandler.TrySpawn(this, prefab, pos, rot, out spawned);
+				Status status = spawnHandler.TrySpawn(this, prefab, pos, rot, out var _);
 				spawnHandler.ReportAttempt(status, pos);
 				numToFill--;
 				if (numToFill == 0)

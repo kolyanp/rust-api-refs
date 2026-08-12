@@ -40,7 +40,12 @@ public class NPCApartmentSecurity : NPCTalking
 		}
 		List<TimerSwitch> list = Pool.Get<List<TimerSwitch>>();
 		Vis.Entities(position, 10f, list, -1, (QueryTriggerInteraction)2);
-		TimerSwitch timerSwitch = list.OrderByDescending((TimerSwitch x) => Vector3.Distance(position, ((Component)player).transform.position)).FirstOrDefault((TimerSwitch x) => !x.isClient);
+		TimerSwitch timerSwitch = list.OrderByDescending(delegate
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+			return Vector3.Distance(position, ((Component)player).transform.position);
+		}).FirstOrDefault((TimerSwitch x) => !x.isClient);
 		if ((Object)(object)timerSwitch != (Object)null)
 		{
 			timerSwitch.timerLength = ApartmentCommands.apartmentsecurityaccesstime;

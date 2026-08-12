@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AddToAlphaMap : ProceduralObject
 {
-	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
+	public Bounds bounds;
 
 	public override void Process()
 	{
@@ -30,5 +30,15 @@ public class AddToAlphaMap : ProceduralObject
 			TerrainMeta.AlphaMap.SetAlpha(x, z, 0f);
 		});
 		GameManager.Destroy((Component)(object)this);
+	}
+
+	public AddToAlphaMap()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		bounds = new Bounds(Vector3.zero, Vector3.one);
+		base._002Ector();
 	}
 }

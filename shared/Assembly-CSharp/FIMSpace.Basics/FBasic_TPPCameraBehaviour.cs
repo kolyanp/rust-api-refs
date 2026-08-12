@@ -9,40 +9,40 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	public Transform ToFollow;
 
 	[Header("Offset in position in reference to target transform (focus point)")]
-	public Vector3 FollowingOffset = new Vector3(0f, 1.5f, 0f);
+	public Vector3 FollowingOffset;
 
 	[Header("Offset in position in reference to camera orientation")]
-	public Vector3 FollowingOffsetDirection = new Vector3(0f, 0f, 0f);
+	public Vector3 FollowingOffsetDirection;
 
 	[Header("Clamp values for zoom of camera")]
-	public Vector2 DistanceRanges = new Vector2(5f, 10f);
+	public Vector2 DistanceRanges;
 
 	private float targetDistance;
 
 	private float animatedDistance;
 
-	public Vector2 RotationRanges = new Vector2(-5f, 60f);
+	public Vector2 RotationRanges;
 
-	private Vector2 targetSphericRotation = new Vector2(0f, 0f);
+	private Vector2 targetSphericRotation;
 
-	private Vector2 animatedSphericRotation = new Vector2(0f, 0f);
+	private Vector2 animatedSphericRotation;
 
 	[Space(10f)]
 	[Tooltip("Sensitivity value for rotating camera around following object")]
-	public float RotationSensitivity = 10f;
+	public float RotationSensitivity;
 
-	[Header("If you want camera rotation to be smooth")]
 	[Range(0.1f, 1f)]
-	public float RotationSpeed = 1f;
+	[Header("If you want camera rotation to be smooth")]
+	public float RotationSpeed;
 
-	[Header("If you want camera to follow target with some smoothness")]
 	[Range(0f, 1f)]
-	public float HardFollowValue = 1f;
+	[Header("If you want camera to follow target with some smoothness")]
+	public float HardFollowValue;
 
 	[Header("If you want to hold cursor (cursor switch on TAB)")]
-	public bool LockCursor = true;
+	public bool LockCursor;
 
-	private bool rotateCamera = true;
+	private bool rotateCamera;
 
 	private RaycastHit sightObstacleHit;
 
@@ -52,7 +52,7 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 	private Vector3 targetPosition;
 
 	[Header("How far forward raycast should check collision for camera")]
-	public float CollisionOffset = 1f;
+	public float CollisionOffset;
 
 	public EFUpdateClock UpdateClock;
 
@@ -266,5 +266,34 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 			Cursor.lockState = (CursorLockMode)0;
 			Cursor.visible = true;
 		}
+	}
+
+	public FBasic_TPPCameraBehaviour()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		FollowingOffset = new Vector3(0f, 1.5f, 0f);
+		FollowingOffsetDirection = new Vector3(0f, 0f, 0f);
+		DistanceRanges = new Vector2(5f, 10f);
+		RotationRanges = new Vector2(-5f, 60f);
+		targetSphericRotation = new Vector2(0f, 0f);
+		animatedSphericRotation = new Vector2(0f, 0f);
+		RotationSensitivity = 10f;
+		RotationSpeed = 1f;
+		HardFollowValue = 1f;
+		LockCursor = true;
+		rotateCamera = true;
+		CollisionOffset = 1f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

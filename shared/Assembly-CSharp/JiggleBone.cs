@@ -2,23 +2,23 @@ using UnityEngine;
 
 public class JiggleBone : BaseMonoBehaviour
 {
-	public bool debugMode = true;
+	public bool debugMode;
 
 	private Vector3 targetPos;
 
 	private Vector3 dynamicPos;
 
-	public Vector3 boneAxis = new Vector3(0f, 0f, 1f);
+	public Vector3 boneAxis;
 
-	public float targetDistance = 2f;
+	public float targetDistance;
 
-	public float bStiffness = 0.1f;
+	public float bStiffness;
 
-	public float bMass = 0.9f;
+	public float bMass;
 
-	public float bDamping = 0.75f;
+	public float bDamping;
 
-	public float bGravity = 0.75f;
+	public float bGravity;
 
 	private Vector3 force;
 
@@ -26,13 +26,13 @@ public class JiggleBone : BaseMonoBehaviour
 
 	private Vector3 vel;
 
-	public bool SquashAndStretch = true;
+	public bool SquashAndStretch;
 
-	public float sideStretch = 0.15f;
+	public float sideStretch;
 
-	public float frontStretch = 0.2f;
+	public float frontStretch;
 
-	public float disableDistance = 20f;
+	public float disableDistance;
 
 	private void Awake()
 	{
@@ -124,5 +124,23 @@ public class JiggleBone : BaseMonoBehaviour
 			Debug.DrawRay(val3, Vector3.up * 0.2f, Color.yellow);
 			Debug.DrawRay(dynamicPos, Vector3.up * 0.2f, Color.red);
 		}
+	}
+
+	public JiggleBone()
+	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		debugMode = true;
+		boneAxis = new Vector3(0f, 0f, 1f);
+		targetDistance = 2f;
+		bStiffness = 0.1f;
+		bMass = 0.9f;
+		bDamping = 0.75f;
+		bGravity = 0.75f;
+		SquashAndStretch = true;
+		sideStretch = 0.15f;
+		frontStretch = 0.2f;
+		disableDistance = 20f;
+		base._002Ector();
 	}
 }

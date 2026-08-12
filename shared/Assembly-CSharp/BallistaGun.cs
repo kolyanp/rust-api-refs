@@ -35,30 +35,30 @@ public class BallistaGun : BaseVehicleSeat
 		Down
 	}
 
-	[SerializeField]
 	[Header("Ballista")]
-	private bool isMountedOnVehicle = true;
+	[SerializeField]
+	private bool isMountedOnVehicle;
 
 	[SerializeField]
-	private float turnSensivity = 2f;
+	private float turnSensivity;
 
 	[SerializeField]
-	private float reloadTime = 3f;
+	private float reloadTime;
 
 	[SerializeField]
-	private bool syncAimDirOnFire = true;
+	private bool syncAimDirOnFire;
 
 	[SerializeField]
-	private bool syncAimDirOnReload = true;
+	private bool syncAimDirOnReload;
 
 	[SerializeField]
 	private bool reloadPreventsAiming;
 
 	[SerializeField]
-	private float fovMultiplier = 1f;
+	private float fovMultiplier;
 
 	[SerializeField]
-	private bool noHeadshots = true;
+	private bool noHeadshots;
 
 	[SerializeField]
 	private CapsuleCollider playerServerCollider;
@@ -96,7 +96,7 @@ public class BallistaGun : BaseVehicleSeat
 	private bool useVehicleParentYaw;
 
 	[SerializeField]
-	protected BUTTON reloadButton = BUTTON.RELOAD;
+	protected BUTTON reloadButton;
 
 	public DamageRenderer damageRenderer;
 
@@ -112,8 +112,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[SerializeField]
 	[Header("Effects")]
+	[SerializeField]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -143,8 +143,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -199,11 +199,11 @@ public class BallistaGun : BaseVehicleSeat
 
 	public const Flags Flag_Loaded = Flags.Reserved5;
 
-	private readonly float progressTickRate = 0.1f;
+	private readonly float progressTickRate;
 
 	private RealTimeSinceEx timeSinceLastServerTick;
 
-	private Vector3 lastSentAimDir = Vector3.zero;
+	private Vector3 lastSentAimDir;
 
 	public virtual bool RunInLateUpdate => runInLateUpdate;
 
@@ -590,14 +590,13 @@ public class BallistaGun : BaseVehicleSeat
 			Quaternion val3 = Quaternion.LookRotation(val2, Vector3.up);
 			float num2 = ClampYaw(((Quaternion)(ref val3)).eulerAngles.y, 0f);
 			Quaternion val4 = Quaternion.Euler(0f, num2, 0f);
-			Quaternion localPitchRot;
-			bool flag = TryGetAppliedAimDir(out localPitchRot);
+			bool flag = TryGetAppliedAimDir(out var localPitchRot);
 			Quaternion val5 = val.rotation * val4;
 			if (yawTransform.rotation != val5)
 			{
 				yawTransform.rotation = Mathx.Lerp(yawTransform.rotation, val5, num, dt);
 			}
-			if (!RunInLateUpdate && ShouldApplyAimDir() && flag && pitchTransform.localRotation != localPitchRot)
+			if (((!RunInLateUpdate && ShouldApplyAimDir()) & flag) && pitchTransform.localRotation != localPitchRot)
 			{
 				pitchTransform.localRotation = Mathx.Lerp(pitchTransform.localRotation, localPitchRot, num, dt);
 			}
@@ -1076,9 +1075,9 @@ public class BallistaGun : BaseVehicleSeat
 		mounted.inventory.ServerUpdate(0f);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1343,8 +1342,8 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
@@ -1372,9 +1371,9 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server.FromMounted]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromMounted]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1502,5 +1501,22 @@ public class BallistaGun : BaseVehicleSeat
 			}
 		}
 		base.Load(info);
+	}
+
+	public BallistaGun()
+	{
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		isMountedOnVehicle = true;
+		turnSensivity = 2f;
+		reloadTime = 3f;
+		syncAimDirOnFire = true;
+		syncAimDirOnReload = true;
+		fovMultiplier = 1f;
+		noHeadshots = true;
+		reloadButton = BUTTON.RELOAD;
+		progressTickRate = 0.1f;
+		lastSentAimDir = Vector3.zero;
+		base._002Ector();
 	}
 }

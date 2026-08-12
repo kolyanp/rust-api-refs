@@ -5,13 +5,13 @@ public class LinearFog : MonoBehaviour
 {
 	public Material fogMaterial;
 
-	public Color fogColor = Color.white;
+	public Color fogColor;
 
 	public float fogStart;
 
-	public float fogRange = 1f;
+	public float fogRange;
 
-	public float fogDensity = 1f;
+	public float fogDensity;
 
 	public bool fogSky;
 
@@ -39,5 +39,15 @@ public class LinearFog : MonoBehaviour
 		{
 			Graphics.Blit((Texture)(object)source, destination, fogMaterial, i);
 		}
+	}
+
+	public LinearFog()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		fogColor = Color.white;
+		fogRange = 1f;
+		fogDensity = 1f;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

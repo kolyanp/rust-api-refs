@@ -56,11 +56,11 @@ public class BuildingBlock : StabilityEntity
 
 	private MeshCollider placeholderCollider;
 
-	public static UpdateSkinWorkQueue updateSkinQueueServer = new UpdateSkinWorkQueue();
+	public static UpdateSkinWorkQueue updateSkinQueueServer;
 
-	public static readonly Phrase RotateTitle = new Phrase("rotate", "Rotate");
+	public static readonly Phrase RotateTitle;
 
-	public static readonly Phrase RotateDesc = new Phrase("rotate_building_desc", "Rotate or flip this block to face a different direction");
+	public static readonly Phrase RotateDesc;
 
 	private bool globalNetworkCooldown;
 
@@ -661,11 +661,11 @@ public class BuildingBlock : StabilityEntity
 		lastModelState = modelState;
 		bool flag3 = lastCustomColour != customColour;
 		lastCustomColour = customColour;
-		if (flag || flag2 || forceSkinRefresh || flag3)
+		if (((flag | flag2) || forceSkinRefresh) | flag3)
 		{
 			currentSkin.Refresh(this);
 			OnSkinRefresh();
-			if (base.isServer && flag2)
+			if (base.isServer & flag2)
 			{
 				CheckForPipes();
 			}
@@ -811,8 +811,8 @@ public class BuildingBlock : StabilityEntity
 		return !player.IsBuildingBlocked(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void DoRotation(RPCMessage msg)
 	{
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
@@ -979,7 +979,7 @@ public class BuildingBlock : StabilityEntity
 					wallpaperProtection.Scale(damageTypeList);
 				}
 				float totalDamage = damageTypeList.Total();
-				if (majorityDamageType == DamageType.Decay || flag || majorityDamageType == DamageType.Heat)
+				if (((majorityDamageType == DamageType.Decay) | flag) || majorityDamageType == DamageType.Heat)
 				{
 					DamageWallpaper(totalDamage);
 					DamageWallpaper(totalDamage, 1);
@@ -1112,8 +1112,8 @@ public class BuildingBlock : StabilityEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_PickupWallpaperStart(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && ShouldDisplayPickupOption(msg.player) && CanCompletePickup(msg.player))
@@ -1462,6 +1462,9 @@ public class BuildingBlock : StabilityEntity
 		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		updateSkinQueueServer = new UpdateSkinWorkQueue();
+		RotateTitle = new Phrase("rotate", "Rotate");
+		RotateDesc = new Phrase("rotate_building_desc", "Rotate or flip this block to face a different direction");
 		Vector3[] array = new Vector3[5];
 		Vector3 val = new Vector3(0f, 1f, 0f);
 		array[0] = ((Vector3)(ref val)).normalized;

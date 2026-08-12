@@ -467,7 +467,7 @@ public static class FEngineering
 
 	public static float PerlinNoise3D(float x, float y, float z)
 	{
-		y += 1f;
+		y++;
 		z += 2f;
 		float num = Mathf.Sin(MathF.PI * Mathf.PerlinNoise(x, y));
 		float num2 = Mathf.Sin(MathF.PI * Mathf.PerlinNoise(x, z));

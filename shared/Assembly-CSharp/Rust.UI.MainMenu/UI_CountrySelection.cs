@@ -20,5 +20,12 @@ public class UI_CountrySelection : UI_Window
 
 	public RustButton changeCountryButton;
 
-	private static readonly Phrase automaticPhrase = new Phrase("countryselect.automatic", "Automatic");
+	private static readonly Phrase automaticPhrase;
+
+	static UI_CountrySelection()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		automaticPhrase = new Phrase("countryselect.automatic", "Automatic");
+	}
 }

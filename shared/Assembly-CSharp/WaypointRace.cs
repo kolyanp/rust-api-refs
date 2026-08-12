@@ -86,16 +86,16 @@ public class WaypointRace : BaseEntity
 
 	private int currentWaypoint;
 
-	public static Phrase stageNotifyPhrase = new Phrase("race_notify", "Reached checkpoint {0}/{1} : {2}s");
+	public static Phrase stageNotifyPhrase;
 
-	public static Phrase raceCompletePhrase = new Phrase("race_complete", "Finished race {0}/{1} in {2}s");
+	public static Phrase raceCompletePhrase;
 
 	private PendingRaceResults raceResults;
 
 	private TimeSince startTime;
 
 	[ServerVar(Saved = true, Help = "How long a race can go until it times out (in seconds)")]
-	public static float raceTimeout = 900f;
+	public static float raceTimeout;
 
 	[ServerVar]
 	public static void startRace(ConsoleSystem.Arg arg)
@@ -263,5 +263,16 @@ public class WaypointRace : BaseEntity
 			SendNetworkUpdate();
 		}
 		Pool.FreeUnmanaged<BasePlayer>(ref list);
+	}
+
+	static WaypointRace()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		stageNotifyPhrase = new Phrase("race_notify", "Reached checkpoint {0}/{1} : {2}s");
+		raceCompletePhrase = new Phrase("race_complete", "Finished race {0}/{1} in {2}s");
+		raceTimeout = 900f;
 	}
 }

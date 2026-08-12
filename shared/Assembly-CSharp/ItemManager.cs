@@ -322,7 +322,7 @@ public class ItemManager
 			Debug.LogError((object)("Creating item with less than 1 amount! (" + template.displayName.english + ")"));
 			return null;
 		}
-		Item item = ((EnablePooling && isServerSide) ? Pool.Get<Item>() : new Item());
+		Item item = ((EnablePooling & isServerSide) ? Pool.Get<Item>() : new Item());
 		item.isServer = isServerSide;
 		item.info = template;
 		item.amount = iAmount;
@@ -355,7 +355,7 @@ public class ItemManager
 	{
 		if (created == null)
 		{
-			created = ((EnablePooling && isServer) ? Pool.Get<Item>() : new Item());
+			created = ((EnablePooling & isServer) ? Pool.Get<Item>() : new Item());
 		}
 		created.isServer = isServer;
 		created.Load(load);

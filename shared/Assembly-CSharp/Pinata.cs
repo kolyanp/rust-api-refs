@@ -19,18 +19,13 @@ public class Pinata : BaseCombatEntity
 	public float DropPointRadius;
 
 	[Header("Hit Animation")]
-	public float TotalSwingTime = 0.6f;
+	public float TotalSwingTime;
 
-	public float SwingForce = 45f;
+	public float SwingForce;
 
 	public Transform SwingTransform;
 
-	public AnimationCurve SwingCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[3]
-	{
-		new Keyframe(0f, 0f),
-		new Keyframe(0.5f, 1f),
-		new Keyframe(1f, 0f)
-	});
+	public AnimationCurve SwingCurve;
 
 	[Header("Visual")]
 	public VisualThreshold[] Thresholds;
@@ -39,7 +34,7 @@ public class Pinata : BaseCombatEntity
 
 	public Transform DestroyEffectSpawnPos;
 
-	public float HangLength = -1.863f;
+	public float HangLength;
 
 	public GameObjectRef FinalDestroyEffect;
 
@@ -60,5 +55,27 @@ public class Pinata : BaseCombatEntity
 				ItemManager.Create(itemAmount.itemDef, (int)itemAmount.amount, 0uL, isServerSide: true, 0uL).CreateWorldObject(DropPoint.position + Random.onUnitSphere * Random.Range(0f, DropPointRadius));
 			}
 		}
+	}
+
+	public Pinata()
+	{
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Expected O, but got Unknown
+		TotalSwingTime = 0.6f;
+		SwingForce = 45f;
+		SwingCurve = new AnimationCurve((Keyframe[])(object)new Keyframe[3]
+		{
+			new Keyframe(0f, 0f),
+			new Keyframe(0.5f, 1f),
+			new Keyframe(1f, 0f)
+		});
+		HangLength = -1.863f;
+		base._002Ector();
 	}
 }

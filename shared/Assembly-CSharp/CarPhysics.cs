@@ -81,7 +81,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 
 	private float speedAngle;
 
-	private bool wasSleeping = true;
+	private bool wasSleeping;
 
 	private bool hasDriver;
 
@@ -89,7 +89,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 
 	private float steerLerpSpeed;
 
-	public float lastMovingTime = float.MinValue;
+	public float lastMovingTime;
 
 	private WheelFrictionCurve zeroFriction;
 
@@ -149,6 +149,8 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		wasSleeping = true;
+		lastMovingTime = float.MinValue;
 		WheelFrictionCurve val = default(WheelFrictionCurve);
 		((WheelFrictionCurve)(ref val)).stiffness = 0f;
 		zeroFriction = val;

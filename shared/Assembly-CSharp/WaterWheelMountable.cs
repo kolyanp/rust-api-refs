@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WaterWheelMountable : BaseMountable
 {
-	public static readonly Phrase NeedSustenance = new Phrase("waterwheel.needSustenance", "Too hungry to use...");
+	public static readonly Phrase NeedSustenance;
 
 	public const Flags PlayerRunningInside = Flags.Reserved11;
 
@@ -14,7 +14,7 @@ public class WaterWheelMountable : BaseMountable
 
 	private ElectricWaterWheel _waterWheel;
 
-	private static readonly int PushingWaterwheel = Animator.StringToHash("pushingWaterWheel");
+	private static readonly int PushingWaterwheel;
 
 	private TimeSince lastToastWarning;
 
@@ -50,7 +50,7 @@ public class WaterWheelMountable : BaseMountable
 			player.metabolism.SendChanges();
 		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved11, AnyMounted() && !flag2 && flag);
+		flagsUpdateScope.Set(Flags.Reserved11, (AnyMounted() && !flag2) & flag);
 	}
 
 	public override void OnPlayerDismounted(BasePlayer player)
@@ -79,5 +79,13 @@ public class WaterWheelMountable : BaseMountable
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = position - mountAnchor.position;
 		return Vector3.Dot(((Vector3)(ref val)).normalized, ((Component)this).transform.forward) > 0.2f;
+	}
+
+	static WaterWheelMountable()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		NeedSustenance = new Phrase("waterwheel.needSustenance", "Too hungry to use...");
+		PushingWaterwheel = Animator.StringToHash("pushingWaterWheel");
 	}
 }

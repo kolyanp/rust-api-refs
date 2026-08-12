@@ -14,8 +14,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private RustButton rightArrowButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureWidget[] gestureWidgets;
 
 	[SerializeField]
@@ -37,8 +37,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private float initialAngleOffset;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
 	[SerializeField]

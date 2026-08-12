@@ -79,31 +79,31 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 
 	public PlayerLoot loot;
 
-	public static Phrase BackpackGroundedError = new Phrase("error.backpackGrounded", "You must be on a solid surface to equip a backpack");
+	public static Phrase BackpackGroundedError;
 
 	public float inventoryRadioactivity;
 
 	public bool containsRadioactiveItems;
 
-	private static Comparison<HeldEntity> hostileComparer = null;
+	private static Comparison<HeldEntity> hostileComparer;
 
 	private Action _updatedVisibleHolsteredItemsCallback;
 
 	private Action _deferredServerUpdateAction;
 
-	private static BufferList<Item> multiContainerBuffer = new BufferList<Item>(128);
+	private static BufferList<Item> multiContainerBuffer;
 
 	private List<Item> returnItems;
 
 	[ServerVar(Help = "(Generated) When enabled, forces the birthday event state to true regardless of the actual date; overrides IsBirthday() calendar check for testing")]
-	public static bool forceBirthday = false;
+	public static bool forceBirthday;
 
 	[ServerVar(Help = "(Generated) When enabled, players can directionally drop items by looking in the desired direction; disable to revert to gravity-only drops")]
-	public static bool directionalDropEnabled = true;
+	public static bool directionalDropEnabled;
 
-	private static float nextCheckTime = 0f;
+	private static float nextCheckTime;
 
-	private static bool wasBirthday = false;
+	private static bool wasBirthday;
 
 	private Action DeferredServerUpdateAction => DeferredServerUpdate;
 
@@ -2071,7 +2071,7 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 		inventoryRadioactivity = num;
 		bool arg = (containsRadioactiveItems = num > 0f);
-		this.onRadioactivityChanged?.Invoke(num, arg);
+		onRadioactivityChanged?.Invoke(num, arg);
 	}
 
 	private void CalculateInventoryRadioactivityCheckFast()
@@ -2080,5 +2080,18 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		{
 			CalculateInventoryRadioactivity();
 		}
+	}
+
+	static PlayerInventory()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		BackpackGroundedError = new Phrase("error.backpackGrounded", "You must be on a solid surface to equip a backpack");
+		hostileComparer = null;
+		multiContainerBuffer = new BufferList<Item>(128);
+		forceBirthday = false;
+		directionalDropEnabled = true;
+		nextCheckTime = 0f;
+		wasBirthday = false;
 	}
 }

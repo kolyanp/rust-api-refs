@@ -56,6 +56,7 @@ public static class AntiHack
 		public GroupedLog(string playerName, AntiHackType antiHackType, string message, Vector3 pos)
 		{
 			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			SetInitial(playerName, antiHackType, message, pos);
 		}
 
@@ -302,7 +303,7 @@ public static class AntiHack
 				}
 			}
 			Pool.FreeUnmanaged<Collider>(ref list);
-			if (recheck || recheckTerrain)
+			if (recheck | recheckTerrain)
 			{
 				if (!recheckTerrain && (Object)(object)ignoreEntity == (Object)null)
 				{
@@ -311,8 +312,7 @@ public static class AntiHack
 					col = ((RaycastHit)(ref val5)).collider;
 					return result;
 				}
-				RaycastHit hitInfo;
-				bool result2 = GamePhysics.Trace(val3, 0f, out hitInfo, magnitude + radius, num, (QueryTriggerInteraction)1, ignoreEntity) || GamePhysics.Trace(val3, radius, out hitInfo, magnitude, num, (QueryTriggerInteraction)1, ignoreEntity);
+				bool result2 = GamePhysics.Trace(val3, 0f, out var hitInfo, magnitude + radius, num, (QueryTriggerInteraction)1, ignoreEntity) || GamePhysics.Trace(val3, radius, out hitInfo, magnitude, num, (QueryTriggerInteraction)1, ignoreEntity);
 				col = ((RaycastHit)(ref hitInfo)).collider;
 				return result2;
 			}
@@ -615,7 +615,7 @@ public static class AntiHack
 						foundIndices.Add(ref playerIndex);
 						foundColls[playerIndex] = val2;
 					}
-					else if (recheck || recheckTerrain)
+					else if (recheck | recheckTerrain)
 					{
 						Vector3 val4 = ToOverlapFrom[i];
 						Vector3 val5 = ToOverlapTo[i];
@@ -1327,8 +1327,7 @@ public static class AntiHack
 						}
 						else if (Vector3.Distance(lastGroundedPosition, ((Component)basePlayer).transform.position) <= 10f)
 						{
-							Collider col;
-							bool num3 = TestNoClipping(basePlayer, ((Component)basePlayer).transform.position, lastGroundedPosition, BasePlayer.NoClipRadius(ConVar.AntiHack.noclip_margin), ConVar.AntiHack.noclip_backtracking, out col);
+							bool num3 = TestNoClipping(basePlayer, ((Component)basePlayer).transform.position, lastGroundedPosition, BasePlayer.NoClipRadius(ConVar.AntiHack.noclip_margin), ConVar.AntiHack.noclip_backtracking, out var _);
 							Vector3 val = lastGroundedPosition + new Vector3(0f, BasePlayer.GetRadius(), 0f);
 							Vector3 val2 = lastGroundedPosition + new Vector3(0f, basePlayer.GetHeight() - BasePlayer.GetRadius(), 0f);
 							if (!num3 && !Physics.CheckCapsule(val, val2, BasePlayer.GetRadius(), 1537286401))

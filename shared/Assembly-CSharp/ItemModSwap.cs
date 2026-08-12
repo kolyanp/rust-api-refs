@@ -97,7 +97,7 @@ public class ItemModSwap : ItemMod
 	private void SpawnItem(ItemAmount itemAmount, BasePlayer player, ItemContainer container, bool allowTeaBonus)
 	{
 		float num = 1f;
-		if (ApplyHarvestingTea && itemAmount.amount > 1f && allowTeaBonus)
+		if ((ApplyHarvestingTea && itemAmount.amount > 1f) & allowTeaBonus)
 		{
 			num += player.modifiers.GetValue(Modifier.ModifierType.Harvesting);
 		}

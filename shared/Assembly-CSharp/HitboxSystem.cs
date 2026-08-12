@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Development.Attributes;
 using Facepunch;
 using UnityEngine;
@@ -34,13 +35,53 @@ public class HitboxSystem : MonoBehaviour, IPrefabPreProcess
 
 		private Matrix4x4 inverseTransform;
 
-		public Matrix4x4 Transform => transform;
+		[CompilerGenerated]
+		private Vector3 _003CSize_003Ek__BackingField;
 
-		public Vector3 Position => ((Matrix4x4)(ref transform)).MultiplyPoint(Vector3.zero);
+		public Matrix4x4 Transform
+		{
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return transform;
+			}
+		}
 
-		public Quaternion Rotation => ((Matrix4x4)(ref transform)).rotation;
+		public Vector3 Position
+		{
+			get
+			{
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+				return ((Matrix4x4)(ref transform)).MultiplyPoint(Vector3.zero);
+			}
+		}
 
-		public Vector3 Size { get; private set; }
+		public Quaternion Rotation
+		{
+			get
+			{
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				return ((Matrix4x4)(ref transform)).rotation;
+			}
+		}
+
+		public Vector3 Size
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CSize_003Ek__BackingField;
+			}
+			[CompilerGenerated]
+			private set
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				_003CSize_003Ek__BackingField = value;
+			}
+		}
 
 		public void UpdateTransform()
 		{

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DeployVolumeOBB : DeployVolume
 {
-	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one);
+	public Bounds bounds;
 
 	public DeployVolumeOBB(Bounds bounds, LayerMask layers)
 	{
@@ -16,6 +16,8 @@ public class DeployVolumeOBB : DeployVolume
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		this.bounds = new Bounds(Vector3.zero, Vector3.one);
+		base._002Ector();
 		this.bounds = bounds;
 		base.layers = layers;
 	}

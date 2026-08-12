@@ -23,19 +23,19 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		public float broadcastRange;
 	}
 
-	public Phrase NPCName = new Phrase("", "");
+	public Phrase NPCName;
 
 	[ConversationData.DisplayGraphViewButton]
-	public ConversationData[] conversations = Array.Empty<ConversationData>();
+	public ConversationData[] conversations;
 
 	public static ListHashSet<IMissionProvider> serverMissionProviders = new ListHashSet<IMissionProvider>();
 
 	public NPCConversationResultAction[] conversationResultActions;
 
 	[NonSerialized]
-	public float maxConversationDistance = 5f;
+	public float maxConversationDistance;
 
-	public List<BasePlayer> conversingPlayers = new List<BasePlayer>();
+	public List<BasePlayer> conversingPlayers;
 
 	public BasePlayer lastActionPlayer;
 
@@ -307,8 +307,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_BeginTalking(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -376,8 +376,7 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 					Server_OnConversationEnded(ply);
 					return;
 				}
-				int nodeIndex;
-				ConversationData.AbstractSpeechNodeData firstSpeechNodeFrom = conversationFor.GetFirstSpeechNodeFrom(ply, this, text, out nodeIndex);
+				ConversationData.AbstractSpeechNodeData firstSpeechNodeFrom = conversationFor.GetFirstSpeechNodeFrom(ply, this, text, out var nodeIndex);
 				val.list = Pool.Get<List<bool>>();
 				if (ply.IsInTutorial || !flag)
 				{
@@ -416,9 +415,9 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_EndTalking(RPCMessage msg)
 	{
 		Server_OnConversationEnded(msg.player);
@@ -439,9 +438,9 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		return true;
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void Server_ResponsePressed(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -523,8 +522,8 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 		Interface.CallHook("OnNpcConversationResponded", this, player, conversationFor, responseNode);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	public void Server_RewardChoiceSelected(RPCMessage msg)
 	{
@@ -658,5 +657,16 @@ public class NPCTalking : NPCShopKeeper, IConversationProvider
 
 	protected virtual void TryAssignMissionToPlayer(BaseMission mission, BasePlayer player)
 	{
+	}
+
+	public NPCTalking()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Expected O, but got Unknown
+		NPCName = new Phrase("", "");
+		conversations = Array.Empty<ConversationData>();
+		maxConversationDistance = 5f;
+		conversingPlayers = new List<BasePlayer>();
+		base._002Ector();
 	}
 }

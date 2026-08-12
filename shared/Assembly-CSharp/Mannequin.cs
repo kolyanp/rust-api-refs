@@ -55,6 +55,9 @@ public class Mannequin : StorageContainer
 
 	public MannequinPose[] AvailablePoses;
 
+	[CompilerGenerated]
+	private TimeSince _003CLastPoseChange_003Ek__BackingField;
+
 	private static Item[] clothingBuffer;
 
 	private static Item[] lockerBuffer;
@@ -81,7 +84,22 @@ public class Mannequin : StorageContainer
 		}
 	}
 
-	public TimeSince LastPoseChange { get; set; }
+	public TimeSince LastPoseChange
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CLastPoseChange_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CLastPoseChange_003Ek__BackingField = value;
+		}
+	}
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{

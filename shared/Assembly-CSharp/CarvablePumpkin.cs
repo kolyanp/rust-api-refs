@@ -52,7 +52,14 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 
 	public FileStorage.Type FileType => FileStorage.Type.png;
 
-	public NetworkableId NetworkID => net.ID;
+	public NetworkableId NetworkID
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return net.ID;
+		}
+	}
 
 	public UGCType ContentType => UGCType.ImagePng;
 
@@ -204,9 +211,9 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		}
 	}
 
+	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxDistance(5f)]
 	public void UpdateSign(RPCMessage msg)
 	{
 		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
@@ -329,7 +336,7 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 				{
 					uint num3 = info.msg.sign.imageIds[i];
 					bool flag2 = num3 != textureIDs[i];
-					flag = flag || flag2;
+					flag |= flag2;
 					textureIDs[i] = num3;
 				}
 			}
@@ -388,8 +395,8 @@ public class CarvablePumpkin : BaseOven, ILOD, ISignage, IUGCBrowserEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void LockSign(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateSign(msg.player))

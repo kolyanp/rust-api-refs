@@ -504,7 +504,7 @@ public class BoatAI : BaseEntity
 			}
 			PlayerTarget playerTarget = boatAI.ActiveTarget as PlayerTarget;
 			bool flag = playerTarget != null && playerTarget.IsValid(boatAI) && playerTarget.Position.HasValue && Mathf.Abs(playerTarget.Position.Value.y - ((Component)boatAI._boat).transform.position.y) > 15f;
-			if (playerTarget == null || flag)
+			if ((playerTarget == null) | flag)
 			{
 				if (PRINT_DEBUGS)
 				{
@@ -585,7 +585,7 @@ public class BoatAI : BaseEntity
 				orbitPercent += 1f / 45f;
 				if (orbitPercent > 1f)
 				{
-					orbitPercent -= 1f;
+					orbitPercent--;
 				}
 				float radAngle = orbitPercent * (MathF.PI * 2f);
 				currentOrbitTargetPoint = GetPointOnCircle(boatAI.ProtectionCenter, 80f, radAngle);
@@ -767,6 +767,9 @@ public class BoatAI : BaseEntity
 
 	private const int CONTEXT_RESOLUTION = 8;
 
+	[CompilerGenerated]
+	private Vector3 _003CProtectionCenter_003Ek__BackingField;
+
 	[Header("Boat AI - Scientists")]
 	[SerializeField]
 	private bool _autoFillWithScientists;
@@ -804,12 +807,12 @@ public class BoatAI : BaseEntity
 
 	public const string DeepSeaPTBoatPath = "assets/content/vehicles/boats/ptboat/ptboat.deepsea.prefab";
 
-	[Header("Boat AI")]
 	[SerializeField]
+	[Header("Boat AI")]
 	private BaseBoat _boat;
 
-	[SerializeField]
 	[Header("Boat AI - General")]
+	[SerializeField]
 	private bool _autoInit;
 
 	[SerializeField]
@@ -821,8 +824,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[Header("Boat AI - Collision Avoidance")]
 	[SerializeField]
+	[Header("Boat AI - Collision Avoidance")]
 	private float _awarenessAngle;
 
 	[SerializeField]
@@ -920,7 +923,22 @@ public class BoatAI : BaseEntity
 		}
 	}
 
-	public Vector3 ProtectionCenter { get; set; }
+	public Vector3 ProtectionCenter
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CProtectionCenter_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CProtectionCenter_003Ek__BackingField = value;
+		}
+	}
 
 	public float ProtectionRadius { get; set; }
 
@@ -2202,7 +2220,7 @@ public class BoatAI : BaseEntity
 				bool flag = _stuckTimer >= 1f;
 				if (_driveLockTimer <= 0f)
 				{
-					if (_driveDirection == 1 && flag && num < -0.4f)
+					if (((_driveDirection == 1) & flag) && num < -0.4f)
 					{
 						_driveDirection = -1;
 						_driveLockTimer = 0.4f;
@@ -2376,7 +2394,7 @@ public class BoatAI : BaseEntity
 		};
 		SetMoveCommand(moveCommand);
 		PursuitTargetAcquireTime = Time.time;
-		if (!(InGroup && applyToGroup))
+		if (!(InGroup & applyToGroup))
 		{
 			return;
 		}

@@ -7,9 +7,9 @@ public class NpcZone : MonoBehaviour, IServerComponent
 {
 	private static List<NpcZone> zones = new List<NpcZone>();
 
-	public Bounds bounds = new Bounds(Vector3.zero, new Vector3(10f, 3.5f, 10f));
+	public Bounds bounds;
 
-	public bool drawBounds = true;
+	public bool drawBounds;
 
 	private void Awake()
 	{
@@ -75,5 +75,16 @@ public class NpcZone : MonoBehaviour, IServerComponent
 			}
 			return result;
 		}
+	}
+
+	public NpcZone()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		bounds = new Bounds(Vector3.zero, new Vector3(10f, 3.5f, 10f));
+		drawBounds = true;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

@@ -33,14 +33,14 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 
 	public bool debugDraw;
 
-	public float updateCullRange = 16f;
+	public float updateCullRange;
 
-	public float VehicleCheckRadius = 5f;
+	public float VehicleCheckRadius;
 
 	public Rigidbody Body;
 
 	[Range(0f, 1f)]
-	public float buoyancyAmplitude = 1f;
+	public float buoyancyAmplitude;
 
 	[ServerVar]
 	public static bool DestroyableByPlayerBoats = true;
@@ -53,9 +53,9 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 
 	private Action updateMovementFixedTick;
 
-	private Quaternion baseRotation = Quaternion.identity;
+	private Quaternion baseRotation;
 
-	private bool first = true;
+	private bool first;
 
 	private bool hasPlayersNearby;
 
@@ -312,5 +312,17 @@ public class JunkPileWater : JunkPile, IBudgetedFloatingEntity, IDestroyableOnPl
 			return ((Vector3)(ref linearVelocity)).magnitude >= MinimumPlayerBoatVelocityToBeDestroyed;
 		}
 		return false;
+	}
+
+	public JunkPileWater()
+	{
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		updateCullRange = 16f;
+		VehicleCheckRadius = 5f;
+		buoyancyAmplitude = 1f;
+		baseRotation = Quaternion.identity;
+		first = true;
+		base._002Ector();
 	}
 }

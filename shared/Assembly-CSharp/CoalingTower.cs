@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Network;
@@ -28,8 +29,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private Action CheckWagonLineUpCB;
 
-	[Header("Coaling Tower")]
 	[SerializeField]
+	[Header("Coaling Tower")]
 	private BoxCollider unloadingBounds;
 
 	[SerializeField]
@@ -88,8 +89,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private TokenisedPhrase trainHasThrottle;
 
-	[SerializeField]
 	[Header("Coaling Tower Audio")]
+	[SerializeField]
 	private GameObject buttonSoundPos;
 
 	[SerializeField]
@@ -186,6 +187,9 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	public const float TIME_TO_EMPTY = 40f;
 
+	[CompilerGenerated]
+	private Vector3 _003CUnloadingPos_003Ek__BackingField;
+
 	private static List<CoalingTower> unloadersInWorld = new List<CoalingTower>();
 
 	private Sound armMovementLoopSound;
@@ -204,7 +208,22 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private bool HasUnloadableLinedUp => HasFlag(Flags.Reserved2);
 
-	public Vector3 UnloadingPos { get; private set; }
+	public Vector3 UnloadingPos
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CUnloadingPos_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CUnloadingPos_003Ek__BackingField = value;
+		}
+	}
 
 	public override void Save(SaveInfo info)
 	{
@@ -551,8 +570,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Unload(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnCoalingTowerStart", this, msg.player) == null && !TryUnloadActiveWagon(out var attemptStatus) && (Object)(object)msg.player != (Object)null)

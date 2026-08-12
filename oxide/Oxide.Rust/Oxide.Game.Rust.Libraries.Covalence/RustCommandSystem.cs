@@ -52,19 +52,22 @@ public class RustCommandSystem : ICommandSystem
 
 	private bool CommandCallback(IPlayer caller, string cmd, string[] args)
 	{
-		RegisteredCommand value;
-		return registeredCommands.TryGetValue(cmd, out value) && value.Callback(caller, cmd, args);
+		if (registeredCommands.TryGetValue(cmd, out var value))
+		{
+			return value.Callback(caller, cmd, args);
+		}
+		return false;
 	}
 
 	public void RegisterCommand(string command, Plugin plugin, CommandCallback callback)
 	{
-		//IL_03c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0384: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0472: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0354: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0382: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0318: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0341: Unknown result type (might be due to invalid IL or missing references)
 		command = command.ToLowerInvariant().Trim();
 		string[] array = command.Split('.');
 		string text = ((array.Length >= 2) ? array[0].Trim() : "global");
@@ -175,53 +178,53 @@ public class RustCommandSystem : ICommandSystem
 
 	public void UnregisterCommand(string command, Plugin plugin)
 	{
-		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
 		if (!registeredCommands.TryGetValue(command, out var value) || plugin != value.Source)
 		{
 			return;
 		}
 		string[] array = command.Split('.');
-		string text = ((array.Length >= 2) ? array[0].Trim() : "global");
-		string text2 = ((array.Length >= 2) ? string.Join(".", array.Skip(1).ToArray()) : array[0].Trim());
-		string text3 = text + "." + text2;
+		string obj = ((array.Length >= 2) ? array[0].Trim() : "global");
+		string text = ((array.Length >= 2) ? string.Join(".", array.Skip(1).ToArray()) : array[0].Trim());
+		string text2 = obj + "." + text;
 		registeredCommands.Remove(command);
 		if (value.OriginalCallback != null)
 		{
-			if (ConsoleSystem.Index.Server.Dict.ContainsKey(StringView.op_Implicit(text3)))
+			if (ConsoleSystem.Index.Server.Dict.ContainsKey(StringView.op_Implicit(text2)))
 			{
-				ConsoleSystem.Index.Server.Dict[StringView.op_Implicit(text3)].Call = value.OriginalCallback;
+				ConsoleSystem.Index.Server.Dict[StringView.op_Implicit(text2)].Call = value.OriginalCallback;
 			}
-			if (text3.StartsWith("global.") && ConsoleSystem.Index.Server.GlobalDict.ContainsKey(StringView.op_Implicit(text2)))
+			if (text2.StartsWith("global.") && ConsoleSystem.Index.Server.GlobalDict.ContainsKey(StringView.op_Implicit(text)))
 			{
-				ConsoleSystem.Index.Server.GlobalDict[StringView.op_Implicit(text2)].Call = value.OriginalCallback;
+				ConsoleSystem.Index.Server.GlobalDict[StringView.op_Implicit(text)].Call = value.OriginalCallback;
 			}
 			if (value.OriginalRustCommand != null)
 			{
-				if (ConsoleSystem.Index.Server.Dict.ContainsKey(StringView.op_Implicit(text3)))
+				if (ConsoleSystem.Index.Server.Dict.ContainsKey(StringView.op_Implicit(text2)))
 				{
-					ConsoleSystem.Index.Server.Dict[StringView.op_Implicit(text3)] = value.OriginalRustCommand;
+					ConsoleSystem.Index.Server.Dict[StringView.op_Implicit(text2)] = value.OriginalRustCommand;
 				}
-				if (text3.StartsWith("global.") && ConsoleSystem.Index.Server.GlobalDict.ContainsKey(StringView.op_Implicit(text2)))
+				if (text2.StartsWith("global.") && ConsoleSystem.Index.Server.GlobalDict.ContainsKey(StringView.op_Implicit(text)))
 				{
-					ConsoleSystem.Index.Server.GlobalDict[StringView.op_Implicit(text2)] = value.OriginalRustCommand;
+					ConsoleSystem.Index.Server.GlobalDict[StringView.op_Implicit(text)] = value.OriginalRustCommand;
 				}
 			}
 		}
 		else
 		{
-			ConsoleSystem.Index.Server.Dict.Remove(StringView.op_Implicit(text3));
-			if (text3.StartsWith("global."))
+			ConsoleSystem.Index.Server.Dict.Remove(StringView.op_Implicit(text2));
+			if (text2.StartsWith("global."))
 			{
-				ConsoleSystem.Index.Server.GlobalDict.Remove(StringView.op_Implicit(text2));
+				ConsoleSystem.Index.Server.GlobalDict.Remove(StringView.op_Implicit(text));
 			}
 		}
 		ConsoleSystem.Index.All = ConsoleSystem.Index.Server.Dict.Values.ToArray();
@@ -235,9 +238,9 @@ public class RustCommandSystem : ICommandSystem
 	private bool CanOverrideCommand(string command)
 	{
 		string[] array = command.Split('.');
-		string text = ((array.Length >= 2) ? array[0].Trim() : "global");
-		string text2 = ((array.Length >= 2) ? string.Join(".", array.Skip(1).ToArray()) : array[0].Trim());
-		string text3 = text + "." + text2;
+		string obj = ((array.Length >= 2) ? array[0].Trim() : "global");
+		string text = ((array.Length >= 2) ? string.Join(".", array.Skip(1).ToArray()) : array[0].Trim());
+		string text2 = obj + "." + text;
 		if (registeredCommands.TryGetValue(command, out var value) && value.Source.IsCorePlugin)
 		{
 			return false;
@@ -246,11 +249,15 @@ public class RustCommandSystem : ICommandSystem
 		{
 			return false;
 		}
-		if (cmdlib.consoleCommands.TryGetValue(text3, out var value3) && value3.Callback.Plugin.IsCorePlugin)
+		if (cmdlib.consoleCommands.TryGetValue(text2, out var value3) && value3.Callback.Plugin.IsCorePlugin)
 		{
 			return false;
 		}
-		return !RustCore.RestrictedCommands.Contains(command) && !RustCore.RestrictedCommands.Contains(text3);
+		if (!RustCore.RestrictedCommands.Contains(command))
+		{
+			return !RustCore.RestrictedCommands.Contains(text2);
+		}
+		return false;
 	}
 
 	public static string[] ExtractArgs(ConsoleSystem.Arg arg)

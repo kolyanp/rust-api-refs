@@ -14,7 +14,7 @@ using UnityEngine.Assertions;
 
 public class MarketTerminal : StorageContainer
 {
-	private static readonly Phrase _cantFitPhrase = new Phrase("marketterminal.cantfit", "This drone marketplace is full. Can't process sale.");
+	private static readonly Phrase _cantFitPhrase;
 
 	public Action<BasePlayer, Item> _onCurrencyRemovedCached;
 
@@ -24,7 +24,7 @@ public class MarketTerminal : StorageContainer
 
 	private bool _transactionActive;
 
-	private static readonly List<NetworkableId> _deliveryEligible = new List<NetworkableId>(128);
+	private static readonly List<NetworkableId> _deliveryEligible;
 
 	private static RealTimeSince _deliveryEligibleLastCalculated;
 
@@ -204,7 +204,11 @@ public class MarketTerminal : StorageContainer
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		if (pendingOrders != null)
 		{
-			int num = List.FindIndexWith<PendingOrder, NetworkableId>((IReadOnlyList<PendingOrder>)pendingOrders, (Func<PendingOrder, NetworkableId>)((PendingOrder o) => o.vendingMachineId), vendingMachineId, (IEqualityComparer<NetworkableId>)null);
+			int num = List.FindIndexWith<PendingOrder, NetworkableId>((IReadOnlyList<PendingOrder>)pendingOrders, (Func<PendingOrder, NetworkableId>)delegate(PendingOrder o)
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return o.vendingMachineId;
+			}, vendingMachineId, (IEqualityComparer<NetworkableId>)null);
 			if (num < 0)
 			{
 				Debug.LogError((object)"Completed market order that doesn't exist?");
@@ -307,9 +311,9 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
 	public void Server_TryOpenMarket(RPCMessage msg)
 	{
 		if (!CanPlayerInteract(msg.player))
@@ -334,9 +338,9 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void Server_Purchase(RPCMessage msg)
 	{
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
@@ -641,7 +645,11 @@ public class MarketTerminal : StorageContainer
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		List<PendingOrder> list = pendingOrders;
-		return ((list != null) ? List.FindWith<PendingOrder, NetworkableId>((IReadOnlyCollection<PendingOrder>)list, (Func<PendingOrder, NetworkableId>)((PendingOrder o) => o.vendingMachineId), vendingMachineId, (IEqualityComparer<NetworkableId>)null) : null) != null;
+		return ((list != null) ? List.FindWith<PendingOrder, NetworkableId>((IReadOnlyCollection<PendingOrder>)list, (Func<PendingOrder, NetworkableId>)delegate(PendingOrder o)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return o.vendingMachineId;
+		}, vendingMachineId, (IEqualityComparer<NetworkableId>)null) : null) != null;
 	}
 
 	public bool CanPlayerInteract(BasePlayer player)
@@ -697,5 +705,13 @@ public class MarketTerminal : StorageContainer
 			PendingOrder item = order.Copy();
 			pendingOrders.Add(item);
 		}
+	}
+
+	static MarketTerminal()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		_cantFitPhrase = new Phrase("marketterminal.cantfit", "This drone marketplace is full. Can't process sale.");
+		_deliveryEligible = new List<NetworkableId>(128);
 	}
 }

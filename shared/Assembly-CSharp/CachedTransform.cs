@@ -10,7 +10,17 @@ public struct CachedTransform<T> where T : Component
 
 	public Vector3 localScale;
 
-	public Matrix4x4 localToWorldMatrix => Matrix4x4.TRS(position, rotation, localScale);
+	public Matrix4x4 localToWorldMatrix
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+			return Matrix4x4.TRS(position, rotation, localScale);
+		}
+	}
 
 	public Matrix4x4 worldToLocalMatrix
 	{
@@ -24,11 +34,38 @@ public struct CachedTransform<T> where T : Component
 		}
 	}
 
-	public Vector3 forward => rotation * Vector3.forward;
+	public Vector3 forward
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return rotation * Vector3.forward;
+		}
+	}
 
-	public Vector3 up => rotation * Vector3.up;
+	public Vector3 up
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return rotation * Vector3.up;
+		}
+	}
 
-	public Vector3 right => rotation * Vector3.right;
+	public Vector3 right
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			return rotation * Vector3.right;
+		}
+	}
 
 	public CachedTransform(T instance)
 	{

@@ -45,7 +45,7 @@ public class SocketMod_BoatBuildingBlock : SocketMod_BuildingBlock
 		List<BoatBuildingBlock> list = Pool.Get<List<BoatBuildingBlock>>();
 		Vis.Entities(pos, sphereRadius, list, layerMask, queryTriggers);
 		bool flag = list.Count > 0;
-		if (flag && (requireHull || requireNoParentBoat))
+		if (flag && (requireHull | requireNoParentBoat))
 		{
 			flag = false;
 			foreach (BoatBuildingBlock item in list)

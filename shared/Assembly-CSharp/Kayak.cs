@@ -395,10 +395,10 @@ public class Kayak : BaseBoat, IPoolVehicle
 		switch (direction)
 		{
 		case PaddleDirection.Left:
-			pos.x -= 1f;
+			pos.x--;
 			break;
 		case PaddleDirection.Right:
-			pos.x += 1f;
+			pos.x++;
 			break;
 		}
 		pos.y -= 0.2f;

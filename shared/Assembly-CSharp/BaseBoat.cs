@@ -63,8 +63,8 @@ public class BaseBoat : BaseVehicle
 
 	public static int secondsBetweenShoreDrift = 120;
 
-	[Help("Shore drift speed in metres per second")]
 	[ServerVar]
+	[Help("Shore drift speed in metres per second")]
 	public static float drift_speed = 1f;
 
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about AI ejection events when passengers are removed from boat seats")]
@@ -86,8 +86,8 @@ public class BaseBoat : BaseVehicle
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	[ServerVar]
+	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);
@@ -95,8 +95,8 @@ public class BaseBoat : BaseVehicle
 		return secondsUntilShoreDrift;
 	}
 
-	[Help("Seconds between shore drift teleport ticks")]
 	[ServerVar]
+	[Help("Seconds between shore drift teleport ticks")]
 	public static int seconds_between_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsBetweenShoreDrift = arg.GetInt(0, secondsBetweenShoreDrift);
@@ -743,7 +743,7 @@ public class BaseBoat : BaseVehicle
 		float num8 = 200f;
 		bool flag = true;
 		RaycastHit val9 = default(RaycastHit);
-		for (int j = 0; j < AI.ocean_patrol_path_iterations && flag; j++)
+		for (int j = 0; (j < AI.ocean_patrol_path_iterations) & flag; j++)
 		{
 			flag = false;
 			for (int k = 0; k < num3; k++)

@@ -19,7 +19,7 @@ public class CargoPlane : BaseEntity
 
 	public bool dropped;
 
-	public Vector3 dropPosition = Vector3.zero;
+	public Vector3 dropPosition;
 
 	public override void ServerInit()
 	{
@@ -76,7 +76,7 @@ public class CargoPlane : BaseEntity
 		{
 			zero = Vector3Ex.Range(0f - x / 3f, x / 3f);
 		}
-		while (filter.GetFactor(zero) == 0f && (num -= 1f) > 0f);
+		while (filter.GetFactor(zero) == 0f && --num > 0f);
 		zero.y = 0f;
 		return zero;
 	}
@@ -202,5 +202,13 @@ public class CargoPlane : BaseEntity
 			dropped = info.msg.cargoPlane.dropped;
 			dropPosition = info.msg.cargoPlane.dropPosition;
 		}
+	}
+
+	public CargoPlane()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		dropPosition = Vector3.zero;
+		base._002Ector();
 	}
 }

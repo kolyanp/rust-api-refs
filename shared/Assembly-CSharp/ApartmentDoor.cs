@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Facepunch.Rust;
@@ -15,19 +16,22 @@ public class ApartmentDoor : Door
 {
 	public Transform KeyPosTransform;
 
-	public static readonly Phrase Phrase_InsertKey = new Phrase("apartment_insert_key", "Insert Key");
+	public static readonly Phrase Phrase_InsertKey;
 
-	public static readonly Phrase Phrase_Unoccupied = new Phrase("apartment_unoccupied", "Unoccupied");
+	public static readonly Phrase Phrase_Unoccupied;
 
-	public static readonly Phrase Phrase_BreakInAlreadyAuthed = new Phrase("apartment_breakin_already_authed", "You already have access to this room");
+	public static readonly Phrase Phrase_BreakInAlreadyAuthed;
 
-	public static readonly Phrase Phrase_BreakInUnoccupied = new Phrase("apartment_breakin_unoccupied", "This room is unoccupied");
+	public static readonly Phrase Phrase_BreakInUnoccupied;
 
-	public static readonly Phrase Phrase_BreakInSuccess = new Phrase("apartment_breakin_success", "You broke into the room and have temporary access");
+	public static readonly Phrase Phrase_BreakInSuccess;
+
+	[CompilerGenerated]
+	private NetworkableId _003CApartmentId_003Ek__BackingField;
 
 	public TextMeshPro RoomNumberLabel;
 
-	public static readonly Flags Flag_BreakInActive = Flags.Reserved5;
+	public static readonly Flags Flag_BreakInActive;
 
 	public SoundDefinition BreakInJingleSound;
 
@@ -35,7 +39,22 @@ public class ApartmentDoor : Door
 
 	private Dictionary<ulong, TimeSince> breakInStarts = new Dictionary<ulong, TimeSince>();
 
-	public NetworkableId ApartmentId { get; set; }
+	public NetworkableId ApartmentId
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CApartmentId_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CApartmentId_003Ek__BackingField = value;
+		}
+	}
 
 	public string RoomNumber { get; set; }
 
@@ -217,5 +236,25 @@ public class ApartmentDoor : Door
 			RoomNumber = info.msg.apartmentDoor.roomNumber;
 			ApartmentId = info.msg.apartmentDoor.apartmentId;
 		}
+	}
+
+	static ApartmentDoor()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Expected O, but got Unknown
+		Phrase_InsertKey = new Phrase("apartment_insert_key", "Insert Key");
+		Phrase_Unoccupied = new Phrase("apartment_unoccupied", "Unoccupied");
+		Phrase_BreakInAlreadyAuthed = new Phrase("apartment_breakin_already_authed", "You already have access to this room");
+		Phrase_BreakInUnoccupied = new Phrase("apartment_breakin_unoccupied", "This room is unoccupied");
+		Phrase_BreakInSuccess = new Phrase("apartment_breakin_success", "You broke into the room and have temporary access");
+		Flag_BreakInActive = Flags.Reserved5;
 	}
 }

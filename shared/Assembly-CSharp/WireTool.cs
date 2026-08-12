@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
 using Network;
@@ -65,6 +66,9 @@ public class WireTool : HeldEntity
 
 	public const float MAX_SLACK = 2f;
 
+	[CompilerGenerated]
+	private NetworkableId _003CvalidatedWireEntity_003Ek__BackingField;
+
 	private const float wireValidationDist = 5f;
 
 	private const float wireValidationDistSqr = 25f;
@@ -80,7 +84,22 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	public NetworkableId validatedWireEntity { get; private set; }
+	public NetworkableId validatedWireEntity
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CvalidatedWireEntity_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		private set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CvalidatedWireEntity_003Ek__BackingField = value;
+		}
+	}
 
 	public int validatedWireSlot { get; private set; } = -1;
 
@@ -373,10 +392,10 @@ public class WireTool : HeldEntity
 		return Mathf.Clamp(num, 0f, 2f);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
 	public void RPC_WireStarted(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -411,9 +430,9 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(WireConnectionMessage) })]
 	public void RPC_MakeConnection(RPCMessage rpc)
@@ -560,10 +579,10 @@ public class WireTool : HeldEntity
 		return true;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -656,7 +675,7 @@ public class WireTool : HeldEntity
 				array2 = Array.Empty<Vector3>();
 			}
 			bool flag4 = (Object)(object)iOEntity3 != (Object)(object)iOEntity;
-			if ((Object)(object)iOEntity == (Object)(object)iOEntity3 && flag)
+			if (((Object)(object)iOEntity == (Object)(object)iOEntity3) & flag)
 			{
 				flag4 = true;
 			}
@@ -747,10 +766,10 @@ public class WireTool : HeldEntity
 		val2.Dispose();
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	public void RPC_CancelPendingWire(RPCMessage msg)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
@@ -759,10 +778,10 @@ public class WireTool : HeldEntity
 		validatedWireSlot = -1;
 	}
 
-	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -1137,7 +1156,7 @@ public class WireTool : HeldEntity
 		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = a.IsOnMovingObject();
 		bool flag2 = b.IsOnMovingObject();
-		if (flag && flag2)
+		if (flag & flag2)
 		{
 			if (IsCarFuelTank(a) && IsCarFuelTank(b))
 			{
@@ -1145,7 +1164,7 @@ public class WireTool : HeldEntity
 			}
 			return (Object)(object)a.GetRootParentEntity() == (Object)(object)b.GetRootParentEntity();
 		}
-		if ((flag || flag2) && !AllowDifferentParentConnections(a) && !AllowDifferentParentConnections(b))
+		if ((flag | flag2) && !AllowDifferentParentConnections(a) && !AllowDifferentParentConnections(b))
 		{
 			return false;
 		}

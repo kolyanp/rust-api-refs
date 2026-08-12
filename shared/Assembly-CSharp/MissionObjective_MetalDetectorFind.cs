@@ -17,7 +17,7 @@ public class MissionObjective_MetalDetectorFind : MissionObjective
 		base.ProcessMissionEvent(playerFor, instance, index, type, payload, amount);
 		if (type == BaseMission.MissionEventType.METAL_DETECTOR_FIND && !IsCompleted(index, instance) && CanProgress(index, instance))
 		{
-			instance.objectiveStatuses[index].progressCurrent += 1f;
+			instance.objectiveStatuses[index].progressCurrent++;
 			if (instance.objectiveStatuses[index].progressCurrent >= instance.objectiveStatuses[index].progressTarget)
 			{
 				CompleteObjective(index, instance, playerFor);

@@ -4,9 +4,9 @@ namespace FIMSpace.FProceduralAnimation;
 
 public class LAM_StabilizePoseOnIdle : LegsAnimatorControlModuleBase
 {
-	private Vector3 currentHeightAdjust = Vector3.zero;
+	private Vector3 currentHeightAdjust;
 
-	private Vector3 sd_currentHeightAdjust = Vector3.zero;
+	private Vector3 sd_currentHeightAdjust;
 
 	private LegsAnimator.Variable _blendV;
 
@@ -126,5 +126,16 @@ public class LAM_StabilizePoseOnIdle : LegsAnimatorControlModuleBase
 		hips.position += currentHeightAdjust * base.EffectBlend * _blendV.GetFloat() * base.LA._MainBlend;
 		Vector3 val4 = base.LA.BaseTransform.position + currentHeightAdjust + Vector3.up * 2.4f;
 		val4.y = base.LA._LastAppliedHipsFinalPosition.y + 2f;
+	}
+
+	public LAM_StabilizePoseOnIdle()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		currentHeightAdjust = Vector3.zero;
+		sd_currentHeightAdjust = Vector3.zero;
+		base._002Ector();
 	}
 }

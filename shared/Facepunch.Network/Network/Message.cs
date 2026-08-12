@@ -35,7 +35,7 @@ public class Message : IPooled
 		QueueUpdate = 26,
 		SyncVar = 27,
 		PackedSyncVar = 28,
-		Last = 28,
+		Last = PackedSyncVar,
 		Count = 29
 	}
 

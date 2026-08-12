@@ -5,20 +5,20 @@ using UnityEngine;
 
 public class WaterVolume : TriggerBase
 {
-	public Bounds WaterBounds = new Bounds(Vector3.zero, Vector3.one);
+	public Bounds WaterBounds;
 
 	private OBB cachedBounds;
 
 	private Transform cachedTransform;
 
-	public Transform[] cutOffPlanes = (Transform[])(object)new Transform[0];
+	public Transform[] cutOffPlanes;
 
 	[Tooltip("Allows filling bota bags, jugs, etc. Don't turn this on if the player is responsible for filling this water volume as that will allow water duplication")]
 	public bool naturalSource;
 
-	public bool waterEnabled = true;
+	public bool waterEnabled;
 
-	public static readonly SharedStatic<NativeGrid<WaterVolumeBurstData>> WaterVolumeBoundsGrid = SharedStatic<NativeGrid<WaterVolumeBurstData>>.GetOrCreateUnsafe(0u, 5868069335773950620L, 0L);
+	public static readonly SharedStatic<NativeGrid<WaterVolumeBurstData>> WaterVolumeBoundsGrid;
 
 	private WaterVolumeBurstData? instanceBurstData;
 
@@ -338,5 +338,24 @@ public class WaterVolume : TriggerBase
 			return null;
 		}
 		return ((Component)baseEntity).gameObject;
+	}
+
+	public WaterVolume()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		WaterBounds = new Bounds(Vector3.zero, Vector3.one);
+		cutOffPlanes = (Transform[])(object)new Transform[0];
+		waterEnabled = true;
+		base._002Ector();
+	}
+
+	static WaterVolume()
+	{
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		WaterVolumeBoundsGrid = SharedStatic<NativeGrid<WaterVolumeBurstData>>.GetOrCreateUnsafe(0u, 5868069335773950620L, 0L);
 	}
 }

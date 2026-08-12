@@ -194,7 +194,7 @@ public class F15 : BaseCombatEntity
 				flagsUpdateScope.Set(Flags.Reserved1, flag);
 				flagsUpdateScope.Set(Flags.Reserved2, flag2);
 			}
-			if (flag2 || flag)
+			if (flag2 | flag)
 			{
 				turnSeconds += Time.fixedDeltaTime;
 			}

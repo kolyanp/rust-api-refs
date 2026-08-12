@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
@@ -15,6 +16,15 @@ public class PostProcessRenderContext
 	public bool dlssEnabled;
 
 	private Camera m_Camera;
+
+	[CompilerGenerated]
+	private RenderTargetIdentifier _003Csource_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private RenderTargetIdentifier _003Cdestination_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private RenderTextureFormat _003CsourceFormat_003Ek__BackingField;
 
 	internal PropertySheet uberSheet;
 
@@ -57,11 +67,56 @@ public class PostProcessRenderContext
 
 	public CommandBuffer command { get; set; }
 
-	public RenderTargetIdentifier source { get; set; }
+	public RenderTargetIdentifier source
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Csource_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Csource_003Ek__BackingField = value;
+		}
+	}
 
-	public RenderTargetIdentifier destination { get; set; }
+	public RenderTargetIdentifier destination
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003Cdestination_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003Cdestination_003Ek__BackingField = value;
+		}
+	}
 
-	public RenderTextureFormat sourceFormat { get; set; }
+	public RenderTextureFormat sourceFormat
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CsourceFormat_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CsourceFormat_003Ek__BackingField = value;
+		}
+	}
 
 	public bool flip { get; set; }
 

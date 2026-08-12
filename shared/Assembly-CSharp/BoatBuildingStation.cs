@@ -25,54 +25,54 @@ public class BoatBuildingStation : DecayEntity
 		Invalid_Too_Many_Deployables
 	}
 
-	public static readonly Phrase invalidTooManyDeployablesPhrase = new Phrase("boatbuilding.invalid.tooManyDeployables", "Deployable limit reached");
+	public static readonly Phrase invalidTooManyDeployablesPhrase;
 
-	public static readonly Phrase invalidIllegalPlacement = new Phrase("boatbuilding.invalid.illegalPlacement", "Illegal deployable placement.");
+	public static readonly Phrase invalidIllegalPlacement;
 
 	[ReplicatedVar]
-	public static int max_bbs = 1;
+	public static int max_bbs;
 
-	private static Dictionary<ulong, List<BoatBuildingStation>> bbsPerPlayer = new Dictionary<ulong, List<BoatBuildingStation>>();
+	private static Dictionary<ulong, List<BoatBuildingStation>> bbsPerPlayer;
 
-	public static Phrase bbsLimitPhrase = new Phrase("bbs_limit_update", "You are now at {0}/{1} Boat Building Stations");
+	public static Phrase bbsLimitPhrase;
 
-	public static Phrase bbsLimitReachedPhrase = new Phrase("bbs_limit_reached", "You have reached your Boat Building Station limit!");
+	public static Phrase bbsLimitReachedPhrase;
 
 	private float lastInteractionTime;
 
 	public const string ACHIEVEMENT_FINISH_BOAT_NAME = "BBS_FINISH_BOAT";
 
-	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
 	[ServerVar]
-	public static bool StaticStationsEnabled = true;
+	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
+	public static bool StaticStationsEnabled;
 
 	[Help("When set above zero, enables a global shared cooldown for boat edit/finishing.")]
 	[ServerVar]
-	public static float GlobalEditFinishUseInterval = 0f;
+	public static float GlobalEditFinishUseInterval;
 
-	public static float NextGlobalEditFinishUseTime = 0f;
-
-	[ServerVar]
-	public static bool LogBoatBuildingEvents = false;
+	public static float NextGlobalEditFinishUseTime;
 
 	[ServerVar]
-	public static float AutoClosePlayerCheckInterval = 150f;
+	public static bool LogBoatBuildingEvents;
 
 	[ServerVar]
-	public static int AutoClosePlayerCheckTriggerCount = 2;
+	public static float AutoClosePlayerCheckInterval;
 
-	private static Grid<BoatBuildingStation> serverStations = new Grid<BoatBuildingStation>(32, 8096f);
+	[ServerVar]
+	public static int AutoClosePlayerCheckTriggerCount;
+
+	private static Grid<BoatBuildingStation> serverStations;
 
 	private int autoClosePassCount;
 
 	private ulong bbsOwnerID;
 
-	private static StringBuilder logStringBuilder = new StringBuilder();
+	private static StringBuilder logStringBuilder;
 
 	public bool IsStatic;
 
 	[ReplicatedVar]
-	public static float EditFinishUseInterval = 5f;
+	public static float EditFinishUseInterval;
 
 	public GameObjectRef BoatPrefab;
 
@@ -451,9 +451,9 @@ public class BoatBuildingStation : DecayEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void EditBoat(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -1481,5 +1481,32 @@ public class BoatBuildingStation : DecayEntity
 		Gizmos.matrix = matrix;
 		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
 		Gizmos.matrix = matrix2;
+	}
+
+	static BoatBuildingStation()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Expected O, but got Unknown
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Expected O, but got Unknown
+		invalidTooManyDeployablesPhrase = new Phrase("boatbuilding.invalid.tooManyDeployables", "Deployable limit reached");
+		invalidIllegalPlacement = new Phrase("boatbuilding.invalid.illegalPlacement", "Illegal deployable placement.");
+		max_bbs = 1;
+		bbsPerPlayer = new Dictionary<ulong, List<BoatBuildingStation>>();
+		bbsLimitPhrase = new Phrase("bbs_limit_update", "You are now at {0}/{1} Boat Building Stations");
+		bbsLimitReachedPhrase = new Phrase("bbs_limit_reached", "You have reached your Boat Building Station limit!");
+		StaticStationsEnabled = true;
+		GlobalEditFinishUseInterval = 0f;
+		NextGlobalEditFinishUseTime = 0f;
+		LogBoatBuildingEvents = false;
+		AutoClosePlayerCheckInterval = 150f;
+		AutoClosePlayerCheckTriggerCount = 2;
+		serverStations = new Grid<BoatBuildingStation>(32, 8096f);
+		logStringBuilder = new StringBuilder();
+		EditFinishUseInterval = 5f;
 	}
 }

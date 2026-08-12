@@ -8,8 +8,8 @@ public class MissionObjective_UpgradeBuildingBlock : MissionObjective
 {
 	public bool ShouldPingBlocksLessThanTargetGrade;
 
-	[FormerlySerializedAs("PingType")]
 	[SerializeField]
+	[FormerlySerializedAs("PingType")]
 	private BasePlayer.PingType pingType;
 
 	public BuildingGrade.Enum TargetGrade;
@@ -53,7 +53,7 @@ public class MissionObjective_UpgradeBuildingBlock : MissionObjective
 		base.ProcessMissionEvent(playerFor, instance, index, type, payload, amount);
 		if (type == BaseMission.MissionEventType.UPGRADE_BUILDING_GRADE && !IsCompleted(index, instance) && CanProgress(index, instance) && payload.IntIdentifier >= (int)TargetGrade)
 		{
-			instance.objectiveStatuses[index].progressCurrent += 1f;
+			instance.objectiveStatuses[index].progressCurrent++;
 			if (instance.objectiveStatuses[index].progressCurrent >= (float)RequiredCount)
 			{
 				CompleteObjective(index, instance, playerFor);

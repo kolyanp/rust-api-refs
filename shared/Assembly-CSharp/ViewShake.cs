@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class ViewShake
@@ -22,11 +23,47 @@ public class ViewShake
 		public bool infinite;
 	}
 
+	[CompilerGenerated]
+	private Vector3 _003CPositionOffset_003Ek__BackingField;
+
+	[CompilerGenerated]
+	private Vector3 _003CAnglesOffset_003Ek__BackingField;
+
 	protected List<ShakeParameters> Entries = new List<ShakeParameters>();
 
-	public Vector3 PositionOffset { get; protected set; }
+	public Vector3 PositionOffset
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CPositionOffset_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CPositionOffset_003Ek__BackingField = value;
+		}
+	}
 
-	public Vector3 AnglesOffset { get; protected set; }
+	public Vector3 AnglesOffset
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CAnglesOffset_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		protected set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CAnglesOffset_003Ek__BackingField = value;
+		}
+	}
 
 	public void AddShake(float amplitude, float frequency, float duration)
 	{

@@ -10,7 +10,14 @@ public class BackgroundColorAttribute : PropertyAttribute
 
 	public float a;
 
-	public Color Color => new Color(r, g, b, a);
+	public Color Color
+	{
+		get
+		{
+			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			return new Color(r, g, b, a);
+		}
+	}
 
 	public BackgroundColorAttribute()
 	{

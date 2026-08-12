@@ -27,7 +27,7 @@ public static class FEasing
 
 	public static float EaseOutCubic(float start, float end, float value, float ignore = 1f)
 	{
-		value -= 1f;
+		value--;
 		end -= start;
 		return end * (value * value * value + 1f) + start;
 	}
@@ -95,7 +95,7 @@ public static class FEasing
 		{
 			num4 = num2 / (MathF.PI * 2f) * Mathf.Asin(end / num3);
 		}
-		return 0f - num3 * Mathf.Pow(2f, 10f * rangeMul * (value -= 1f)) * Mathf.Sin((value * num - num4) * (MathF.PI * 2f) / num2) + start;
+		return 0f - num3 * Mathf.Pow(2f, 10f * rangeMul * --value) * Mathf.Sin((value * num - num4) * (MathF.PI * 2f) / num2) + start;
 	}
 
 	public static float EaseInOutElastic(float start, float end, float value, float rangeMul = 1f)
@@ -124,9 +124,9 @@ public static class FEasing
 		}
 		if (value < 1f)
 		{
-			return -0.5f * (num3 * Mathf.Pow(2f, 10f * (value -= 1f)) * Mathf.Sin((value * num - num4) * (MathF.PI * 2f) / num2)) + start;
+			return -0.5f * (num3 * Mathf.Pow(2f, 10f * --value) * Mathf.Sin((value * num - num4) * (MathF.PI * 2f) / num2)) + start;
 		}
-		return num3 * Mathf.Pow(2f, -10f * rangeMul * (value -= 1f)) * Mathf.Sin((value * num - num4) * (MathF.PI * 2f) / num2) * 0.5f + end + start;
+		return num3 * Mathf.Pow(2f, -10f * rangeMul * --value) * Mathf.Sin((value * num - num4) * (MathF.PI * 2f) / num2) * 0.5f + end + start;
 	}
 
 	public static float EaseInExpo(float start, float end, float value, float ignore = 1f)
@@ -149,7 +149,7 @@ public static class FEasing
 		{
 			return end * 0.5f * Mathf.Pow(2f, 10f * (value - 1f)) + start;
 		}
-		value -= 1f;
+		value--;
 		return end * 0.5f * (0f - Mathf.Pow(2f, -10f * value) + 2f) + start;
 	}
 

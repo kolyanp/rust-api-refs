@@ -16,7 +16,14 @@ public class ModularVehicleInventory : IDisposable
 
 	public ItemContainer ChassisContainer => chassisContainer;
 
-	public ItemContainerId UID => moduleContainer.uid;
+	public ItemContainerId UID
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return moduleContainer.uid;
+		}
+	}
 
 	private int TotalSockets => vehicle.TotalSockets;
 

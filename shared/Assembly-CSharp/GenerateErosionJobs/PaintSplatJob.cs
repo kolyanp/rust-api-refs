@@ -62,8 +62,7 @@ internal struct PaintSplatJob : IJobFor
 		{
 			return;
 		}
-		float grad;
-		float num5 = ConcavityFactor(HeightMapDelta, HeightMapRes, num, num2, out grad);
+		float num5 = ConcavityFactor(HeightMapDelta, HeightMapRes, num, num2, out var grad);
 		if (!(num5 < 3.5762787E-07f))
 		{
 			int x = Index(num3, SplatMapRes);

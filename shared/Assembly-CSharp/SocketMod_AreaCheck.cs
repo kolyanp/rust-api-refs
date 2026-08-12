@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class SocketMod_AreaCheck : SocketMod
 {
-	public Bounds bounds = new Bounds(Vector3.zero, Vector3.one * 0.1f);
+	public Bounds bounds;
 
 	public LayerMask layerMask;
 
-	public bool wantsInside = true;
+	public bool wantsInside;
 
 	public bool ignoreAntiLargeVehicleCheck;
 
-	private Phrase lastError = new Phrase("", "");
+	private Phrase lastError;
 
 	protected override Phrase ErrorPhrase => lastError;
 
@@ -43,7 +43,7 @@ public class SocketMod_AreaCheck : SocketMod
 				}
 			}
 		}
-		if (shouldParent && wantsInside)
+		if (shouldParent & wantsInside)
 		{
 			for (int i = 0; i < list.Count; i++)
 			{
@@ -114,8 +114,7 @@ public class SocketMod_AreaCheck : SocketMod
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = place.position + place.rotation * worldPosition;
 		Quaternion val2 = place.rotation * worldRotation;
-		bool foundParent;
-		bool flag = IsInArea(val, new OBB(val, val2, bounds), layerMask, out foundParent, wantsInside, !place.parentPassed && place.shouldParent, ((Object)(object)place.transform != (Object)null) ? GameObjectEx.ToBaseEntity(place.transform) : null, place.ignoredEntity) == wantsInside;
+		bool flag = IsInArea(val, new OBB(val, val2, bounds), layerMask, out var foundParent, wantsInside, !place.parentPassed && place.shouldParent, ((Object)(object)place.transform != (Object)null) ? GameObjectEx.ToBaseEntity(place.transform) : null, place.ignoredEntity) == wantsInside;
 		place.parentPassed |= foundParent;
 		if (!flag)
 		{
@@ -138,5 +137,20 @@ public class SocketMod_AreaCheck : SocketMod
 			return true;
 		}
 		return false;
+	}
+
+	public SocketMod_AreaCheck()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Expected O, but got Unknown
+		bounds = new Bounds(Vector3.zero, Vector3.one * 0.1f);
+		wantsInside = true;
+		lastError = new Phrase("", "");
+		base._002Ector();
 	}
 }

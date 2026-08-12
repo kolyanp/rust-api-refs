@@ -5,11 +5,11 @@ public class AIInformationCell
 {
 	public Bounds BoundingBox;
 
-	public List<AIInformationCell> NeighbourCells = new List<AIInformationCell>();
+	public List<AIInformationCell> NeighbourCells;
 
-	public AIInformationCellContents<AIMovePoint> MovePoints = new AIInformationCellContents<AIMovePoint>();
+	public AIInformationCellContents<AIMovePoint> MovePoints;
 
-	public AIInformationCellContents<AICoverPoint> CoverPoints = new AIInformationCellContents<AICoverPoint>();
+	public AIInformationCellContents<AICoverPoint> CoverPoints;
 
 	public int X { get; }
 
@@ -21,6 +21,10 @@ public class AIInformationCell
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		NeighbourCells = new List<AIInformationCell>();
+		MovePoints = new AIInformationCellContents<AIMovePoint>();
+		CoverPoints = new AIInformationCellContents<AICoverPoint>();
+		base._002Ector();
 		BoundingBox = bounds;
 		X = x;
 		Z = z;

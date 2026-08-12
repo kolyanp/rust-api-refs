@@ -27,14 +27,14 @@ public class EggHuntEvent : BaseHuntEvent
 
 	public float timeAlive;
 
-	public static EggHuntEvent serverEvent = null;
+	public static EggHuntEvent serverEvent;
 
-	public static EggHuntEvent clientEvent = null;
+	public static EggHuntEvent clientEvent;
 
 	public const int CAST_LAYERS = 10551297;
 
 	[NonSerialized]
-	public static float durationSeconds = 180f;
+	public static float durationSeconds;
 
 	public Dictionary<ulong, EggHunter> _eggHunters = new Dictionary<ulong, EggHunter>();
 
@@ -59,15 +59,15 @@ public class EggHuntEvent : BaseHuntEvent
 	private float eggSpawningFrameBudget = 1.5f;
 
 	[ServerVar(Help = "Will spawn eggs for bots, only for debug purposes - don't enable it!")]
-	public static bool includeBots = false;
+	public static bool includeBots;
 
-	public static Phrase topBunnyPhrase = new Phrase("egghunt.result.topbunny", "{0} is the top bunny with {1} eggs collected.");
+	public static Phrase topBunnyPhrase;
 
-	public static Phrase noPlayersPhrase = new Phrase("egghunt.result.noplayers", "Wow, no one played so no one won.");
+	public static Phrase noPlayersPhrase;
 
-	public static Phrase placePhrase = new Phrase("egghunt.result.place", "You placed {0} of {1} with {2} eggs collected.");
+	public static Phrase placePhrase;
 
-	public static Phrase rewardPhrase = new Phrase("egghunt.result.reward", "You received {0}x {1} as an award!.");
+	public static Phrase rewardPhrase;
 
 	public bool IsEventActive()
 	{
@@ -543,5 +543,25 @@ public class EggHuntEvent : BaseHuntEvent
 			info.msg.eggHunt.hunters.Add(val);
 		}
 		Pool.FreeUnmanaged<EggHunter>(ref topHunters);
+	}
+
+	static EggHuntEvent()
+	{
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Expected O, but got Unknown
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Expected O, but got Unknown
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Expected O, but got Unknown
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Expected O, but got Unknown
+		serverEvent = null;
+		clientEvent = null;
+		durationSeconds = 180f;
+		includeBots = false;
+		topBunnyPhrase = new Phrase("egghunt.result.topbunny", "{0} is the top bunny with {1} eggs collected.");
+		noPlayersPhrase = new Phrase("egghunt.result.noplayers", "Wow, no one played so no one won.");
+		placePhrase = new Phrase("egghunt.result.place", "You placed {0} of {1} with {2} eggs collected.");
+		rewardPhrase = new Phrase("egghunt.result.reward", "You received {0}x {1} as an award!.");
 	}
 }

@@ -95,7 +95,12 @@ public class Spawn : ConsoleSystem
 		int num = Mathf.Clamp(args.GetInt(0, 100), 1, 10000);
 		List<ILootContainer> list = new List<ILootContainer>();
 		global::Vis.Entities(((Component)player).transform.position, 5f, list, -1, (QueryTriggerInteraction)1);
-		ILootContainer lootContainer = list.OrderBy((ILootContainer x) => Vector3.Distance(((Component)player).transform.position, ((Component)x.GetEntity()).transform.position)).FirstOrDefault();
+		ILootContainer lootContainer = list.OrderBy(delegate(ILootContainer x)
+		{
+			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+			return Vector3.Distance(((Component)player).transform.position, ((Component)x.GetEntity()).transform.position);
+		}).FirstOrDefault();
 		if (lootContainer == null)
 		{
 			args.ReplyWith("No loot container found");
@@ -264,8 +269,7 @@ public class Spawn : ConsoleSystem
 	{
 		if (!((Object)(object)SingletonComponent<SpawnHandler>.Instance == (Object)null))
 		{
-			int inSafeZone;
-			int num = SingletonComponent<SpawnHandler>.Instance.GenerateOreNodeMap(out inSafeZone);
+			int num = SingletonComponent<SpawnHandler>.Instance.GenerateOreNodeMap(out var inSafeZone);
 			args.ReplyWith($"Wrote {Server.rootFolder}/debug/ore-nodes.png - {num} ore nodes, {inSafeZone} inside safezones");
 		}
 	}

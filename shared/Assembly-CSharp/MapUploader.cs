@@ -92,39 +92,25 @@ public static class MapUploader
 				using MemoryStream streamCopy = new MemoryStream();
 				await stream.CopyToAsync(streamCopy);
 				streamCopy.Position = 0L;
-				HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri);
-				try
+				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri);
+				request.Content = new StreamContent(streamCopy);
+				using HttpResponseMessage response = await Http.SendAsync(request);
+				if (response.IsSuccessStatusCode)
 				{
-					request.Content = (HttpContent)new StreamContent((Stream)streamCopy);
-					HttpResponseMessage response = await Http.SendAsync(request);
-					try
+					string text = await response.Content.ReadAsStringAsync();
+					if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("http"))
 					{
-						if (response.IsSuccessStatusCode)
-						{
-							string text = await response.Content.ReadAsStringAsync();
-							if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("http"))
-							{
-								throw new Exception("Backend sent an invalid success response when uploading the map.");
-							}
-							return text;
-						}
-						int statusCode = (int)response.StatusCode;
-						if (statusCode >= 400 && statusCode <= 499)
-						{
-							Debug.LogError((object)("[Rust.MapCache] Backend refused our map upload request: " + await response.Content.ReadAsStringAsync()));
-							return null;
-						}
-						response.EnsureSuccessStatusCode();
+						throw new Exception("Backend sent an invalid success response when uploading the map.");
 					}
-					finally
-					{
-						((IDisposable)response)?.Dispose();
-					}
+					return text;
 				}
-				finally
+				int statusCode = (int)response.StatusCode;
+				if (statusCode >= 400 && statusCode <= 499)
 				{
-					((IDisposable)request)?.Dispose();
+					Debug.LogError((object)("[Rust.MapCache] Backend refused our map upload request: " + await response.Content.ReadAsStringAsync()));
+					return null;
 				}
+				response.EnsureSuccessStatusCode();
 			}
 			catch (Exception arg)
 			{
@@ -178,40 +164,26 @@ public static class MapUploader
 		{
 			try
 			{
-				HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri);
-				try
+				using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri);
+				request.Content = new ByteArrayContent(image);
+				request.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+				using HttpResponseMessage response = await Http.SendAsync(request);
+				if (response.IsSuccessStatusCode)
 				{
-					request.Content = (HttpContent)new ByteArrayContent(image);
-					request.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-					HttpResponseMessage response = await Http.SendAsync(request);
-					try
+					string text = await response.Content.ReadAsStringAsync();
+					if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("http"))
 					{
-						if (response.IsSuccessStatusCode)
-						{
-							string text = await response.Content.ReadAsStringAsync();
-							if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("http"))
-							{
-								throw new Exception("Backend sent an invalid success response when uploading the map image");
-							}
-							return text;
-						}
-						int statusCode = (int)response.StatusCode;
-						if (statusCode >= 400 && statusCode <= 499)
-						{
-							Debug.LogError((object)("[Rust.MapCache-Images] Backend refused our image upload request: " + await response.Content.ReadAsStringAsync()));
-							return null;
-						}
-						response.EnsureSuccessStatusCode();
+						throw new Exception("Backend sent an invalid success response when uploading the map image");
 					}
-					finally
-					{
-						((IDisposable)response)?.Dispose();
-					}
+					return text;
 				}
-				finally
+				int statusCode = (int)response.StatusCode;
+				if (statusCode >= 400 && statusCode <= 499)
 				{
-					((IDisposable)request)?.Dispose();
+					Debug.LogError((object)("[Rust.MapCache-Images] Backend refused our image upload request: " + await response.Content.ReadAsStringAsync()));
+					return null;
 				}
+				response.EnsureSuccessStatusCode();
 			}
 			catch (Exception arg)
 			{

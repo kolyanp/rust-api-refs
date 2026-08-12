@@ -31,7 +31,7 @@ public class MissionObjective_Craft : MissionObjective
 		{
 			ItemDefinition itemDefinition2 = ItemManager.FindItemDefinition(payload.IntIdentifier);
 			bool flag = (Object)(object)itemDefinition2 != (Object)null && (Object)(object)itemDefinition2.isRedirectOf != (Object)null && itemDefinition2.isRedirectOf.itemid == itemDefinition.itemid;
-			if (itemDefinition.itemid == payload.IntIdentifier || flag)
+			if ((itemDefinition.itemid == payload.IntIdentifier) | flag)
 			{
 				instance.objectiveStatuses[index].progressCurrent += (int)amount;
 				if (instance.objectiveStatuses[index].progressCurrent >= (float)targetItemAmount)

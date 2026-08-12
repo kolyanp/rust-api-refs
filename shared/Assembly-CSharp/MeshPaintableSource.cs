@@ -5,17 +5,17 @@ using UnityEngine;
 
 public class MeshPaintableSource : MonoBehaviour, IClientComponent
 {
-	public Vector4 uvRange = new Vector4(0f, 0f, 1f, 1f);
+	public Vector4 uvRange;
 
-	public int texWidth = 256;
+	public int texWidth;
 
-	public int texHeight = 128;
+	public int texHeight;
 
-	public string replacementTextureName = "_DecalTexture";
+	public string replacementTextureName;
 
-	public float cameraFOV = 60f;
+	public float cameraFOV;
 
-	public float cameraDistance = 2f;
+	public float cameraDistance;
 
 	[NonSerialized]
 	public Texture2D texture;
@@ -28,7 +28,7 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 
 	public Vector3 localRotation;
 
-	public bool applyToAllRenderers = true;
+	public bool applyToAllRenderers;
 
 	public Renderer[] extraRenderers;
 
@@ -36,9 +36,9 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 
 	public bool paint3D;
 
-	public bool applyToSkinRenderers = true;
+	public bool applyToSkinRenderers;
 
-	public bool applyToFirstPersonLegs = true;
+	public bool applyToFirstPersonLegs;
 
 	[NonSerialized]
 	public bool isSelected;
@@ -175,5 +175,21 @@ public class MeshPaintableSource : MonoBehaviour, IClientComponent
 			texture.Clear(Color32.op_Implicit(new Color(0f, 0f, 0f, 0f)));
 			texture.Apply(true, false);
 		}
+	}
+
+	public MeshPaintableSource()
+	{
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		uvRange = new Vector4(0f, 0f, 1f, 1f);
+		texWidth = 256;
+		texHeight = 128;
+		replacementTextureName = "_DecalTexture";
+		cameraFOV = 60f;
+		cameraDistance = 2f;
+		applyToAllRenderers = true;
+		applyToSkinRenderers = true;
+		applyToFirstPersonLegs = true;
+		((MonoBehaviour)this)._002Ector();
 	}
 }

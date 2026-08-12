@@ -303,9 +303,23 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	public virtual bool AlwaysAllowBradleyTargeting => false;
 
-	protected bool RecentlyPushed => TimeSince.op_Implicit(timeSinceLastPush) < 1f;
+	protected bool RecentlyPushed
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return TimeSince.op_Implicit(timeSinceLastPush) < 1f;
+		}
+	}
 
-	protected TimeSince TimeSinceLastAIUpdate => timeSinceLastAIUpdate;
+	protected TimeSince TimeSinceLastAIUpdate
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return timeSinceLastAIUpdate;
+		}
+	}
 
 	public override bool PositionTickFixedTime
 	{
@@ -437,13 +451,13 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		{
 			info.damageTypes.ScaleAll(0f);
 		}
-		this.BeenAttacked?.Invoke(info);
+		BeenAttacked?.Invoke(info);
 		base.OnAttacked(info);
 	}
 
 	public override void OnDied(HitInfo info)
 	{
-		this.Died?.Invoke();
+		Died?.Invoke();
 		base.OnDied(info);
 	}
 
@@ -578,7 +592,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 				{
 					OnServerWake();
 				}
-				else if (!prevSleeping && flag2)
+				else if (!prevSleeping & flag2)
 				{
 					OnServerSleep();
 				}
@@ -732,7 +746,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	public override void DismountAllPlayers()
 	{
-		this.OnDismountAll?.Invoke();
+		OnDismountAll?.Invoke();
 		foreach (MountPointInfo allMountPoint in allMountPoints)
 		{
 			if ((Object)(object)allMountPoint.mountable != (Object)null)
@@ -1227,7 +1241,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	public virtual bool IsPlayerSeatSwapValid(BasePlayer player, int fromIndex, int toIndex, bool forcingRestrainedPlayer)
 	{
-		return !player.IsRestrained || forcingRestrainedPlayer;
+		return !player.IsRestrained | forcingRestrainedPlayer;
 	}
 
 	public void SwapSeats(BasePlayer player, int targetSeat = -1, bool forcingRestrainedPlayer = false)
@@ -1275,7 +1289,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		bool IsValidSwap(MountPointInfo point, int toIndex)
 		{
 			//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-			if ((Object)(object)point?.mountable != (Object)null && !point.mountable.AnyMounted() && point.mountable.CanSwapToThis(player) && !(point.isDriver && forcingRestrainedPlayer) && !IsSeatClipping(point.mountable) && IsSeatVisible(point.mountable, player.eyes.position))
+			if ((Object)(object)point?.mountable != (Object)null && !point.mountable.AnyMounted() && point.mountable.CanSwapToThis(player) && !(point.isDriver & forcingRestrainedPlayer) && !IsSeatClipping(point.mountable) && IsSeatVisible(point.mountable, player.eyes.position))
 			{
 				return IsPlayerSeatSwapValid(player, currentSeatIndex, toIndex, forcingRestrainedPlayer);
 			}
@@ -1401,7 +1415,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		bool flag = (Object)(object)basePlayer != (Object)null;
 		bool flag2 = flag && basePlayer.Team != null;
 		bool flag3 = flag && (Object)(object)playerFor == (Object)(object)basePlayer;
-		if (!flag3 && flag && OnlyOwnerAccessible() && (Object)(object)playerFor != (Object)null && (playerFor.Team == null || !playerFor.Team.members.Contains(basePlayer.userID)))
+		if ((!flag3 & flag) && OnlyOwnerAccessible() && (Object)(object)playerFor != (Object)null && (playerFor.Team == null || !playerFor.Team.members.Contains(basePlayer.userID)))
 		{
 			return null;
 		}
@@ -1432,7 +1446,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 					Debug.Log((object)$"Skipping seat {allMountPoint.mountable} - it's not visible");
 				}
 			}
-			else if (!(OnlyOwnerAccessible() && flag3) || flag2 || allMountPoint.isDriver)
+			else if (!(OnlyOwnerAccessible() & flag3) || flag2 || allMountPoint.isDriver)
 			{
 				result = allMountPoint.mountable;
 				num = num2;
@@ -1642,7 +1656,16 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 			if (dismountStyle == DismountStyle.Closest)
 			{
 				Vector3 comparePos = player.TriggerPoint();
-				list.Sort((Transform a, Transform b) => Vector3.SqrMagnitude(a.position - comparePos).CompareTo(Vector3.SqrMagnitude(b.position - comparePos)));
+				list.Sort(delegate(Transform a, Transform b)
+				{
+					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+					//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+					//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+					return Vector3.SqrMagnitude(a.position - comparePos).CompareTo(Vector3.SqrMagnitude(b.position - comparePos));
+				});
 			}
 			foreach (Transform item in list)
 			{
@@ -1728,8 +1751,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		return baseMountable;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(5f)]
+	[RPC_Server]
 	public void RPC_WantsPush(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
@@ -1979,7 +2002,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 			flag = angularVelocity.x > 0.5f || angularVelocity.z > 0.5f;
 		}
 		float num = Vector3.Dot(Vector3.up, ((Component)this).transform.up);
-		return flag || num <= 0.4f;
+		return flag | (num <= 0.4f);
 	}
 
 	public bool IsFlipped()

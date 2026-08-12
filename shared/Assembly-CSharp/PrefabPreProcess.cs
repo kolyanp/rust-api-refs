@@ -259,7 +259,7 @@ public class PrefabPreProcess : IPrefabProcessor
 				{
 					bool num = ((Component)item6).gameObject.CompareTag("Client Cull");
 					bool flag2 = (Object)(object)item6 != (Object)(object)go.transform && ((Component)item6).gameObject.TryGetComponent<BaseEntity>(ref baseEntity);
-					if (num || flag2)
+					if (num | flag2)
 					{
 						RemoveComponents(((Component)item6).gameObject);
 						NominateForDeletion(((Component)item6).gameObject);
@@ -290,11 +290,10 @@ public class PrefabPreProcess : IPrefabProcessor
 		{
 			bool num = PrefabNeedsCopy(val);
 			bool flag = NeedsProcessing(val, assetSceneRuntime);
-			bool flag2 = num && flag;
-			if (!forceInPlace && flag2)
+			bool flag2 = num & flag;
+			if (!forceInPlace & flag2)
 			{
-				GameObject obj;
-				Transform val2 = (TryGetHierarchyGroup(out obj) ? obj.transform : null);
+				Transform val2 = (TryGetHierarchyGroup(out var obj) ? obj.transform : null);
 				go = Instantiate.GameObject(val, val2);
 				((Object)go).name = ((Object)val).name;
 			}

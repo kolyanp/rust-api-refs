@@ -7,16 +7,16 @@ using UnityEngine;
 
 public class LegacyShelter : DecayEntity
 {
-	public static readonly int FpShelterDefault = 1;
+	public static readonly int FpShelterDefault;
 
 	[ReplicatedVar]
-	public static int max_shelters = 1;
+	public static int max_shelters;
 
-	private static Dictionary<ulong, List<LegacyShelter>> sheltersPerPlayer = new Dictionary<ulong, List<LegacyShelter>>();
+	private static Dictionary<ulong, List<LegacyShelter>> sheltersPerPlayer;
 
-	public static Phrase shelterLimitPhrase = new Phrase("shelter_limit_update", "You are now at {0}/{1} shelters");
+	public static Phrase shelterLimitPhrase;
 
-	public static Phrase shelterLimitReachedPhrase = new Phrase("shelter_limit_reached", "You have reached your shelter limit!");
+	public static Phrase shelterLimitReachedPhrase;
 
 	[Header("Shelter References")]
 	public GameObjectRef smallPrivilegePrefab;
@@ -346,5 +346,18 @@ public class LegacyShelter : DecayEntity
 		{
 			childDoor.SetHealth(base.health);
 		}
+	}
+
+	static LegacyShelter()
+	{
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Expected O, but got Unknown
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Expected O, but got Unknown
+		FpShelterDefault = 1;
+		max_shelters = 1;
+		sheltersPerPlayer = new Dictionary<ulong, List<LegacyShelter>>();
+		shelterLimitPhrase = new Phrase("shelter_limit_update", "You are now at {0}/{1} shelters");
+		shelterLimitReachedPhrase = new Phrase("shelter_limit_reached", "You have reached your shelter limit!");
 	}
 }

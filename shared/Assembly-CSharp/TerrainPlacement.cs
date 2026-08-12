@@ -4,17 +4,17 @@ using UnityEngine;
 public abstract class TerrainPlacement : PrefabAttribute
 {
 	[ReadOnly]
-	public Vector3 size = Vector3.zero;
+	public Vector3 size;
 
 	[ReadOnly]
-	public Vector3 extents = Vector3.zero;
+	public Vector3 extents;
 
 	[ReadOnly]
-	public Vector3 offset = Vector3.zero;
+	public Vector3 offset;
 
-	public bool HeightMap = true;
+	public bool HeightMap;
 
-	public bool AlphaMap = true;
+	public bool AlphaMap;
 
 	public bool WaterMap;
 
@@ -169,5 +169,21 @@ public abstract class TerrainPlacement : PrefabAttribute
 	protected override Type GetIndexedType()
 	{
 		return typeof(TerrainPlacement);
+	}
+
+	protected TerrainPlacement()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		size = Vector3.zero;
+		extents = Vector3.zero;
+		offset = Vector3.zero;
+		HeightMap = true;
+		AlphaMap = true;
+		base._002Ector();
 	}
 }

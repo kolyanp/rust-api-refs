@@ -9,8 +9,8 @@ public class WallpaperSettings : BaseScriptableObject
 		Wall = 1,
 		Floor = 2,
 		Ceiling = 3,
-		First = 1,
-		Last = 3
+		First = Wall,
+		Last = Ceiling
 	}
 
 	[Flags]

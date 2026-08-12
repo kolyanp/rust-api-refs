@@ -24,6 +24,7 @@ public class FImp_ColliderData_Mesh : FImp_ColliderData_Base
 	public FImp_ColliderData_Mesh(PolygonCollider2D collider)
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		base._002Ector();
 		Is2D = true;
 		base.Transform = ((Component)collider).transform;
 		Poly2D = collider;

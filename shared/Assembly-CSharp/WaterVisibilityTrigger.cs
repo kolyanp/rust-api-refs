@@ -74,7 +74,7 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 	{
 		bool num = (Object)(object)((Component)other).gameObject.GetComponent<PlayerWalkMovement>() != (Object)null;
 		bool flag = ((Component)other).gameObject.CompareTag("MainCamera");
-		if ((num || flag) && !tracker.ContainsValue(this))
+		if ((num | flag) && !tracker.ContainsValue(this))
 		{
 			enteredTick = ticks++;
 			tracker.Add(enteredTick, this);
@@ -90,7 +90,7 @@ public class WaterVisibilityTrigger : EnvironmentVolumeTrigger
 	{
 		bool num = (Object)(object)((Component)other).gameObject.GetComponent<PlayerWalkMovement>() != (Object)null;
 		bool flag = ((Component)other).gameObject.CompareTag("MainCamera");
-		if ((num || flag) && tracker.ContainsValue(this))
+		if ((num | flag) && tracker.ContainsValue(this))
 		{
 			tracker.Remove(enteredTick);
 			if (tracker.Count > 0)

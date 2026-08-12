@@ -13,15 +13,15 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public Transform centerOfMass;
 
-	public float forwardPushForce = 5f;
+	public float forwardPushForce;
 
-	public float rearPushForce = 5f;
+	public float rearPushForce;
 
-	public float rotationForce = 5f;
+	public float rotationForce;
 
-	public float maxSpeed = 3f;
+	public float maxSpeed;
 
-	public float maxPaddleFrequency = 0.5f;
+	public float maxPaddleFrequency;
 
 	public SoundDefinition paddleSfx;
 
@@ -31,7 +31,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public BlendedSoundLoops waterLoops;
 
-	public float waterSoundSpeedDivisor = 1f;
+	public float waterSoundSpeedDivisor;
 
 	public float additiveDownhillVelocity;
 
@@ -41,11 +41,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public GameObjectRef footSplashEffect;
 
-	public float animationLerpSpeed = 1f;
+	public float animationLerpSpeed;
 
 	public Transform smoothedEyePosition;
 
-	public float smoothedEyeSpeed = 1f;
+	public float smoothedEyeSpeed;
 
 	public Buoyancy buoyancy;
 
@@ -54,11 +54,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 	public GameObjectRef mountEffect;
 
 	[Range(0f, 1f)]
-	public float handSplashOffset = 1f;
+	public float handSplashOffset;
 
-	public float velocitySplashMultiplier = 4f;
+	public float velocitySplashMultiplier;
 
-	public Vector3 modifyEyeOffset = Vector3.zero;
+	public Vector3 modifyEyeOffset;
 
 	[Range(0f, 1f)]
 	public float inheritVelocityMultiplier;
@@ -67,11 +67,11 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public ParticleSystem[] movingParticleSystems;
 
-	public float movingParticlesThreshold = 0.0005f;
+	public float movingParticlesThreshold;
 
 	public Transform headSpaceCheckPosition;
 
-	public float headSpaceCheckRadius = 0.4f;
+	public float headSpaceCheckRadius;
 
 	private TimeSince landFacingCheck;
 
@@ -83,7 +83,7 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	private bool isInPool;
 
-	private Vector3 lastPos = Vector3.zero;
+	private Vector3 lastPos;
 
 	private Vector3 lastClipCheckPosition;
 
@@ -423,5 +423,28 @@ public class WaterInflatable : BaseMountable, IPoolVehicle, INotifyTrigger
 
 	public void OnEmpty()
 	{
+	}
+
+	public WaterInflatable()
+	{
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		forwardPushForce = 5f;
+		rearPushForce = 5f;
+		rotationForce = 5f;
+		maxSpeed = 3f;
+		maxPaddleFrequency = 0.5f;
+		waterSoundSpeedDivisor = 1f;
+		animationLerpSpeed = 1f;
+		smoothedEyeSpeed = 1f;
+		handSplashOffset = 1f;
+		velocitySplashMultiplier = 4f;
+		modifyEyeOffset = Vector3.zero;
+		movingParticlesThreshold = 0.0005f;
+		headSpaceCheckRadius = 0.4f;
+		lastPos = Vector3.zero;
+		base._002Ector();
 	}
 }

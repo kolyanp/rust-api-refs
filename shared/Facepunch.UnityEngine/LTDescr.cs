@@ -2710,7 +2710,7 @@ public class LTDescr
 		{
 			return diffDiv2 * Mathf.Pow(2f, 10f * (val - 1f)) + from;
 		}
-		val -= 1f;
+		val--;
 		return diffDiv2 * (0f - Mathf.Pow(2f, -10f * val) + 2f) + from;
 	}
 
@@ -2813,7 +2813,7 @@ public class LTDescr
 		{
 			return new Vector3(LeanTween.easeInBounce(0f, diff.x, val) * 0.5f + from.x, LeanTween.easeInBounce(0f, diff.y, val) * 0.5f + from.y, LeanTween.easeInBounce(0f, diff.z, val) * 0.5f + from.z);
 		}
-		val -= 1f;
+		val--;
 		return new Vector3(LeanTween.easeOutBounce(0f, diff.x, val) * 0.5f + diffDiv2.x + from.x, LeanTween.easeOutBounce(0f, diff.y, val) * 0.5f + diffDiv2.y + from.y, LeanTween.easeOutBounce(0f, diff.z, val) * 0.5f + diffDiv2.z + from.z);
 	}
 

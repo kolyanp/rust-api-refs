@@ -13,7 +13,7 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 
 	public MonumentNavMesh monumentNavMesh;
 
-	private static List<DynamicDungeon> _dungeons = new List<DynamicDungeon>();
+	private static List<DynamicDungeon> _dungeons;
 
 	public GameObjectRef portalPrefab;
 
@@ -27,11 +27,11 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 
 	public Door doorInstance;
 
-	public static Vector3 nextDungeonPos = Vector3.zero;
+	public static Vector3 nextDungeonPos;
 
-	public static Vector3 dungeonStartPoint = Vector3.zero;
+	public static Vector3 dungeonStartPoint;
 
-	public static float dungeonSpacing = 50f;
+	public static float dungeonSpacing;
 
 	public SpawnGroup[] spawnGroups;
 
@@ -171,5 +171,17 @@ public class DynamicDungeon : BaseEntity, IMissionEntityListener
 
 	public void MissionEnded(BasePlayer assignee, BaseMission.MissionInstance instance)
 	{
+	}
+
+	static DynamicDungeon()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		_dungeons = new List<DynamicDungeon>();
+		nextDungeonPos = Vector3.zero;
+		dungeonStartPoint = Vector3.zero;
+		dungeonSpacing = 50f;
 	}
 }

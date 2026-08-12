@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text;
 using Facepunch;
 using UnityEngine;
@@ -16,24 +18,25 @@ public class Powergrid : ConsoleSystem
 	[Help("Pretend there are this many additional heavy fuses currently plugged into the power plant. Can input negative numbers to negate the effect of any currently plugged in fuses.")]
 	public static int simulatePowerPlantFuses = 0;
 
-	[ServerVar]
-	[Help("How long heavy fuses last for when plugged into the power plant. If <= 0 then fuses will last forever. This is the total time a fuse takes to go from full condition to broken, regardless of fuseFastDeteriorationThreshold / fuseFastDeteriorationScale.")]
+	[ServerVar(Help = "How long a heavy fuse plugged into the power plant lasts while it is decaying at the full rate (how long the worst fuses in the power plant survive for). If <= 0 then fuses last forever.", Saved = true)]
 	public static float fuseLifespanSeconds = 9600f;
 
 	private const float defaultFuseLifespanSeconds = 9600f;
 
-	[ServerVar(Help = "Normalized condition (0-1) at which heavy fuses plugged into the power plant start deteriorating faster. At or below this threshold the deterioration rate is multiplied by fuseFastDeteriorationScale. Set to 0 to disable accelerated deterioration.", Saved = true)]
-	public static float fuseFastDeteriorationThreshold = 0.3f;
+	[ServerVar(Help = "How many of the worst condition heavy fuses in the power plant decay at the full rate (burning out after fuseLifespanSeconds). Every other inserted fuse decays slowly instead. If 0 no fuse ever decays at the full rate.", Saved = true)]
+	public static int fuseFullDecayCount = 3;
 
-	private const float defaultFuseFastDeteriorationThreshold = 0.3f;
+	private const int defaultFuseFullDecayCount = 3;
 
-	[ServerVar(Help = "How much faster heavy fuses plugged into the power plant deteriorate once their normalized condition is at or below fuseFastDeteriorationThreshold.", Saved = true)]
-	public static float fuseFastDeteriorationScale = 3f;
+	[ServerVar(Help = "Minimum fraction (0-1) of the full decay rate applied to heavy fuses that aren't one of the worst fuseFullDecayCount. Each fuse rolls its own fraction between fuseSlowDecayFractionMin and fuseSlowDecayFractionMax and keeps it for its lifetime.", Saved = true)]
+	public static float fuseSlowDecayFractionMin = 0.08f;
 
-	private const float defaultFuseFastDeteriorationScale = 3f;
+	private const float defaultFuseSlowDecayFractionMin = 0.08f;
 
-	[ServerVar(Help = "If enabled, whenever no heavy fuse in the power plant is below fuseFastDeteriorationThreshold, the single lowest condition fuse deteriorates at the fast rate anyway.", Saved = true)]
-	public static bool fuseFastDeteriorateLowest = true;
+	[ServerVar(Help = "Maximum fraction (0-1) of the full decay rate applied to heavy fuses that aren't one of the worst fuseFullDecayCount. See fuseSlowDecayFractionMin.", Saved = true)]
+	public static float fuseSlowDecayFractionMax = 0.12f;
+
+	private const float defaultFuseSlowDecayFractionMax = 0.12f;
 
 	[ServerVar(Help = "Max time per frame (ms) to spend notifying powergrid entities of a stage change.", Saved = true)]
 	public static float stageChangeWorkQueueBudget = 0.1f;
@@ -59,9 +62,9 @@ public class Powergrid : ConsoleSystem
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "enabled", enabled));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "simulatePowerPlantFuses", simulatePowerPlantFuses));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseLifespanSeconds", fuseLifespanSeconds));
-		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseFastDeteriorationThreshold", fuseFastDeteriorationThreshold));
-		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseFastDeteriorationScale", fuseFastDeteriorationScale));
-		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseFastDeteriorateLowest", fuseFastDeteriorateLowest));
+		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseFullDecayCount", fuseFullDecayCount));
+		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseSlowDecayFractionMin", fuseSlowDecayFractionMin));
+		stringBuilder.AppendLine(string.Format("{0}: {1}", "fuseSlowDecayFractionMax", fuseSlowDecayFractionMax));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "greenRecyclerFullEfficiencyStage", greenRecyclerFullEfficiencyStage));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "stageChangeWorkQueueBudget", stageChangeWorkQueueBudget));
 		stringBuilder.AppendLine(string.Format("{0}: {1}", "stageChangeWorkQueueDelayBetweenJobs", stageChangeWorkQueueDelayBetweenJobs));
@@ -82,5 +85,60 @@ public class Powergrid : ConsoleSystem
 		stringBuilder.AppendLine($"Number of Powergrid connected entities: {PowergridManager.GetNoOfPowergridEntities()}");
 		arg.ReplyWith(stringBuilder.ToString());
 		Pool.FreeUnmanaged(ref stringBuilder);
+	}
+
+	[ServerVar]
+	public static void fuseStatus(Arg arg)
+	{
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)PointEntity<PowergridManager>.ServerInstance == (Object)null)
+		{
+			arg.ReplyWith("Failed to retrieve server instance for PowergridManager");
+			return;
+		}
+		PooledList<Item> val = Pool.Get<PooledList<Item>>();
+		try
+		{
+			PowergridManager.Server_GatherInsertedFuses((List<Item>)(object)val);
+			if (((List<Item>)(object)val).Count > 0)
+			{
+				StringBuilder stringBuilder = Pool.Get<StringBuilder>();
+				PooledList<Item> val2 = Pool.Get<PooledList<Item>>();
+				try
+				{
+					PowergridManager.Server_GatherFullDecayFuses((List<Item>)(object)val2);
+					int i = 0;
+					for (int count = ((List<Item>)(object)val).Count; i < count; i++)
+					{
+						Item item = ((List<Item>)(object)val)[i];
+						float num = (((List<Item>)(object)val2).Contains(item) ? 1f : PowergridManager.Server_GetSlowDecayRateScale(item));
+						stringBuilder.Append($"  Fuse {item.uid}: condition {item.conditionNormalized:P0}");
+						stringBuilder.Append($", decay rate {num:P0}");
+						if (fuseLifespanSeconds > 0f && num > 0f)
+						{
+							float num2 = item.conditionNormalized * fuseLifespanSeconds / num;
+							stringBuilder.Append($", ~{TimeSpan.FromSeconds(num2):d\\.hh\\:mm\\:ss} left at this rate");
+						}
+						else
+						{
+							stringBuilder.Append(", never burns out at this rate");
+						}
+						stringBuilder.AppendLine();
+					}
+					arg.ReplyWith(stringBuilder.ToString());
+					Pool.FreeUnmanaged(ref stringBuilder);
+					return;
+				}
+				finally
+				{
+					((IDisposable)val2)?.Dispose();
+				}
+			}
+			arg.ReplyWith("No fuses inserted");
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
 	}
 }

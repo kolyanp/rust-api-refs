@@ -60,7 +60,7 @@ public class LAM_EdgeStepDetector : LegsAnimatorControlModuleBase
 		RaycastHit hit = default(RaycastHit);
 		float num = Vector3.Distance(leg.lastRaycastingOrigin, leg.lastRaycastingEndPoint);
 		float num2 = iterationsV.GetInt();
-		for (float num3 = 1f; num3 <= num2; num3 += 1f)
+		for (float num3 = 1f; num3 <= num2; num3++)
 		{
 			Vector3 localPos = Vector3.LerpUnclamped(val2, val, 0.1f + num3 / num2);
 			localPos = base.LegsAnim.RootToWorldSpace(localPos);

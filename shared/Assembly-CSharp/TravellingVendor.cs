@@ -81,7 +81,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public float client_steering_right;
 
-	public Vector3 client_velocity = Vector3.zero;
+	public Vector3 client_velocity;
 
 	public TimeSince timeSinceLastUpdate;
 
@@ -101,11 +101,11 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private int currentPathIndex;
 
-	private float atDestinationDistance = 8f;
+	private float atDestinationDistance;
 
 	private bool followingSpine;
 
-	private int splineId = -1;
+	private int splineId;
 
 	private WorldSpline spline;
 
@@ -113,36 +113,36 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private List<BasePlayer> localPlayers;
 
-	private int searchRange = 10;
+	private int searchRange;
 
-	private float allowedVendorBlockTime = 1f;
+	private float allowedVendorBlockTime;
 
 	[Header("General")]
-	public bool DoAI = true;
+	public bool DoAI;
 
-	public float ObstacleCheckTime = 0.33f;
+	public float ObstacleCheckTime;
 
-	public float MarkerUpdateTime = 0.05f;
+	public float MarkerUpdateTime;
 
-	public float TimeBetweenPullovers = 120f;
+	public float TimeBetweenPullovers;
 
 	[Header("Engine Config")]
-	public float motorForceConstant = 300f;
+	public float motorForceConstant;
 
-	public float brakeForceConstant = 500f;
+	public float brakeForceConstant;
 
-	public float acceleration = 2f;
+	public float acceleration;
 
 	[Header("Steer Config")]
-	public float wheelbase = 3.3f;
+	public float wheelbase;
 
-	public float rearTrack = 1.6f;
+	public float rearTrack;
 
-	public float steeringSmoothing = 0.1f;
+	public float steeringSmoothing;
 
-	public float downforceCoefficient = 10f;
+	public float downforceCoefficient;
 
-	public float maxSteerAngle = 80f;
+	public float maxSteerAngle;
 
 	[Header("Trade")]
 	public GameObjectRef vendingMachineRef;
@@ -150,7 +150,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	public GameObjectRef vendingMachineFrontRef;
 
 	[Header("Pullover")]
-	public float maxPulloverAngleDifference = 15f;
+	public float maxPulloverAngleDifference;
 
 	[Header("Other")]
 	public static int obstacleMask = 196608;
@@ -171,7 +171,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 	public NPCVendingMachine vendingMachine;
 
 	[Header("Spline")]
-	public float splineMovementSpeed = 2f;
+	public float splineMovementSpeed;
 
 	public Vector3 splineOffset;
 
@@ -196,9 +196,9 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private float throttle;
 
-	private float targetThrottle = 3f;
+	private float targetThrottle;
 
-	private bool handbrake = true;
+	private bool handbrake;
 
 	private float steeringAngle;
 
@@ -224,11 +224,11 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private bool pullingOver;
 
-	private Vector3 pulloverPosition = Vector3.zero;
+	private Vector3 pulloverPosition;
 
 	private float pullOverTimer;
 
-	private Vector3 pulloverTangent = Vector3.zero;
+	private Vector3 pulloverTangent;
 
 	private bool overrideSteering;
 
@@ -248,7 +248,14 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	private float slowdownStartSpeed;
 
-	public Vector3 Velocity => client_velocity;
+	public Vector3 Velocity
+	{
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return client_velocity;
+		}
+	}
 
 	public float DriveWheelVelocity => ((Vector3)(ref client_velocity)).magnitude;
 
@@ -890,8 +897,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SV_OpenMenu(RPCMessage msg)
 	{
 		if ((Object)(object)vendingMachine == (Object)null)
@@ -1454,7 +1461,7 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		testedPosition = adjustedPulloverPoint;
 		bool num = IsDirectionClear(normalized, adjustedPulloverPoint);
 		bool flag = IsPositionClear(adjustedPulloverPoint);
-		return num && flag;
+		return num & flag;
 	}
 
 	private Vector3 GetPulloverPointFromSide(Vector3 side, bool inFront = true)
@@ -1953,5 +1960,39 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		int num = FindClosestNode() + 2 % currentPath.Count;
 		currentPathIndex = num;
 		SetDestination(currentPath[currentPathIndex]);
+	}
+
+	public TravellingVendor()
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		client_velocity = Vector3.zero;
+		atDestinationDistance = 8f;
+		splineId = -1;
+		searchRange = 10;
+		allowedVendorBlockTime = 1f;
+		DoAI = true;
+		ObstacleCheckTime = 0.33f;
+		MarkerUpdateTime = 0.05f;
+		TimeBetweenPullovers = 120f;
+		motorForceConstant = 300f;
+		brakeForceConstant = 500f;
+		acceleration = 2f;
+		wheelbase = 3.3f;
+		rearTrack = 1.6f;
+		steeringSmoothing = 0.1f;
+		downforceCoefficient = 10f;
+		maxSteerAngle = 80f;
+		maxPulloverAngleDifference = 15f;
+		splineMovementSpeed = 2f;
+		targetThrottle = 3f;
+		handbrake = true;
+		pulloverPosition = Vector3.zero;
+		pulloverTangent = Vector3.zero;
+		base._002Ector();
 	}
 }

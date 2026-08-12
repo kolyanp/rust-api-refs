@@ -105,12 +105,9 @@ public struct EntityRef : IEntityRef, IEquatable<EntityRef>
 		return ((object)uid/*cast due to constrained. prefix*/).GetHashCode();
 	}
 }
-public struct EntityRef<T>(NetworkableId uid) : IEntityRef, IEquatable<EntityRef<T>> where T : BaseEntity
+public struct EntityRef<T> : IEntityRef, IEquatable<EntityRef<T>> where T : BaseEntity
 {
-	private EntityRef entityRef = new EntityRef
-	{
-		uid = uid
-	};
+	private EntityRef entityRef;
 
 	public bool IsSet => entityRef.IsSet();
 
@@ -126,6 +123,15 @@ public struct EntityRef<T>(NetworkableId uid) : IEntityRef, IEquatable<EntityRef
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 			entityRef.uid = value;
 		}
+	}
+
+	public EntityRef(NetworkableId uid)
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		entityRef = new EntityRef
+		{
+			uid = uid
+		};
 	}
 
 	public bool IsValid(bool serverside)

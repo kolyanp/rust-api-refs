@@ -133,7 +133,7 @@ public class MissionObjective_SpeakWith : MissionObjective
 					flag
 				}));
 			}
-			if (requiredReturnItems == null || requiredReturnItems.Length == 0 || flag)
+			if ((requiredReturnItems == null || requiredReturnItems.Length == 0) | flag)
 			{
 				CompleteObjective(index, instance, playerFor);
 			}

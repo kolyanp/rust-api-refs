@@ -4,7 +4,7 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 {
 	public BaseEntity thisEntity;
 
-	public float maxPushVelocity = 10f;
+	public float maxPushVelocity;
 
 	public float minRadius;
 
@@ -12,7 +12,7 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 
 	public bool snapToAxis;
 
-	public Vector3 axisToSnapTo = Vector3.right;
+	public Vector3 axisToSnapTo;
 
 	public bool allowParentRigidbody;
 
@@ -157,5 +157,14 @@ public class TriggerVehiclePush : TriggerBase, IServerComponent
 			Vector3 val = ((Component)this).transform.TransformDirection(axisToSnapTo);
 			Gizmos.DrawLine(((Component)this).transform.position + val, ((Component)this).transform.position - val);
 		}
+	}
+
+	public TriggerVehiclePush()
+	{
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		maxPushVelocity = 10f;
+		axisToSnapTo = Vector3.right;
+		base._002Ector();
 	}
 }

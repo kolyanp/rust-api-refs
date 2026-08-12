@@ -277,10 +277,10 @@ public class NeonSign : Signage
 			bool num4 = !flag && inputSlot == 0;
 			bool flag2 = inputSlot > 0 && inputSlot - 1 == num2;
 			bool flag3 = inputAmount == 0 && num2 != currentFrame && !flag;
-			if (num4 || flag2 || flag3)
+			if (num4 | flag2 | flag3)
 			{
 				currentFrame = num2;
-				if (isAnimating && flag)
+				if (isAnimating & flag)
 				{
 					CancelInvoke(animationLoopAction);
 					InvokeRepeating(animationLoopAction, animationSpeed, animationSpeed);
@@ -368,9 +368,9 @@ public class NeonSign : Signage
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
 	public void UpdateNeonColors(RPCMessage msg)
 	{
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
