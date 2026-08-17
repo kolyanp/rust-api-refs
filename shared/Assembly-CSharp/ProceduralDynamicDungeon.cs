@@ -250,8 +250,8 @@ public class ProceduralDynamicDungeon : BaseEntity
 		}
 	}
 
-	[ContextMenu("Test Grid")]
 	[ExecuteInEditMode]
+	[ContextMenu("Test Grid")]
 	public void GenerateGrid()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

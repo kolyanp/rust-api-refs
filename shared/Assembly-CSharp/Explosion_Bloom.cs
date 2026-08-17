@@ -10,30 +10,30 @@ public class Explosion_Bloom : MonoBehaviour
 	[Serializable]
 	public struct Settings
 	{
-		[SerializeField]
 		[Tooltip("Filters out pixels under this level of brightness.")]
+		[SerializeField]
 		public float threshold;
 
-		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		[SerializeField]
 		[Range(0f, 1f)]
+		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		public float softKnee;
 
-		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
-		[Range(1f, 7f)]
 		[SerializeField]
+		[Range(1f, 7f)]
+		[Tooltip("Changes extent of veiling effects in a screen resolution-independent fashion.")]
 		public float radius;
 
-		[Tooltip("Blend factor of the result image.")]
 		[SerializeField]
+		[Tooltip("Blend factor of the result image.")]
 		public float intensity;
 
 		[SerializeField]
 		[Tooltip("Controls filter quality and buffer resolution.")]
 		public bool highQuality;
 
-		[Tooltip("Reduces flashing noise with an additional filter.")]
 		[SerializeField]
+		[Tooltip("Reduces flashing noise with an additional filter.")]
 		public bool antiFlicker;
 
 		public float thresholdGamma
@@ -74,8 +74,8 @@ public class Explosion_Bloom : MonoBehaviour
 	[SerializeField]
 	public Settings settings = Settings.defaultSettings;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Shader m_Shader;
 
 	private Material m_Material;

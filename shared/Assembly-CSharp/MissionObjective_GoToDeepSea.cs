@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class MissionObjective_GoToDeepSea : MissionObjective
 {
-	[Tooltip("Time in seconds from deep sea wipe in which this objective will be considered as valid. If current time to wipe is less than this, then the mission cannot be started. If value <= 0, then this value is ignored.")]
 	[InspectorName("Maximum Time To Wipe (s)")]
+	[Tooltip("Time in seconds from deep sea wipe in which this objective will be considered as valid. If current time to wipe is less than this, then the mission cannot be started. If value <= 0, then this value is ignored.")]
 	public int maximumTimeToDeepSeaWipe;
 
 	[Tooltip("Should fail mission when deep sea closes.")]

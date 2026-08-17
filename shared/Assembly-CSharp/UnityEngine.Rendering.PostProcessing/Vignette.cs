@@ -19,8 +19,8 @@ public sealed class Vignette : PostProcessEffectSettings
 	[Tooltip("Amount of vignetting on screen.")]
 	public FloatParameter intensity;
 
-	[Range(0.01f, 1f)]
 	[Tooltip("Smoothness of the vignette borders.")]
+	[Range(0.01f, 1f)]
 	public FloatParameter smoothness;
 
 	[Range(0f, 1f)]
@@ -33,8 +33,8 @@ public sealed class Vignette : PostProcessEffectSettings
 	[Tooltip("A black and white mask to use as a vignette.")]
 	public TextureParameter mask;
 
-	[Tooltip("Mask opacity.")]
 	[Range(0f, 1f)]
+	[Tooltip("Mask opacity.")]
 	public FloatParameter opacity;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

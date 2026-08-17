@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(AtmosphereVolumeCamera), typeof(AtmosphereVolumeCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AtmosphereVolumeRendererFeature")]
+[RustRendererFeatureCameraComponent(typeof(AtmosphereVolumeCamera), typeof(AtmosphereVolumeCameraContext))]
 public class AtmosphereVolumeRendererFeature : RustRendererFeature
 {
 	public FogMode Mode;

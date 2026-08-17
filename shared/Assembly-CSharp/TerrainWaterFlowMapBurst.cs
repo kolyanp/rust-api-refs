@@ -11,9 +11,9 @@ using UnityEngine;
 public static class TerrainWaterFlowMapBurst
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate void GetFlowDirections_00006D61_0024PostfixBurstDelegate(in NativeArray<Vector3> positions3D, ref NativeArray<float3> results, in NativeArray<byte> source, in int res);
+	internal delegate void GetFlowDirections_00006D66_0024PostfixBurstDelegate(in NativeArray<Vector3> positions3D, ref NativeArray<float3> results, in NativeArray<byte> source, in int res);
 
-	internal static class GetFlowDirections_00006D61_0024BurstDirectCall
+	internal static class GetFlowDirections_00006D66_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -24,7 +24,7 @@ public static class TerrainWaterFlowMapBurst
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<GetFlowDirections_00006D61_0024PostfixBurstDelegate>((GetFlowDirections_00006D61_0024PostfixBurstDelegate)GetFlowDirections).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<GetFlowDirections_00006D66_0024PostfixBurstDelegate>((GetFlowDirections_00006D66_0024PostfixBurstDelegate)GetFlowDirections).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -51,11 +51,11 @@ public static class TerrainWaterFlowMapBurst
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(GetFlowDirections_00006D61_0024PostfixBurstDelegate))]
+	[MonoPInvokeCallback(typeof(GetFlowDirections_00006D66_0024PostfixBurstDelegate))]
 	[BurstCompile]
 	public static void GetFlowDirections(in NativeArray<Vector3> positions3D, ref NativeArray<float3> results, in NativeArray<byte> source, in int res)
 	{
-		GetFlowDirections_00006D61_0024BurstDirectCall.Invoke(in positions3D, ref results, in source, in res);
+		GetFlowDirections_00006D66_0024BurstDirectCall.Invoke(in positions3D, ref results, in source, in res);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

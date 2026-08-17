@@ -14,8 +14,8 @@ public class Pooltable : BaseCombatEntity
 
 	private TimeSince timeSinceLastMove;
 
-	[Header("Shared")]
 	[SerializeField]
+	[Header("Shared")]
 	private float ballRadius;
 
 	[SerializeField]
@@ -41,15 +41,23 @@ public class Pooltable : BaseCombatEntity
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	private float splineTableCloseness;
 
-	[Header("Server")]
+	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	[SerializeField]
+	private bool runWalkClippingChecks;
+
+	[SerializeField]
+	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
+	private Bounds walkAreaCheck;
+
+	[SerializeField]
+	[Header("Server")]
 	private GameObjectRef mountableRef;
 
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[SerializeField]
 	[Header("Client")]
+	[SerializeField]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -79,13 +87,13 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval;
 
-	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	[Header("Ball Return")]
 	[SerializeField]
+	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	private WorldSpline ballReturnPath;
 
-	[SerializeField]
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
+	[SerializeField]
 	private GameObject[] basketBalls;
 
 	[SerializeField]
@@ -133,6 +141,14 @@ public class Pooltable : BaseCombatEntity
 	private const int MaxCatchUpTicks = 32;
 
 	private const float TableBoundSoftness = 0.15f;
+
+	private const int WalkCheckMask = 1235298561;
+
+	private const float WalkCheckStep = 0.15f;
+
+	private const int WalkCheckMaxSamples = 24;
+
+	private const float WalkCheckScanStep = 0.25f;
 
 	private static readonly int[][] RackRows;
 
@@ -471,8 +487,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		BeginGame(msg.player, solo: true);
@@ -523,8 +539,8 @@ public class Pooltable : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && gameController != null)
@@ -545,38 +561,34 @@ public class Pooltable : BaseCombatEntity
 
 	private void MountPlayerAtTable(BasePlayer player)
 	{
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)worldSpline == (Object)null) && (physicsEngine == null || !physicsEngine.HasMovingBalls()) && playerMountables.Count <= 0)
 		{
 			CancelInvoke(DismountAllSeatedPlayers);
-			Vector3 pos = PullSplinePointTowardTable(worldSpline.GetClosestPointWorld(((Component)player).transform.position, out var distanceOnSpline));
-			BaseEntity baseEntity = GameManager.server.CreateEntity(mountableRef.resourcePath, pos);
-			baseEntity.SetParent(this, worldPositionStays: true);
-			((Component)baseEntity).transform.rotation = Quaternion.LookRotation(GetDirToCueBall(pos));
-			baseEntity.Spawn();
-			playerMountables[player.userID] = baseEntity;
-			PooltableMountable component = ((Component)baseEntity).GetComponent<PooltableMountable>();
-			component.MountPlayer(player);
-			component.SplineDistance = distanceOnSpline;
-			ClientRPC(RpcTarget.Player("RPC_OpenPoolUI", player));
-			gameController?.OnPlayerJoined(player.userID);
-			timeSinceLastMove = TimeSince.op_Implicit(0f);
+			worldSpline.GetClosestPointWorld(((Component)player).transform.position, out var distanceOnSpline);
+			if (TryFindFreeSplineDistance(distanceOnSpline, out distanceOnSpline) && TryGetSplinePose(distanceOnSpline, out var pos, out var rot))
+			{
+				BaseEntity baseEntity = GameManager.server.CreateEntity(mountableRef.resourcePath, pos, rot);
+				baseEntity.SetParent(this, worldPositionStays: true);
+				baseEntity.Spawn();
+				playerMountables[player.userID] = baseEntity;
+				PooltableMountable component = ((Component)baseEntity).GetComponent<PooltableMountable>();
+				component.SplineDistance = distanceOnSpline;
+				component.MountPlayer(player);
+				ClientRPC(RpcTarget.Player("RPC_OpenPoolUI", player));
+				gameController?.OnPlayerJoined(player.userID);
+				timeSinceLastMove = TimeSince.op_Implicit(0f);
+			}
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -895,8 +907,12 @@ public class Pooltable : BaseCombatEntity
 		float length = worldSpline.GetData().Length;
 		if (!(length <= 0f))
 		{
-			mountable.SplineDistance = Mathf.Repeat(mountable.SplineDistance + movement, length);
-			PositionMountableOnSpline(mountable);
+			movement = ClampWalkDistance(mountable, movement, length);
+			if (!(Mathf.Abs(movement) <= Mathf.Epsilon))
+			{
+				mountable.SplineDistance = Mathf.Repeat(mountable.SplineDistance + movement, length);
+				PositionMountableOnSpline(mountable);
+			}
 		}
 	}
 
@@ -911,8 +927,12 @@ public class Pooltable : BaseCombatEntity
 				num -= length;
 			}
 			num = Mathf.Clamp(num, 0f - maxWalkDistance, maxWalkDistance);
-			mountable.SplineDistance = Mathf.Repeat(mountable.SplineDistance + num, length);
-			PositionMountableOnSpline(mountable);
+			num = ClampWalkDistance(mountable, num, length);
+			if (!(Mathf.Abs(num) <= Mathf.Epsilon))
+			{
+				mountable.SplineDistance = Mathf.Repeat(mountable.SplineDistance + num, length);
+				PositionMountableOnSpline(mountable);
+			}
 		}
 	}
 
@@ -946,18 +966,153 @@ public class Pooltable : BaseCombatEntity
 		return ((Component)this).transform.TransformPoint(val);
 	}
 
+	public bool TryGetSplinePose(float splineDistance, out Vector3 pos, out Quaternion rot)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		pos = default(Vector3);
+		rot = default(Quaternion);
+		if ((Object)(object)worldSpline == (Object)null)
+		{
+			return false;
+		}
+		if (physicsEngine == null || !physicsEngine.IsReady)
+		{
+			return false;
+		}
+		if (physicsEngine.Balls.Count <= 0)
+		{
+			return false;
+		}
+		pos = PullSplinePointTowardTable(worldSpline.GetPointCubicHermiteWorld(splineDistance));
+		rot = Quaternion.LookRotation(GetDirToCueBall(pos));
+		return true;
+	}
+
 	private void PositionMountableOnSpline(PooltableMountable mountable)
 	{
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = PullSplinePointTowardTable(worldSpline.GetPointCubicHermiteWorld(mountable.SplineDistance));
-		((Component)mountable).transform.position = val;
-		((Component)mountable).transform.rotation = Quaternion.LookRotation(GetDirToCueBall(val));
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		if (TryGetSplinePose(mountable.SplineDistance, out var pos, out var rot))
+		{
+			((Component)mountable).transform.position = pos;
+			((Component)mountable).transform.rotation = rot;
+		}
+	}
+
+	public bool IsWalkPoseBlocked(Vector3 pos, Quaternion rot)
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		if (!runWalkClippingChecks)
+		{
+			return false;
+		}
+		List<Collider> list = Pool.Get<List<Collider>>();
+		GamePhysics.OverlapOBB(new OBB(pos, rot, walkAreaCheck), list, 1235298561, (QueryTriggerInteraction)1);
+		BaseEntity rootParentEntity = GetRootParentEntity();
+		bool result = false;
+		foreach (Collider item in list)
+		{
+			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item);
+			if ((Object)(object)baseEntity == (Object)null)
+			{
+				result = true;
+				break;
+			}
+			if (baseEntity.isServer == base.isServer && !((Object)(object)baseEntity.GetRootParentEntity() == (Object)(object)rootParentEntity))
+			{
+				result = true;
+				break;
+			}
+		}
+		Pool.FreeUnmanaged<Collider>(ref list);
+		return result;
+	}
+
+	private float ClampWalkDistance(PooltableMountable mountable, float delta, float splineLength)
+	{
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		if (!runWalkClippingChecks)
+		{
+			return delta;
+		}
+		if (Mathf.Abs(delta) <= Mathf.Epsilon)
+		{
+			return delta;
+		}
+		float splineDistance = mountable.SplineDistance;
+		if (TryGetSplinePose(splineDistance, out var pos, out var rot) && IsWalkPoseBlocked(pos, rot))
+		{
+			return delta;
+		}
+		float num = Mathf.Min(Mathf.Abs(delta), 3.6000001f);
+		float num2 = Mathf.Sign(delta);
+		float num3 = 0f;
+		for (int i = 1; i <= 24; i++)
+		{
+			float num4 = Mathf.Min((float)i * 0.15f, num);
+			float splineDistance2 = Mathf.Repeat(splineDistance + num2 * num4, splineLength);
+			if (!TryGetSplinePose(splineDistance2, out var pos2, out var rot2) || IsWalkPoseBlocked(pos2, rot2))
+			{
+				break;
+			}
+			num3 = num4;
+			if (num4 >= num)
+			{
+				break;
+			}
+		}
+		return num2 * num3;
+	}
+
+	public bool TryFindFreeSplineDistance(float preferred, out float result)
+	{
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		result = preferred;
+		if (!runWalkClippingChecks)
+		{
+			return true;
+		}
+		float num = (((Object)(object)worldSpline != (Object)null) ? worldSpline.GetData().Length : 0f);
+		if (num <= 0f)
+		{
+			return true;
+		}
+		if (TryGetSplinePose(preferred, out var pos, out var rot) && !IsWalkPoseBlocked(pos, rot))
+		{
+			return true;
+		}
+		int num2 = Mathf.CeilToInt(num * 0.5f / 0.25f);
+		for (int i = 1; i <= num2; i++)
+		{
+			float num3 = (float)i * 0.25f;
+			for (int j = 0; j < 2; j++)
+			{
+				float num4 = Mathf.Repeat(preferred + ((j == 0) ? num3 : (0f - num3)), num);
+				if (TryGetSplinePose(num4, out var pos2, out var rot2) && !IsWalkPoseBlocked(pos2, rot2))
+				{
+					result = num4;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private void ApplyShotShared(Vector3 dir, float force)
@@ -1283,8 +1438,12 @@ public class Pooltable : BaseCombatEntity
 
 	public Pooltable()
 	{
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
 		playerMountables = new Dictionary<ulong, BaseEntity>();
 		tableWidth = 1.2f;
 		tableHeight = 0.6f;
@@ -1292,6 +1451,8 @@ public class Pooltable : BaseCombatEntity
 		mouthWidth = 0.08f;
 		cueBallStartX = -0.545f;
 		splineTableCloseness = 0.25f;
+		runWalkClippingChecks = true;
+		walkAreaCheck = new Bounds(new Vector3(0f, 0f, 0.24f), new Vector3(0.55f, 1.3f, 0.44f));
 		ballCollisionSpeedRange = new Vector2(0.1f, 3f);
 		ballCollisionSoundInterval = 0.02f;
 		ballReturnSpeed = 1.5f;

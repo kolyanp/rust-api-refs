@@ -613,8 +613,8 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestFinishBuilding(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -630,8 +630,8 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestFinishBuildingFromWheel(RPCMessage msg)
 	{
@@ -665,9 +665,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	public void RequestEditBoat(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -687,8 +687,8 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestDeployAndEditBoat(RPCMessage msg)
 	{

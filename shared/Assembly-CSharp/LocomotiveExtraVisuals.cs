@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class LocomotiveExtraVisuals : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Gauges")]
+	[SerializeField]
 	private TrainEngine trainEngine;
 
 	[SerializeField]

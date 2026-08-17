@@ -17,8 +17,8 @@ public class UICircle : UIPrimitiveBase
 	[Range(0f, 1000f)]
 	public int ArcSteps;
 
-	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	[Range(0f, 360f)]
+	[Tooltip("The Arc Rotation property permits adjusting the geometry orientation around the Z axis.")]
 	public int ArcRotation;
 
 	[Tooltip("The Progress property allows the primitive to be used as a progression indicator.")]

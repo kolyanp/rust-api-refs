@@ -11,8 +11,8 @@ public static class SystemCommands
 {
 	public static bool appliedManualCpuAffinity;
 
-	[ServerVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	[ClientVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
+	[ServerVar(Help = "(Generated) Sets the CPU core affinity mask for the process using comma-separated core indices or dash-separated ranges (e.g. 0,2-5)")]
 	public static void cpu_affinity(ConsoleSystem.Arg arg)
 	{
 		if (!arg.HasArgs())
@@ -99,8 +99,8 @@ public static class SystemCommands
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
 	[ServerVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
+	[ClientVar(Help = "(Generated) Sets the OS process priority class (belownormal, normal, abovenormal, high); Idle and Realtime are blocked; not supported on OSX")]
 	public static void cpu_priority(ConsoleSystem.Arg arg)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)

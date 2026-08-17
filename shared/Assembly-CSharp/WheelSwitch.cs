@@ -191,8 +191,8 @@ public class WheelSwitch : IOEntity
 		flagsUpdateScope.Set(Flags.Reserved4, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void CancelRotate(RPCMessage msg)
 	{
 		CancelPlayerRotation();

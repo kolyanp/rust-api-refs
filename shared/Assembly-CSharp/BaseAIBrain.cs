@@ -1096,10 +1096,10 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		return true;
 	}
 
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
-	[BaseEntity.RPC_Server.IsVisible(3f)]
 	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
+	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	private void RequestAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (UseAIDesign && !((Object)(object)msg.player == (Object)null) && AIDesign != null && PlayerCanDesignAI(msg.player))
@@ -1112,9 +1112,9 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 	}
 
 	[BaseEntity.RPC_Server]
-	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server.IsVisible(3f)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
+	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
 	private void SubmitAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (!UseAIDesign || (Object)(object)msg.player == (Object)null || !PlayerCanDesignAI(msg.player))

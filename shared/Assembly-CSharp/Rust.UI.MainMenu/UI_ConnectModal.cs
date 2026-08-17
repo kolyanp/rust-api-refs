@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ConnectModal : UI_Window
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private RustText _title;
 
 	[SerializeField]

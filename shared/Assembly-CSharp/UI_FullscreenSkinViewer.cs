@@ -30,8 +30,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 
 	public RustButton worldmodelButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SkinInfoPanel skinInfoPanel;
 
 	[SerializeField]
@@ -41,12 +41,12 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private GameObject navButtonsGroup;
 
-	[Header("Drag")]
 	[SerializeField]
+	[Header("Drag")]
 	private float inertiaDecay;
 
-	[Header("Pan")]
 	[SerializeField]
+	[Header("Pan")]
 	private Vector2 panLimitX;
 
 	[SerializeField]

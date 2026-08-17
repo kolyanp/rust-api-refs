@@ -27,8 +27,8 @@ public sealed class DepthOfField : PostProcessEffectSettings
 		value = 50f
 	};
 
-	[DisplayName("Max Blur Size")]
 	[Tooltip("Convolution kernel size of the bokeh filter, which determines the maximum radius of bokeh. It also affects performances (the larger the kernel is, the longer the GPU time is required).")]
+	[DisplayName("Max Blur Size")]
 	public KernelSizeParameter kernelSize = new KernelSizeParameter
 	{
 		value = KernelSize.Medium

@@ -22,12 +22,12 @@ public struct NavMeshBuildParams(bool dummy = true)
 	[Min(0f)]
 	public float cellHeight = cellSize;
 
-	[Tooltip("Agent height. Needs to be a multiple of cellHeight")]
 	[Min(0f)]
+	[Tooltip("Agent height. Needs to be a multiple of cellHeight")]
 	public float agentHeight = 1.7f;
 
-	[Tooltip("Agent radius. Needs to be a multiple of walkableRadius")]
 	[Min(0f)]
+	[Tooltip("Agent radius. Needs to be a multiple of walkableRadius")]
 	public float agentRadius = 0.25f;
 
 	[Min(0f)]
@@ -38,8 +38,8 @@ public struct NavMeshBuildParams(bool dummy = true)
 	[Tooltip("The maximum slope that is considered walkable. [Limits: 0 <= value < 90] [Units: Degrees]")]
 	public float agentMaxSlope = 45f;
 
-	[Tooltip("The width/height size of tile's on the xz-plane. [Limit: >= 0] [Units: vx]")]
 	[Range(16f, 1024f)]
+	[Tooltip("The width/height size of tile's on the xz-plane. [Limit: >= 0] [Units: vx]")]
 	public float tileSize = 512f;
 
 	[Tooltip("The type of partitioning used for NavMesh generation")]

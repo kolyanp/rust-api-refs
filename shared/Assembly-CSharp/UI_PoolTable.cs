@@ -11,8 +11,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RustSlider powerBar;
 
-	[SerializeField]
 	[Header("Instructions")]
+	[SerializeField]
 	private GameObject holdInstruction;
 
 	[SerializeField]
@@ -21,8 +21,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private GameObject cancelInstruction;
 
-	[Header("Players")]
 	[SerializeField]
+	[Header("Players")]
 	private RustText localPlayerNameText;
 
 	[SerializeField]
@@ -57,8 +57,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private Color eightBallColour;
 
-	[Tooltip("Contains the 15 ball displays in left-to-right order.")]
 	[SerializeField]
+	[Tooltip("Contains the 15 ball displays in left-to-right order.")]
 	private Transform ballDisplayRoot;
 
 	public bool ShouldUpdateShadows => true;

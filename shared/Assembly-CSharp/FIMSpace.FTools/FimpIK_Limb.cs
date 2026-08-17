@@ -287,8 +287,8 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	[Range(0f, 1f)]
 	public float IKPositionWeight;
 
-	[Tooltip("Blend value for end bone rotation")]
 	[Range(0f, 1f)]
+	[Tooltip("Blend value for end bone rotation")]
 	public float FootRotationWeight;
 
 	[Tooltip("Flex style algorithm for different limbs")]

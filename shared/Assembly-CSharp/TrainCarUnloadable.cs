@@ -15,8 +15,8 @@ public class TrainCarUnloadable : TrainCar
 		Fuel
 	}
 
-	[Header("Train Car Unloadable")]
 	[SerializeField]
+	[Header("Train Car Unloadable")]
 	private GameObjectRef storagePrefab;
 
 	[SerializeField]
@@ -34,8 +34,8 @@ public class TrainCarUnloadable : TrainCar
 	[SerializeField]
 	private Transform orePlaneColliderWorld;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	public float vacuumStretchPercent;
 
 	[SerializeField]

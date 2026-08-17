@@ -392,10 +392,10 @@ public class WireTool : HeldEntity
 		return Mathf.Clamp(num, 0f, 2f);
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	public void RPC_WireStarted(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -430,8 +430,8 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(WireConnectionMessage) })]
@@ -579,10 +579,10 @@ public class WireTool : HeldEntity
 		return true;
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -767,9 +767,9 @@ public class WireTool : HeldEntity
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void RPC_CancelPendingWire(RPCMessage msg)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
@@ -778,9 +778,9 @@ public class WireTool : HeldEntity
 		validatedWireSlot = -1;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{

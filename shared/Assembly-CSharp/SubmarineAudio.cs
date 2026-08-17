@@ -37,8 +37,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private SoundDefinition waterSubmergeSoundDef;
 
-	[Header("Interior")]
 	[SerializeField]
+	[Header("Interior")]
 	private SoundDefinition activeLoopDef;
 
 	[SerializeField]

@@ -154,8 +154,8 @@ public class UI_Settings : UI_Page
 	[SerializeField]
 	private GameObject searchButtonGroup;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gestureGroup;
 
 	[SerializeField]

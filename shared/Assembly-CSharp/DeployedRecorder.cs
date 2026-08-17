@@ -70,8 +70,8 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		bool play = msg.read.ReadByte() == 1;

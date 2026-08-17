@@ -64,6 +64,16 @@ public class PlayerStateManager
 		}
 	}
 
+	public PlayerState GetCached(ulong playerId)
+	{
+		PlayerState result = default(PlayerState);
+		if (_cache.TryGetValue(playerId, ref result))
+		{
+			return result;
+		}
+		return null;
+	}
+
 	public void Save(ulong playerId)
 	{
 		PlayerState state = default(PlayerState);

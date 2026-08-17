@@ -20,8 +20,8 @@ public class UI_SteamInventoryPlayerItemModal : UI_SteamInventoryItemBaseModal
 	[SerializeField]
 	protected UI_SteamInventoryCraftingModal.MaterialGroup clothGroup;
 
-	[SerializeField]
 	[Header("Breakdown Controls")]
+	[SerializeField]
 	private GameObject breakdownButtonGroup;
 
 	[SerializeField]

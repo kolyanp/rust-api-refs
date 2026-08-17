@@ -59,8 +59,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private ItemDefinition _ammoItem;
 
-	[Header("Mounted Weapon - Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Weapon")]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -88,8 +88,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[Header("Mounted Weapon - Player General Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player General Animation")]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -132,15 +132,15 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Viewmodel")]
+	[SerializeField]
 	private bool _useViewmodel;
 
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Aim Movement Sounds")]
+	[SerializeField]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]
@@ -1425,10 +1425,10 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(100uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
+	[RPC_Server.CallsPerSecond(100uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

@@ -9,8 +9,8 @@ public class CatapultSounds : GroundVehicleAudio
 
 	public SoundDefinition reloadStopDef;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]

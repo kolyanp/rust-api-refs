@@ -46,8 +46,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		}
 	}
 
-	[Header("Player Helicopter")]
 	[SerializeField]
+	[Header("Player Helicopter")]
 	public Wheel[] wheels;
 
 	[SerializeField]

@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AtmosphereRendererFeature")]
 [RustRendererFeatureCameraComponent(typeof(AtmosphereRendererCamera), typeof(AtmosphereRendererCameraContext))]
+[CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AtmosphereRendererFeature")]
 public class AtmosphereRendererFeature : RustRendererFeature
 {
 	public Texture DitheringTexture;

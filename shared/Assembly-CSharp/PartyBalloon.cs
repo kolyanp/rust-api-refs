@@ -323,8 +323,8 @@ public class PartyBalloon : BaseCombatEntity
 		TextColour = colour;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void LockBalloon(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanUpdateBalloon(msg.player))

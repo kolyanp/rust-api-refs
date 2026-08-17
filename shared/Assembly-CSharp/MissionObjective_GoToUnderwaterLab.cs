@@ -5,14 +5,14 @@ public class MissionObjective_GoToUnderwaterLab : MissionObjective
 	[BaseMission.PositionGenerator.PositionPoint]
 	public string position;
 
-	[Tooltip("Player must be within underwater labs environment volume and within this distance of the mission point for the objective to complete.")]
 	[Min(0f)]
+	[Tooltip("Player must be within underwater labs environment volume and within this distance of the mission point for the objective to complete.")]
 	public float minimumDistanceToPosition = 100f;
 
 	public bool shouldHideCompassMarkerWhenClose;
 
-	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
 	[Min(0f)]
+	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
 	public float hideCompassMarkerDistance = 50f;
 
 	private float sqrMinimumDistanceToPosition;

@@ -84,12 +84,12 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private FlexGridsElement grid;
 
-	[Tooltip("The source of the items, for analytics")]
 	[SerializeField]
+	[Tooltip("The source of the items, for analytics")]
 	private StoreSource source;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -98,8 +98,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private int maxCellCount;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	public int cellWidth;
 
 	[SerializeField]

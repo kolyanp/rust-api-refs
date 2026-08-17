@@ -248,8 +248,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 
 	public float spawnTime = -1f;
 
-	[Header("Base Vehicle")]
 	[Tooltip("Check for vehicles clipping into our mount point as well as static stuff")]
+	[Header("Base Vehicle")]
 	public bool checkVehicleClipping;
 
 	[Tooltip("Exclude any problematic physics layers from colliding with this vehicle. Requires a DoPrepare to update")]
@@ -1751,8 +1751,8 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		return baseMountable;
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(5f)]
 	public void RPC_WantsPush(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

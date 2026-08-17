@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AmbientOcclusion")]
 public class SSAORendererFeature : RustRendererFeature
 {
-	[Tooltip("How the occlusion result is composited into the frame.")]
 	[Header("Ambient Occlusion")]
+	[Tooltip("How the occlusion result is composited into the frame.")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -22,27 +22,27 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
 	public Color Tint;
 
-	[Tooltip("World-space radius of the occlusion kernel.")]
 	[Range(0f, 32f)]
+	[Tooltip("World-space radius of the occlusion kernel.")]
 	public float Radius;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent;
 
 	[Range(0f, 0.99f)]
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	public float Bias;
 
-	[Tooltip("Controls thickness-based occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls thickness-based occlusion contribution.")]
 	public float Thickness;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample;
 
-	[Header("Distance Fade")]
 	[Tooltip("Fade the effect out at a distance.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]
@@ -72,24 +72,24 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(1f, 4f)]
 	public int BlurRadius;
 
-	[Range(1f, 4f)]
 	[Tooltip("Number of blur passes.")]
+	[Range(1f, 4f)]
 	public int BlurPasses;
 
 	[Range(0f, 20f)]
 	[Tooltip("0 = blurred / 1 = sharpened.")]
 	public float BlurSharpness;
 
-	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	[Header("Temporal Filter")]
+	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	public bool FilterEnabled;
 
-	[Range(0f, 1f)]
 	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
+	[Range(0f, 1f)]
 	public float FilterBlending;
 
-	[Range(0f, 1f)]
 	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
+	[Range(0f, 1f)]
 	public float FilterResponse;
 
 	[Header("Shaders")]

@@ -19,8 +19,8 @@ public class UI_StoreGeneralTab : UI_StoreTabBase
 		public RustButton Button;
 	}
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private ScrollRect scrollRect;
 
 	[SerializeField]
@@ -29,8 +29,8 @@ public class UI_StoreGeneralTab : UI_StoreTabBase
 	[SerializeField]
 	private FlexElement scrollRectContentFlex;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Section[] sections;
 
 	[SerializeField]

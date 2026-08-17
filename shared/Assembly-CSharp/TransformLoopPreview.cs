@@ -21,8 +21,8 @@ public class TransformLoopPreview : MonoBehaviour
 	[Min(0.001f)]
 	private float movementDistance = 10f;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	private float movementSpeed = 5f;
 
 	[SerializeField]
@@ -32,16 +32,16 @@ public class TransformLoopPreview : MonoBehaviour
 	[SerializeField]
 	private MovementAxis movementAxis = MovementAxis.PositiveZ;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 originPosition;
 
 	[HideInInspector]
 	[SerializeField]
 	private bool originCaptured;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private float travelledDistance;
 
 	private void OnEnable()

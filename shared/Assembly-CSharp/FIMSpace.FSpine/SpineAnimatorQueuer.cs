@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace FIMSpace.FSpine;
 
-[DefaultExecutionOrder(-12)]
 [AddComponentMenu("FImpossible Creations/Spine Animator Utilities/Spine Animator Queuer")]
+[DefaultExecutionOrder(-12)]
 public class SpineAnimatorQueuer : MonoBehaviour
 {
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("Can be used to fade out all spine animators")]
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float SpineAnimatorsAmount = 1f;
 
 	[SerializeField]

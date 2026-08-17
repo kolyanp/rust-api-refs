@@ -101,8 +101,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public float wheelRadius = 0.615f;
 
-	[SerializeField]
 	[FormerlySerializedAs("fxFinalExplosion")]
+	[SerializeField]
 	public GameObjectRef fxDestroyed;
 
 	[SerializeField]
@@ -131,23 +131,23 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public ParticleSystem frontCouplingChangedFx;
 
-	[SerializeField]
 	[FormerlySerializedAs("rearCoupleFx")]
+	[SerializeField]
 	public ParticleSystem rearCouplingChangedFx;
 
-	[SerializeField]
 	[FormerlySerializedAs("fxCoupling")]
+	[SerializeField]
 	public ParticleSystem newCouplingFX;
 
 	[SerializeField]
 	private float decayTimeMultiplier = 1f;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public Vector3 frontBogieLocalOffset;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public Vector3 rearBogieLocalOffset;
 
 	[SerializeField]

@@ -28,8 +28,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 
 	private BoxCollider characterBoxCollider;
 
-	[Header("DPV")]
 	[SerializeField]
+	[Header("DPV")]
 	private Buoyancy buoyancy;
 
 	[SerializeField]
@@ -106,8 +106,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private RustText healthWarningText;
 
-	[Header("DPV - FX")]
 	[SerializeField]
+	[Header("DPV - FX")]
 	private Transform leftHandGrip;
 
 	[SerializeField]

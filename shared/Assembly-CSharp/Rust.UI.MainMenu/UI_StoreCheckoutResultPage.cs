@@ -29,8 +29,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -57,9 +57,9 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private UI_StoreTakeover localTakeovers;
 
-	[Space]
-	[Header("Skin Viewer")]
 	[SerializeField]
+	[Header("Skin Viewer")]
+	[Space]
 	private CoverImage skinViewerImage;
 
 	[SerializeField]
@@ -74,8 +74,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	protected HttpImage iconImage;
 
-	[Header("Intro Sequence")]
 	[SerializeField]
+	[Header("Intro Sequence")]
 	private CanvasGroup fadeOverlay;
 
 	[SerializeField]

@@ -36,9 +36,9 @@ public class ModelViewer_MainCameraParameters
 
 	public float followLag;
 
-	[Range(0.01f, 360f)]
-	[Header("                ")]
 	[Header("Lens")]
+	[Header("                ")]
+	[Range(0.01f, 360f)]
 	public float fieldOfView;
 
 	public float nearPlane;
@@ -102,8 +102,8 @@ public class ModelViewer_MainCameraParameters
 	[Header("God Rays")]
 	public bool GodRays;
 
-	[Header("Bloom")]
 	[Header("                ")]
+	[Header("Bloom")]
 	public float Brightness;
 
 	public float Threshold;
@@ -121,8 +121,8 @@ public class ModelViewer_MainCameraParameters
 
 	public Color Color;
 
-	[Header("                ")]
 	[Header("Vignette")]
+	[Header("                ")]
 	public float Darkness;
 
 	public float Sharpness;

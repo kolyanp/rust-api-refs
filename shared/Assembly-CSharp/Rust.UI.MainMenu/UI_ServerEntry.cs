@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ServerEntry : FacepunchBehaviour
 {
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private RustButton _button;
 
 	[SerializeField]
@@ -36,15 +36,15 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _distanceTooltip;
 
-	[Header("References - Last Played")]
 	[SerializeField]
+	[Header("References - Last Played")]
 	private RustText _lastPlayedText;
 
 	[SerializeField]
 	private GameObject _lastPlayedObject;
 
-	[Header("References - Friends")]
 	[SerializeField]
+	[Header("References - Friends")]
 	private RustText _friendsText;
 
 	[SerializeField]
@@ -60,8 +60,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private GameObject _queueObject;
 
-	[Header("References - Favourites")]
 	[SerializeField]
+	[Header("References - Favourites")]
 	private RustButton _favouritesButton;
 
 	[SerializeField]
@@ -70,8 +70,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private RectTransform _favouritesSpawnPoint;
 
-	[Header("References - Styles")]
 	[SerializeField]
+	[Header("References - Styles")]
 	private StyleAsset _evenStyle;
 
 	[SerializeField]
@@ -80,7 +80,7 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private bool _joinOnClick;
 }

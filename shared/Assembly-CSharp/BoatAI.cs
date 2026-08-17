@@ -811,8 +811,8 @@ public class BoatAI : BaseEntity
 	[Header("Boat AI")]
 	private BaseBoat _boat;
 
-	[Header("Boat AI - General")]
 	[SerializeField]
+	[Header("Boat AI - General")]
 	private bool _autoInit;
 
 	[SerializeField]
@@ -824,8 +824,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[SerializeField]
 	[Header("Boat AI - Collision Avoidance")]
+	[SerializeField]
 	private float _awarenessAngle;
 
 	[SerializeField]

@@ -13,13 +13,13 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private ViewModel poolCueViewmodel;
 
-	[Header("3p Cue")]
-	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	[SerializeField]
+	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
+	[Header("3p Cue")]
 	private Transform cueHeldProp;
 
-	[SerializeField]
 	[Tooltip("Grip offset in prop bone space. Mostly z: how far up the shaft the hand holds the cue, which is what the stroke rotates around.")]
+	[SerializeField]
 	private Vector3 cueHeldPropPositionOffset;
 
 	[Tooltip("Cue tilt relative to the prop bone.")]
@@ -38,8 +38,8 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private float movementSpeed;
 
-	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
 	[SerializeField]
+	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
 	private float mouseAimMaxSpeed = 8f;
 
 	private static readonly int RightHash = Animator.StringToHash("right");
@@ -61,8 +61,8 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private float strikeSpeedThreshold = 1f;
 
-	[SerializeField]
 	[Tooltip("Minimum pullback required before a fast forward movement can strike.")]
+	[SerializeField]
 	private float minimumStrikePower = 0.05f;
 
 	private float cuePullback = 0.5f;
@@ -74,6 +74,10 @@ public class PooltableMountable : BaseMountable
 	private Pooltable _poolTable;
 
 	private float lastSplineUpdateTime;
+
+	private TimeSince timeSinceClipCheck;
+
+	private const float ClipCheckInterval = 0.25f;
 
 	private float MaxSplineSpeed => Mathf.Max(movementSpeed, mouseAimMaxSpeed);
 
@@ -140,8 +144,22 @@ public class PooltableMountable : BaseMountable
 
 	public override void ServerInit()
 	{
+		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		lastSplineUpdateTime = Time.time;
+		timeSinceClipCheck = TimeSince.op_Implicit(0f);
+	}
+
+	public override bool IsSeatClipping(BaseMountable mountable)
+	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)poolTable == (Object)null || (Object)(object)mountable == (Object)null)
+		{
+			return false;
+		}
+		return poolTable.IsWalkPoseBlocked(((Component)mountable).transform.position, ((Component)mountable).transform.rotation);
 	}
 
 	public override void OnPlayerDismounted(BasePlayer player)
@@ -167,15 +185,38 @@ public class PooltableMountable : BaseMountable
 
 	public override void PlayerServerInput(InputState inputState, BasePlayer player)
 	{
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		base.PlayerServerInput(inputState, player);
-		if (!((Object)(object)player == (Object)null) && (!player.IsOnGround() || WaterFactorForPlayer(player, out var _) > 0.25f || inputState.WasJustPressed(BUTTON.JUMP)))
+		if ((Object)(object)player == (Object)null)
+		{
+			return;
+		}
+		if (!player.IsOnGround() || WaterFactorForPlayer(player, out var _) > 0.25f || inputState.WasJustPressed(BUTTON.JUMP))
 		{
 			DismountAllPlayers();
 		}
+		else
+		{
+			if (TimeSince.op_Implicit(timeSinceClipCheck) < 0.25f)
+			{
+				return;
+			}
+			timeSinceClipCheck = TimeSince.op_Implicit(0f);
+			if (IsSeatClipping(this))
+			{
+				if ((Object)(object)poolTable != (Object)null && poolTable.TryFindFreeSplineDistance(SplineDistance, out var result))
+				{
+					poolTable.MoveMountableTowardSplineDistance(this, result, float.MaxValue);
+				}
+				DismountAllPlayers();
+			}
+		}
 	}
 
-	[RPC_Server.CallsPerSecond(30uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(30uL)]
 	[RPC_Server.FromMounted]
 	public void RPC_UpdateSplineDistance(RPCMessage msg)
 	{
@@ -184,7 +225,7 @@ public class PooltableMountable : BaseMountable
 			float num = msg.read.Float();
 			if (!float.IsNaN(num) && !float.IsInfinity(num))
 			{
-				float num2 = Mathf.Clamp(Time.time - lastSplineUpdateTime, 0f, 1f);
+				float num2 = Mathf.Clamp(Time.time - lastSplineUpdateTime, 0f, 0.35f);
 				lastSplineUpdateTime = Time.time;
 				float maxWalkDistance = MaxSplineSpeed * num2 * 1.25f;
 				poolTable.MoveMountableTowardSplineDistance(this, num, maxWalkDistance);

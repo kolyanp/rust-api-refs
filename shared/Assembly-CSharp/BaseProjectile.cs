@@ -119,8 +119,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride;
 
-	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
+	[Tooltip("How far away this attack effect can be heard")]
 	public float maxAttackEffectDistance;
 
 	public GameObjectRef attackFX;
@@ -1448,9 +1448,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1539,8 +1539,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1679,8 +1679,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{

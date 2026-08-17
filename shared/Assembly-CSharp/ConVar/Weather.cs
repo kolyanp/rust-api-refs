@@ -1297,8 +1297,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all available volumetric cloud configuration asset names registered in the Climate instance")]
 	[ClientVar(Help = "(Generated) Lists all available volumetric cloud configuration asset names registered in the Climate instance")]
+	[ServerVar(Help = "(Generated) Lists all available volumetric cloud configuration asset names registered in the Climate instance")]
 	public static void list_cloud_configs(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))
@@ -1330,8 +1330,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
 	[ClientVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
+	[ServerVar(Help = "(Generated) Resets all weather overrides and cloud configurations, restoring the dynamic weather system; admin/developer only; server replicates to clients")]
 	public static void reset(Arg args)
 	{
 		if (Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))

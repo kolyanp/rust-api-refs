@@ -19,8 +19,8 @@ public abstract class UI_DevListBase : UI_Window
 	[SerializeField]
 	protected GameObjectRef itemButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected RectTransform categoryButtonsParent;
 
 	[SerializeField]

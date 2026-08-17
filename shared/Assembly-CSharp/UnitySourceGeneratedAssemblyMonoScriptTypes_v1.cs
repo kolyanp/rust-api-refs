@@ -2,9 +2,9 @@ using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-[CompilerGenerated]
-[EditorBrowsable(EditorBrowsableState.Never)]
 [GeneratedCode("Unity.MonoScriptGenerator.MonoScriptInfoGenerator", null)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+[CompilerGenerated]
 internal class UnitySourceGeneratedAssemblyMonoScriptTypes_v1
 {
 	private struct MonoScriptData

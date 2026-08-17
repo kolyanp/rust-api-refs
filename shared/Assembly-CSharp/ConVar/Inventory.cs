@@ -1051,8 +1051,8 @@ public class Inventory : ConsoleSystem
 		return num;
 	}
 
-	[ClientVar(Help = "(Generated) Prints the names of all Steam inventory item definitions currently loaded from the Steam backend; useful for verifying skin/item definition state")]
 	[ServerVar(Help = "(Generated) Prints the names of all Steam inventory item definitions currently loaded from the Steam backend; useful for verifying skin/item definition state")]
+	[ClientVar(Help = "(Generated) Prints the names of all Steam inventory item definitions currently loaded from the Steam backend; useful for verifying skin/item definition state")]
 	public static void defs(Arg arg)
 	{
 		if (SteamInventory.Definitions == null)
@@ -1069,8 +1069,8 @@ public class Inventory : ConsoleSystem
 		arg.ReplyWith(obj);
 	}
 
-	[ClientVar(Help = "(Generated) Forces a reload of all Steam inventory item definitions from the Steam backend; use if definitions appear stale or missing after a store update")]
 	[ServerVar(Help = "(Generated) Forces a reload of all Steam inventory item definitions from the Steam backend; use if definitions appear stale or missing after a store update")]
+	[ClientVar(Help = "(Generated) Forces a reload of all Steam inventory item definitions from the Steam backend; use if definitions appear stale or missing after a store update")]
 	public static void reloaddefs(Arg arg)
 	{
 		SteamInventory.LoadItemDefinitions();

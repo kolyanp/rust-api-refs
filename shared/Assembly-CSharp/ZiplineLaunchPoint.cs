@@ -298,8 +298,8 @@ public class ZiplineLaunchPoint : BaseEntity
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void MountPlayer(RPCMessage msg)
 	{

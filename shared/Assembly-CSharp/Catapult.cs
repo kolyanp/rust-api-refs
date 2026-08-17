@@ -34,8 +34,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private readonly float progressTickRate = 0.1f;
 
-	[Header("Catapult")]
 	[SerializeField]
+	[Header("Catapult")]
 	private Animator animator;
 
 	[SerializeField]
@@ -70,8 +70,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private TimeSince timeSinceLastFire;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	public GameObjectRef dryFireEffectPrefab;
 
 	[SerializeField]
@@ -414,8 +414,8 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SERVER_OpenAmmo(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -456,8 +456,8 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
@@ -474,10 +474,10 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)(object)reloadingPlayer)

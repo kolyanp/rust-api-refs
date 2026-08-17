@@ -49,8 +49,8 @@ public class UI_DeveloperTools : UI_Window
 	[SerializeField]
 	private RectTransform tabContentParent;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Image blurImage;
 
 	[SerializeField]

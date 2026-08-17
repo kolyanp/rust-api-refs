@@ -1095,8 +1095,8 @@ public class SleepingBag : DecayEntity
 		return true;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void Rename(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -1121,8 +1121,8 @@ public class SleepingBag : DecayEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void AssignToFriend(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || deployerUserID != (ulong)msg.player.userID || !canReassignToFriends)
@@ -1247,8 +1247,8 @@ public class SleepingBag : DecayEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_MakeBed(RPCMessage msg)
 	{
 		if (!canBePublic || !IsPublic() || !msg.player.CanInteract())
@@ -1315,8 +1315,8 @@ public class SleepingBag : DecayEntity
 		NotifyPlayer(deployerUserID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_ShowOnCompass(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && deployerUserID == (ulong)msg.player.userID)

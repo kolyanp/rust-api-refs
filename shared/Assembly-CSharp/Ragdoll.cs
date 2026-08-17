@@ -10,8 +10,8 @@ using UnityEngine;
 
 public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 {
-	[Header("Ragdoll")]
 	[Tooltip("If true, ragdoll physics are simulated on the server instead of the client")]
+	[Header("Ragdoll")]
 	public bool simOnServer;
 
 	public float lerpToServerSimTime = 0.5f;
@@ -47,16 +47,16 @@ public class Ragdoll : EntityComponent<BaseEntity>, IPrefabPreProcess
 	[SerializeField]
 	private List<CharacterJoint> characterJoints = new List<CharacterJoint>();
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private List<ConfigurableJoint> configurableJoints = new List<ConfigurableJoint>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private List<Collider> colliders = new List<Collider>();
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private int[] boneIndex;
 
 	[ReadOnly]

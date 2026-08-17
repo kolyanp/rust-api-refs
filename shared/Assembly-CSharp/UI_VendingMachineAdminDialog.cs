@@ -16,12 +16,12 @@ public class UI_VendingMachineAdminDialog : UIDialog
 	[SerializeField]
 	private GameObjectRef statsPanelRef;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_FakeInventory fakeInventory;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Transform existingSellOrderParent;
 
 	[SerializeField]
@@ -39,8 +39,8 @@ public class UI_VendingMachineAdminDialog : UIDialog
 	[SerializeField]
 	private FlexTransition transition;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_TagToggle droneAccessTag;
 
 	[SerializeField]

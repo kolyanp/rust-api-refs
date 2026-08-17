@@ -115,6 +115,8 @@ public class InstrumentTool : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(int),
@@ -122,8 +124,6 @@ public class InstrumentTool : HeldEntity
 		typeof(int),
 		typeof(float)
 	})]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	private void Server_PlayNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();

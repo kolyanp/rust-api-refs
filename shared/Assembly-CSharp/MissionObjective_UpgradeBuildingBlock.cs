@@ -8,8 +8,8 @@ public class MissionObjective_UpgradeBuildingBlock : MissionObjective
 {
 	public bool ShouldPingBlocksLessThanTargetGrade;
 
-	[SerializeField]
 	[FormerlySerializedAs("PingType")]
+	[SerializeField]
 	private BasePlayer.PingType pingType;
 
 	public BuildingGrade.Enum TargetGrade;

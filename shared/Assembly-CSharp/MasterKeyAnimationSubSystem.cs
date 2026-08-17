@@ -9,6 +9,8 @@ public class MasterKeyAnimationSubSystem : AnimationSubSystem
 
 	public static readonly int BreakInActiveParam = Animator.StringToHash("breakin_active");
 
+	private static readonly int ViewModelTurnStateHash = Animator.StringToHash("attack");
+
 	[FormerlySerializedAs("ShakeClip")]
 	public AnimationClip ShakeAnimationClip;
 

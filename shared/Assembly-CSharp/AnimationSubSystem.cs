@@ -16,14 +16,14 @@ public abstract class AnimationSubSystem : MonoBehaviour, IClientComponent
 
 	public const int TotalPriorityLevels = 3;
 
-	[SubSystemVariable]
 	[Tooltip("Used for debugging, should describe what this system does")]
 	[SerializeField]
+	[SubSystemVariable]
 	private string SubSystemName = string.Empty;
 
-	[Tooltip("Controls what part of the body this system modifies, if none full body mask will be used")]
-	[SerializeField]
 	[SubSystemVariable]
+	[SerializeField]
+	[Tooltip("Controls what part of the body this system modifies, if none full body mask will be used")]
 	protected AvatarMask Mask;
 
 	[SerializeField]
@@ -38,7 +38,7 @@ public abstract class AnimationSubSystem : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected bool DisableSpineIK;
 
-	[SubSystemVariable]
 	[SerializeField]
+	[SubSystemVariable]
 	private PriorityLevels Priority = PriorityLevels.Medium;
 }

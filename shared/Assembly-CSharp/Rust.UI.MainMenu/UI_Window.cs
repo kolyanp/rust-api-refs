@@ -9,8 +9,8 @@ public class UI_Window : BaseMonoBehaviour
 	[SerializeField]
 	private bool _skipAutoFixState;
 
-	[SerializeField]
 	[Header("Window - Transitions")]
+	[SerializeField]
 	private FlexTransition _openTransition;
 
 	[SerializeField]

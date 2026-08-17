@@ -15,14 +15,14 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 
 	public Phrase phrase;
 
-	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
-	[Header("Additional Settings - Delay")]
 	[Space(10f)]
+	[Header("Additional Settings - Delay")]
+	[Tooltip("Delay timing before the tooltip appears. Short is 0.15 seconds, Long is 0.5 seconds.")]
 	public DelayType delayBeforeAppearing;
 
-	[Header("Advanced Settings - Position")]
-	[Tooltip("What position relative to the object that the tooltip should be spawned on.")]
 	[Space(10f)]
+	[Tooltip("What position relative to the object that the tooltip should be spawned on.")]
+	[Header("Advanced Settings - Position")]
 	public TooltipContainer.PositionMode positionMode;
 
 	[Tooltip("Spawn the tooltip relative to the mouse position rather than the objects.")]

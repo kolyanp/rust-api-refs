@@ -61,8 +61,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public float spineYawInertiaFactor;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Quaternion[] targetNeckRotations;
 
 	[ReadOnly]
@@ -73,8 +73,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3[] localSpinePositions;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	private Vector3 originalHipPosition;
 
 	[SerializeField]

@@ -80,8 +80,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 1f)]
 	public float traceBias;
 
-	[Header("                ")]
 	[Header("Ambient Occlusion")]
+	[Header("                ")]
 	public bool enableAmbientOcclusion;
 
 	public SampleCountLevel SampleCount;
@@ -90,8 +90,8 @@ public class ModelViewer_RenderParameters
 
 	public Color Tint;
 
-	[Range(0f, 32f)]
 	[Tooltip("Radius spread of the occlusion.")]
+	[Range(0f, 32f)]
 	public float Radius;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -118,8 +118,8 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength;
 
-	[Tooltip("Final Intensity parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Intensity parameter.")]
 	public float FadeToIntensity;
 
 	public Color FadeToTint;
@@ -128,16 +128,16 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent;
 
 	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
 	public float FadeToThickness;
 
-	[Header("                ")]
 	[Header("Reflections")]
+	[Header("                ")]
 	public ReflectionProbeMode Type;
 
 	public ReflectionProbeRefreshMode RefreshMode;

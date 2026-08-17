@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[DisallowMultipleComponent]
 [RequireComponent(typeof(Graphic))]
+[DisallowMultipleComponent]
 [AddComponentMenu("UI/Effects/Rounded Corners")]
 public class UIRoundedCorners : BaseMeshEffect
 {

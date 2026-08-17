@@ -79,12 +79,12 @@ public class MLRS : BaseMountable
 	private Transform hydraulics;
 
 	[Header("MLRS Weaponry")]
-	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	[SerializeField]
+	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	public float minRange = 200f;
 
-	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	[SerializeField]
+	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -751,8 +751,8 @@ public class MLRS : BaseMountable
 	}
 
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -763,8 +763,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Fire_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -793,8 +793,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open_Dashboard(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

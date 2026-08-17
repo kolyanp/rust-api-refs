@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(ViewmodelRendererCamera), typeof(ViewmodelRendererCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/ViewmodelRendererFeature")]
+[RustRendererFeatureCameraComponent(typeof(ViewmodelRendererCamera), typeof(ViewmodelRendererCameraContext))]
 public class ViewmodelRendererFeature : RustRendererFeature
 {
 	public Shader viewModelShader;

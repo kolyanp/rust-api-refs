@@ -22,8 +22,8 @@ public class ModularCarAudio : GroundVehicleAudio
 	[SerializeField]
 	private float skidMaxSlip = 25f;
 
-	[SerializeField]
 	[Header("Movement & Suspension")]
+	[SerializeField]
 	private SoundDefinition movementStartOneshot;
 
 	[SerializeField]

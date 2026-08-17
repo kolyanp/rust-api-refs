@@ -7718,7 +7718,7 @@ public class ConsoleGen
 			Parent = "clan",
 			FullName = "clan.info",
 			ServerAdmin = true,
-			Description = "Prints info about a clan given its ID",
+			Description = "Prints info about a clan given its ID or a steamID of a player in that clan",
 			Variable = false,
 			Call = delegate(ConsoleSystem.Arg arg)
 			{

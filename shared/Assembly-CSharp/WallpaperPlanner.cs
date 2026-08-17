@@ -264,10 +264,10 @@ public class WallpaperPlanner : Planner
 		list.amount.Add((int)placementPrice.amount);
 	}
 
-	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsActiveItem]
-	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void SERVER_ChangeWallpaperToolSkin(RPCMessage msg)
 	{
 		int num = msg.read.Int32();
@@ -294,8 +294,8 @@ public class WallpaperPlanner : Planner
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server]
 	[RPC_Server.FromOwner]
 	public void SERVER_SwitchMode(RPCMessage msg)
 	{

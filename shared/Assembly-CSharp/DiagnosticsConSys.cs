@@ -51,8 +51,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		public List<GameObjectRecursiveData> Children = new List<GameObjectRecursiveData>();
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of animators into a diagnostics subfolder ")]
 	public static void dumpAnimators(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -99,8 +99,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	public static void dumpEntities(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -288,8 +288,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.ScriptableObject.Count.txt", stringBuilder3.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
 	public static void dumpPhysics(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -400,8 +400,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "Physics.RigidBody.All.txt", stringBuilder2.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of root objects (all gameobjects across all scenes) into a /diagnostics/ subfolder. WARNING: this will stall the server and can cause it to crash.")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of root objects (all gameobjects across all scenes) into a /diagnostics/ subfolder. WARNING: this will stall the server and can cause it to crash.")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of root objects (all gameobjects across all scenes) into a /diagnostics/ subfolder. WARNING: this will stall the server and can cause it to crash.")]
 	public static void dumpRootObjects(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -742,8 +742,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
 	public static void dumpWarmup(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -809,8 +809,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "World.Spawn.csv", stringBuilder.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot into a folder in /diagnostics/. WARNING: this will stall the server and can cause it to crash.")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot into a folder in /diagnostics/. WARNING: this will stall the server and can cause it to crash.")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot into a folder in /diagnostics/. WARNING: this will stall the server and can cause it to crash.")]
 	public static void dump(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -830,8 +830,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		args.ReplyWith("Dumped diagnostics to: " + targetFolder);
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
 	public static void dumpSystemInformation(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -839,8 +839,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		args.ReplyWith("Dumped system information to: " + targetFolder + "System.Info.txt");
 	}
 
-	[ServerVar(Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
+	[ServerVar(Help = "Dump list of prefabs pre-processed into a diagnostics subfolder")]
 	public static void dumppreprocess(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

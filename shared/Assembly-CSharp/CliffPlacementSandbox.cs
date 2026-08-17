@@ -67,8 +67,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus;
 
-	[Header("Terrain source")]
 	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
+	[Header("Terrain source")]
 	public TerrainSource Source;
 
 	[Header("Procedural (real Rust base heightmap)")]
@@ -99,8 +99,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch;
 
-	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
 	[Header("Map file region (real .map crop)")]
+	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
 	public string MapFilePath;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -182,8 +182,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Click-to-select mode: instead of drawing every gizmo in range, left-click a cliff to toggle its gizmos on, click again to turn them off. Several cliffs can be selected at once.")]
 	public bool GizmoSelectionMode;
 
-	[Header("Scale reference")]
 	[Tooltip("Spawn a bright, roughly player-sized capsule on the terrain so you can judge scale against the cliffs. Use 'Marker where I'm looking' or the J key to drop it under the aim.")]
+	[Header("Scale reference")]
 	public bool ShowPlayerScaleReference;
 
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]

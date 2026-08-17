@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace VLB;
 
-[DisallowMultipleComponent]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-triggerzone/")]
 [RequireComponent(typeof(VolumetricLightBeam))]
+[DisallowMultipleComponent]
 public class TriggerZone : MonoBehaviour
 {
 	public bool setIsTrigger = true;

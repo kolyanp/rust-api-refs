@@ -29,12 +29,12 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 	[Range(-12f, -1f)]
 	public FloatParameter upsampleTolerance;
 
-	[Tooltip("This modifies the thickness of occluders. It increases the size of dark areas and also introduces a dark halo around objects.")]
 	[Range(1f, 10f)]
+	[Tooltip("This modifies the thickness of occluders. It increases the size of dark areas and also introduces a dark halo around objects.")]
 	public FloatParameter thicknessModifier;
 
-	[Tooltip("Modifies the influence of direct lighting on ambient occlusion.")]
 	[Range(0f, 1f)]
+	[Tooltip("Modifies the influence of direct lighting on ambient occlusion.")]
 	public FloatParameter directLightingStrength;
 
 	[Tooltip("The radius of sample points. This affects the size of darkened areas.")]

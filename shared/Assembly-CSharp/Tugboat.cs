@@ -11,8 +11,8 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 {
 	private const Flags Flag_Horn = Flags.Reserved18;
 
-	[SerializeField]
 	[Header("Tugboat")]
+	[SerializeField]
 	private Canvas monitorCanvas;
 
 	[SerializeField]
@@ -63,8 +63,8 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 	[SerializeField]
 	private TriggerParent parentTrigger;
 
-	[ServerVar]
 	[Help("how long until boat corpses despawn (excluding tugboat)")]
+	[ServerVar]
 	public static float tugcorpseseconds = 7200f;
 
 	[ServerVar(Help = "How long before a tugboat loses all its health while outside")]

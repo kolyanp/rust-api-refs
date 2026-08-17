@@ -16,8 +16,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private RustText itemTypeText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private CanvasGroup imageGroup;
 
 	[SerializeField]

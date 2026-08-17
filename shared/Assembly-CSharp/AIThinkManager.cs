@@ -22,8 +22,8 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 
 	public static ListHashSet<IThinker> _petRemovalQueue = new ListHashSet<IThinker>();
 
-	[Help("How many miliseconds to budget for processing AI entities per server frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing AI entities per server frame")]
 	public static float framebudgetms = 2f;
 
 	[ServerVar]

@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/VolumeCloudsRendererFeature")]
 [RustRendererFeatureCameraComponent(typeof(VolumeCloudsCamera), typeof(VolumeCloudsCameraContext))]
+[CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/VolumeCloudsRendererFeature")]
 public class VolumeCloudsRendererFeature : RustRendererFeature
 {
 	private VolumeCloudsShadowPass _shadowPass;

@@ -10,8 +10,8 @@ public class MissionObjective_SpeakWithTargetNPC : MissionObjective
 
 	public ItemAmount[] requiredReturnItems;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("The target NPC must be nearby this mission point for the objective to complete.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string RequireProximityToPosition;
 
 	[Tooltip("This defines the minimum proximity between the target NPC and the mission point.")]

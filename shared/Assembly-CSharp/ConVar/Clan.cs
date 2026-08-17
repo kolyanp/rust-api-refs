@@ -68,7 +68,7 @@ public class Clan : ConsoleSystem
 	[ServerVar(Help = "How much score players earn for starting the oil rig fuel switch")]
 	public static int scoreForStartingOilRigFuelSwitch = 5;
 
-	[ServerVar(Help = "Prints info about a clan given its ID")]
+	[ServerVar(Help = "Prints info about a clan given its ID or a steamID of a player in that clan")]
 	public static void Info(Arg arg)
 	{
 		if ((Object)(object)ClanManager.ServerInstance == (Object)null)
@@ -76,22 +76,25 @@ public class Clan : ConsoleSystem
 			arg.ReplyWith("ClanManager is null!");
 			return;
 		}
-		long clanId = arg.GetLong(0, 0L);
-		if (clanId == 0L)
+		long num = arg.GetLong(0, 0L);
+		if (num == 0L || num > 76500000000000000L)
 		{
 			BasePlayer basePlayer = ArgEx.Player(arg);
-			if ((Object)(object)basePlayer == (Object)null)
+			ulong num2 = (ulong)num;
+			if (num2 == 0L)
 			{
-				arg.ReplyWith("Usage: clan.info <clanID>");
+				if ((Object)(object)basePlayer == (Object)null)
+				{
+					arg.ReplyWith("Usage: clan.info <clanID/steamID>");
+					return;
+				}
+				num2 = basePlayer.userID;
 			}
-			else
-			{
-				SendClanInfoPlayer(basePlayer);
-			}
+			SendClanInfoPlayer(num2, basePlayer);
 		}
 		else
 		{
-			SendClanInfoConsole(clanId);
+			SendClanInfoConsole(num);
 		}
 		static string FormatClan(IClan clan)
 		{
@@ -152,16 +155,14 @@ public class Clan : ConsoleSystem
 				Debug.LogException(ex);
 			}
 		}
-		async void SendClanInfoPlayer(BasePlayer player)
+		static async void SendClanInfoPlayer(ulong steamId, BasePlayer player)
 		{
-			_ = 1;
 			try
 			{
-				IClan val = ((clanId != 0L) ? (await GetClanByID(clanId)) : (await GetPlayerClan(player)));
-				IClan val2 = val;
-				if (val2 != null)
+				IClan val = await GetPlayerClan(steamId, player);
+				if (val != null)
 				{
-					string msg = FormatClan(val2);
+					string msg = FormatClan(val);
 					player.ConsoleMessage(msg);
 				}
 			}
@@ -173,27 +174,34 @@ public class Clan : ConsoleSystem
 		}
 	}
 
-	private static async ValueTask<IClan> GetPlayerClan(BasePlayer player)
+	private static async ValueTask<IClan> GetPlayerClan(ulong playerId, BasePlayer forPlayer = null)
 	{
-		ClanValueResult<IClan> val = await ClanManager.ServerInstance.Backend.GetByMember((ulong)player.userID);
+		ClanValueResult<IClan> val = await ClanManager.ServerInstance.Backend.GetByMember(playerId);
 		if (!val.IsSuccess)
 		{
-			string msg = (((int)val.Result == 3) ? "You're not in a clan!" : "Failed to find your clan!");
-			player.ConsoleMessage(msg);
+			string text = (((int)val.Result == 3) ? "Player is not in a clan!" : $"Failed to find player's clan ({val.Result})!");
+			if ((Object)(object)forPlayer != (Object)null)
+			{
+				forPlayer.ConsoleMessage(text);
+			}
+			else
+			{
+				Debug.Log((object)text);
+			}
 			return null;
 		}
 		return val.Value;
 	}
 
-	private static async ValueTask<IClan> GetClanByID(long clanId, BasePlayer player = null)
+	private static async ValueTask<IClan> GetClanByID(long clanId, BasePlayer forPlayer = null)
 	{
 		ClanValueResult<IClan> val = await ClanManager.ServerInstance.Backend.Get(clanId);
 		if (!val.IsSuccess)
 		{
 			string text = (((int)val.Result == 4) ? $"Clan with ID {clanId} was not found!" : $"Failed to get the clan with ID {clanId} ({val.Result})!");
-			if ((Object)(object)player != (Object)null)
+			if ((Object)(object)forPlayer != (Object)null)
 			{
-				player.ConsoleMessage(text);
+				forPlayer.ConsoleMessage(text);
 			}
 			else
 			{
@@ -262,7 +270,7 @@ public class Clan : ConsoleSystem
 			_ = 1;
 			try
 			{
-				IClan clan = await GetPlayerClan(player);
+				IClan clan = await GetPlayerClan(player.userID, player);
 				if (clan != null)
 				{
 					ClanResult val = await clan.Disband((ulong)player.userID);
@@ -311,7 +319,7 @@ public class Clan : ConsoleSystem
 			_ = 2;
 			try
 			{
-				IClan clan = await GetPlayerClan(player);
+				IClan clan = await GetPlayerClan(player.userID, player);
 				if (clan != null)
 				{
 					if (clan.Invites.All(delegate(ClanInvite i)

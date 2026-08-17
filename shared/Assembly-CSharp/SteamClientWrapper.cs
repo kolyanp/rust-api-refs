@@ -4,6 +4,8 @@ public class SteamClientWrapper : SingletonComponent<SteamClientWrapper>
 {
 	public Texture2D DefaultAvatar;
 
+	public const ulong MinSteamId = 76500000000000000uL;
+
 	private static readonly Phrase TimelineDeathTitle;
 
 	private static readonly Phrase TimelineKillTitle;

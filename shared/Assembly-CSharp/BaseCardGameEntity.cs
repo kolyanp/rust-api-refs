@@ -35,8 +35,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		Blackjack
 	}
 
-	[Header("Card Game")]
 	[SerializeField]
+	[Header("Card Game")]
 	private GameObjectRef uiPrefab;
 
 	public ItemDefinition scrapItemDef;
@@ -527,7 +527,7 @@ public abstract class BaseCardGameEntity : BaseVehicle
 
 	public bool CanLootPlayerStorage(BasePlayer player, CardGamePlayerStorage storage)
 	{
-		if ((Object)(object)player == (Object)null || (Object)(object)storage == (Object)null)
+		if ((Object)(object)player == (Object)null || (Object)(object)storage == (Object)null || !player.isMounted)
 		{
 			return false;
 		}
@@ -676,8 +676,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Editor_MakeRandomMove(RPCMessage msg)
 	{
 		if (Application.isEditor)

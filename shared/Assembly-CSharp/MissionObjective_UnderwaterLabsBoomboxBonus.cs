@@ -4,8 +4,8 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 {
 	public string targetRadioIp;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string requireProximityToPosition;
 
 	[Min(0f)]
@@ -14,8 +14,8 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 
 	public bool shouldHideCompassMarkerWhenClose;
 
-	[Min(0f)]
 	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
+	[Min(0f)]
 	public float hideCompassMarkerDistance = 50f;
 
 	private float sqrDistanceToHideCompassMarker;

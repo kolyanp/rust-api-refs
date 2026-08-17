@@ -41,8 +41,8 @@ public class RustNavMeshAgent : EntityComponent<BaseEntity>, IServerComponent
 
 	private SenseComponent senses;
 
-	[Header("Base fields")]
 	[SerializeField]
+	[Header("Base fields")]
 	private int _agentTypeID;
 
 	[SerializeField]

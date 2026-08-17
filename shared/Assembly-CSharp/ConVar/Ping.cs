@@ -33,8 +33,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
 	[ServerVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
+	[ClientVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
 	public static int ping_refresh_interval
 	{
 		get
@@ -47,8 +47,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) When enabled, region ping estimates are automatically refreshed in the background to keep server list latency data up to date")]
 	[ServerVar(Help = "(Generated) When enabled, region ping estimates are automatically refreshed in the background to keep server list latency data up to date")]
+	[ClientVar(Help = "(Generated) When enabled, region ping estimates are automatically refreshed in the background to keep server list latency data up to date")]
 	public static bool auto_refresh_region
 	{
 		get

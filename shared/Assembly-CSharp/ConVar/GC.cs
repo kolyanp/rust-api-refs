@@ -42,8 +42,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	[ClientVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
+	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	public static int incremental_milliseconds
 	{
 		get

@@ -120,9 +120,9 @@ public class SatelliteCrash : BaseCombatEntity
 	[Tooltip("Visual effect played at the crash position when the satellite hits the ground")]
 	public GameObjectRef groundImpactEffect;
 
-	[Header("Crash Config")]
 	[Tooltip("Loot budget at 1.0x mass scale, in crate-equivalents. Multiplied by the mass-to-loot curve; the result spawns as crates up to Max Crates Per Crash, with any overflow going into extra items per crate.")]
 	[FormerlySerializedAs("maxCratesToSpawn")]
+	[Header("Crash Config")]
 	public int baselineCrateSpawnCount = 6;
 
 	public int maxFireballs = 10;
