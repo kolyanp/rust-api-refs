@@ -16,12 +16,12 @@ public class UI_VendingMachineAdminDialog : UIDialog
 	[SerializeField]
 	private GameObjectRef statsPanelRef;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_FakeInventory fakeInventory;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private Transform existingSellOrderParent;
 
 	[SerializeField]

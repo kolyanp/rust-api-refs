@@ -351,8 +351,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(12f)]
+	[RPC_Server]
 	public void RPC_AddSellOrderRelaxedDistance(RPCMessage msg)
 	{
 		RPC_AddSellOrder(msg);
@@ -365,8 +365,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 		base.RPC_UpdateShopName(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_BuyItem(RPCMessage msg)
 	{
 		BuyItem(msg);
@@ -386,8 +386,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 		SV_RequestPurchaseData(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_DeleteSellOrderDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteSellOrder(msg);

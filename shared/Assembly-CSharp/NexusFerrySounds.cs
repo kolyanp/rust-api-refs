@@ -44,8 +44,8 @@ public class NexusFerrySounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Transform engineTransform;
 
-	[Header("Water")]
 	[SerializeField]
+	[Header("Water")]
 	private SoundDefinition waterIdleDef;
 
 	[SerializeField]
@@ -77,8 +77,8 @@ public class NexusFerrySounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector3 sideSoundLineBow;
 
-	[SerializeField]
 	[Header("Dock")]
+	[SerializeField]
 	private SoundDefinition dockArrivalSoundDef;
 
 	[SerializeField]

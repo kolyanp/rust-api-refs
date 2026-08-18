@@ -311,9 +311,9 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void Server_TryOpenMarket(RPCMessage msg)
 	{
 		if (!CanPlayerInteract(msg.player))
@@ -339,8 +339,8 @@ public class MarketTerminal : StorageContainer
 	}
 
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void Server_Purchase(RPCMessage msg)
 	{
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)

@@ -53,8 +53,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0.01f, 100f)]
 	public float Ratio;
 
-	[Header("Focus")]
 	[Header("                ")]
+	[Header("Focus")]
 	public bool depthOfField;
 
 	public float focalLength;
@@ -67,21 +67,21 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Header("                ")]
 	[Header("Motion Blur")]
+	[Header("                ")]
 	[Range(0f, 360f)]
 	public float shutterAngle;
 
+	[Range(-100f, 100f)]
 	[Header("Distortion")]
 	[Header("                ")]
-	[Range(-100f, 100f)]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
 	public float chromaticAbberation;
 
-	[Header("Post Effects")]
 	[Header("                ")]
+	[Header("Post Effects")]
 	public TonemappingMode ToneMapping;
 
 	public float Exposure;
@@ -92,8 +92,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(-100f, 100f)]
 	public float Saturation;
 
-	[Header("                ")]
 	[Header("Sharpen")]
+	[Header("                ")]
 	public float Strength;
 
 	public float limit;
@@ -102,8 +102,8 @@ public class ModelViewer_MainCameraParameters
 	[Header("God Rays")]
 	public bool GodRays;
 
-	[Header("                ")]
 	[Header("Bloom")]
+	[Header("                ")]
 	public float Brightness;
 
 	public float Threshold;
@@ -121,8 +121,8 @@ public class ModelViewer_MainCameraParameters
 
 	public Color Color;
 
-	[Header("Vignette")]
 	[Header("                ")]
+	[Header("Vignette")]
 	public float Darkness;
 
 	public float Sharpness;

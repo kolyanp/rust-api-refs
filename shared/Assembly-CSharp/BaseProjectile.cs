@@ -22,8 +22,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[InspectorFlags]
 			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
+			[InspectorFlags]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -119,8 +119,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride;
 
-	[Header("Effects")]
 	[Tooltip("How far away this attack effect can be heard")]
+	[Header("Effects")]
 	public float maxAttackEffectDistance;
 
 	public GameObjectRef attackFX;
@@ -280,34 +280,37 @@ public class BaseProjectile : AttackEntity
 				}
 				using (TimeWarning.New("CLProject"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(64))
 					{
-						if (!RPC_Server.FromOwner.Test(3168282921u, "CLProject", this, player))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						if (!RPC_Server.IsActiveItem.Test(3168282921u, "CLProject", this, player))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg2 = new RPCMessage
+							if (!RPC_Server.FromOwner.Test(3168282921u, "CLProject", this, player))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							CLProject(msg2);
+								return true;
+							}
+							if (!RPC_Server.IsActiveItem.Test(3168282921u, "CLProject", this, player))
+							{
+								return true;
+							}
 						}
-					}
-					catch (Exception ex)
-					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in CLProject");
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg2 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								CLProject(msg2);
+							}
+						}
+						catch (Exception ex)
+						{
+							Debug.LogException(ex);
+							player.Kick("RPC Error in CLProject");
+						}
 					}
 				}
 				return true;
@@ -1448,9 +1451,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1679,9 +1682,10 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
+	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)

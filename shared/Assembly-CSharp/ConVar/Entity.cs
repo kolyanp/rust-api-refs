@@ -217,8 +217,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists all networked entities belonging to the given network group ID in a formatted table; admin-only on client")]
 	public static void find_group(Arg args)
 	{
 		uint filter = args.GetUInt(0);
@@ -304,8 +304,8 @@ public class Entity : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Lists all networked entities owned by the calling player (matched by network ID) in a formatted table; admin-only on client")]
 	[ClientVar(Help = "(Generated) Lists all networked entities owned by the calling player (matched by network ID) in a formatted table; admin-only on client")]
+	[ServerVar(Help = "(Generated) Lists all networked entities owned by the calling player (matched by network ID) in a formatted table; admin-only on client")]
 	public static void find_self(Arg args)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)

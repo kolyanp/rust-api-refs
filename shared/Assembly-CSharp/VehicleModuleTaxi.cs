@@ -6,8 +6,8 @@ using UnityEngine.Assertions;
 
 public class VehicleModuleTaxi : VehicleModuleStorage
 {
-	[Header("Taxi")]
 	[SerializeField]
+	[Header("Taxi")]
 	private SoundDefinition kickButtonSound;
 
 	[SerializeField]

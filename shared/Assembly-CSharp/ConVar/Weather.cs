@@ -1230,8 +1230,8 @@ public class Weather : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
 	[ServerVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
+	[ClientVar(Help = "(Generated) Loads and applies a named weather preset to the climate system; admin/developer only; server replicates the change to all clients")]
 	public static void load(Arg args)
 	{
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<Climate>.Instance))

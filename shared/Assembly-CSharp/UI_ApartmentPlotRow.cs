@@ -19,8 +19,8 @@ public class UI_ApartmentPlotRow : BaseMonoBehaviour
 	[SerializeField]
 	private RustText valueText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject[] occupiedVisuals;
 
 	[SerializeField]

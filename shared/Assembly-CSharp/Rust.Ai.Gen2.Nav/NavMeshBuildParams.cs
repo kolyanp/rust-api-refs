@@ -14,28 +14,28 @@ public struct NavMeshBuildParams(bool dummy = true)
 		Layers
 	}
 
-	[Tooltip("The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	[Min(0f)]
+	[Tooltip("The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	public float cellSize = agentRadius / 3f;
 
 	[Tooltip("The y-axis cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	[Min(0f)]
 	public float cellHeight = cellSize;
 
-	[Min(0f)]
 	[Tooltip("Agent height. Needs to be a multiple of cellHeight")]
+	[Min(0f)]
 	public float agentHeight = 1.7f;
 
-	[Min(0f)]
 	[Tooltip("Agent radius. Needs to be a multiple of walkableRadius")]
+	[Min(0f)]
 	public float agentRadius = 0.25f;
 
-	[Min(0f)]
 	[Tooltip("Maximum climb height for agent. Needs to be a multiple of cellHeight")]
+	[Min(0f)]
 	public float agentMaxClimb = 0.4f;
 
-	[Range(0f, 90f)]
 	[Tooltip("The maximum slope that is considered walkable. [Limits: 0 <= value < 90] [Units: Degrees]")]
+	[Range(0f, 90f)]
 	public float agentMaxSlope = 45f;
 
 	[Range(16f, 1024f)]

@@ -105,15 +105,15 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	private Ammo[] ammoPrefabs;
 
-	[Header("IK")]
 	[SerializeField]
+	[Header("IK")]
 	public Transform leftHandTarget;
 
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[SerializeField]
 	[Header("Effects")]
+	[SerializeField]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -143,8 +143,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -261,34 +261,37 @@ public class BallistaGun : BaseVehicleSeat
 				}
 				using (TimeWarning.New("SERVER_FireClientProjectile"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(1))
 					{
-						if (!RPC_Server.CallsPerSecond.Test(296086248u, "SERVER_FireClientProjectile", this, player, 1uL))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						if (!RPC_Server.FromMounted.Test(296086248u, "SERVER_FireClientProjectile", this, player))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg3 = new RPCMessage
+							if (!RPC_Server.CallsPerSecond.Test(296086248u, "SERVER_FireClientProjectile", this, player, 1uL))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							SERVER_FireClientProjectile(msg3);
+								return true;
+							}
+							if (!RPC_Server.FromMounted.Test(296086248u, "SERVER_FireClientProjectile", this, player))
+							{
+								return true;
+							}
 						}
-					}
-					catch (Exception ex2)
-					{
-						Debug.LogException(ex2);
-						player.Kick("RPC Error in SERVER_FireClientProjectile");
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg3 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								SERVER_FireClientProjectile(msg3);
+							}
+						}
+						catch (Exception ex2)
+						{
+							Debug.LogException(ex2);
+							player.Kick("RPC Error in SERVER_FireClientProjectile");
+						}
 					}
 				}
 				return true;
@@ -1036,8 +1039,8 @@ public class BallistaGun : BaseVehicleSeat
 		((Collider)playerServerCollider).enabled = active;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void SERVER_SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
@@ -1075,9 +1078,10 @@ public class BallistaGun : BaseVehicleSeat
 		mounted.inventory.ServerUpdate(0f);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server.MaxRepeatedElements(1)]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1342,9 +1346,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1371,9 +1375,9 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromMounted]
+	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace VLB;
 
-[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
-[RequireComponent(typeof(VolumetricLightBeam))]
 [DisallowMultipleComponent]
+[HelpURL("http://saladgamer.com/vlb-doc/comp-dynocclusion/")]
 [ExecuteInEditMode]
+[RequireComponent(typeof(VolumetricLightBeam))]
 public class DynamicOcclusion : MonoBehaviour
 {
 	private enum Direction

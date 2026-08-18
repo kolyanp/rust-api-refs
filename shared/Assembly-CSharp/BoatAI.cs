@@ -770,8 +770,8 @@ public class BoatAI : BaseEntity
 	[CompilerGenerated]
 	private Vector3 _003CProtectionCenter_003Ek__BackingField;
 
-	[Header("Boat AI - Scientists")]
 	[SerializeField]
+	[Header("Boat AI - Scientists")]
 	private bool _autoFillWithScientists;
 
 	[SerializeField]
@@ -811,8 +811,8 @@ public class BoatAI : BaseEntity
 	[Header("Boat AI")]
 	private BaseBoat _boat;
 
-	[SerializeField]
 	[Header("Boat AI - General")]
+	[SerializeField]
 	private bool _autoInit;
 
 	[SerializeField]

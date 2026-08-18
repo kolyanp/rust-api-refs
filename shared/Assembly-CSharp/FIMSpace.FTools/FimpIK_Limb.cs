@@ -266,8 +266,8 @@ public class FimpIK_Limb : FIK_ProcessorBase
 
 	private bool hasRoot;
 
-	[Range(0f, 1f)]
 	[HideInInspector]
+	[Range(0f, 1f)]
 	public float ManualHintPositionWeight;
 
 	[HideInInspector]
@@ -282,13 +282,13 @@ public class FimpIK_Limb : FIK_ProcessorBase
 	[Tooltip("3-Bones limb array")]
 	private IKBone[] IKBones;
 
+	[Range(0f, 1f)]
 	[Tooltip("Blend value for goal position")]
 	[Space(4f)]
-	[Range(0f, 1f)]
 	public float IKPositionWeight;
 
-	[Range(0f, 1f)]
 	[Tooltip("Blend value for end bone rotation")]
+	[Range(0f, 1f)]
 	public float FootRotationWeight;
 
 	[Tooltip("Flex style algorithm for different limbs")]

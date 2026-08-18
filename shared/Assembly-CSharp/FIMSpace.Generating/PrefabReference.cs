@@ -35,8 +35,8 @@ public class PrefabReference
 	[HideInInspector]
 	protected Mesh _refMesh;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected Collider _refCol;
 
 	public GameObject CoreGameObject => Prefab;

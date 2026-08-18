@@ -18,8 +18,8 @@ internal struct SmallDisplacementPlaneTraceJob : IJobParallelForDefer
 
 	public ReadOnly<float> MaxDists;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<bool> HitResults;
 
 	[NativeDisableParallelForRestriction]

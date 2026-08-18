@@ -146,8 +146,8 @@ public class RFBroadcaster : IOEntity, IRFObject
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void ServerSetFrequency(RPCMessage msg)
 	{

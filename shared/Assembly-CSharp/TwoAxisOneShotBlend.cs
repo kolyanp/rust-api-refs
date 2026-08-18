@@ -18,8 +18,8 @@ public class TwoAxisOneShotBlend : AnimationSubSystem
 	[Range(-1f, 1f)]
 	private float XAxis;
 
-	[Range(-1f, 1f)]
 	[SerializeField]
+	[Range(-1f, 1f)]
 	private float YAxis;
 
 	[SerializeField]

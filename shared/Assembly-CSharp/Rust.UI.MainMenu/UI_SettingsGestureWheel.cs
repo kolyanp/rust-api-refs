@@ -51,8 +51,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private UI_SettingsGesturePack packPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	public RectTransform dragAndDropCanvas;
 
 	[SerializeField]
@@ -61,8 +61,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Canvas buttonListCanvas;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject hoveredGestureTexts;
 
 	[SerializeField]

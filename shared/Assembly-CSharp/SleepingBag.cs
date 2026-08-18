@@ -1095,11 +1095,20 @@ public class SleepingBag : DecayEntity
 		return true;
 	}
 
-	[RPC_Server]
+	protected virtual bool CanAccessBed(BasePlayer player)
+	{
+		if ((Object)(object)player != (Object)null)
+		{
+			return player.CanInteract();
+		}
+		return false;
+	}
+
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void Rename(RPCMessage msg)
 	{
-		if (!msg.player.CanInteract())
+		if (!CanAccessBed(msg.player))
 		{
 			return;
 		}
@@ -1202,11 +1211,11 @@ public class SleepingBag : DecayEntity
 		(BaseNetworkable.serverEntities.Find(entityID) as SleepingBag).AssignToUser(0uL);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public virtual void RPC_MakePublic(RPCMessage msg)
 	{
-		if (!canBePublic || !msg.player.CanInteract() || (deployerUserID != (ulong)msg.player.userID && !msg.player.CanBuild()))
+		if (!canBePublic || !CanAccessBed(msg.player) || (deployerUserID != (ulong)msg.player.userID && !msg.player.CanBuild()))
 		{
 			return;
 		}
@@ -1251,7 +1260,7 @@ public class SleepingBag : DecayEntity
 	[RPC_Server]
 	public void RPC_MakeBed(RPCMessage msg)
 	{
-		if (!canBePublic || !IsPublic() || !msg.player.CanInteract())
+		if (!canBePublic || !IsPublic() || !CanAccessBed(msg.player))
 		{
 			return;
 		}

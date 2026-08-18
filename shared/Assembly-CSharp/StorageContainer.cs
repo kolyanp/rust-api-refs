@@ -376,8 +376,8 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (isLootable)
@@ -417,6 +417,15 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 
 	public override bool CanBeLooted(BasePlayer player)
 	{
+		BaseEntity baseEntity = GetParentEntity();
+		while ((Object)(object)baseEntity != (Object)null)
+		{
+			if (baseEntity is BaseVehicleModule baseVehicleModule && !baseVehicleModule.CanBeLooted(player))
+			{
+				return false;
+			}
+			baseEntity = baseEntity.GetParentEntity();
+		}
 		if ((needsBuildingPrivilegeToUse || ShouldRequireAuthIfNoCodelock(this, requireAuthIfNotLocked)) && !player.CanBuild())
 		{
 			return false;

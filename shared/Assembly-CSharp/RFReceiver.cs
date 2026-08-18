@@ -177,8 +177,8 @@ public class RFReceiver : IOEntity, IRFObject
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void ServerSetFrequency(RPCMessage msg)
 	{
@@ -202,8 +202,8 @@ public class RFReceiver : IOEntity, IRFObject
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_RequestOpenPanel(RPCMessage msg)
 	{

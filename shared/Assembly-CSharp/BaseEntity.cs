@@ -965,6 +965,37 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			}
 		}
 
+		public class MaxRepeatedElements : Attribute
+		{
+			public int MaximumElements { get; }
+
+			public MaxRepeatedElements(int maximumElements)
+			{
+				MaximumElements = maximumElements;
+			}
+		}
+
+		public class IgnoreConditional : Attribute
+		{
+			public string functionName;
+
+			public Type[] ignoredAttributeTypes;
+
+			public IgnoreConditional(string testFunc, params Type[] ignoredAttributes)
+			{
+				functionName = testFunc;
+				ignoredAttributeTypes = ignoredAttributes;
+			}
+		}
+
+		public class IgnoreProtoFieldOrder : Attribute
+		{
+		}
+
+		public class IgnoreProtoFieldOperationLimit : Attribute
+		{
+		}
+
 		public class CallsPerSecond : Conditional
 		{
 			private ulong callsPerSecond;
@@ -2724,8 +2755,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return cachedBuildingPrivilege;
 	}
 
-	public void SV_RPCMessage(uint nameID, Message message)
+	public unsafe void SV_RPCMessage(uint nameID, Message message)
 	{
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		Assert.IsTrue(base.isServer, "Should be server!");
 		BasePlayer basePlayer = NetworkPacketEx.Player(message);
 		if (!basePlayer.IsValid())
@@ -2752,25 +2785,33 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			}
 			return;
 		}
-		(byte[], int) buffer = message.read.GetBuffer();
-		if (OnRpcMessage(basePlayer, nameID, message))
+		FieldOperationLimitScope val = message.read.UseProtoDeserializationLimits();
+		try
 		{
-			if (!basePlayer.IsRealNull())
-			{
-				Facepunch.Rust.Analytics.Azure.OnServerRPC(basePlayer, nameID, buffer.Item1, buffer.Item2);
-			}
-			return;
-		}
-		for (int i = 0; i < Components.Count; i++)
-		{
-			if (Components[i].OnRpcMessage(basePlayer, nameID, message))
+			(byte[], int) buffer = message.read.GetBuffer();
+			if (OnRpcMessage(basePlayer, nameID, message))
 			{
 				if (!basePlayer.IsRealNull())
 				{
 					Facepunch.Rust.Analytics.Azure.OnServerRPC(basePlayer, nameID, buffer.Item1, buffer.Item2);
 				}
-				break;
+				return;
 			}
+			for (int i = 0; i < Components.Count; i++)
+			{
+				if (Components[i].OnRpcMessage(basePlayer, nameID, message))
+				{
+					if (!basePlayer.IsRealNull())
+					{
+						Facepunch.Rust.Analytics.Azure.OnServerRPC(basePlayer, nameID, buffer.Item1, buffer.Item2);
+					}
+					break;
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)(*(FieldOperationLimitScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 
@@ -3721,8 +3762,8 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return axis;
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwnerOrMounted]
+	[RPC_Server]
 	private void BroadcastSignalFromClient(RPCMessage msg)
 	{
 		uint num = StringPool.Get("BroadcastSignalFromClient");

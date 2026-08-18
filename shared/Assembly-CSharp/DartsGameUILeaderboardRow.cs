@@ -23,8 +23,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public Color currentWinnerColour;
 
-	[Tooltip("Every text in here gets the normal colour, or the winner colour on the current winner row.")]
 	[Header("Text Colours")]
+	[Tooltip("Every text in here gets the normal colour, or the winner colour on the current winner row.")]
 	public List<RustText> rowTexts;
 
 	public Color normalTextColour;

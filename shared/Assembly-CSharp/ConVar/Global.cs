@@ -23,8 +23,8 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
 	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
@@ -38,8 +38,8 @@ public class Global : ConsoleSystem
 
 	public static readonly string UndergroundFlag = "--underground";
 
-	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
+	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	public static int perf = 0;
 
 	private static bool _god = false;
@@ -91,8 +91,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
+	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	public static int job_system_threads
 	{
 		get
@@ -229,8 +229,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ClientVar(Help = "(Generated) Prints the count of enabled versus disabled Collider components currently in the scene")]
 	[ServerVar(Help = "(Generated) Prints the count of enabled versus disabled Collider components currently in the scene")]
+	[ClientVar(Help = "(Generated) Prints the count of enabled versus disabled Collider components currently in the scene")]
 	public static void colliders(Arg args)
 	{
 		int num = (from x in Object.FindObjectsByType<Collider>((FindObjectsSortMode)0)
@@ -243,8 +243,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(strValue);
 	}
 
-	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
+	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	public static void queue(Arg args)
 	{
 		string text = "";
@@ -1302,8 +1302,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	[ClientVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
+	[ServerVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	public static void free(Arg args)
 	{
 		Pool.clear_prefabs(args);
@@ -1327,8 +1327,8 @@ public class Global : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
+	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);

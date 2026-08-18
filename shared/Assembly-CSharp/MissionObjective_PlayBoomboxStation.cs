@@ -7,8 +7,8 @@ public class MissionObjective_PlayBoomboxStation : MissionObjective
 	[Tooltip("If true, the boombox must be a static environment boombox for this objective to complete.")]
 	public bool boomboxMustBeStatic;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string requireProximityToPosition;
 
 	[Min(0f)]

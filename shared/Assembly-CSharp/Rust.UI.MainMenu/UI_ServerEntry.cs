@@ -36,15 +36,15 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _distanceTooltip;
 
-	[SerializeField]
 	[Header("References - Last Played")]
+	[SerializeField]
 	private RustText _lastPlayedText;
 
 	[SerializeField]
 	private GameObject _lastPlayedObject;
 
-	[SerializeField]
 	[Header("References - Friends")]
+	[SerializeField]
 	private RustText _friendsText;
 
 	[SerializeField]
@@ -53,15 +53,15 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[SerializeField]
 	[Header("References - Queue")]
+	[SerializeField]
 	private RustText _queueText;
 
 	[SerializeField]
 	private GameObject _queueObject;
 
-	[SerializeField]
 	[Header("References - Favourites")]
+	[SerializeField]
 	private RustButton _favouritesButton;
 
 	[SerializeField]
@@ -80,7 +80,7 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private bool _joinOnClick;
 }

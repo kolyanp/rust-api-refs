@@ -52,8 +52,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 
 	public static Phrase boostPhrase;
 
-	[Header("Bike")]
 	[SerializeField]
+	[Header("Bike")]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -80,8 +80,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[SerializeField]
 	public float maxFuelPerSec;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float pitchStabP;
 
 	[Range(0f, 1f)]
@@ -92,16 +92,16 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[Range(0f, 1f)]
 	private float twoWheelRollStabP;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float twoWheelRollStabD;
 
-	[Range(1f, 500f)]
 	[SerializeField]
+	[Range(1f, 500f)]
 	private float manyWheelStabP;
 
-	[Range(1f, 100f)]
 	[SerializeField]
+	[Range(1f, 100f)]
 	private float manyWheelStabD;
 
 	[SerializeField]

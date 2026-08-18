@@ -175,8 +175,8 @@ public class OrientableLight : SimpleLight
 		ClientRPC(RpcTarget.Player("CLIENT_OnDeployed", deployedBy));
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void SERVER_SetDir(RPCMessage msg)
 	{

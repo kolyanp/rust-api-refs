@@ -211,34 +211,37 @@ public class IndustrialConveyor : IndustrialEntity
 				}
 				using (TimeWarning.New("RPC_ChangeFilters"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(30))
 					{
-						if (!RPC_Server.CallsPerSecond.Test(617569194u, "RPC_ChangeFilters", this, player, 1uL))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						if (!RPC_Server.MaxDistance.Test(617569194u, "RPC_ChangeFilters", this, player, 3f))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg2 = new RPCMessage
+							if (!RPC_Server.CallsPerSecond.Test(617569194u, "RPC_ChangeFilters", this, player, 1uL))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							RPC_ChangeFilters(msg2);
+								return true;
+							}
+							if (!RPC_Server.MaxDistance.Test(617569194u, "RPC_ChangeFilters", this, player, 3f))
+							{
+								return true;
+							}
 						}
-					}
-					catch (Exception ex)
-					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in RPC_ChangeFilters");
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg2 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								RPC_ChangeFilters(msg2);
+							}
+						}
+						catch (Exception ex)
+						{
+							Debug.LogException(ex);
+							player.Kick("RPC Error in RPC_ChangeFilters");
+						}
 					}
 				}
 				return true;
@@ -1215,9 +1218,10 @@ public class IndustrialConveyor : IndustrialEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.MaxRepeatedElements(30)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void RPC_ChangeFilters(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null || !msg.player.CanBuild())
@@ -1262,9 +1266,9 @@ public class IndustrialConveyor : IndustrialEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	private void SvSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnSwitchToggle", this, msg.player) == null)
@@ -1387,9 +1391,9 @@ public class IndustrialConveyor : IndustrialEntity
 		return inputIndex == 1;
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_RequestUpToDateFilters(RPCMessage msg)
 	{
 		if (!IsOn())

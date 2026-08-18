@@ -37,27 +37,27 @@ public class Pooltable : BaseCombatEntity
 	private WorldSpline worldSpline;
 
 	[Range(0f, 0.75f)]
-	[SerializeField]
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
+	[SerializeField]
 	private float splineTableCloseness;
 
-	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	[SerializeField]
+	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	private bool runWalkClippingChecks;
 
 	[SerializeField]
 	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
 	private Bounds walkAreaCheck;
 
-	[SerializeField]
 	[Header("Server")]
+	[SerializeField]
 	private GameObjectRef mountableRef;
 
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[Header("Client")]
 	[SerializeField]
+	[Header("Client")]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -87,9 +87,9 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval;
 
-	[Header("Ball Return")]
 	[SerializeField]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
+	[Header("Ball Return")]
 	private WorldSpline ballReturnPath;
 
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
@@ -487,18 +487,24 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
-		BeginGame(msg.player, solo: true);
+		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
+		{
+			BeginGame(msg.player, solo: true);
+		}
 	}
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
-		BeginGame(msg.player, solo: false);
+		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
+		{
+			BeginGame(msg.player, solo: false);
+		}
 	}
 
 	private void BeginGame(BasePlayer player, bool solo)
@@ -543,7 +549,7 @@ public class Pooltable : BaseCombatEntity
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
-		if (!((Object)(object)msg.player == (Object)null) && gameController != null)
+		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null)
 		{
 			gameController.AddSecondPlayer(msg.player.userID);
 		}
@@ -553,7 +559,7 @@ public class Pooltable : BaseCombatEntity
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_RequestMount(RPCMessage msg)
 	{
-		if (!((Object)(object)msg.player == (Object)null) && gameController != null && gameController.HasGame && gameController.CanMount(msg.player.userID))
+		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null && gameController.HasGame && gameController.CanMount(msg.player.userID))
 		{
 			MountPlayerAtTable(msg.player);
 		}
@@ -587,30 +593,44 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)msg.player == (Object)null) && !IsInvoking(DismountAllSeatedPlayers) && gameController != null && gameController.CanShoot(msg.player.userID))
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)msg.player == (Object)null || IsInvoking(DismountAllSeatedPlayers) || gameController == null || !gameController.CanShoot(msg.player.userID))
 		{
-			Vector3 val = msg.read.Vector3();
-			float num = msg.read.Float();
-			gameController.OnShotFired();
-			timeSinceLastMove = TimeSince.op_Implicit(0f);
-			ApplyShotShared(val, num);
-			ClientRPC(RpcTarget.NetworkGroup("ClientOnShotFired"), val, num, gameController.ShotId);
-			SendNetworkUpdateImmediate();
+			return;
+		}
+		Vector3 val = msg.read.Vector3();
+		float num = msg.read.Float();
+		if (!Vector3Ex.IsNaNOrInfinity(val) && !FloatEx.IsNaNOrInfinity(num))
+		{
+			val.y = 0f;
+			val = Vector3.ClampMagnitude(val, 1f);
+			num = Mathf.Clamp(num, 1f, 8f);
+			if (!(((Vector3)(ref val)).sqrMagnitude <= Mathf.Epsilon))
+			{
+				gameController.OnShotFired();
+				timeSinceLastMove = TimeSince.op_Implicit(0f);
+				ApplyShotShared(val, num);
+				ClientRPC(RpcTarget.NetworkGroup("ClientOnShotFired"), val, num, gameController.ShotId);
+				SendNetworkUpdateImmediate();
+			}
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))

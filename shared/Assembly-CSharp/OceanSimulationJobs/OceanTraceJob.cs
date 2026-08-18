@@ -28,8 +28,8 @@ internal struct OceanTraceJob : IJobParallelForDefer
 
 	public ReadOnly<float> MaxDists;
 
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<bool> HitResults;
 
 	[WriteOnly]

@@ -11,8 +11,8 @@ public class ScentEmission : EntityComponent<BaseCombatEntity>, IClientComponent
 	[SerializeField]
 	private float sampleIntervalSeconds;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private int minInitialPoints;
 
 	[SerializeField]

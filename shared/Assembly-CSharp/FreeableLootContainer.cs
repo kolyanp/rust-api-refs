@@ -118,6 +118,15 @@ public class FreeableLootContainer : LootContainer
 		return HasFlag(Flags.Reserved8);
 	}
 
+	public override bool CanBeLooted(BasePlayer player)
+	{
+		if (!IsTiedDown())
+		{
+			return base.CanBeLooted(player);
+		}
+		return false;
+	}
+
 	public override void ServerInit()
 	{
 		GetRB().isKinematic = true;

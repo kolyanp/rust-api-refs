@@ -13,8 +13,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[Header("Small Engine")]
 	[SerializeField]
+	[Header("Small Engine")]
 	private float maxThrust = 1000f;
 
 	[SerializeField]
@@ -311,9 +311,9 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 		flagsUpdateScope.Set(Flags.On, b: true);
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void TurnOff(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnEngineStop", this, msg.player) == null && PlayerBoat.IsPlayerAuthedOnChildEntity(this, msg.player, authedIfNoPrivOrLock: true))
@@ -328,9 +328,9 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 		flagsUpdateScope.Set(Flags.On, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SV_ToggleReverse(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnEngineReverse", this, msg.player) != null || !PlayerBoat.IsPlayerAuthedOnChildEntity(this, msg.player, authedIfNoPrivOrLock: true) || !PlayerBoat.IsChildOfInteractablePlayerBoat(this))
@@ -341,8 +341,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 		flagsUpdateScope.Set(Flags.Reserved3, !InReverse);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenFuel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

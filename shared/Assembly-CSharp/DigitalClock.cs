@@ -68,51 +68,54 @@ public class DigitalClock : IOEntity, INotifyLOD
 				}
 				using (TimeWarning.New("RPC_SetAlarms"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(5))
 					{
-						if (!RPC_Server.CallsPerSecond.Test(2287159130u, "RPC_SetAlarms", this, player, 5uL))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						long position = msg.read.Position;
-						DigitalClockMessage val = msg.read.Proto<DigitalClockMessage>((DigitalClockMessage)null);
-						try
-						{
-							foreach (DigitalClockAlarm alarm in val.alarms)
+							if (!RPC_Server.CallsPerSecond.Test(2287159130u, "RPC_SetAlarms", this, player, 5uL))
 							{
-								if (!RPC_Server.InputValidation.Test(alarm.time))
+								return true;
+							}
+							long position = msg.read.Position;
+							DigitalClockMessage val = msg.read.Proto<DigitalClockMessage>((DigitalClockMessage)null);
+							try
+							{
+								foreach (DigitalClockAlarm alarm in val.alarms)
+								{
+									if (!RPC_Server.InputValidation.Test(alarm.time))
+									{
+										return true;
+									}
+								}
+								msg.read.Position = position;
+								if (!RPC_Server.IsVisible.Test(2287159130u, "RPC_SetAlarms", this, player, 3f))
 								{
 									return true;
 								}
 							}
-							msg.read.Position = position;
-							if (!RPC_Server.IsVisible.Test(2287159130u, "RPC_SetAlarms", this, player, 3f))
+							finally
 							{
-								return true;
+								((IDisposable)val)?.Dispose();
 							}
 						}
-						finally
+						try
 						{
-							((IDisposable)val)?.Dispose();
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg2 = new RPCMessage
+							using (TimeWarning.New("Call"))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							RPC_SetAlarms(msg2);
+								RPCMessage msg2 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								RPC_SetAlarms(msg2);
+							}
 						}
-					}
-					catch (Exception ex)
-					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in RPC_SetAlarms");
+						catch (Exception ex)
+						{
+							Debug.LogException(ex);
+							player.Kick("RPC Error in RPC_SetAlarms");
+						}
 					}
 				}
 				return true;
@@ -193,10 +196,11 @@ public class DigitalClock : IOEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(DigitalClockMessage) })]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxRepeatedElements(5)]
 	public void RPC_SetAlarms(RPCMessage msg)
 	{
 		if (!CanPlayerAdmin(msg.player))

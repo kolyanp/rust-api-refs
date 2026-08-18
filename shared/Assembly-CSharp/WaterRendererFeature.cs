@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(WaterRendererCamera), typeof(WaterRendererCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/WaterRendererFeature")]
+[RustRendererFeatureCameraComponent(typeof(WaterRendererCamera), typeof(WaterRendererCameraContext))]
 public class WaterRendererFeature : RustRendererFeature
 {
 	[SerializeField]

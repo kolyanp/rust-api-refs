@@ -357,8 +357,8 @@ public class BoatBuildingBlock : BuildingBlock, IPlacementDirectionProvider
 		damageTaken += Mathf.Abs(amount);
 	}
 
-	[RPC_Server.MaxDistance(5f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(5f)]
 	public void RPC_WantsPushParentBoat(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null))

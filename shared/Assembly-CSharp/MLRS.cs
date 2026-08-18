@@ -51,15 +51,15 @@ public class MLRS : BaseMountable
 
 	public static readonly Phrase RaidWindowBlockedToast;
 
-	[SerializeField]
 	[Header("MLRS Components")]
+	[SerializeField]
 	private GameObjectRef rocketStoragePrefab;
 
 	[SerializeField]
 	private GameObjectRef dashboardStoragePrefab;
 
-	[SerializeField]
 	[Header("MLRS Rotation")]
+	[SerializeField]
 	private Transform hRotator;
 
 	[SerializeField]
@@ -71,16 +71,16 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public float vRotSpeed = 10f;
 
-	[SerializeField]
 	[Range(50f, 90f)]
+	[SerializeField]
 	public float vRotMax = 85f;
 
 	[SerializeField]
 	private Transform hydraulics;
 
-	[Header("MLRS Weaponry")]
 	[SerializeField]
 	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
+	[Header("MLRS Weaponry")]
 	public float minRange = 200f;
 
 	[SerializeField]
@@ -750,9 +750,9 @@ public class MLRS : BaseMountable
 		return false;
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -774,8 +774,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

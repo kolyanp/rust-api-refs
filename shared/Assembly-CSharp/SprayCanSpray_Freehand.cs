@@ -33,8 +33,8 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SprayCanSpray_Freehand.OnRpcMessage"))
 		{
 			if (rpc == 2020094435 && (Object)(object)player != (Object)null)
@@ -89,48 +89,51 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 				}
 				using (TimeWarning.New("Server_FinishEditing"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(60))
 					{
-						long position2 = msg.read.Position;
-						msg.read.Read<int>();
-						SprayList val = msg.read.Proto<SprayList>((SprayList)null);
+						using (TimeWarning.New("Conditions"))
+						{
+							long position2 = msg.read.Position;
+							msg.read.Read<int>();
+							SprayList val = msg.read.Proto<SprayList>((SprayList)null);
+							try
+							{
+								foreach (LinePoint linePoint in val.linePoints)
+								{
+									if (!RPC_Server.InputValidation.Test(linePoint.localPosition))
+									{
+										return true;
+									}
+									if (!RPC_Server.InputValidation.Test(linePoint.worldNormal))
+									{
+										return true;
+									}
+								}
+								msg.read.Position = position2;
+							}
+							finally
+							{
+								((IDisposable)val)?.Dispose();
+							}
+						}
 						try
 						{
-							foreach (LinePoint linePoint in val.linePoints)
+							using (TimeWarning.New("Call"))
 							{
-								if (!RPC_Server.InputValidation.Test(linePoint.localPosition))
+								RPCMessage msg3 = new RPCMessage
 								{
-									return true;
-								}
-								if (!RPC_Server.InputValidation.Test(linePoint.worldNormal))
-								{
-									return true;
-								}
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								Server_FinishEditing(msg3);
 							}
-							msg.read.Position = position2;
 						}
-						finally
+						catch (Exception ex2)
 						{
-							((IDisposable)val)?.Dispose();
+							Debug.LogException(ex2);
+							player.Kick("RPC Error in Server_FinishEditing");
 						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg3 = new RPCMessage
-							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Server_FinishEditing(msg3);
-						}
-					}
-					catch (Exception ex2)
-					{
-						Debug.LogException(ex2);
-						player.Kick("RPC Error in Server_FinishEditing");
 					}
 				}
 				return true;
@@ -193,12 +196,12 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		width = lineWidth;
 	}
 
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
 		typeof(Vector3)
 	})]
+	[RPC_Server]
 	private void Server_AddPointMidSpray(RPCMessage msg)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
@@ -245,12 +248,13 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		}
 	}
 
-	[RPC_Server]
+	[RPC_Server.MaxRepeatedElements(60)]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(int),
 		typeof(SprayList)
 	})]
+	[RPC_Server]
 	private void Server_FinishEditing(RPCMessage msg)
 	{
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)

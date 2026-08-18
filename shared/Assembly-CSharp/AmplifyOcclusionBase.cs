@@ -24,13 +24,13 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public float Radius;
 
 	[NonSerialized]
-	[Tooltip("Max sampling range in pixels.")]
 	[Range(32f, 1024f)]
+	[Tooltip("Max sampling range in pixels.")]
 	public int PixelRadiusLimit;
 
 	[NonSerialized]
-	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	[Range(0f, 2f)]
+	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -68,8 +68,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 32f)]
 	public float FadeToRadius;
 
-	[Range(0f, 16f)]
 	[Tooltip("Final PowerExponent parameter.")]
+	[Range(0f, 16f)]
 	public float FadeToPowerExponent;
 
 	[Range(0f, 1f)]
@@ -87,16 +87,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Number of times that the Blur will repeat.")]
 	public int BlurPasses;
 
-	[Range(0f, 20f)]
 	[Tooltip("0 - Blured, 1 - Sharpened.")]
+	[Range(0f, 20f)]
 	public float BlurSharpness;
 
-	[Header("Temporal Filter")]
 	[Tooltip("Accumulates the effect over the time.")]
+	[Header("Temporal Filter")]
 	public bool FilterEnabled;
 
-	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
 	public float FilterBlending;
 
 	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]

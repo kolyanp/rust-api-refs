@@ -17,8 +17,8 @@ public class ItemModMenuOption : ItemMod
 	[Tooltip("If true, this is the command that will run when an item is 'selected' on the toolbar")]
 	public bool isPrimaryOption = true;
 
-	[Header("Still shows when disabled")]
 	[Space(10f)]
+	[Header("Still shows when disabled")]
 	public bool showDisabled = true;
 
 	public DisabledTooltipOption disabledTooltipDescription;

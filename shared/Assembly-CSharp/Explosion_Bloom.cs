@@ -1,22 +1,22 @@
 using System;
 using UnityEngine;
 
+[ImageEffectAllowedInSceneView]
+[AddComponentMenu("KriptoFX/Explosion_Bloom")]
 [ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
-[AddComponentMenu("KriptoFX/Explosion_Bloom")]
-[ImageEffectAllowedInSceneView]
 public class Explosion_Bloom : MonoBehaviour
 {
 	[Serializable]
 	public struct Settings
 	{
-		[Tooltip("Filters out pixels under this level of brightness.")]
 		[SerializeField]
+		[Tooltip("Filters out pixels under this level of brightness.")]
 		public float threshold;
 
+		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		[SerializeField]
 		[Range(0f, 1f)]
-		[Tooltip("Makes transition between under/over-threshold gradual.")]
 		public float softKnee;
 
 		[SerializeField]

@@ -12,7 +12,27 @@ namespace Network;
 
 public class NetRead : Stream, IPooled
 {
+	public readonly struct RepeatedElementLimitScope : IDisposable
+	{
+		private readonly NetRead _reader;
+
+		private readonly int _previousLimit;
+
+		internal RepeatedElementLimitScope(NetRead reader, int previousLimit)
+		{
+			_reader = reader;
+			_previousLimit = previousLimit;
+		}
+
+		public void Dispose()
+		{
+			_reader.repeatedElementLimit = _previousLimit;
+		}
+	}
+
 	private BufferStream stream;
+
+	private int repeatedElementLimit = -1;
 
 	public int refCount;
 
@@ -77,6 +97,7 @@ public class NetRead : Stream, IPooled
 	public void EnterPool()
 	{
 		connection = null;
+		repeatedElementLimit = -1;
 		BufferStream obj = stream;
 		if (obj != null)
 		{
@@ -246,7 +267,7 @@ public class NetRead : Stream, IPooled
 		{
 			return null;
 		}
-		if (num > maxSize)
+		if (num > maxSize || num > (uint)Unread)
 		{
 			return null;
 		}
@@ -391,27 +412,98 @@ public class NetRead : Stream, IPooled
 	}
 
 	[PoolAnalyzerGetWrapper]
-	public T Proto<T>(T proto = null) where T : class, IProto<T>, new()
+	public unsafe T Proto<T>(T proto = null) where T : class, IProto<T>, new()
 	{
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		if (repeatedElementLimit < 0)
+		{
+			if (proto == null)
+			{
+				proto = Pool.Get<T>();
+			}
+			((IProto)proto).ReadFromStream(stream, false);
+			return proto;
+		}
 		if (proto == null)
 		{
 			proto = Pool.Get<T>();
 		}
-		((IProto)proto).ReadFromStream(stream, false);
-		return proto;
+		RepeatedElementLimitScope val = stream.BeginRepeatedElementLimit(repeatedElementLimit);
+		try
+		{
+			((IProto)proto).ReadFromStream(stream, false);
+			return proto;
+		}
+		finally
+		{
+			((IDisposable)(*(RepeatedElementLimitScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+		}
 	}
 
 	[PoolAnalyzerGetWrapper]
-	public T ProtoDelta<T>(T proto) where T : class, IProto<T>, new()
+	public unsafe T ProtoDelta<T>(T proto) where T : class, IProto<T>, new()
 	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		if (proto == null)
 		{
 			throw new ArgumentNullException("proto");
 		}
 		T val = Pool.Get<T>();
 		((IProto<T>)proto).CopyTo(val);
-		((IProto)val).ReadFromStream(stream, true);
-		return val;
+		if (repeatedElementLimit < 0)
+		{
+			((IProto)val).ReadFromStream(stream, true);
+			return val;
+		}
+		RepeatedElementLimitScope val2 = stream.BeginRepeatedElementLimit(repeatedElementLimit);
+		try
+		{
+			((IProto)val).ReadFromStream(stream, true);
+			return val;
+		}
+		finally
+		{
+			((IDisposable)(*(RepeatedElementLimitScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+		}
+	}
+
+	public RepeatedElementLimitScope UseRepeatedElementLimit(int maxElements)
+	{
+		int previousLimit = repeatedElementLimit;
+		repeatedElementLimit = maxElements;
+		return new RepeatedElementLimitScope(this, previousLimit);
+	}
+
+	public FieldOperationLimitScope UseProtoDeserializationLimits()
+	{
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		return stream.BeginFieldOperationLimit(4096, "RPC");
+	}
+
+	public FieldOrderValidationScope SuspendProtoFieldOrderValidation()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		return SuspendProtoFieldOrderValidation(suspend: true);
+	}
+
+	public FieldOrderValidationScope SuspendProtoFieldOrderValidation(bool suspend)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		return stream.SuspendFieldOrderValidation(suspend);
+	}
+
+	public FieldOperationLimitSuspensionScope SuspendProtoFieldOperationLimit()
+	{
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		return SuspendProtoFieldOperationLimit(suspend: true);
+	}
+
+	public FieldOperationLimitSuspensionScope SuspendProtoFieldOperationLimit(bool suspend)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		return stream.SuspendFieldOperationLimit(suspend);
 	}
 
 	public override int Read(byte[] buffer, int offset, int count)

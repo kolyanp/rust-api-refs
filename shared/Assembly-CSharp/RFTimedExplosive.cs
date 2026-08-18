@@ -254,8 +254,8 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void Pickup(RPCMessage msg)
 	{
 		if (Interface.CallHook("ICanPickupEntity", msg.player, this) != null || !msg.player.CanInteract() || !IsArmed())
@@ -279,8 +279,8 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void PickupTimer(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && IsArmed())

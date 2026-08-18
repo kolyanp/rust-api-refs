@@ -7,16 +7,16 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.BloomRenderer), "Unity/Bloom", true)]
 public sealed class Bloom : PostProcessEffectSettings
 {
-	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
 	[Min(0f)]
+	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
 	public FloatParameter intensity;
 
 	[Min(0f)]
 	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	public FloatParameter threshold;
 
-	[Range(0f, 1f)]
 	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
+	[Range(0f, 1f)]
 	public FloatParameter softKnee;
 
 	[Tooltip("Clamps pixels to control the bloom amount. Value is in gamma-space.")]
@@ -30,21 +30,21 @@ public sealed class Bloom : PostProcessEffectSettings
 	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	public FloatParameter anamorphicRatio;
 
-	[Tooltip("Global tint of the bloom filter.")]
 	[ColorUsage(false, true)]
+	[Tooltip("Global tint of the bloom filter.")]
 	public ColorParameter color;
 
-	[FormerlySerializedAs("mobileOptimized")]
 	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
+	[FormerlySerializedAs("mobileOptimized")]
 	public BoolParameter fastMode;
 
-	[DisplayName("Texture")]
 	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
+	[DisplayName("Texture")]
 	public TextureParameter dirtTexture;
 
-	[DisplayName("Intensity")]
 	[Min(0f)]
 	[Tooltip("The intensity of the lens dirtiness.")]
+	[DisplayName("Intensity")]
 	public FloatParameter dirtIntensity;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

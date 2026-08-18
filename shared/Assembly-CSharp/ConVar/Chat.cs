@@ -450,8 +450,8 @@ public class Chat : ConsoleSystem
 		return false;
 	}
 
-	[Help("Return the last x lines of the console. Default is 200")]
 	[ServerVar]
+	[Help("Return the last x lines of the console. Default is 200")]
 	public static IEnumerable<ChatEntry> tail(Arg arg)
 	{
 		int num = arg.GetInt(0, 200);

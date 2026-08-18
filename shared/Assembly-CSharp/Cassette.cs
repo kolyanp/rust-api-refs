@@ -239,24 +239,17 @@ public class Cassette : BaseEntity, IUGCBrowserEntity, IServerFileReceiver
 	[RPC_Server.CallsPerSecond(1uL)]
 	public void Server_MakeNewFile(RPCMessage msg)
 	{
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)msg.player == (Object)null)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)msg.player == (Object)null) && GetParentEntity() is RecorderTool recorderTool && !((Object)(object)recorderTool.GetOwnerPlayer() != (Object)(object)msg.player) && !((Object)(object)recorderTool.cachedCassette != (Object)(object)this))
 		{
-			return;
-		}
-		if ((Object)(object)GetParentEntity() != (Object)null && GetParentEntity() is HeldEntity heldEntity && (Object)(object)heldEntity.GetOwnerPlayer() != (Object)(object)msg.player)
-		{
-			Debug.Log((object)"Player mismatch!");
-			return;
-		}
-		byte[] data = msg.read.BytesWithSize();
-		ulong userId = msg.read.UInt64();
-		if (IsOggValid(data, this))
-		{
-			FileStorage.server.RemoveAllByEntity(net.ID);
-			uint id = FileStorage.server.Store(data, FileStorage.Type.ogg, net.ID);
-			SetAudioId(id, userId);
+			byte[] data = msg.read.BytesWithSize();
+			if (IsOggValid(data, this))
+			{
+				FileStorage.server.RemoveAllByEntity(net.ID);
+				uint id = FileStorage.server.Store(data, FileStorage.Type.ogg, net.ID);
+				SetAudioId(id, msg.player.userID);
+			}
 		}
 	}
 

@@ -11,8 +11,8 @@ public class Tugboat : MotorRowboat, IPlannerReparentChildrenToMe, ILargeVehicle
 {
 	private const Flags Flag_Horn = Flags.Reserved18;
 
-	[Header("Tugboat")]
 	[SerializeField]
+	[Header("Tugboat")]
 	private Canvas monitorCanvas;
 
 	[SerializeField]

@@ -19,8 +19,8 @@ using UnityEngine;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("server")]
+[ResetStaticFields]
 public class Server : ConsoleSystem
 {
 	[ServerVar(Help = "(Generated) IP address the server binds to; leave empty to bind to all interfaces")]

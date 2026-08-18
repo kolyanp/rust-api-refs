@@ -71,20 +71,20 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 steerAngle;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 accelAngle;
 
 	[SerializeField]
 	[HideInInspector]
 	private Vector3 brakeAngle;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 speedometerAngle;
 
 	[SerializeField]
@@ -328,8 +328,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_DestroyLock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

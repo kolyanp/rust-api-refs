@@ -3,8 +3,8 @@ using UnityEngine;
 namespace Rust.Ai.Gen2;
 
 [SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
-[SoftRequireComponent(typeof(BlackboardComponent), typeof(NpcBarkManager))]
 [SoftRequireComponent(typeof(NpcZoneComponent), typeof(NPCEncounterTimer), typeof(NpcShootingComponent))]
+[SoftRequireComponent(typeof(BlackboardComponent), typeof(NpcBarkManager))]
 public class Scientist2FSM_Heavy : FSMComponent
 {
 	public State_PatrolIdle idle = new State_PatrolIdle();

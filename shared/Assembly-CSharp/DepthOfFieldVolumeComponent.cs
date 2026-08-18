@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [Serializable]
-[VolumeComponentMenu("RRP/Depth of Field")]
 [SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
+[VolumeComponentMenu("RRP/Depth of Field")]
 public class DepthOfFieldVolumeComponent : VolumeComponent, IPostProcessComponent
 {
 	public FloatParameter focalLength;

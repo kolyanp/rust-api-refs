@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
@@ -47,13 +48,13 @@ public class StackOfCards
 		while (num > 1)
 		{
 			num--;
-			int num2 = Random.Range(0, num);
+			int @int = RandomNumberGenerator.GetInt32(num);
 			List<PlayingCard> list = cards;
-			int index = num2;
+			int index = @int;
 			List<PlayingCard> list2 = cards;
 			int index2 = num;
 			PlayingCard playingCard = cards[num];
-			PlayingCard playingCard2 = cards[num2];
+			PlayingCard playingCard2 = cards[@int];
 			PlayingCard playingCard3 = (list[index] = playingCard);
 			playingCard3 = (list2[index2] = playingCard2);
 		}

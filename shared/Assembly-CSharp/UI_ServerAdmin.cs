@@ -8,8 +8,8 @@ public class UI_ServerAdmin : UI_Window
 {
 	public static UI_ServerAdmin Instance;
 
-	[Header("Player List")]
 	[SerializeField]
+	[Header("Player List")]
 	private GameObjectRef playerEntryPrefab;
 
 	[SerializeField]
@@ -36,8 +36,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RustInput playerListSearchInput;
 
-	[Header("Server Info")]
 	[SerializeField]
+	[Header("Server Info")]
 	private GameObjectRef serverInfoEntryPrefab;
 
 	[SerializeField]

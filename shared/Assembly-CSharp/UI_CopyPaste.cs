@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class UI_CopyPaste : UI_Window
 {
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected ScrollRect scrollRect;
 
 	[SerializeField]
@@ -21,8 +21,8 @@ public class UI_CopyPaste : UI_Window
 	[SerializeField]
 	private RectTransform fileLinesParent;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject gridModeButtonGo;
 
 	[SerializeField]

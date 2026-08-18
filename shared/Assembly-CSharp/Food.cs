@@ -54,8 +54,8 @@ public class Food : BaseMelee
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void Consume()
 	{

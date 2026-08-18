@@ -193,8 +193,8 @@ public class DecayEntity : BaseCombatEntity
 		return player.IsBuildingAuthed(((Component)this).transform.position, ((Component)this).transform.rotation, bounds);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && CanDemolish(msg.player) && Interface.CallHook("OnStructureDemolish", this, msg.player, false) == null)

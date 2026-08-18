@@ -373,30 +373,33 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 				}
 				using (TimeWarning.New("UpdatedStorageSettings"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(64))
 					{
-						if (!RPC_Server.IsVisible.Test(3920035167u, "UpdatedStorageSettings", this, player, 3f))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg2 = new RPCMessage
+							if (!RPC_Server.IsVisible.Test(3920035167u, "UpdatedStorageSettings", this, player, 3f))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							UpdatedStorageSettings(msg2);
+								return true;
+							}
 						}
-					}
-					catch (Exception ex)
-					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in UpdatedStorageSettings");
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg2 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								UpdatedStorageSettings(msg2);
+							}
+						}
+						catch (Exception ex)
+						{
+							Debug.LogException(ex);
+							player.Kick("RPC Error in UpdatedStorageSettings");
+						}
 					}
 				}
 				return true;
@@ -598,6 +601,7 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxRepeatedElements(64)]
 	public void UpdatedStorageSettings(RPCMessage msg)
 	{
 		SortSettings val = msg.read.Proto<SortSettings>((SortSettings)null);

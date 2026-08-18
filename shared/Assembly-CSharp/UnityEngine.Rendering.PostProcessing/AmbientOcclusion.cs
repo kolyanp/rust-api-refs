@@ -9,8 +9,8 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 	[Tooltip("The ambient occlusion method to use. \"Multi Scale Volumetric Obscurance\" is higher quality and faster on desktop & console platforms but requires compute shader support.")]
 	public AmbientOcclusionModeParameter mode;
 
-	[Range(0f, 4f)]
 	[Tooltip("The degree of darkness added by ambient occlusion. Higher values produce darker areas.")]
+	[Range(0f, 4f)]
 	public FloatParameter intensity;
 
 	[ColorUsage(false)]

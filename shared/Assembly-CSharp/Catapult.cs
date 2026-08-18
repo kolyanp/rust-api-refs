@@ -380,8 +380,8 @@ public class Catapult : BaseSiegeWeapon
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_WantsFire(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -456,8 +456,8 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
@@ -474,10 +474,10 @@ public class Catapult : BaseSiegeWeapon
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)(object)reloadingPlayer)

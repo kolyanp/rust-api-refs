@@ -227,8 +227,8 @@ public class LiquidWeapon : BaseLiquidVessel
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StopFiring()
 	{
 		CancelInvoke(FireTick);

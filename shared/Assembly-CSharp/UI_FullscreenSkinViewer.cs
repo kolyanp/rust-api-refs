@@ -37,16 +37,16 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject navButtonsGroup;
 
-	[SerializeField]
 	[Header("Drag")]
+	[SerializeField]
 	private float inertiaDecay;
 
-	[SerializeField]
 	[Header("Pan")]
+	[SerializeField]
 	private Vector2 panLimitX;
 
 	[SerializeField]
@@ -55,15 +55,15 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float panSpeed;
 
-	[SerializeField]
 	[Header("Zoom")]
+	[SerializeField]
 	private float zoomSpeed;
 
 	[SerializeField]
 	private Vector2 minMaxFov;
 
-	[Header("Idle")]
 	[SerializeField]
+	[Header("Idle")]
 	private float idleSwaySpeed;
 
 	[SerializeField]

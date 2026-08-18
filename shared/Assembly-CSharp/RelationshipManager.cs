@@ -40,6 +40,9 @@ public class RelationshipManager : BaseEntity
 		[NonSerialized]
 		public float lastMugshotTime;
 
+		[NonSerialized]
+		public bool awaitingMugshot;
+
 		public ulong UserId => player;
 
 		public string UserName => displayName;
@@ -73,6 +76,7 @@ public class RelationshipManager : BaseEntity
 			mugshotCrc = 0u;
 			notes = "";
 			lastMugshotTime = 0f;
+			awaitingMugshot = false;
 		}
 
 		public PlayerRelationshipInfo ToProto()
@@ -970,6 +974,7 @@ public class RelationshipManager : BaseEntity
 				float num5 = Vector3Ex.Distance2D(((Component)player).transform.position, ((Component)otherPlayer).transform.position);
 				if ((flag2 && num5 < num4) & flag4)
 				{
+					relations.awaitingMugshot = true;
 					ClientRPC(RpcTarget.Player("CLIENT_DoMugshot", player), num2);
 					relations.lastMugshotTime = Time.realtimeSinceStartup;
 				}
@@ -1104,8 +1109,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void SERVER_ChangeRelationship(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1134,8 +1139,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void SERVER_UpdatePlayerNote(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1145,17 +1150,27 @@ public class RelationshipManager : BaseEntity
 		MarkRelationshipsDirtyFor(userID);
 	}
 
-	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(10uL)]
 	public void SERVER_ReceiveMugshot(RPCMessage msg)
 	{
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
 		EncryptedValue<ulong> userID = msg.player.userID;
 		ulong num = msg.read.UInt64();
 		uint num2 = msg.read.UInt32();
+		if (!relationships.TryGetValue(userID, out var value) || !value.relations.TryGetValue(num, out var value2))
+		{
+			return;
+		}
+		RelationshipType type = value2.type;
+		if ((type != RelationshipType.Acquaintance && type != RelationshipType.Friend && type != RelationshipType.Enemy) || !value2.awaitingMugshot)
+		{
+			return;
+		}
+		value2.awaitingMugshot = false;
 		byte[] array = msg.read.BytesWithSize(65536u);
-		if (array != null && ImageProcessing.IsValidJPG(array, 256, 512) && relationships.TryGetValue(userID, out var value) && value.relations.TryGetValue(num, out var value2))
+		if (array != null && ImageProcessing.IsValidJPG(array, 256, 512))
 		{
 			uint steamIdHash = GetSteamIdHash(userID, num);
 			uint num3 = FileStorage.server.Store(array, FileStorage.Type.jpg, net.ID, steamIdHash);
@@ -1382,8 +1397,8 @@ public class RelationshipManager : BaseEntity
 		return playerTeam;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void TryCreateTeam(RPCMessage rpc)
 	{
 		if (maxTeamSize != 0)

@@ -459,8 +459,8 @@ public class FarmableAnimal : BaseCombatEntity
 		AnimalSunlight = Random.Range(20f, 40f);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerPetChicken(RPCMessage msg)
 	{
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
@@ -514,8 +514,8 @@ public class FarmableAnimal : BaseCombatEntity
 		data.animalName = AnimalName;
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void RequestNameChange(RPCMessage msg)
 	{
 		if (msg.player.CanBuild(cached: true))

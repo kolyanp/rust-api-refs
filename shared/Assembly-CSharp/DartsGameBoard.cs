@@ -518,9 +518,9 @@ public class DartsGameBoard : BaseCombatEntity
 		Leaderboard = new List<DartsGameLeaderboardEntry>();
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -534,9 +534,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -549,9 +549,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_EndGame(RPCMessage msg)
 	{
 		EndGame();
@@ -572,11 +572,14 @@ public class DartsGameBoard : BaseCombatEntity
 	[RPC_Server]
 	public void RPC_ReceiveDartThrow(RPCMessage msg)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 dartThrowSyncVar = msg.read.Vector3();
-		SetDartThrowSyncVar(dartThrowSyncVar);
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		if (!((Object)(object)msg.player == (Object)null) && GameController != null && GameController.IsGameOngoing && GameController.IsPlayersTurn(msg.player) && GameController.IsAtBoard(msg.player))
+		{
+			Vector3 dartThrowSyncVar = msg.read.Vector3();
+			SetDartThrowSyncVar(dartThrowSyncVar);
+		}
 	}
 
 	private void SetDartThrowSyncVar(Vector3 aimLocation)

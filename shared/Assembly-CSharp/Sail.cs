@@ -12,8 +12,8 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[Header("Sail")]
 	[SerializeField]
+	[Header("Sail")]
 	private float maxThrust = 1000f;
 
 	public float RaiseDuration = 1.5f;
@@ -495,9 +495,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		return DeployVolume.Check(((Component)this).transform.position, ((Component)this).transform.rotation * Quaternion.AngleAxis(180f, Vector3.up), volumes, ~(1 << ((Component)this).gameObject.layer));
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void LowerSail(RPCMessage msg)
 	{
 		Lower(msg.player);
@@ -544,8 +544,8 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RaiseSail(RPCMessage msg)
 	{
 		Raise(msg.player);
@@ -589,9 +589,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		OnRaisedOrLowered();
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	public void RotateSail(RPCMessage msg)
 	{
 		RotateSail(msg.player);

@@ -55,6 +55,19 @@ public class SleepingBagCamper : SleepingBag
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	protected override bool CanAccessBed(BasePlayer player)
+	{
+		if (!base.CanAccessBed(player) || !(GetParentEntity() is VehicleModuleCamper vehicleModuleCamper))
+		{
+			return false;
+		}
+		if (vehicleModuleCamper.IsOnAVehicle && vehicleModuleCamper.Vehicle.IsDead())
+		{
+			return true;
+		}
+		return vehicleModuleCamper.IsOnThisModule(player);
+	}
+
 	public override void ServerInit()
 	{
 		base.ServerInit();

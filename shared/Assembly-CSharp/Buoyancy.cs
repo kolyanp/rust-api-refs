@@ -69,8 +69,8 @@ public class Buoyancy : ListComponent<Buoyancy>, IServerComponent, IPrefabPrePro
 
 	public bool FlowForceDisabled;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private BuoyancyPointData[] pointData;
 
 	private bool initedPointArrays;

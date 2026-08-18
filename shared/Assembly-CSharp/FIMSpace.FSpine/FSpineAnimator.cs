@@ -722,8 +722,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool forceRefreshCollidersData;
 
-	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
+	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
 	public float SpineAnimatorAmount;
 
 	private Quaternion Rotate180;
@@ -858,16 +858,16 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float RotSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
+	[Range(0f, 1f)]
 	public float MaxStretching;
 
 	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	[Range(0f, 1f)]
 	public float Slithery;
 
-	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
 	[Range(1f, 91f)]
+	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
 	public float AngleLimit;
 
 	[Range(0f, 1f)]
@@ -937,8 +937,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If you want to continue checking collision if segment collides with one collider (very useful for example when you using gravity power with ground)")]
 	public bool DetailedCollision;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool _CheckedPivot;
 
 	private bool updateSpineAnimator;

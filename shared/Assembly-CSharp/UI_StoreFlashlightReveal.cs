@@ -10,8 +10,8 @@ public class UI_StoreFlashlightReveal : MonoBehaviour
 	[SerializeField]
 	private Material flashlightMaterial;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private string imageFolder;
 
 	[SerializeField]

@@ -1,8 +1,8 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(ContactShadowsCamera), typeof(ContactShadowsCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/ContactShadowsRendererFeature")]
+[RustRendererFeatureCameraComponent(typeof(ContactShadowsCamera), typeof(ContactShadowsCameraContext))]
 public class ContactShadowsRendererFeature : RustRendererFeature
 {
 	[Range(0f, 1f)]

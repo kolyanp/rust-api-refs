@@ -8,12 +8,12 @@ public class MissionObjective_OpenStorageContainer : MissionObjective
 	[Tooltip("If set, the objective world location will be set to this position.")]
 	public string SetObjectiveLocation;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("The opened container must be nearby this mission point for the objective to complete.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string RequireProximityToPosition;
 
-	[Min(0f)]
 	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the opened storage container and the mission point.")]
+	[Min(0f)]
 	public float MinimumDistanceToMissionPoint;
 
 	private float sqrDistanceToMissionPoint;

@@ -845,8 +845,10 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 
 	public BaseNavigator Navigator { get; set; }
 
-	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	public unsafe override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
+		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BaseAIBrain.OnRpcMessage"))
 		{
 			if (rpc == 66191493 && (Object)(object)player != (Object)null)
@@ -933,38 +935,46 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 				}
 				using (TimeWarning.New("SubmitAIDesign"))
 				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!BaseEntity.RPC_Server.CallsPerSecond.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 5uL))
-						{
-							return true;
-						}
-						if (!BaseEntity.RPC_Server.IsVisible.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
-						{
-							return true;
-						}
-						if (!BaseEntity.RPC_Server.MaxDistance.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
-						{
-							return true;
-						}
-					}
+					FieldOperationLimitSuspensionScope val = msg.read.SuspendProtoFieldOperationLimit();
 					try
 					{
-						using (TimeWarning.New("Call"))
+						using (TimeWarning.New("Conditions"))
 						{
-							BaseEntity.RPCMessage msg4 = new BaseEntity.RPCMessage
+							if (!BaseEntity.RPC_Server.CallsPerSecond.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 5uL))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							SubmitAIDesign(msg4);
+								return true;
+							}
+							if (!BaseEntity.RPC_Server.IsVisible.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
+							{
+								return true;
+							}
+							if (!BaseEntity.RPC_Server.MaxDistance.Test(657290375u, "SubmitAIDesign", GetBaseEntity(), player, 3f))
+							{
+								return true;
+							}
+						}
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								BaseEntity.RPCMessage msg4 = new BaseEntity.RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								SubmitAIDesign(msg4);
+							}
+						}
+						catch (Exception ex3)
+						{
+							Debug.LogException(ex3);
+							player.Kick("RPC Error in SubmitAIDesign");
 						}
 					}
-					catch (Exception ex3)
+					finally
 					{
-						Debug.LogException(ex3);
-						player.Kick("RPC Error in SubmitAIDesign");
+						((IDisposable)(*(FieldOperationLimitSuspensionScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
 					}
 				}
 				return true;
@@ -1096,8 +1106,8 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 		return true;
 	}
 
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
+	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.IsVisible(3f)]
 	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	private void RequestAIDesign(BaseEntity.RPCMessage msg)
@@ -1113,8 +1123,9 @@ public class BaseAIBrain : EntityComponent<BaseEntity>, IPet, IAISleepable, glob
 
 	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.IsVisible(3f)]
-	[BaseEntity.RPC_Server.MaxDistance(3f)]
 	[BaseEntity.RPC_Server.CallsPerSecond(5uL)]
+	[BaseEntity.RPC_Server.MaxDistance(3f)]
+	[BaseEntity.RPC_Server.IgnoreProtoFieldOperationLimit]
 	private void SubmitAIDesign(BaseEntity.RPCMessage msg)
 	{
 		if (!UseAIDesign || (Object)(object)msg.player == (Object)null || !PlayerCanDesignAI(msg.player))

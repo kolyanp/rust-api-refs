@@ -22,14 +22,14 @@ public class UI_StoreAddCartButton : ListComponent<UI_StoreAddCartButton>
 	[SerializeField]
 	private RustText discountText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private Animator animator;
 
 	[SerializeField]
 	private UI_StoreCartButtonAnimation animationSequence;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private SteamInventoryItem autoInitItem;
 }

@@ -326,8 +326,8 @@ public class IOEntity : DecayEntity
 	[Help("How many milliseconds to budget for processing high priority electric io entities per server frame (monuments)")]
 	public static float frameBudgetElectricHighPriorityMs = 1f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing low priority io entities per server frame (player placed)")]
+	[ServerVar]
 	public static float frameBudgetElectricLowPriorityMs = 0.5f;
 
 	[Help("How many milliseconds to budget for processing fluid io entities per server frame")]
@@ -907,9 +907,9 @@ public class IOEntity : DecayEntity
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server]
 	private void Server_RequestData(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

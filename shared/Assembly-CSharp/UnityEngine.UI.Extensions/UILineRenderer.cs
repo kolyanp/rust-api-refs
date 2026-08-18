@@ -4,8 +4,8 @@ using UnityEngine.Sprites;
 
 namespace UnityEngine.UI.Extensions;
 
-[RequireComponent(typeof(RectTransform))]
 [AddComponentMenu("UI/Extensions/Primitives/UILineRenderer")]
+[RequireComponent(typeof(RectTransform))]
 public class UILineRenderer : UIPrimitiveBase
 {
 	private enum SegmentType
@@ -79,12 +79,12 @@ public class UILineRenderer : UIPrimitiveBase
 	[Tooltip("Do the points identify a single line or split pairs of lines")]
 	internal bool lineList;
 
-	[SerializeField]
 	[Tooltip("Add end caps to each line\nMultiple caps when used with Line List")]
+	[SerializeField]
 	internal bool lineCaps;
 
-	[Tooltip("Resolution of the Bezier curve, different to line Resolution")]
 	[SerializeField]
+	[Tooltip("Resolution of the Bezier curve, different to line Resolution")]
 	internal int bezierSegmentsPerCurve = 10;
 
 	[Tooltip("The type of Join used between lines, Square/Mitre or Curved/Bevel")]

@@ -11,8 +11,8 @@ public class UI_StoreCartButtonAnimation : BaseMonoBehaviour
 	[SerializeField]
 	private GameObject addToCartGroup;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private FlexElement inCartGroup;
 
 	[SerializeField]

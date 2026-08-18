@@ -63,8 +63,8 @@ public class MarchingCubesManager : FacepunchBehaviour
 		}
 	}
 
-	[ServerVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
 	[ClientVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
+	[ServerVar(Default = "1", Help = "[0-2] - mip level the sculpture collision mesh is marched at. Each level is ~4x fewer collision triangles and a correspondingly cheaper physics bake, at the cost of the collider drifting slightly from the visual surface")]
 	public static int ColliderMipLevel
 	{
 		get

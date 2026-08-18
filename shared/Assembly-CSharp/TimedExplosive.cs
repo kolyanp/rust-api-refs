@@ -738,8 +738,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)ent == (Object)null)
 		{
 			return;
@@ -754,28 +754,37 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 			ent = ent.parentEntity.Get(serverside: true);
 		}
 		SetMotionEnabled(wantsMotion: false);
-		if (!HasChild(ent))
+		if (HasChild(ent))
 		{
-			((Component)this).transform.position = position;
-			((Component)this).transform.rotation = Quaternion.LookRotation(normal, ((Component)this).transform.up);
-			if ((Object)(object)collider != (Object)null)
+			return;
+		}
+		((Component)this).transform.position = position;
+		((Component)this).transform.rotation = Quaternion.LookRotation(normal, ((Component)this).transform.up);
+		if ((Object)(object)collider != (Object)null)
+		{
+			uint num = ent.FindBoneID(((Component)collider).transform);
+			if (ent is MotorRowboat && num == StringPool.closest)
 			{
-				SetParent(ent, ent.FindBoneID(((Component)collider).transform), worldPositionStays: true);
+				SetParent(ent, worldPositionStays: true);
 			}
 			else
 			{
-				SetParent(ent, StringPool.closest, worldPositionStays: true);
+				SetParent(ent, num, worldPositionStays: true);
 			}
-			if (ent is BaseCombatEntity baseCombatEntity)
-			{
-				baseCombatEntity.SetJustAttacked();
-			}
-			if (stickEffect.isValid)
-			{
-				Effect.server.Run(stickEffect.resourcePath, ((Component)this).transform.position, Vector3.up, null, broadcast: true);
-			}
-			ReceiveCollisionMessages(b: false);
 		}
+		else
+		{
+			SetParent(ent, StringPool.closest, worldPositionStays: true);
+		}
+		if (ent is BaseCombatEntity baseCombatEntity)
+		{
+			baseCombatEntity.SetJustAttacked();
+		}
+		if (stickEffect.isValid)
+		{
+			Effect.server.Run(stickEffect.resourcePath, ((Component)this).transform.position, Vector3.up, null, broadcast: true);
+		}
+		ReceiveCollisionMessages(b: false);
 	}
 
 	public void UnStick()

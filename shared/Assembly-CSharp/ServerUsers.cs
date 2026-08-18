@@ -151,9 +151,9 @@ public static class ServerUsers
 				sb.Append("banid ");
 				sb.Append(item2.steamid);
 				sb.Append(' ');
-				StringBuilderExtensions.QuoteSafe(sb, item2.username);
+				StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item2.username));
 				sb.Append(' ');
-				StringBuilderExtensions.QuoteSafe(sb, item2.notes);
+				StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item2.notes));
 				sb.Append(' ');
 				sb.Append(item2.expiry);
 				sb.Append("\r\n");
@@ -166,9 +166,9 @@ public static class ServerUsers
 			sb.Append("ownerid ");
 			sb.Append(item3.steamid);
 			sb.Append(' ');
-			StringBuilderExtensions.QuoteSafe(sb, item3.username);
+			StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item3.username));
 			sb.Append(' ');
-			StringBuilderExtensions.QuoteSafe(sb, item3.notes);
+			StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item3.notes));
 			sb.Append("\r\n");
 		}
 		foreach (User item4 in GetAll(UserGroup.Moderator))
@@ -176,9 +176,9 @@ public static class ServerUsers
 			sb.Append("moderatorid ");
 			sb.Append(item4.steamid);
 			sb.Append(' ');
-			StringBuilderExtensions.QuoteSafe(sb, item4.username);
+			StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item4.username));
 			sb.Append(' ');
-			StringBuilderExtensions.QuoteSafe(sb, item4.notes);
+			StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item4.notes));
 			sb.Append("\r\n");
 		}
 		foreach (User item5 in GetAll(UserGroup.SkipQueue))
@@ -186,9 +186,9 @@ public static class ServerUsers
 			sb.Append("skipqueueid ");
 			sb.Append(item5.steamid);
 			sb.Append(' ');
-			StringBuilderExtensions.QuoteSafe(sb, item5.username);
+			StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item5.username));
 			sb.Append(' ');
-			StringBuilderExtensions.QuoteSafe(sb, item5.notes);
+			StringBuilderExtensions.QuoteSafe(sb, ConsoleSystem.SanitizeConfigValue(item5.notes));
 			sb.Append("\r\n");
 		}
 		File.WriteAllText(serverFolder + "/users.cfg", sb.ToString());

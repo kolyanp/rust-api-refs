@@ -242,8 +242,8 @@ public class HackableLockedCrate : LootContainer
 		flagsUpdateScope.Set(Flags.Reserved1, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Hack(RPCMessage msg)
 	{
 		if (!IsBeingHacked() && Interface.CallHook("CanHackCrate", msg.player, this) == null)

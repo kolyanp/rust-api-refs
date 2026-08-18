@@ -285,8 +285,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
-	[Header("BaseNetworkable")]
 	[ReadOnly]
+	[Header("BaseNetworkable")]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]

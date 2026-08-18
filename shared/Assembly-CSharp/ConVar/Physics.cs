@@ -132,8 +132,8 @@ public class Physics : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, Unity Physics auto-syncs transform changes to physics each frame; disable to manually control when transforms sync")]
 	[ClientVar(Help = "(Generated) When enabled, Unity Physics auto-syncs transform changes to physics each frame; disable to manually control when transforms sync")]
+	[ServerVar(Help = "(Generated) When enabled, Unity Physics auto-syncs transform changes to physics each frame; disable to manually control when transforms sync")]
 	public static bool autosynctransforms
 	{
 		get

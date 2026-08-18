@@ -177,8 +177,8 @@ public class BaseCombatEntity : BaseEntity
 		Horror
 	}
 
-	[InspectorName("Spawn Corpse")]
 	[Header("Deployable Corpse")]
+	[InspectorName("Spawn Corpse")]
 	public bool spawnDeployableCorpseOnDeath;
 
 	[InspectorName("Corpse Prefab")]
@@ -571,8 +571,8 @@ public class BaseCombatEntity : BaseEntity
 	{
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_PickupStart(RPCMessage rpc)
 	{
 		pickupErrorToFormat = (format: null, arg0: null);

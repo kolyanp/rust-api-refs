@@ -6,8 +6,8 @@ using UnityEngine.Serialization;
 
 namespace Facepunch.Flexbox;
 
-[ExecuteAlways]
 [DisallowMultipleComponent]
+[ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
 public class FlexGridsElement : FlexElementBase
 {
@@ -35,9 +35,9 @@ public class FlexGridsElement : FlexElementBase
 	[Min(1f)]
 	public int ColumnCount = 1;
 
+	[Min(1f)]
 	[Tooltip("The minimum width of each column when not using a fixed number of columns.")]
 	[FormerlySerializedAs("ColumnWidth")]
-	[Min(1f)]
 	public int ColumnMinWidth = 100;
 
 	public bool FixedRowCount;

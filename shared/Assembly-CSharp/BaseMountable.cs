@@ -87,8 +87,8 @@ public class BaseMountable : BaseCombatEntity
 
 	public float mountLOSVertOffset;
 
-	[Header("Mount Pose")]
 	[Tooltip("The speed of the posde animation for this mountable.")]
+	[Header("Mount Pose")]
 	[Range(0f, 1f)]
 	public float mountedAnimationSpeed;
 
@@ -596,8 +596,8 @@ public class BaseMountable : BaseCombatEntity
 		base.OnDied(info);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_WantsMount(RPCMessage msg)
 	{
 		WantsMount(msg.player);

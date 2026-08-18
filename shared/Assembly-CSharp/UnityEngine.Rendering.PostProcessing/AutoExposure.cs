@@ -6,14 +6,14 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.AutoExposureRenderer), "Unity/Auto Exposure", true)]
 public sealed class AutoExposure : PostProcessEffectSettings
 {
-	[MinMax(1f, 99f)]
-	[DisplayName("Filtering (%)")]
 	[Tooltip("Filters the bright and dark parts of the histogram when computing the average luminance. This is to avoid very dark pixels and very bright pixels from contributing to the auto exposure. Unit is in percent.")]
+	[DisplayName("Filtering (%)")]
+	[MinMax(1f, 99f)]
 	public Vector2Parameter filtering;
 
-	[DisplayName("Minimum (EV)")]
-	[Tooltip("Minimum average luminance to consider for auto exposure. Unit is EV.")]
 	[Range(-9f, 9f)]
+	[Tooltip("Minimum average luminance to consider for auto exposure. Unit is EV.")]
+	[DisplayName("Minimum (EV)")]
 	public FloatParameter minLuminance;
 
 	[Range(-9f, 9f)]
@@ -34,8 +34,8 @@ public sealed class AutoExposure : PostProcessEffectSettings
 	[Tooltip("Adaptation speed from a dark to a light environment.")]
 	public FloatParameter speedUp;
 
-	[Min(0f)]
 	[Tooltip("Adaptation speed from a light to a dark environment.")]
+	[Min(0f)]
 	public FloatParameter speedDown;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

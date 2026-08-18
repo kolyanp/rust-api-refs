@@ -50,10 +50,10 @@ public class BaseArcadeMachine : BaseVehicle
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
-		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0332: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0302: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0317: Unknown result type (might be due to invalid IL or missing references)
+		//IL_032c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0341: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("BaseArcadeMachine.OnRpcMessage"))
 		{
 			if (rpc == 271542211 && (Object)(object)player != (Object)null)
@@ -143,67 +143,70 @@ public class BaseArcadeMachine : BaseVehicle
 				}
 				using (TimeWarning.New("GetSnapshotFromClient"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(64))
 					{
-						if (!RPC_Server.CallsPerSecond.Test(2467852388u, "GetSnapshotFromClient", this, player, 30uL))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						long position = msg.read.Position;
-						ArcadeGame val = msg.read.Proto<ArcadeGame>((ArcadeGame)null);
-						try
-						{
-							foreach (arcadeEnt arcadeEnt in val.arcadeEnts)
-							{
-								if (!RPC_Server.InputValidation.Test(arcadeEnt.position))
-								{
-									return true;
-								}
-								if (!RPC_Server.InputValidation.Test(arcadeEnt.heading))
-								{
-									return true;
-								}
-								if (!RPC_Server.InputValidation.Test(arcadeEnt.scale))
-								{
-									return true;
-								}
-								if (!RPC_Server.InputValidation.Test(arcadeEnt.colliderScale))
-								{
-									return true;
-								}
-								if (!RPC_Server.InputValidation.Test(arcadeEnt.alpha))
-								{
-									return true;
-								}
-							}
-							msg.read.Position = position;
-							if (!RPC_Server.IsVisible.Test(2467852388u, "GetSnapshotFromClient", this, player, 3f))
+							if (!RPC_Server.CallsPerSecond.Test(2467852388u, "GetSnapshotFromClient", this, player, 30uL))
 							{
 								return true;
 							}
-						}
-						finally
-						{
-							((IDisposable)val)?.Dispose();
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg4 = new RPCMessage
+							long position = msg.read.Position;
+							ArcadeGame val = msg.read.Proto<ArcadeGame>((ArcadeGame)null);
+							try
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							GetSnapshotFromClient(msg4);
+								foreach (arcadeEnt arcadeEnt in val.arcadeEnts)
+								{
+									if (!RPC_Server.InputValidation.Test(arcadeEnt.position))
+									{
+										return true;
+									}
+									if (!RPC_Server.InputValidation.Test(arcadeEnt.heading))
+									{
+										return true;
+									}
+									if (!RPC_Server.InputValidation.Test(arcadeEnt.scale))
+									{
+										return true;
+									}
+									if (!RPC_Server.InputValidation.Test(arcadeEnt.colliderScale))
+									{
+										return true;
+									}
+									if (!RPC_Server.InputValidation.Test(arcadeEnt.alpha))
+									{
+										return true;
+									}
+								}
+								msg.read.Position = position;
+								if (!RPC_Server.IsVisible.Test(2467852388u, "GetSnapshotFromClient", this, player, 3f))
+								{
+									return true;
+								}
+							}
+							finally
+							{
+								((IDisposable)val)?.Dispose();
+							}
 						}
-					}
-					catch (Exception ex3)
-					{
-						Debug.LogException(ex3);
-						player.Kick("RPC Error in GetSnapshotFromClient");
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg4 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								GetSnapshotFromClient(msg4);
+							}
+						}
+						catch (Exception ex3)
+						{
+							Debug.LogException(ex3);
+							player.Kick("RPC Error in GetSnapshotFromClient");
+						}
 					}
 				}
 				return true;
@@ -352,8 +355,8 @@ public class BaseArcadeMachine : BaseVehicle
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void DestroyMessageFromHost(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -371,8 +374,8 @@ public class BaseArcadeMachine : BaseVehicle
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(7uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void BroadcastEntityMessage(RPCMessage msg)
 	{
@@ -394,6 +397,7 @@ public class BaseArcadeMachine : BaseVehicle
 
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.CallsPerSecond(30uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(ArcadeGame) })]
 	public void GetSnapshotFromClient(RPCMessage msg)

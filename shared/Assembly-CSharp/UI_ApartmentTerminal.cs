@@ -11,8 +11,8 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObjectRef plotRowPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustText timeText;
 
 	[SerializeField]
@@ -38,9 +38,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText subtitleText;
 
-	[Space]
-	[Header("CCTV")]
 	[SerializeField]
+	[Header("CCTV")]
+	[Space]
 	private RawImage feedImage;
 
 	[SerializeField]
@@ -49,17 +49,17 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObject feedNoSignal;
 
-	[SerializeField]
-	[Header("Tabs")]
 	[Space]
+	[Header("Tabs")]
+	[SerializeField]
 	private GameObject apartmentsPanel;
 
 	[SerializeField]
 	private GameObject shopsPanel;
 
+	[Space]
 	[Header("Shops")]
 	[SerializeField]
-	[Space]
 	private RectTransform shopList;
 
 	[SerializeField]

@@ -8,8 +8,8 @@ using UnityEngine.Assertions;
 
 public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFlares
 {
-	[SerializeField]
 	[Header("Helicopter Flares")]
+	[SerializeField]
 	private GameObjectRef flareStoragePrefab;
 
 	[SerializeField]

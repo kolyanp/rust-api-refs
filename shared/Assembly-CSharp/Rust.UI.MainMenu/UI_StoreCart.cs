@@ -30,8 +30,8 @@ public class UI_StoreCart : UI_Window
 	[SerializeField]
 	private RustText totalValueText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform itemParent;
 
 	[SerializeField]

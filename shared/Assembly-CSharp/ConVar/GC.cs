@@ -28,8 +28,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Read-only: reports whether Unity incremental garbage collection is enabled for this runtime; cannot be changed at runtime")]
 	[ServerVar(Help = "(Generated) Read-only: reports whether Unity incremental garbage collection is enabled for this runtime; cannot be changed at runtime")]
+	[ClientVar(Help = "(Generated) Read-only: reports whether Unity incremental garbage collection is enabled for this runtime; cannot be changed at runtime")]
 	public static bool incremental_enabled
 	{
 		get
@@ -42,8 +42,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	[ServerVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
+	[ClientVar(Help = "(Generated) Time slice in milliseconds allocated to incremental GC per frame; lower values reduce GC stutter but spread collection over more frames")]
 	public static int incremental_milliseconds
 	{
 		get
@@ -77,15 +77,15 @@ public class GC : ConsoleSystem
 		Rust.GC.Collect();
 	}
 
-	[ServerVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
 	[ClientVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
+	[ServerVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
 	public static void unload()
 	{
 		Resources.UnloadUnusedAssets();
 	}
 
-	[ClientVar(Help = "(Generated) Allocates a byte array of the given size (default 1 MB) as a GC pressure test; useful for profiling memory allocation throughput")]
 	[ServerVar(Help = "(Generated) Allocates a byte array of the given size (default 1 MB) as a GC pressure test; useful for profiling memory allocation throughput")]
+	[ClientVar(Help = "(Generated) Allocates a byte array of the given size (default 1 MB) as a GC pressure test; useful for profiling memory allocation throughput")]
 	public static void alloc(Arg args)
 	{
 		byte[] array = new byte[args.GetInt(0, 1048576)];

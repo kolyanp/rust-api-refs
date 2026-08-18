@@ -115,8 +115,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private VehicleLight[] movingForwardLights;
 
-	[SerializeField]
 	[FormerlySerializedAs("movingBackwardsLights")]
+	[SerializeField]
 	private VehicleLight[] movingBackwardLights;
 
 	[SerializeField]
@@ -152,8 +152,8 @@ public class TrainEngine : TrainCar, IEngineControllerUser, IEntity
 	[SerializeField]
 	private ParticleSystemContainer[] sparks;
 
-	[FormerlySerializedAs("brakeSparkLights")]
 	[SerializeField]
+	[FormerlySerializedAs("brakeSparkLights")]
 	private Light[] sparkLights;
 
 	[SerializeField]

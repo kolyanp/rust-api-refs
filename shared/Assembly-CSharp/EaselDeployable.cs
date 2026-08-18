@@ -155,8 +155,8 @@ public class EaselDeployable : DecorDeployable
 	}
 
 	[RPC_Server.MaxDistance(6f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void Server_StopPainting(RPCMessage msg)
 	{
 	}

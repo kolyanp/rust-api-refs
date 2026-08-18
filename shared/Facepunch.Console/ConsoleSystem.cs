@@ -140,17 +140,17 @@ public class ConsoleSystem
 			}
 			if (IsClientside)
 			{
+				if (Option.IsFromServer && !cmd.AllowRunFromServer)
+				{
+					Debug.Log((object)("Server tried to run command \"" + ((object)Unsafe.As<StringView, StringView>(ref FullString)/*cast due to constrained. prefix*/).ToString() + "\", but we blocked it."));
+					return false;
+				}
 				if (cmd.ClientAdmin)
 				{
 					if (ClientCanRunAdminCommands != null)
 					{
 						return ClientCanRunAdminCommands();
 					}
-					return false;
-				}
-				if (Option.IsFromServer && !cmd.AllowRunFromServer)
-				{
-					Debug.Log((object)("Server tried to run command \"" + ((object)Unsafe.As<StringView, StringView>(ref FullString)/*cast due to constrained. prefix*/).ToString() + "\", but we blocked it."));
 					return false;
 				}
 				if (cmd.DeveloperOnly)
@@ -1436,10 +1436,19 @@ public class ConsoleSystem
 		{
 			if (item.GetOveride != null)
 			{
-				text = text + item.FullName + " " + StringExtensions.QuoteSafe(item.String);
+				text = text + item.FullName + " " + StringExtensions.QuoteSafe(SanitizeConfigValue(item.String));
 				text += Environment.NewLine;
 			}
 		}
 		return text;
+	}
+
+	public static string SanitizeConfigValue(string value)
+	{
+		if (value.IndexOf('\r') < 0 && value.IndexOf('\n') < 0)
+		{
+			return value;
+		}
+		return value.Replace("\r", string.Empty).Replace("\n", string.Empty);
 	}
 }

@@ -86,8 +86,8 @@ public class BaseBoat : BaseVehicle
 
 	protected virtual bool SkipBoatForcedUpdate => false;
 
-	[ServerVar]
 	[Help("Seconds until boat starts drifting to shore if there's nobody around")]
+	[ServerVar]
 	public static int seconds_until_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsUntilShoreDrift = arg.GetInt(0, secondsUntilShoreDrift);
@@ -95,8 +95,8 @@ public class BaseBoat : BaseVehicle
 		return secondsUntilShoreDrift;
 	}
 
-	[ServerVar]
 	[Help("Seconds between shore drift teleport ticks")]
+	[ServerVar]
 	public static int seconds_between_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsBetweenShoreDrift = arg.GetInt(0, secondsBetweenShoreDrift);

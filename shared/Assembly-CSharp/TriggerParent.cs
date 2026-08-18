@@ -307,9 +307,9 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[NonSerialized]
 	public int StableIndex = -1;
 
-	[Header("General")]
 	[SerializeField]
 	[Tooltip("Deparent if the parented entity clips into an obstacle")]
+	[Header("General")]
 	protected bool doClippingCheck;
 
 	[Tooltip("If deparenting via clipping, this will be used (if assigned) to also move the entity to a valid dismount position")]
@@ -330,15 +330,15 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("When parenting an NPC don't check if they are shop keepers or mission providers.")]
 	public bool SkipNPCChecks;
 
-	[Header("Other")]
 	[Tooltip("If the player is already parented to something else, they'll switch over to another parent only if this is true")]
+	[Header("Other")]
 	public bool overrideOtherTriggers;
 
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
 	public bool checkForObjUnderFeet;
 
-	[SerializeField]
 	[Header("You probably don't need it")]
+	[SerializeField]
 	private bool doExpensivePlayerClippingChecks;
 
 	[Tooltip("TickMode 1 only - Allow trigger to sleep if it hasn't moved on selected axis. Set to None if it should never ignore")]

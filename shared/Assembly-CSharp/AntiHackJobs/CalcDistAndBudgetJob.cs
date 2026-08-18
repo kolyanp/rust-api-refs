@@ -8,8 +8,8 @@ namespace AntiHackJobs;
 [BurstCompile]
 public struct CalcDistAndBudgetJob : IJobFor
 {
-	[NativeDisableParallelForRestriction]
 	[WriteOnly]
+	[NativeDisableParallelForRestriction]
 	public NativeArray<(float Dist, float Budget)> DistAndBudget;
 
 	[WriteOnly]

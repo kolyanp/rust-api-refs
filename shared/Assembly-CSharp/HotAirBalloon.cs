@@ -534,8 +534,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void EngineSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnHotAirBalloonToggle", this, msg.player) != null)
@@ -955,8 +955,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		return result;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_ReqEquipItem(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

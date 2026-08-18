@@ -84,9 +84,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		ShellFuseLength = FuseLength.Medium;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void StartOpenDesigner(RPCMessage rpc)
 	{
 		if (PlayerCanModify(rpc.player))
@@ -95,9 +95,10 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		}
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(Design) })]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.InputValidation(new Type[] { typeof(Design) })]
+	[RPC_Server.MaxRepeatedElements(35)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	private void ServerSetFireworkDesign(RPCMessage rpc)
 	{
@@ -139,9 +140,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		SendNetworkUpdateImmediate();
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	private void SetShellFuseLength(RPCMessage rpc)
 	{
 		if (PlayerCanModify(rpc.player))
@@ -220,7 +221,7 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("PatternFirework.OnRpcMessage"))
 		{
 			if (rpc == 3850129568u && (Object)(object)player != (Object)null)
@@ -232,51 +233,54 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 				}
 				using (TimeWarning.New("ServerSetFireworkDesign"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(35))
 					{
-						if (!RPC_Server.CallsPerSecond.Test(3850129568u, "ServerSetFireworkDesign", this, player, 5uL))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						long position = msg.read.Position;
-						Design val = msg.read.Proto<Design>((Design)null);
-						try
-						{
-							foreach (Star star in val.stars)
+							if (!RPC_Server.CallsPerSecond.Test(3850129568u, "ServerSetFireworkDesign", this, player, 5uL))
 							{
-								if (!RPC_Server.InputValidation.Test(star.position))
+								return true;
+							}
+							long position = msg.read.Position;
+							Design val = msg.read.Proto<Design>((Design)null);
+							try
+							{
+								foreach (Star star in val.stars)
+								{
+									if (!RPC_Server.InputValidation.Test(star.position))
+									{
+										return true;
+									}
+								}
+								msg.read.Position = position;
+								if (!RPC_Server.IsVisible.Test(3850129568u, "ServerSetFireworkDesign", this, player, 3f))
 								{
 									return true;
 								}
 							}
-							msg.read.Position = position;
-							if (!RPC_Server.IsVisible.Test(3850129568u, "ServerSetFireworkDesign", this, player, 3f))
+							finally
 							{
-								return true;
+								((IDisposable)val)?.Dispose();
 							}
 						}
-						finally
+						try
 						{
-							((IDisposable)val)?.Dispose();
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage rpc2 = new RPCMessage
+							using (TimeWarning.New("Call"))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							ServerSetFireworkDesign(rpc2);
+								RPCMessage rpc2 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								ServerSetFireworkDesign(rpc2);
+							}
 						}
-					}
-					catch (Exception ex)
-					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in ServerSetFireworkDesign");
+						catch (Exception ex)
+						{
+							Debug.LogException(ex);
+							player.Kick("RPC Error in ServerSetFireworkDesign");
+						}
 					}
 				}
 				return true;

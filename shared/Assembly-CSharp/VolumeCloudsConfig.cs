@@ -35,8 +35,8 @@ public class VolumeCloudsConfig : ScriptableObject
 
 	public float CurlNoiseStrength;
 
-	[Range(0f, 1f)]
 	[Header("Density")]
+	[Range(0f, 1f)]
 	public float DensityScale;
 
 	[Range(0f, 1f)]

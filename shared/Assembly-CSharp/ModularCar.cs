@@ -126,8 +126,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	private BoxCollider mainChassisCollider;
 
-	[SerializeField]
 	[Header("Towing")]
+	[SerializeField]
 	private TriggerTowing towingTrigger;
 
 	[SerializeField]
@@ -136,8 +136,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	public SpawnSettings spawnSettings;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	public MeshRenderer[] damageShowingRenderers;
 
 	[ServerVar(Help = "Population active on the server", ShowInAdminUI = true)]

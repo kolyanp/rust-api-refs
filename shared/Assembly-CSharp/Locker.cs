@@ -143,21 +143,21 @@ public class Locker : StorageContainer
 		return (slot - 7) % 14 == 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Equip(RPCMessage msg)
 	{
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		int num = msg.read.Int32();
 		if (num < 0 || num >= maxGearSets || Interface.CallHook("OnLockerSwap", this, num, msg.player) != null || IsEquipping())
 		{
 			return;
 		}
 		BasePlayer player = msg.player;
-		if (player.IsDead())
+		if (player.IsDead() || !CanBeLooted(player))
 		{
 			return;
 		}

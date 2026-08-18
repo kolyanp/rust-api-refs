@@ -4,12 +4,12 @@ public class MissionObjective_UnderwaterLabsBoomboxBonus : MissionObjective
 {
 	public string targetRadioIp;
 
-	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
 	[BaseMission.PositionGenerator.PositionPoint]
+	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
 	public string requireProximityToPosition;
 
-	[Min(0f)]
 	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
+	[Min(0f)]
 	public float minimumDistanceToMissionPoint;
 
 	public bool shouldHideCompassMarkerWhenClose;

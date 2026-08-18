@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class ChargeUpIOEntity : IOEntity
 {
-	[Tooltip("This amount will be added to the charge meter every second.")]
 	[Header("ChargeUp IO")]
+	[Tooltip("This amount will be added to the charge meter every second.")]
 	public int powerConsumptionWhileCharging = 1;
 
 	public float chargeRequiredToBecomeActive = 10f;
@@ -27,8 +27,8 @@ public class ChargeUpIOEntity : IOEntity
 
 	public bool RequireInputToTrigger;
 
-	[Header("Charging Sounds")]
 	[Tooltip("If this entity has no sound, disable this to save on resources")]
+	[Header("Charging Sounds")]
 	public bool doSounds = true;
 
 	public SoundDefinition startChargingSound;

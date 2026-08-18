@@ -69,9 +69,9 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		bool play = msg.read.ReadByte() == 1;
@@ -171,20 +171,29 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 		}
 		SetMotionEnabled(wantsMotion: false);
 		SetCollisionEnabled(wantsCollision: false);
-		if (!((Object)(object)ent != (Object)null) || !HasChild(ent))
+		if ((Object)(object)ent != (Object)null && HasChild(ent))
 		{
-			((Component)this).transform.position = position;
-			((Component)this).transform.rotation = Quaternion.LookRotation(normal, ((Component)this).transform.up);
-			if ((Object)(object)hitCollider != (Object)null && (Object)(object)ent != (Object)null)
+			return;
+		}
+		((Component)this).transform.position = position;
+		((Component)this).transform.rotation = Quaternion.LookRotation(normal, ((Component)this).transform.up);
+		if ((Object)(object)hitCollider != (Object)null && (Object)(object)ent != (Object)null)
+		{
+			uint num = ent.FindBoneID(((Component)hitCollider).transform);
+			if (ent is MotorRowboat && num == StringPool.closest)
 			{
-				SetParent(ent, ent.FindBoneID(((Component)hitCollider).transform), worldPositionStays: true);
+				SetParent(ent, worldPositionStays: true);
 			}
 			else
 			{
-				SetParent(ent, StringPool.closest, worldPositionStays: true);
+				SetParent(ent, num, worldPositionStays: true);
 			}
-			ReceiveCollisionMessages(b: false);
 		}
+		else
+		{
+			SetParent(ent, StringPool.closest, worldPositionStays: true);
+		}
+		ReceiveCollisionMessages(b: false);
 	}
 
 	private void UnStick()

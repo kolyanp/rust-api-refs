@@ -109,8 +109,14 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		}
 	}
 
-	public void OnNetworkMessage(Message packet)
+	public unsafe void OnNetworkMessage(Message packet)
 	{
+		//IL_0165: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04fe: Unknown result type (might be due to invalid IL or missing references)
 		if (ConVar.Server.packetlog_enabled)
 		{
 			packetHistory.Increment(packet.type);
@@ -133,15 +139,16 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				{
 					OnGiveUserInformation(packet);
 				}
-				catch (Exception e7)
+				catch (Exception e5)
 				{
-					Log(e7);
+					Log(e5);
 					Net.sv.Kick(packet.connection, "Invalid Packet: User Information");
 				}
 			}
 			packet.connection.AddPacketsPerSecond(packet.type);
 			break;
 		case Message.Type.Ready:
+		{
 			if (!packet.connection.connected)
 			{
 				break;
@@ -151,20 +158,29 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				Net.sv.Kick(packet.connection, "Packet Flooding: Client Ready", packet.connection.connected);
 				break;
 			}
-			using (TimeWarning.New("ClientReady", 20))
+			FieldOperationLimitScope val3 = packet.read.UseProtoDeserializationLimits();
+			try
 			{
-				try
+				using (TimeWarning.New("ClientReady", 20))
 				{
-					ClientReady(packet);
+					try
+					{
+						ClientReady(packet);
+					}
+					catch (Exception e8)
+					{
+						Log(e8);
+						Net.sv.Kick(packet.connection, "Invalid Packet: Client Ready");
+					}
 				}
-				catch (Exception e9)
-				{
-					Log(e9);
-					Net.sv.Kick(packet.connection, "Invalid Packet: Client Ready");
-				}
+				packet.connection.AddPacketsPerSecond(packet.type);
+				break;
 			}
-			packet.connection.AddPacketsPerSecond(packet.type);
-			break;
+			finally
+			{
+				((IDisposable)(*(FieldOperationLimitScope*)(&val3))/*cast due to constrained. prefix*/).Dispose();
+			}
+		}
 		case Message.Type.RPCMessage:
 			if (!packet.connection.connected)
 			{
@@ -181,9 +197,9 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				{
 					OnRPCMessage(packet);
 				}
-				catch (Exception e8)
+				catch (Exception e7)
 				{
-					Log(e8);
+					Log(e7);
 					Net.sv.Kick(packet.connection, "Invalid Packet: RPC Message");
 				}
 			}
@@ -205,9 +221,9 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				{
 					ConsoleNetwork.OnClientCommand(packet);
 				}
-				catch (Exception e5)
+				catch (Exception e2)
 				{
-					Log(e5);
+					Log(e2);
 					Net.sv.Kick(packet.connection, "Invalid Packet: Client Command");
 				}
 			}
@@ -230,15 +246,16 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 					ReadDisconnectReason(packet);
 					Net.sv.Disconnect(packet.connection);
 				}
-				catch (Exception e2)
+				catch (Exception e9)
 				{
-					Log(e2);
+					Log(e9);
 					Net.sv.Kick(packet.connection, "Invalid Packet: Disconnect Reason");
 				}
 			}
 			packet.connection.AddPacketsPerSecond(packet.type);
 			break;
 		case Message.Type.Tick:
+		{
 			if (!packet.connection.connected)
 			{
 				break;
@@ -248,20 +265,29 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				Net.sv.Kick(packet.connection, "Packet Flooding: Player Tick", packet.connection.connected);
 				break;
 			}
-			using (TimeWarning.New("OnPlayerTick", 20))
+			FieldOperationLimitScope val = packet.read.UseProtoDeserializationLimits();
+			try
 			{
-				try
+				using (TimeWarning.New("OnPlayerTick", 20))
 				{
-					OnPlayerTick(packet);
+					try
+					{
+						OnPlayerTick(packet);
+					}
+					catch (Exception e4)
+					{
+						Log(e4);
+						Net.sv.Kick(packet.connection, "Invalid Packet: Player Tick");
+					}
 				}
-				catch (Exception e4)
-				{
-					Log(e4);
-					Net.sv.Kick(packet.connection, "Invalid Packet: Player Tick");
-				}
+				packet.connection.AddPacketsPerSecond(packet.type);
+				break;
 			}
-			packet.connection.AddPacketsPerSecond(packet.type);
-			break;
+			finally
+			{
+				((IDisposable)(*(FieldOperationLimitScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			}
+		}
 		case Message.Type.EAC:
 			using (TimeWarning.New("OnEACMessage", 20))
 			{
@@ -278,6 +304,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				}
 			}
 		case Message.Type.World:
+		{
 			if (!World.Transfer || !packet.connection.connected)
 			{
 				break;
@@ -287,20 +314,29 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				Net.sv.Kick(packet.connection, "Packet Flooding: World", packet.connection.connected);
 				break;
 			}
-			using (TimeWarning.New("OnWorldMessage", 20))
+			FieldOperationLimitScope val2 = packet.read.UseProtoDeserializationLimits();
+			try
 			{
-				try
+				using (TimeWarning.New("OnWorldMessage", 20))
 				{
-					WorldNetworking.OnServerMessageReceived(packet);
-					break;
-				}
-				catch (Exception e6)
-				{
-					Log(e6);
-					Net.sv.Kick(packet.connection, "Invalid Packet: World");
-					break;
+					try
+					{
+						WorldNetworking.OnServerMessageReceived(packet);
+						break;
+					}
+					catch (Exception e6)
+					{
+						Log(e6);
+						Net.sv.Kick(packet.connection, "Invalid Packet: World");
+						break;
+					}
 				}
 			}
+			finally
+			{
+				((IDisposable)(*(FieldOperationLimitScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			}
+		}
 		case Message.Type.VoiceData:
 			if (!packet.connection.connected)
 			{
@@ -436,46 +472,49 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			Net.sv.Kick(packet.connection, "Invalid connection state");
 			return;
 		}
-		ClientReady val = packet.read.Proto<ClientReady>((ClientReady)null);
-		try
+		using (packet.read.UseRepeatedElementLimit(512))
 		{
-			foreach (ClientInfo item in val.clientInfo)
+			ClientReady val = packet.read.Proto<ClientReady>((ClientReady)null);
+			try
 			{
-				Interface.CallHook("OnPlayerSetInfo", packet.connection, item.name, item.value);
-				packet.connection.info.Set(item.name, item.value);
-			}
-			packet.connection.globalNetworking = val.globalNetworking;
-			packet.connection.state = Network.Connection.State.Connected;
-			connectionQueue.JoinedGame(packet.connection);
-			Facepunch.Rust.Analytics.Azure.OnPlayerConnected(packet.connection);
-			AddPartyMembersToTeam(packet.connection, val.party);
-			using (TimeWarning.New("ClientReady"))
-			{
-				BasePlayer basePlayer;
-				using (TimeWarning.New("SpawnPlayerSleeping"))
+				foreach (ClientInfo item in val.clientInfo)
 				{
-					basePlayer = SpawnPlayerSleeping(packet.connection);
+					Interface.CallHook("OnPlayerSetInfo", packet.connection, item.name, item.value);
+					packet.connection.info.Set(item.name, item.value);
 				}
-				if ((Object)(object)basePlayer == (Object)null)
+				packet.connection.globalNetworking = val.globalNetworking;
+				packet.connection.state = Network.Connection.State.Connected;
+				connectionQueue.JoinedGame(packet.connection);
+				Facepunch.Rust.Analytics.Azure.OnPlayerConnected(packet.connection);
+				AddPartyMembersToTeam(packet.connection, val.party);
+				using (TimeWarning.New("ClientReady"))
 				{
-					using (TimeWarning.New("SpawnNewPlayer"))
+					BasePlayer basePlayer;
+					using (TimeWarning.New("SpawnPlayerSleeping"))
 					{
-						basePlayer = SpawnNewPlayer(packet.connection);
+						basePlayer = SpawnPlayerSleeping(packet.connection);
+					}
+					if ((Object)(object)basePlayer == (Object)null)
+					{
+						using (TimeWarning.New("SpawnNewPlayer"))
+						{
+							basePlayer = SpawnNewPlayer(packet.connection);
+						}
+					}
+					basePlayer.SendRespawnOptions();
+					basePlayer.LoadClanInfo();
+					if ((Object)(object)basePlayer != (Object)null)
+					{
+						Util.SendSignedInNotification(basePlayer);
 					}
 				}
-				basePlayer.SendRespawnOptions();
-				basePlayer.LoadClanInfo();
-				if ((Object)(object)basePlayer != (Object)null)
-				{
-					Util.SendSignedInNotification(basePlayer);
-				}
 			}
+			finally
+			{
+				((IDisposable)val)?.Dispose();
+			}
+			SendReplicatedVars(packet.connection);
 		}
-		finally
-		{
-			((IDisposable)val)?.Dispose();
-		}
-		SendReplicatedVars(packet.connection);
 	}
 
 	private void AddPartyMembersToTeam(Network.Connection connection, PartyData party)

@@ -71,8 +71,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Header("Terrain source")]
 	public TerrainSource Source;
 
-	[Header("Procedural (real Rust base heightmap)")]
 	[Tooltip("World seed fed to the real generator. 0 = auto.")]
+	[Header("Procedural (real Rust base heightmap)")]
 	public uint Seed;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -130,8 +130,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Procedural-generation scene the one-click 'Bake pre-cliff T0' button drives to capture T0. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene. Only used by the editor bake button.")]
 	public string GenerationScenePath;
 
-	[Header("Placement")]
 	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
+	[Header("Placement")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]

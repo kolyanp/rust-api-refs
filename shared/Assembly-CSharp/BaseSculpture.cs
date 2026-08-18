@@ -20,8 +20,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private Action resetBlockExcludeLayersAction;
 
-	[SerializeField]
 	[Header("BaseSculpture")]
+	[SerializeField]
 	private MeshFilter targetMesh;
 
 	[SerializeField]
@@ -54,8 +54,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	[SerializeField]
 	private CapsuleCollider playerPushCollider;
 
-	[SerializeField]
 	[Header("Mesh Painting")]
+	[SerializeField]
 	private GameObjectRef meshPaintDialogueRef;
 
 	[SerializeField]
@@ -324,8 +324,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_LockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player))
@@ -378,9 +378,9 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ServerUpdateProcessQueue.Clear();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	private void SV_SendSculptureUpdate(RPCMessage msg)
 	{
 		if (msg.read.Length > 2000000 || !CanUpdateSculpture(msg.player) || !msg.read.TemporaryBytesWithSize(out var buffer, out var size))

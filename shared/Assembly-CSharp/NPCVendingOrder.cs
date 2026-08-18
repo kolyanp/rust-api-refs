@@ -23,8 +23,8 @@ public class NPCVendingOrder : ScriptableObject
 
 		public bool currencyAsBP;
 
-		[FormerlySerializedAs("initialStock")]
 		[Tooltip("Most units of this order the machine will hold, both when the orders are installed and when it refills. Leave at -1 to use the machine's own Starting Stock.")]
+		[FormerlySerializedAs("initialStock")]
 		public int maxStock = -1;
 
 		public int refillAmount = 1;
@@ -39,8 +39,8 @@ public class NPCVendingOrder : ScriptableObject
 	{
 		public bool useRandom;
 
-		[Range(0f, 1f)]
 		[Tooltip("The higher this number, the more likely this will be chosen")]
+		[Range(0f, 1f)]
 		public float weight;
 
 		[Tooltip("Minimum price for the currency item")]
@@ -49,8 +49,8 @@ public class NPCVendingOrder : ScriptableObject
 		[Tooltip("Maximum price for the currency item")]
 		public int maxPrice;
 
-		[Range(0f, 1f)]
 		[Tooltip("Chance for a very low price to occur (0 to 1)")]
+		[Range(0f, 1f)]
 		public float veryLowPriceChance;
 
 		[Tooltip("Minimum very low price")]

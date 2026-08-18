@@ -112,8 +112,8 @@ public class MedicalTool : AttackEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void UseOther(RPCMessage msg)
 	{
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)

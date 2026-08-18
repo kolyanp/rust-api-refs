@@ -52,8 +52,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public float lastDecayTick;
 
-	[SerializeField]
 	[Header("Train Car")]
+	[SerializeField]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -131,8 +131,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public ParticleSystem frontCouplingChangedFx;
 
-	[FormerlySerializedAs("rearCoupleFx")]
 	[SerializeField]
+	[FormerlySerializedAs("rearCoupleFx")]
 	public ParticleSystem rearCouplingChangedFx;
 
 	[FormerlySerializedAs("fxCoupling")]
@@ -142,12 +142,12 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	private float decayTimeMultiplier = 1f;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public Vector3 frontBogieLocalOffset;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public Vector3 rearBogieLocalOffset;
 
 	[SerializeField]
@@ -456,8 +456,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

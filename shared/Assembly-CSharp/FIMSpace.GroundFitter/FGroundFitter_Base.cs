@@ -7,9 +7,9 @@ namespace FIMSpace.GroundFitter;
 
 public abstract class FGroundFitter_Base : MonoBehaviour
 {
+	[Space(4f, order = 1)]
 	[Range(1f, 30f)]
 	[Tooltip("How quick rotation should be corrected to target")]
-	[Space(4f, order = 1)]
 	[Header("> Main Variables <", order = 0)]
 	public float FittingSpeed;
 
@@ -26,28 +26,28 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Tooltip("If you want this script only to change your object's rotation and do nothing with position, untoggle this")]
 	public bool GlueToGround;
 
-	[Range(0f, 1f)]
 	[Space(4f, order = 1)]
+	[Range(0f, 1f)]
 	[Header("> Tweaking Settings <", order = 0)]
 	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
 	public float MildForwardValue;
 
-	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
 	[Range(0f, 90f)]
+	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
 	public float MaxForwardRotation;
 
-	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
 	[Range(0f, 1f)]
+	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
 	[Space(5f)]
 	public float MildHorizontalValue;
 
-	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	[Range(0f, 90f)]
+	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	public float MaxHorizontalRotation;
 
+	[Header("> Advanced settings <", order = 0)]
 	[Space(4f, order = 1)]
 	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
-	[Header("> Advanced settings <", order = 0)]
 	public float RaycastHeightOffset;
 
 	[Tooltip("How far ray should cast to check if ground is under feet")]

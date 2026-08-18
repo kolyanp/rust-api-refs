@@ -10,8 +10,8 @@ public static class JsonSettingsBootstrap
 {
 	private static bool registered;
 
-	[RuntimeInitializeOnLoadMethod(/*Could not decode attribute arguments.*/)]
 	[Preserve]
+	[RuntimeInitializeOnLoadMethod(/*Could not decode attribute arguments.*/)]
 	private static void RegisterUnityConverters()
 	{
 		if (registered)

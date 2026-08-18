@@ -182,10 +182,10 @@ public class MixingTable : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SV_FillInventoryForRecipe(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null)

@@ -67,8 +67,8 @@ public class BaseMelee : AttackEntity
 
 	public List<MaterialFX> materialStrikeFX = new List<MaterialFX>();
 
-	[Range(0f, 1f)]
 	[Header("Other")]
+	[Range(0f, 1f)]
 	public float heartStress = 0.5f;
 
 	public ResourceDispenser.GatherProperties gathering;
@@ -139,34 +139,37 @@ public class BaseMelee : AttackEntity
 				}
 				using (TimeWarning.New("CLProject"))
 				{
-					using (TimeWarning.New("Conditions"))
+					using (msg.read.UseRepeatedElementLimit(1))
 					{
-						if (!RPC_Server.FromOwner.Test(3168282921u, "CLProject", this, player))
+						using (TimeWarning.New("Conditions"))
 						{
-							return true;
-						}
-						if (!RPC_Server.IsActiveItem.Test(3168282921u, "CLProject", this, player))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg3 = new RPCMessage
+							if (!RPC_Server.FromOwner.Test(3168282921u, "CLProject", this, player))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							CLProject(msg3);
+								return true;
+							}
+							if (!RPC_Server.IsActiveItem.Test(3168282921u, "CLProject", this, player))
+							{
+								return true;
+							}
 						}
-					}
-					catch (Exception ex2)
-					{
-						Debug.LogException(ex2);
-						player.Kick("RPC Error in CLProject");
+						try
+						{
+							using (TimeWarning.New("Call"))
+							{
+								RPCMessage msg3 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								CLProject(msg3);
+							}
+						}
+						catch (Exception ex2)
+						{
+							Debug.LogException(ex2);
+							player.Kick("RPC Error in CLProject");
+						}
 					}
 				}
 				return true;
@@ -219,9 +222,9 @@ public class BaseMelee : AttackEntity
 		return player.GetInheritedThrowVelocity(direction);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	private void CLEntityThrow(RPCMessage msg)
 	{
 		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
@@ -320,9 +323,10 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.MaxRepeatedElements(1)]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)

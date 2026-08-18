@@ -17,8 +17,12 @@ public class CopyPasteEntity : PointEntity
 
 	public const string FileExtension = ".data";
 
-	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
+	public unsafe override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("CopyPasteEntity.OnRpcMessage"))
 		{
 			if (rpc == 2913956655u && (Object)(object)player != (Object)null)
@@ -30,23 +34,36 @@ public class CopyPasteEntity : PointEntity
 				}
 				using (TimeWarning.New("Paste"))
 				{
+					FieldOrderValidationScope val = msg.read.SuspendProtoFieldOrderValidation();
 					try
 					{
-						using (TimeWarning.New("Call"))
+						FieldOperationLimitSuspensionScope val2 = msg.read.SuspendProtoFieldOperationLimit();
+						try
 						{
-							RPCMessage rpc2 = new RPCMessage
+							using (TimeWarning.New("Call"))
 							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Paste(rpc2);
+								RPCMessage rpc2 = new RPCMessage
+								{
+									connection = msg.connection,
+									player = player,
+									read = msg.read
+								};
+								Paste(rpc2);
+							}
+						}
+						catch (Exception ex)
+						{
+							Debug.LogException(ex);
+							player.Kick("RPC Error in Paste");
+						}
+						finally
+						{
+							((IDisposable)(*(FieldOperationLimitSuspensionScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
 						}
 					}
-					catch (Exception ex)
+					finally
 					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in Paste");
+						((IDisposable)(*(FieldOrderValidationScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
 					}
 				}
 				return true;
@@ -89,7 +106,9 @@ public class CopyPasteEntity : PointEntity
 			select Path.GetFileNameWithoutExtension(x)).ToArray();
 	}
 
+	[RPC_Server.IgnoreProtoFieldOperationLimit]
 	[RPC_Server]
+	[RPC_Server.IgnoreProtoFieldOrder]
 	public void Paste(RPCMessage rpc)
 	{
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
