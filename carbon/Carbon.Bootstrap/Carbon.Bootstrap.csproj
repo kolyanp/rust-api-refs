@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>15.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -27,7 +27,7 @@
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="Facepunch.System" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Carbon.Profiler">
       <HintPath>../../../../../../../tmp/carbon-extract/carbon/managed/Carbon.Profiler.dll</HintPath>

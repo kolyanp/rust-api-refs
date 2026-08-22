@@ -89,21 +89,21 @@ public class InternalCallHook
 
 	public static void GeneratePartial(CompilationUnitSyntax input, out CompilationUnitSyntax output, CSharpParseOptions options, string fileName, List<ClassDeclarationSyntax> classes = null, string debugOutputPath = null, List<string> usingsList = null, IEnumerable<MetadataReference> references = null)
 	{
-		BaseNamespaceDeclarationSyntax @namespace;
+		BaseNamespaceDeclarationSyntax @namespace = null;
 		if (classes == null)
 		{
 			classes = new List<ClassDeclarationSyntax>();
 			FindPluginInfo(input, out @namespace, out var _, out var _, classes);
 		}
-		else
-		{
-			SyntaxNode parent = ((SyntaxNode)classes[0]).Parent;
-			@namespace = (BaseNamespaceDeclarationSyntax)(object)((parent is BaseNamespaceDeclarationSyntax) ? parent : null);
-		}
 		if (classes.Count == 0)
 		{
 			output = null;
 			return;
+		}
+		if (@namespace == null)
+		{
+			SyntaxNode parent = ((SyntaxNode)classes[0]).Parent;
+			@namespace = (BaseNamespaceDeclarationSyntax)(object)((parent is BaseNamespaceDeclarationSyntax) ? parent : null);
 		}
 		InternalCallHookTypeModel internalCallHookTypeModel = CreateModel(input, @namespace, classes, usingsList, references, options);
 		if (internalCallHookTypeModel.Methods.Count == 0)
@@ -118,19 +118,19 @@ public class InternalCallHook
 
 	private static InternalCallHookTypeModel CreateModel(CompilationUnitSyntax input, BaseNamespaceDeclarationSyntax @namespace, List<ClassDeclarationSyntax> classes, List<string> usingsList, IEnumerable<MetadataReference> references, CSharpParseOptions options)
 	{
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0204: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0334: Unknown result type (might be due to invalid IL or missing references)
 		InternalCallHookTypeModel obj = new InternalCallHookTypeModel
 		{
 			NamespaceName = (((@namespace != null) ? ((object)@namespace.Name).ToString() : null) ?? string.Empty)
@@ -139,23 +139,36 @@ public class InternalCallHook
 		obj.TypeName = ((SyntaxToken)(ref identifier)).ValueText;
 		obj.BaseKind = "plugin";
 		obj.VersionOwnerExpression = "base";
-		InternalCallHookTypeModel internalCallHookTypeModel = obj;
-		internalCallHookTypeModel.GlobalUsings.AddRange(((IEnumerable<UsingDirectiveSyntax>)(object)input.Usings).Select((UsingDirectiveSyntax x) => ((object)x).ToString()));
+		InternalCallHookTypeModel model = obj;
+		model.GlobalUsings.AddRange(((IEnumerable<UsingDirectiveSyntax>)(object)input.Usings).Select((UsingDirectiveSyntax x) => ((object)x).ToString()));
 		if (usingsList != null)
 		{
-			internalCallHookTypeModel.GlobalUsings.AddRange(usingsList);
+			model.GlobalUsings.AddRange(usingsList);
 		}
 		if (@namespace != null)
 		{
-			internalCallHookTypeModel.NamespaceUsings.AddRange(((IEnumerable<UsingDirectiveSyntax>)(object)@namespace.Usings).Select((UsingDirectiveSyntax x) => ((object)x).ToString()));
+			model.NamespaceUsings.AddRange(((IEnumerable<UsingDirectiveSyntax>)(object)@namespace.Usings).Select((UsingDirectiveSyntax x) => ((object)x).ToString()));
 		}
-		MethodDeclarationSyntax[] array = classes.SelectMany((ClassDeclarationSyntax x) => ((SyntaxNode)x).ChildNodes().OfType<MethodDeclarationSyntax>()).Where(IsHookableMethod).OrderBy(delegate(MethodDeclarationSyntax x)
+		MethodDeclarationSyntax[] array = classes.Where(delegate(ClassDeclarationSyntax x)
 		{
 			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-			SyntaxToken identifier2 = x.Identifier;
-			return ((SyntaxToken)(ref identifier2)).ValueText;
-		})
+			SyntaxToken identifier2 = ((BaseTypeDeclarationSyntax)x).Identifier;
+			if (((SyntaxToken)(ref identifier2)).ValueText == model.TypeName)
+			{
+				SyntaxNode parent = ((SyntaxNode)x).Parent;
+				SyntaxNode obj2 = ((parent is BaseNamespaceDeclarationSyntax) ? parent : null);
+				return (((obj2 != null) ? ((object)((BaseNamespaceDeclarationSyntax)obj2).Name).ToString() : null) ?? string.Empty) == model.NamespaceName;
+			}
+			return false;
+		}).SelectMany((ClassDeclarationSyntax x) => ((SyntaxNode)x).ChildNodes().OfType<MethodDeclarationSyntax>()).Where(IsHookableMethod)
+			.OrderBy(delegate(MethodDeclarationSyntax x)
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				SyntaxToken identifier2 = x.Identifier;
+				return ((SyntaxToken)(ref identifier2)).ValueText;
+			})
 			.ToArray();
 		HashSet<string> refLikeMethodKeys = GetRefLikeMethodKeys(input, references, options, array);
 		MethodDeclarationSyntax[] array2 = array;
@@ -181,7 +194,11 @@ public class InternalCallHook
 				ParameterSyntax current = enumerator.Current;
 				if (((BaseParameterSyntax)current).Type != null)
 				{
-					bool flag = ((IEnumerable<SyntaxToken>)(object)((BaseParameterSyntax)current).Modifiers).Any((SyntaxToken x) => CSharpExtensions.IsKind(x, (SyntaxKind)8361));
+					bool flag = ((IEnumerable<SyntaxToken>)(object)((BaseParameterSyntax)current).Modifiers).Any(delegate(SyntaxToken x)
+					{
+						//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+						return CSharpExtensions.IsKind(x, (SyntaxKind)8361);
+					});
 					bool flag2 = current.Default != null || ((BaseParameterSyntax)current).Type is NullableTypeSyntax;
 					List<InternalCallHookParameterModel> parameters = internalCallHookMethodModel2.Parameters;
 					InternalCallHookParameterModel internalCallHookParameterModel = new InternalCallHookParameterModel();
@@ -189,15 +206,19 @@ public class InternalCallHook
 					TupleTypeSyntax val2 = (TupleTypeSyntax)(object)((type is TupleTypeSyntax) ? type : null);
 					internalCallHookParameterModel.TypeName = ((val2 != null) ? ("(" + string.Join(", ", ((IEnumerable<TupleElementSyntax>)(object)val2.Elements).Select((TupleElementSyntax e) => ((object)e.Type).ToString())) + ")") : ((object)((BaseParameterSyntax)current).Type).ToString()).Replace("global::", string.Empty);
 					internalCallHookParameterModel.IsOut = flag;
-					internalCallHookParameterModel.IsRef = ((IEnumerable<SyntaxToken>)(object)((BaseParameterSyntax)current).Modifiers).Any((SyntaxToken x) => CSharpExtensions.IsKind(x, (SyntaxKind)8360));
+					internalCallHookParameterModel.IsRef = ((IEnumerable<SyntaxToken>)(object)((BaseParameterSyntax)current).Modifiers).Any(delegate(SyntaxToken x)
+					{
+						//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+						return CSharpExtensions.IsKind(x, (SyntaxKind)8360);
+					});
 					internalCallHookParameterModel.UseInlineDefaultExpression = flag2;
 					internalCallHookParameterModel.RequiresGuard = !flag2 && !flag;
 					parameters.Add(internalCallHookParameterModel);
 				}
 			}
-			internalCallHookTypeModel.Methods.Add(internalCallHookMethodModel2);
+			model.Methods.Add(internalCallHookMethodModel2);
 		}
-		return internalCallHookTypeModel;
+		return model;
 	}
 
 	private static bool IsHookableMethod(MethodDeclarationSyntax method)
@@ -207,7 +228,16 @@ public class InternalCallHook
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
 		SyntaxTokenList modifiers = ((MemberDeclarationSyntax)method).Modifiers;
-		if (((SyntaxTokenList)(ref modifiers)).Count == 0 || ((IEnumerable<SyntaxToken>)(object)((MemberDeclarationSyntax)method).Modifiers).All((SyntaxToken modifier) => !CSharpExtensions.IsKind(modifier, (SyntaxKind)8343) && !CSharpExtensions.IsKind(modifier, (SyntaxKind)8347)) || ((IEnumerable<AttributeListSyntax>)(object)((MemberDeclarationSyntax)method).AttributeLists).Any((AttributeListSyntax x) => ((IEnumerable<AttributeSyntax>)(object)x.Attributes).Any((AttributeSyntax y) => ((object)y.Name).ToString() == "HookMethod")))
+		if (((SyntaxTokenList)(ref modifiers)).Count == 0 || ((IEnumerable<SyntaxToken>)(object)((MemberDeclarationSyntax)method).Modifiers).All(delegate(SyntaxToken modifier)
+		{
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+			return !CSharpExtensions.IsKind(modifier, (SyntaxKind)8343) && !CSharpExtensions.IsKind(modifier, (SyntaxKind)8347);
+		}) || ((IEnumerable<AttributeListSyntax>)(object)((MemberDeclarationSyntax)method).AttributeLists).Any(delegate(AttributeListSyntax x)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return ((IEnumerable<AttributeSyntax>)(object)x.Attributes).Any((AttributeSyntax y) => ((object)y.Name).ToString() == "HookMethod");
+		}))
 		{
 			return method.TypeParameterList == null;
 		}
@@ -216,8 +246,6 @@ public class InternalCallHook
 
 	private static HashSet<string> GetRefLikeMethodKeys(CompilationUnitSyntax input, IEnumerable<MetadataReference> references, CSharpParseOptions options, IReadOnlyCollection<MethodDeclarationSyntax> methods)
 	{
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b5: Expected O, but got Unknown
 		if (methods.Count == 0 || !methods.Any(CanHaveRefLikeSignature) || references == null || (ParseOptions)(object)options == (ParseOptions)null)
@@ -269,10 +297,9 @@ public class InternalCallHook
 
 	private static bool HasRefLikeSignature(IMethodSymbol method)
 	{
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		if (!method.ReturnType.IsRefLikeType)
 		{
-			return ImmutableArrayExtensions.Any<IParameterSymbol>(method.Parameters, (Func<IParameterSymbol, bool>)((IParameterSymbol x) => x.Type.IsRefLikeType));
+			return method.Parameters.Any((IParameterSymbol x) => x.Type.IsRefLikeType);
 		}
 		return true;
 	}
@@ -358,7 +385,11 @@ public class InternalCallHook
 		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		AttributeSyntax val = ((IEnumerable<AttributeListSyntax>)(object)((MemberDeclarationSyntax)method).AttributeLists).Select((AttributeListSyntax x) => ((IEnumerable<AttributeSyntax>)(object)x.Attributes).FirstOrDefault((AttributeSyntax val4) => ((object)val4.Name).ToString() == "HookMethod")).FirstOrDefault();
+		AttributeSyntax val = ((IEnumerable<AttributeListSyntax>)(object)((MemberDeclarationSyntax)method).AttributeLists).Select(delegate(AttributeListSyntax x)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return ((IEnumerable<AttributeSyntax>)(object)x.Attributes).FirstOrDefault((AttributeSyntax val4) => ((object)val4.Name).ToString() == "HookMethod");
+		}).FirstOrDefault();
 		string text;
 		if (val != null)
 		{
@@ -422,7 +453,11 @@ public class InternalCallHook
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
-		AttributeSyntax? obj = ((IEnumerable<AttributeListSyntax>)(object)((MemberDeclarationSyntax)method).AttributeLists).SelectMany((AttributeListSyntax x) => (IEnumerable<AttributeSyntax>)(object)x.Attributes).FirstOrDefault((AttributeSyntax x) => ((object)x.Name).ToString() == "Conditional");
+		AttributeSyntax? obj = ((IEnumerable<AttributeListSyntax>)(object)((MemberDeclarationSyntax)method).AttributeLists).SelectMany(delegate(AttributeListSyntax x)
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return (IEnumerable<AttributeSyntax>)(object)x.Attributes;
+		}).FirstOrDefault((AttributeSyntax x) => ((object)x.Name).ToString() == "Conditional");
 		object obj2;
 		if (obj == null)
 		{
@@ -436,27 +471,49 @@ public class InternalCallHook
 		return ((string)obj2)?.Replace("\"", string.Empty) ?? string.Empty;
 	}
 
+	private static bool IsInfoAttribute(NameSyntax name)
+	{
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		QualifiedNameSyntax val = (QualifiedNameSyntax)(object)((name is QualifiedNameSyntax) ? name : null);
+		if (val == null)
+		{
+			AliasQualifiedNameSyntax val2 = (AliasQualifiedNameSyntax)(object)((name is AliasQualifiedNameSyntax) ? name : null);
+			if (val2 == null)
+			{
+				SimpleNameSyntax val3 = (SimpleNameSyntax)(object)((name is SimpleNameSyntax) ? name : null);
+				if (val3 != null)
+				{
+					SyntaxToken identifier = val3.Identifier;
+					string valueText = ((SyntaxToken)(ref identifier)).ValueText;
+					return (valueText == "Info" || valueText == "InfoAttribute") ? true : false;
+				}
+				return false;
+			}
+			return IsInfoAttribute((NameSyntax)(object)val2.Name);
+		}
+		return IsInfoAttribute((NameSyntax)(object)val.Right);
+	}
+
 	public static bool FindPluginInfo(CompilationUnitSyntax input, out BaseNamespaceDeclarationSyntax @namespace, out int namespaceIndex, out int classIndex, List<ClassDeclarationSyntax> classes)
 	{
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
 		ClassDeclarationSyntax val = null;
 		@namespace = null;
 		namespaceIndex = 0;
@@ -477,29 +534,39 @@ public class InternalCallHook
 				{
 					continue;
 				}
-				if (((MemberDeclarationSyntax)val5).AttributeLists.Count > 0)
+				bool flag = false;
+				Enumerator<AttributeListSyntax> enumerator = ((MemberDeclarationSyntax)val5).AttributeLists.GetEnumerator();
+				while (enumerator.MoveNext())
 				{
-					Enumerator<AttributeListSyntax> enumerator = ((MemberDeclarationSyntax)val5).AttributeLists.GetEnumerator();
-					while (enumerator.MoveNext())
+					AttributeListSyntax current = enumerator.Current;
+					Enumerator<AttributeSyntax> enumerator2 = current.Attributes.GetEnumerator();
+					while (enumerator2.MoveNext())
 					{
-						AttributeListSyntax current = enumerator.Current;
-						NameSyntax name = current.Attributes[0].Name;
-						IdentifierNameSyntax val6 = (IdentifierNameSyntax)(object)((name is IdentifierNameSyntax) ? name : null);
-						if (val6 != null)
+						AttributeSyntax current2 = enumerator2.Current;
+						if (IsInfoAttribute(current2.Name))
 						{
-							SyntaxToken identifier = ((SimpleNameSyntax)val6).Identifier;
-							if (((SyntaxToken)(ref identifier)).Text.Equals("Info"))
-							{
-								namespaceIndex = i;
-								@namespace = val3;
-								classIndex = j;
-								val = val5;
-								classes?.Insert(0, val);
-							}
+							namespaceIndex = i;
+							@namespace = val3;
+							classIndex = j;
+							val = val5;
+							flag = true;
+							break;
 						}
 					}
+					if (flag)
+					{
+						break;
+					}
 				}
-				else if (((IEnumerable<SyntaxToken>)(object)((MemberDeclarationSyntax)val5).Modifiers).Any((SyntaxToken x) => CSharpExtensions.IsKind(x, (SyntaxKind)8406)))
+				if (flag)
+				{
+					classes?.Insert(0, val);
+				}
+				else if (((IEnumerable<SyntaxToken>)(object)((MemberDeclarationSyntax)val5).Modifiers).Any(delegate(SyntaxToken x)
+				{
+					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+					return CSharpExtensions.IsKind(x, (SyntaxKind)8406);
+				}))
 				{
 					classes?.Add(val5);
 				}

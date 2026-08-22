@@ -1830,11 +1830,11 @@ public class LUI : IDisposable
 
 	public string lastName = string.Empty;
 
-	public static readonly Vector2 defaultPivot = new Vector2(0.5f, 0.5f);
+	public static readonly Vector2 defaultPivot;
 
-	public static readonly Vector2 defaultFade = new Vector2(0f, 1f);
+	public static readonly Vector2 defaultFade;
 
-	public static readonly Vector2 defaultCellSize = new Vector2(100f, 100f);
+	public static readonly Vector2 defaultCellSize;
 
 	private ImageDatabaseModule imgDb { get; }
 
@@ -2698,5 +2698,18 @@ public class LUI : IDisposable
 			CUI.Handler.FontTypes.PressStart => "pressstart2p-regular.ttf", 
 			_ => "robotocondensed-regular.ttf", 
 		};
+	}
+
+	static LUI()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		defaultPivot = new Vector2(0.5f, 0.5f);
+		defaultFade = new Vector2(0f, 1f);
+		defaultCellSize = new Vector2(100f, 100f);
 	}
 }

@@ -167,6 +167,7 @@ public class Category_Static
 		})]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Info("Called whenever a Carbon server command is called.")]
+		[Return(typeof(void))]
 		public class IOnConsoleCommand : Patch
 		{
 			private static string Space = " ";
@@ -269,6 +270,7 @@ public class Category_Static
 		[Parameter("ip", typeof(IPAddress), false)]
 		[Parameter("command", typeof(string), false)]
 		[Parameter("arguments", typeof(string[]), false)]
+		[Return(typeof(void))]
 		[OxideCompatible]
 		public class IOnRconCommand : Patch
 		{
@@ -373,6 +375,7 @@ public class Category_Static
 		[Info("Called after the server startup has been completed and is awaiting connections.")]
 		[Info("Also called for plugins that are hotloaded while the server is already started running.")]
 		[Parameter("initialized", typeof(bool), true)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class IOnServerInitialized : Patch
 		{
@@ -412,7 +415,11 @@ public class Category_Static
 						await HandleHookable(module);
 					}
 				}
-				foreach (RustPlugin item in ((IEnumerable<Package>)ModLoader.Packages).SelectMany((Package package) => package.Plugins))
+				foreach (RustPlugin item in ((IEnumerable<Package>)ModLoader.Packages).SelectMany(delegate(Package package)
+				{
+					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+					return package.Plugins;
+				}))
 				{
 					await HandleHookable((BaseHookable)(object)item);
 				}

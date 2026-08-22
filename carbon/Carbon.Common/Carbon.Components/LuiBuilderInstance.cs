@@ -9,15 +9,15 @@ public struct LuiBuilderInstance : IDisposable
 {
 	private static int _segmentLimit = 100;
 
-	private LUIBuilder.WriteArray[] _segments = ArrayPool<LUIBuilder.WriteArray>.Shared.Rent(_segmentLimit);
+	private LUIBuilder.WriteArray[] _segments;
 
-	private int _segmentCount = 0;
+	private int _segmentCount;
 
 	private const int maxSegmentSize = 4096;
 
-	public readonly char[] _charBuffer = new char[4096];
+	public readonly char[] _charBuffer;
 
-	public int _charIndex = 0;
+	public int _charIndex;
 
 	private string GetFieldName(LuiCompType type)
 	{
@@ -85,6 +85,10 @@ public struct LuiBuilderInstance : IDisposable
 		//IL_126c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1253: Unknown result type (might be due to invalid IL or missing references)
 		//IL_1283: Unknown result type (might be due to invalid IL or missing references)
+		_segments = ArrayPool<LUIBuilder.WriteArray>.Shared.Rent(_segmentLimit);
+		_segmentCount = 0;
+		_charBuffer = new char[4096];
+		_charIndex = 0;
 		this.WriteStartArray();
 		int count = cui.elements.Count;
 		int num = 0;
@@ -845,7 +849,7 @@ public struct LuiBuilderInstance : IDisposable
 						num2++;
 						bool flag = luiScrollComp.anchor != LuiPosition.Full;
 						bool flag2 = luiScrollComp.offset != LuiOffset.None;
-						if (flag || flag2 || luiScrollComp.pivot != LUI.defaultPivot)
+						if ((flag | flag2) || luiScrollComp.pivot != LUI.defaultPivot)
 						{
 							this.WriteComma();
 							this.WriteStartObject("contentTransform");
@@ -867,7 +871,7 @@ public struct LuiBuilderInstance : IDisposable
 							}
 							if (luiScrollComp.pivot != LUI.defaultPivot)
 							{
-								if (flag || flag2)
+								if (flag | flag2)
 								{
 									this.WriteComma();
 								}

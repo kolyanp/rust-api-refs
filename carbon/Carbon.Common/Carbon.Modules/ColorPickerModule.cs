@@ -140,10 +140,10 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 		CUI.Pair<string, CuiElement> pair4 = cui.CreatePanel(container, pair2, "0.1 0.1 0.1 0.5", null, 0.015f, 0.14f, 0.085f, 0.15f, 0f, 0f, -30f, -30f);
 		cui.CreateProtectedInputField(container, pair4, "1 1 1 1", $"{storage}", 10, 0, readOnly: false, 0.075f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, "carbonuicolorpicker.pickalpha", (TextAnchor)5, CUI.Handler.FontTypes.RobotoCondensedRegular, autoFocus: false, hudMenuInput: false, (LineType)0, 0f, 0f, needsCursor: false, needsKeyboard: true);
 		CUI.Pair<string, CuiElement> pair5 = cui.CreatePanel(container, pair2, "0 0 0 0", null, 0.175f, 0.8f, 0.1f, 0.9f, 0f, 0f, 0f, 0f, blur: false, 0f, 0f, needsCursor: false, needsKeyboard: false, null, null, outlineUseGraphicAlpha: false, "carbonuicolorpicker.picker");
-		for (float num3 = 0f; num3 < num; num3 += 1f)
+		for (float num3 = 0f; num3 < num; num3++)
 		{
 			Color val = Color.Lerp(blue, green, num3.Scale(0f, num, 0f, 1f));
-			for (float num4 = 0f; num4 < num; num4 += 1f)
+			for (float num4 = 0f; num4 < num; num4++)
 			{
 				Color val2 = Color.Lerp(red, yellow, (num4 + num3).Scale(0f, oldMax, 0f, 1f));
 				Color color = Color.Lerp(val2, val, num4.Scale(0f, num, 0f, 1f)) * storage2;
@@ -152,14 +152,14 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 			}
 		}
 		int num5 = 0;
-		for (float num6 = 0f; num6 < num; num6 += 1f)
+		for (float num6 = 0f; num6 < num; num6++)
 		{
 			Color color2 = Color.Lerp(Color.black, Color.white, num6.Scale(0f, num, 0f, 1f));
 			DrawColor(cui, container, playerSession, num, color2, pair5, num2 * num6, 0f - num2 * (num + 1f), "brightness", (!storage3) ? CurrentAnimation : 0f, num5);
 			CurrentAnimation += AnimationLength;
 			num5++;
 		}
-		for (float num7 = 0f; num7 < num; num7 += 1f)
+		for (float num7 = 0f; num7 < num; num7++)
 		{
 			Color color3 = Color.Lerp(Color.white, Color.black, num7.Scale(0f, num, 0f, 1f));
 			DrawColor(cui, container, playerSession, num, color3, pair5, num2 * (num + 1f), 0f - num2 * num7, "color", (!storage3) ? CurrentAnimation : 0f);
@@ -305,7 +305,7 @@ public class ColorPickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData
 				flag = ((obj2 is Action<string, string, float> || obj2 == null) ? true : false);
 				bool flag4 = flag;
 				Action<string, string, float> onColorPicked = (flag4 ? ((Action<string, string, float>)(obj2 ?? null)) : null);
-				if (flag3 && flag4)
+				if (flag3 & flag4)
 				{
 					Draw(player, onColorPicked);
 					return null;

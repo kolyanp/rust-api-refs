@@ -236,7 +236,7 @@ public class Vault
 		}
 	}
 
-	public static readonly string Global = "global";
+	public static readonly string Global;
 
 	private const int DEFAULT_KEY_BIT_SIZE = 256;
 
@@ -246,9 +246,9 @@ public class Vault
 
 	private const int SALT_SIZE = 16;
 
-	private static readonly SecureRandom RANDOM = new SecureRandom();
+	private static readonly SecureRandom RANDOM;
 
-	private static readonly List<Factory> FACTORIES = new List<Factory>();
+	private static readonly List<Factory> FACTORIES;
 
 	private static string CARBON_ID_CACHE;
 
@@ -388,8 +388,7 @@ public class Vault
 		uint num = Pool.Get(name);
 		byte[] salt = null;
 		byte[] bytes = Encoding.UTF8.GetBytes(value);
-		Item value2;
-		bool flag = factory2.HasItem(num, out value2);
+		bool flag = factory2.HasItem(num, out var value2);
 		if (value2 == null)
 		{
 			value2 = Pool.Get<Item>();
@@ -577,5 +576,14 @@ public class Vault
 			}
 		}
 		return null;
+	}
+
+	static Vault()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		Global = "global";
+		RANDOM = new SecureRandom();
+		FACTORIES = new List<Factory>();
 	}
 }

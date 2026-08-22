@@ -20,7 +20,14 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 
 	public override string Name => "AdminExtensions";
 
-	public override VersionNumber Version => new VersionNumber(1, 0, 0);
+	public override VersionNumber Version
+	{
+		get
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			return new VersionNumber(1, 0, 0);
+		}
+	}
 
 	public override Type Type => typeof(AdminExtensionsModule);
 
@@ -430,7 +437,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj2 is string || obj2 == null) ? true : false);
 				bool flag28 = flag;
 				string userid = (flag28 ? ((string)(obj2 ?? null)) : null);
-				if (flag27 && flag28)
+				if (flag27 & flag28)
 				{
 					return CanUserLogin(username, userid);
 				}
@@ -447,7 +454,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag26 = flag;
 				string[] args9 = (flag26 ? ((string[])(obj3 ?? null)) : null);
-				if (flag24 && flag25 && flag26)
+				if (flag24 & flag25 & flag26)
 				{
 					CmdBan(player9, cmd4, args9);
 					return null;
@@ -465,7 +472,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag14 = flag;
 				string[] args5 = (flag14 ? ((string[])(obj3 ?? null)) : null);
-				if (flag12 && flag13 && flag14)
+				if (flag12 & flag13 & flag14)
 				{
 					CmdBlind(player5, _2, args5);
 					return null;
@@ -483,7 +490,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag8 = flag;
 				string[] args3 = (flag8 ? ((string[])(obj3 ?? null)) : null);
-				if (flag6 && flag7 && flag8)
+				if (flag6 & flag7 & flag8)
 				{
 					CmdEmpower(player3, _, args3);
 					return null;
@@ -501,7 +508,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag31 = flag;
 				string[] args10 = (flag31 ? ((string[])(obj3 ?? null)) : null);
-				if (flag29 && flag30 && flag31)
+				if (flag29 & flag30 & flag31)
 				{
 					CmdKick(player10, cmd5, args10);
 					return null;
@@ -519,7 +526,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag11 = flag;
 				string[] args4 = (flag11 ? ((string[])(obj3 ?? null)) : null);
-				if (flag9 && flag10 && flag11)
+				if (flag9 & flag10 & flag11)
 				{
 					CmdLockPlayerInventory(player4, cmd2, args4);
 					return null;
@@ -537,7 +544,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag5 = flag;
 				string[] args2 = (flag5 ? ((string[])(obj3 ?? null)) : null);
-				if (flag3 && flag4 && flag5)
+				if (flag3 & flag4 & flag5)
 				{
 					CmdMute(player2, cmd, args2);
 					return null;
@@ -567,7 +574,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag37 = flag;
 				string[] args11 = (flag37 ? ((string[])(obj3 ?? null)) : null);
-				if (flag35 && flag36 && flag37)
+				if (flag35 & flag36 & flag37)
 				{
 					CmdPrivateMessage(player13, cmd6, args11);
 					return null;
@@ -585,7 +592,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag23 = flag;
 				string[] args8 = (flag23 ? ((string[])(obj3 ?? null)) : null);
-				if (flag21 && flag22 && flag23)
+				if (flag21 & flag22 & flag23)
 				{
 					CmdTeleportMarker(player8, _4, args8);
 					return null;
@@ -603,7 +610,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag20 = flag;
 				string[] args7 = (flag20 ? ((string[])(obj3 ?? null)) : null);
-				if (flag18 && flag19 && flag20)
+				if (flag18 & flag19 & flag20)
 				{
 					CmdToggleCadmin(player7, _3, args7);
 					return null;
@@ -621,7 +628,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag17 = flag;
 				string[] args6 = (flag17 ? ((string[])(obj3 ?? null)) : null);
-				if (flag15 && flag16 && flag17)
+				if (flag15 & flag16 & flag17)
 				{
 					CmdUnban(player6, cmd3, args6);
 					return null;
@@ -636,7 +643,7 @@ public class AdminExtensionsModule : CarbonModule<AdminExtensionsConfig, EmptyMo
 				flag = ((obj2 is MapNote || obj2 == null) ? true : false);
 				bool flag33 = flag;
 				MapNote note = ((!flag33) ? ((MapNote)null) : ((MapNote)(obj2 ?? null)));
-				if (flag32 && flag33)
+				if (flag32 & flag33)
 				{
 					OnMapMarkerAdded(player11, note);
 					return null;

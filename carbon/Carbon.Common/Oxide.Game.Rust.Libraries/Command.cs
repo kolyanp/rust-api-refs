@@ -211,7 +211,11 @@ public class Command : Library
 						((Option)(ref option)).FromRcon = FromRcon;
 						val.Option = option;
 						val.FullString = StringView.op_Implicit(text);
-						val.Args = args.Select((string x) => StringView.op_Implicit(x)).ToArray();
+						val.Args = args.Select(delegate(string x)
+						{
+							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+							return StringView.op_Implicit(x);
+						}).ToArray();
 						list.Add(val);
 					}
 					else

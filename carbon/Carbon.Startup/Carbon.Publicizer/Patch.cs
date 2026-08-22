@@ -181,6 +181,7 @@ public class Patch : IDisposable
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Expected O, but got Unknown
+		base._002Ector();
 		filePath = path;
 		fileName = name;
 		if (AssemblyResolver == null)

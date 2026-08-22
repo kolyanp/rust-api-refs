@@ -49,7 +49,14 @@ public sealed class HarmonyProfiler : IHarmonyModHooks
 		}
 	}
 
-	public static FacepunchBehaviour Runner => _runner ?? (_runner = (FacepunchBehaviour)(object)new GameObject("Profiler Runner").AddComponent<ProfilerRunner>());
+	public static FacepunchBehaviour Runner
+	{
+		get
+		{
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			return _runner ?? (_runner = (FacepunchBehaviour)(object)new GameObject("Profiler Runner").AddComponent<ProfilerRunner>());
+		}
+	}
 
 	public void OnLoaded(OnHarmonyModLoadedArgs args)
 	{

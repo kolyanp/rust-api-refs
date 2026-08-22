@@ -167,24 +167,17 @@ public class ScriptCompilationThread : BaseThreadedJob
 
 	private List<ClassDeclarationSyntax> ClassList = new List<ClassDeclarationSyntax>();
 
-	private static EmitOptions _emitOptions = new EmitOptions(false, (DebugInformationFormat)3, (string)null, (string)null, 0, 0uL, false, default(SubsystemVersion), (string)null, false, true, default(ImmutableArray<InstrumentationKind>), (HashAlgorithmName?)null, (Encoding)null, (Encoding)null);
+	private static EmitOptions _emitOptions;
 
-	private static ConcurrentDictionary<string, byte[]> _compilationCache = new ConcurrentDictionary<string, byte[]>();
+	private static ConcurrentDictionary<string, byte[]> _compilationCache;
 
-	private static ConcurrentDictionary<string, byte[]> _extensionCompilationCache = new ConcurrentDictionary<string, byte[]>();
+	private static ConcurrentDictionary<string, byte[]> _extensionCompilationCache;
 
-	private static Dictionary<string, PortableExecutableReference> _referenceCache = new Dictionary<string, PortableExecutableReference>();
+	private static Dictionary<string, PortableExecutableReference> _referenceCache;
 
-	private static Dictionary<string, PortableExecutableReference> _extensionReferenceCache = new Dictionary<string, PortableExecutableReference>();
+	private static Dictionary<string, PortableExecutableReference> _extensionReferenceCache;
 
-	private static readonly string[] _libraryDirectories = new string[5]
-	{
-		Defines.GetLibFolder(),
-		Defines.GetManagedFolder(),
-		Defines.GetRustManagedFolder(),
-		Defines.GetManagedModulesFolder(),
-		Defines.GetExtensionsFolder()
-	};
+	private static readonly string[] _libraryDirectories;
 
 	private static bool hasLoaded;
 
@@ -205,26 +198,20 @@ public class ScriptCompilationThread : BaseThreadedJob
 	private static byte[] _getPlugin(string name)
 	{
 		name = name.Replace(" ", string.Empty);
-		foreach (KeyValuePair<string, byte[]> item in _compilationCache)
+		if (!_compilationCache.TryGetValue(name, out var value))
 		{
-			if (item.Key == name)
-			{
-				return item.Value;
-			}
+			return null;
 		}
-		return null;
+		return value;
 	}
 
 	private static byte[] _getExtensionPlugin(string name)
 	{
-		foreach (KeyValuePair<string, byte[]> item in _extensionCompilationCache)
+		if (!_extensionCompilationCache.TryGetValue(name, out var value))
 		{
-			if (item.Key == name)
-			{
-				return item.Value;
-			}
+			return null;
 		}
-		return null;
+		return value;
 	}
 
 	private static void _overridePlugin(string name, byte[] pluginAssembly)
@@ -458,8 +445,13 @@ public class ScriptCompilationThread : BaseThreadedJob
 
 	public override void Start()
 	{
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		if (base.IsAborted)
+		{
+			base.IsDone = true;
+			return;
+		}
 		IsCompileTestMode = Community.Runtime?.Config?.Compiler?.CompileTestMode == true;
 		PrewarmInternalHookGenerator();
 		references = _addReferences();
@@ -527,64 +519,60 @@ public class ScriptCompilationThread : BaseThreadedJob
 
 	public override void ThreadFunction()
 	{
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03dd: Expected O, but got Unknown
-		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0214: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0463: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0468: Unknown result type (might be due to invalid IL or missing references)
-		//IL_046c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0471: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04f6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04fb: Invalid comparison between Unknown and I4
+		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03d7: Expected O, but got Unknown
+		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0235: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0500: Invalid comparison between Unknown and I4
-		//IL_0597: Unknown result type (might be due to invalid IL or missing references)
-		//IL_059c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05d6: Expected O, but got Unknown
-		//IL_051f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0524: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0531: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0536: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0554: Unknown result type (might be due to invalid IL or missing references)
-		//IL_055e: Expected O, but got Unknown
-		if (Sources.TrueForAll((ISource x) => string.IsNullOrEmpty(x.Content)))
+		//IL_0502: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0504: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0507: Invalid comparison between Unknown and I4
+		//IL_0509: Unknown result type (might be due to invalid IL or missing references)
+		//IL_050c: Invalid comparison between Unknown and I4
+		//IL_05a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05e2: Expected O, but got Unknown
+		//IL_052b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0530: Unknown result type (might be due to invalid IL or missing references)
+		//IL_053d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0542: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0560: Unknown result type (might be due to invalid IL or missing references)
+		//IL_056a: Expected O, but got Unknown
+		if (base.IsAborted || Sources.TrueForAll((ISource x) => string.IsNullOrEmpty(x.Content)))
 		{
 			Dispose();
 			return;
 		}
+		List<SyntaxTree> list = null;
+		List<string> list2 = null;
 		try
 		{
 			Exceptions.Clear();
 			Warnings.Clear();
-			List<SyntaxTree> list = Pool.Get<List<SyntaxTree>>();
-			List<string> list2 = Pool.Get<List<string>>();
+			list = Pool.Get<List<SyntaxTree>>();
+			list2 = Pool.Get<List<string>>();
 			_stopwatch = Pool.Get<Stopwatch>();
 			try
 			{
@@ -602,6 +590,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 			string contextFileName = InitialSource.ContextFileName;
 			CSharpParseOptions val = new CSharpParseOptions((LanguageVersion)2147483646, (DocumentationMode)1, (SourceCodeKind)0, (IEnumerable<string>)null).WithPreprocessorSymbols((IEnumerable<string>)list2);
 			bool flag = Sources.Any((ISource x) => !string.IsNullOrEmpty(x.Content) && x.Content.Contains("override object InternalCallHook"));
+			bool flag2 = false;
 			foreach (ISource source in Sources)
 			{
 				SyntaxTree val2 = CSharpSyntaxTree.ParseText(source.Content, val, source.FilePath, Encoding.UTF8, default(CancellationToken));
@@ -611,8 +600,13 @@ public class ScriptCompilationThread : BaseThreadedJob
 				val2 = val2.WithRootAndOptions((SyntaxNode)(object)val3, (ParseOptions)(object)val);
 				if (InternalCallHook.FindPluginInfo(val3, out var @namespace, out var namespaceIndex, out var classIndex, ClassList))
 				{
+					flag2 = true;
 					ClassDeclarationSyntax val4 = ClassList[0];
-					if (!((IEnumerable<SyntaxToken>)(object)((MemberDeclarationSyntax)val4).Modifiers).Any((SyntaxToken x) => CSharpExtensions.IsKind(x, (SyntaxKind)8406)))
+					if (!((IEnumerable<SyntaxToken>)(object)((MemberDeclarationSyntax)val4).Modifiers).Any(delegate(SyntaxToken x)
+					{
+						//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+						return CSharpExtensions.IsKind(x, (SyntaxKind)8406);
+					}))
 					{
 						ClassDeclarationSyntax obj = val4;
 						SyntaxTokenList modifiers = ((MemberDeclarationSyntax)val4).Modifiers;
@@ -627,7 +621,7 @@ public class ScriptCompilationThread : BaseThreadedJob
 				}
 				Usings.AddRange(((IEnumerable<UsingDirectiveSyntax>)(object)val3.Usings).Select((UsingDirectiveSyntax x) => ((object)x).ToString()));
 			}
-			if (!flag)
+			if (!flag & flag2)
 			{
 				_stopwatch.Start();
 				SyntaxTree val5 = CSharpSyntaxTree.ParseText(Sources.Select((ISource x) => x.Content).ToString("\n"), val, contextFileName, Encoding.UTF8, default(CancellationToken));
@@ -635,14 +629,13 @@ public class ScriptCompilationThread : BaseThreadedJob
 				InternalCallHookGenTime = _stopwatch.Elapsed;
 				if (output != null)
 				{
-					InternalCallHookSource = ((SyntaxNode)SyntaxNodeExtensions.NormalizeWhitespace<CompilationUnitSyntax>(output, "    ", "\r\n", false)).ToFullString();
 					list.Add(((SyntaxNode)output).SyntaxTree);
 				}
 			}
 			ScriptCompilerPolyfills.InjectMissingPolyfills(list, references, val);
 			CSharpCompilationOptions val6 = new CSharpCompilationOptions((OutputKind)2, false, (string)null, (string)null, (string)null, (IEnumerable<string>)null, (OptimizationLevel)1, false, true, (string)null, (string)null, default(ImmutableArray<byte>), (bool?)null, (Platform)0, (ReportDiagnostic)0, 4, (IEnumerable<KeyValuePair<string, ReportDiagnostic>>)null, true, true, (XmlReferenceResolver)null, (SourceReferenceResolver)null, (MetadataReferenceResolver)null, (AssemblyIdentityComparer)null, (StrongNameProvider)null, false, (MetadataImportOptions)0, (NullableContextOptions)0);
 			_stopwatch.Restart();
-			if (InitialSource == null)
+			if (InitialSource == null || base.IsAborted)
 			{
 				Dispose();
 				return;
@@ -650,27 +643,34 @@ public class ScriptCompilationThread : BaseThreadedJob
 			CSharpCompilation val7 = CSharpCompilation.Create($"Script.{InitialSource.FileName}.{Guid.NewGuid():N}", (IEnumerable<SyntaxTree>)list, (IEnumerable<MetadataReference>)references, val6);
 			using (MemoryStream memoryStream = new MemoryStream())
 			{
-				EmitResult val8 = ((Compilation)val7).Emit((Stream)memoryStream, (Stream)null, (Stream)null, (Stream)null, (IEnumerable<ResourceDescription>)null, _emitOptions, (IMethodSymbol)null, (Stream)null, (IEnumerable<EmbeddedText>)null, (Stream)null, default(CancellationToken));
+				EmitResult val8;
+				try
+				{
+					val8 = ((Compilation)val7).Emit((Stream)memoryStream, (Stream)null, (Stream)null, (Stream)null, (IEnumerable<ResourceDescription>)null, _emitOptions, (IMethodSymbol)null, (Stream)null, (IEnumerable<EmbeddedText>)null, (Stream)null, base.CancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					Dispose();
+					return;
+				}
 				List<string> list3 = Pool.Get<List<string>>();
 				List<string> list4 = Pool.Get<List<string>>();
-				Enumerator<Diagnostic> enumerator2 = val8.Diagnostics.GetEnumerator();
-				while (enumerator2.MoveNext())
+				foreach (Diagnostic diagnostic in val8.Diagnostics)
 				{
-					Diagnostic current2 = enumerator2.Current;
-					if (list3.Contains(current2.Id) || list4.Contains(current2.Id))
+					if (list3.Contains(diagnostic.Id) || list4.Contains(diagnostic.Id))
 					{
 						continue;
 					}
-					FileLinePositionSpan mappedLineSpan = current2.Location.GetMappedLineSpan();
+					FileLinePositionSpan mappedLineSpan = diagnostic.Location.GetMappedLineSpan();
 					LinePositionSpan span = ((FileLinePositionSpan)(ref mappedLineSpan)).Span;
 					object obj2;
-					if (current2 == null)
+					if (diagnostic == null)
 					{
 						obj2 = null;
 					}
 					else
 					{
-						Location location = current2.Location;
+						Location location = diagnostic.Location;
 						if (location == null)
 						{
 							obj2 = null;
@@ -683,28 +683,28 @@ public class ScriptCompilationThread : BaseThreadedJob
 					}
 					string text = (string)obj2;
 					string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(text);
-					DiagnosticSeverity severity = current2.Severity;
+					DiagnosticSeverity severity = diagnostic.Severity;
 					LinePosition start;
 					if ((int)severity != 2)
 					{
 						if ((int)severity == 3)
 						{
-							list3.Add(current2.Id);
+							list3.Add(diagnostic.Id);
 							List<CompilerException> exceptions = Exceptions;
 							start = ((LinePositionSpan)(ref span)).Start;
 							int num = ((LinePosition)(ref start)).Line + 1;
 							start = ((LinePositionSpan)(ref span)).Start;
-							exceptions.Add(new CompilerException(text, new CompilerError(fileNameWithoutExtension, num, ((LinePosition)(ref start)).Character + 1, current2.Id, current2.GetMessage((IFormatProvider)CultureInfo.InvariantCulture))));
+							exceptions.Add(new CompilerException(text, new CompilerError(fileNameWithoutExtension, num, ((LinePosition)(ref start)).Character + 1, diagnostic.Id, diagnostic.GetMessage((IFormatProvider)CultureInfo.InvariantCulture))));
 						}
 					}
-					else if (!current2.GetMessage((IFormatProvider)CultureInfo.InvariantCulture).Contains("Assuming assembly reference"))
+					else if (!diagnostic.GetMessage((IFormatProvider)CultureInfo.InvariantCulture).Contains("Assuming assembly reference"))
 					{
-						list3.Add(current2.Id);
+						list3.Add(diagnostic.Id);
 						List<CompilerException> warnings = Warnings;
 						start = ((LinePositionSpan)(ref span)).Start;
 						int num2 = ((LinePosition)(ref start)).Line + 1;
 						start = ((LinePositionSpan)(ref span)).Start;
-						warnings.Add(new CompilerException(text, new CompilerError(fileNameWithoutExtension, num2, ((LinePosition)(ref start)).Character + 1, current2.Id, current2.GetMessage((IFormatProvider)CultureInfo.InvariantCulture))));
+						warnings.Add(new CompilerException(text, new CompilerError(fileNameWithoutExtension, num2, ((LinePosition)(ref start)).Character + 1, diagnostic.Id, diagnostic.GetMessage((IFormatProvider)CultureInfo.InvariantCulture))));
 					}
 				}
 				Pool.FreeUnmanaged<string>(ref list3);
@@ -713,13 +713,21 @@ public class ScriptCompilationThread : BaseThreadedJob
 				{
 					IsCompileSuccess = true;
 					byte[] array = memoryStream.ToArray();
-					if (array != null)
+					bool flag3 = false;
+					lock (_abortHandle)
 					{
-						if (IsExtension)
+						if (array != null && !base.IsAborted)
 						{
-							_overrideExtensionPlugin(InitialSource.ContextFilePath, array);
+							flag3 = true;
+							if (IsExtension)
+							{
+								_overrideExtensionPlugin(InitialSource.ContextFilePath, array);
+							}
+							_overridePlugin(Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath), array);
 						}
-						_overridePlugin(Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath), array);
+					}
+					if (flag3)
+					{
 						if (IsCompileTestMode)
 						{
 							Assembly = null;
@@ -731,23 +739,23 @@ public class ScriptCompilationThread : BaseThreadedJob
 							{
 								string fileNameWithoutExtension2 = Path.GetFileNameWithoutExtension(string.IsNullOrEmpty(InitialSource.ContextFileName) ? InitialSource.FileName : InitialSource.ContextFileName);
 								bool isProfiledAssembly = MonoProfiler.TryStartProfileFor(MonoProfilerConfig.ProfileTypes.Plugin, Assembly, fileNameWithoutExtension2, incremental: true);
-								Assemblies.Plugins.Update(fileNameWithoutExtension2, Assembly, string.IsNullOrEmpty(InitialSource.ContextFilePath) ? InitialSource.FilePath : InitialSource.ContextFilePath, isProfiledAssembly);
+								lock (_abortHandle)
+								{
+									if (!base.IsAborted)
+									{
+										Assemblies.Plugins.Update(fileNameWithoutExtension2, Assembly, string.IsNullOrEmpty(InitialSource.ContextFilePath) ? InitialSource.FilePath : InitialSource.ContextFilePath, isProfiledAssembly);
+									}
+								}
 							}
-							catch (Exception ex2)
+							catch (Exception ex3)
 							{
-								Logger.Error("Couldn't cache assembly in Carbon's global database", ex2);
+								Logger.Error("Couldn't cache assembly in Carbon's global database", ex3);
 							}
 						}
 					}
 				}
 			}
-			references.Clear();
-			references = null;
-			Pool.FreeUnmanaged<string>(ref list2);
-			Pool.FreeUnmanaged<SyntaxTree>(ref list);
 			CompileTime = _stopwatch.Elapsed;
-			_stopwatch.Reset();
-			Pool.FreeUnsafe<Stopwatch>(ref _stopwatch);
 			if (IsCompileTestMode || Assembly == null)
 			{
 				return;
@@ -801,10 +809,28 @@ public class ScriptCompilationThread : BaseThreadedJob
 			}
 			throw null;
 		}
-		catch (Exception ex3)
+		catch (Exception ex4)
 		{
-			Logger.Error("Threading compilation failed for '" + InitialSource?.ContextFilePath + "'", ex3);
-			Analytics.plugin_native_compile_fail(InitialSource, ex3);
+			Logger.Error("Threading compilation failed for '" + InitialSource?.ContextFilePath + "'", ex4);
+			Analytics.plugin_native_compile_fail(InitialSource, ex4);
+		}
+		finally
+		{
+			references?.Clear();
+			references = null;
+			if (list2 != null)
+			{
+				Pool.FreeUnmanaged<string>(ref list2);
+			}
+			if (list != null)
+			{
+				Pool.FreeUnmanaged<SyntaxTree>(ref list);
+			}
+			if (_stopwatch != null)
+			{
+				_stopwatch.Reset();
+				Pool.FreeUnsafe<Stopwatch>(ref _stopwatch);
+			}
 		}
 	}
 
@@ -823,5 +849,26 @@ public class ScriptCompilationThread : BaseThreadedJob
 		Exceptions = null;
 		Warnings = null;
 		InternalCallHookSource = null;
+	}
+
+	static ScriptCompilationThread()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Expected O, but got Unknown
+		_emitOptions = new EmitOptions(false, (DebugInformationFormat)3, (string)null, (string)null, 0, 0uL, false, default(SubsystemVersion), (string)null, false, true, default(ImmutableArray<InstrumentationKind>), (HashAlgorithmName?)null, (Encoding)null, (Encoding)null);
+		_compilationCache = new ConcurrentDictionary<string, byte[]>();
+		_extensionCompilationCache = new ConcurrentDictionary<string, byte[]>();
+		_referenceCache = new Dictionary<string, PortableExecutableReference>();
+		_extensionReferenceCache = new Dictionary<string, PortableExecutableReference>();
+		_libraryDirectories = new string[5]
+		{
+			Defines.GetLibFolder(),
+			Defines.GetManagedFolder(),
+			Defines.GetRustManagedFolder(),
+			Defines.GetManagedModulesFolder(),
+			Defines.GetExtensionsFolder()
+		};
 	}
 }

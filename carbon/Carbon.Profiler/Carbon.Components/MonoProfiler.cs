@@ -1219,7 +1219,7 @@ public static class MonoProfiler
 				}
 			}, duration);
 		}
-		else if (IsRecording && logging)
+		else if (IsRecording & logging)
 		{
 			HarmonyProfiler.Runner.Invoke(_profileWarningTimer = delegate
 			{

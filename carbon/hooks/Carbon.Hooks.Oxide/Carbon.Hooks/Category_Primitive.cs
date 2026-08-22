@@ -14,14 +14,14 @@ public class Category_Primitive
 	public class Primitive_BallistaGun
 	{
 		[Patch("OnBallistaGunReload", "OnBallistaGunReload", "BallistaGun", "SERVER_ReloadStart", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("45452a63caaf4fd99a171b087610c37d")]
+		[Identifier("68c2f134f77f4ac686f1c1b8a52cd74d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BallistaGun", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BallistaGun_45452a63caaf4fd99a171b087610c37d : Patch
+		public class Primitive_BallistaGun_68c2f134f77f4ac686f1c1b8a52cd74d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -58,14 +58,14 @@ public class Category_Primitive
 	public class Primitive_Catapult
 	{
 		[Patch("OnCatapultFireForce", "OnCatapultFireForce", "Catapult", "Fire", new string[] { "BasePlayer", "System.Single" })]
-		[Identifier("1d9c9379e7144271aeeef6f1ed509634")]
+		[Identifier("bd30298e3e2749618afb9390d049035d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Catapult", false)]
 		[Parameter("shooter", "BasePlayer", false)]
 		[Parameter("local1", "System.Single", false)]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_Catapult_1d9c9379e7144271aeeef6f1ed509634 : Patch
+		public class Primitive_Catapult_bd30298e3e2749618afb9390d049035d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -106,14 +106,14 @@ public class Category_Primitive
 		}
 
 		[Patch("OnSiegeWeaponFire", "OnSiegeWeaponFire [Catapult]", "Catapult", "SERVER_WantsFire", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("602bda78c51c462fbaf57507e49789bd")]
+		[Identifier("6761852ab4bf4e5c89b92b67a42d96aa")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Catapult", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_Catapult_602bda78c51c462fbaf57507e49789bd : Patch
+		public class Primitive_Catapult_6761852ab4bf4e5c89b92b67a42d96aa : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -148,14 +148,14 @@ public class Category_Primitive
 	public class Primitive_BatteringRam
 	{
 		[Patch("OnSiegeWeaponFire", "OnSiegeWeaponFire [BatteringRam]", "BatteringRam", "SERVER_WantsAttack", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("a9ec598dd13040259af28fe9388421d9")]
+		[Identifier("ce01dba83d1f4285b5da6608eee19a23")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BatteringRam", false)]
 		[Parameter("local1", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BatteringRam_a9ec598dd13040259af28fe9388421d9 : Patch
+		public class Primitive_BatteringRam_ce01dba83d1f4285b5da6608eee19a23 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -189,14 +189,14 @@ public class Category_Primitive
 		}
 
 		[Patch("OnSiegeWeaponDoorOpen", "OnSiegeWeaponDoorOpen [BatteringRam]", "BatteringRam", "RPC_OpenDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("7031cdddfe2749c8a768ebce35db8ea8")]
+		[Identifier("13bf6a74b8614502a3862a1de3067fba")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BatteringRam", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BatteringRam_7031cdddfe2749c8a768ebce35db8ea8 : Patch
+		public class Primitive_BatteringRam_13bf6a74b8614502a3862a1de3067fba : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -229,14 +229,14 @@ public class Category_Primitive
 		}
 
 		[Patch("OnSiegeWeaponDoorClose", "OnSiegeWeaponDoorClose [BatteringRam]", "BatteringRam", "RPC_CloseDoor", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("3bc8f353d7144d42bc228f76bb1488c7")]
+		[Identifier("0c3810ea65474e7b8c33de01a79ce8e6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BatteringRam", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BatteringRam_3bc8f353d7144d42bc228f76bb1488c7 : Patch
+		public class Primitive_BatteringRam_0c3810ea65474e7b8c33de01a79ce8e6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -272,14 +272,14 @@ public class Category_Primitive
 	public class Primitive_BaseSiegeWeapon
 	{
 		[Patch("OnSiegeWeaponPull", "OnSiegeWeaponPull", "BaseSiegeWeapon", "SERVER_StartPulling", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("95a5870294c04a45b42e58ec5b0da687")]
+		[Identifier("f47eb8b4eab14cdaa2526816e3bf7791")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseSiegeWeapon", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Primitive")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Primitive_BaseSiegeWeapon_95a5870294c04a45b42e58ec5b0da687 : Patch
+		public class Primitive_BaseSiegeWeapon_f47eb8b4eab14cdaa2526816e3bf7791 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

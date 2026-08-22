@@ -1,61 +1,35 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using AsmResolver.DotNet;
 using AsmResolver.DotNet.Code;
 using AsmResolver.DotNet.Code.Cil;
 using AsmResolver.DotNet.Signatures;
-using AsmResolver.DotNet.Signatures.Types;
 using AsmResolver.PE.DotNet.Cil;
 using Carbon.Compat.Converters;
 using Carbon.Compat.Lib;
 using HarmonyLib;
-using Oxide.Core.Libraries;
 using Oxide.Plugins;
 
 namespace Carbon.Compat.Patches.Oxide;
 
 public class OxideILSwitch : BaseOxidePatch
 {
-	private static MethodInfo pluginLoaderMethod;
+	private static MethodInfo pluginLoaderMethod = AccessTools.Method(typeof(OxideCompat), "RegisterPluginLoader", (Type[])null, (Type[])null);
 
-	private static MethodInfo consoleCommand1;
+	private static MethodInfo consoleCommand1 = AccessTools.Method(typeof(OxideCompat), "AddConsoleCommand1", (Type[])null, (Type[])null);
 
-	private static MethodInfo chatCommand1;
+	private static MethodInfo chatCommand1 = AccessTools.Method(typeof(OxideCompat), "AddChatCommand1", (Type[])null, (Type[])null);
 
-	private static MethodInfo getExtensionDirectory;
+	private static MethodInfo getExtensionDirectory = AccessTools.Method(typeof(OxideCompat), "GetExtensionDirectory", (Type[])null, (Type[])null);
 
-	private static MethodInfo timerOnce;
+	private static MethodInfo onAddedToManagerCompat = AccessTools.Method(typeof(OxideCompat), "OnAddedToManagerCompat", (Type[])null, (Type[])null);
 
-	private static MethodInfo timerRepeat;
+	private static MethodInfo onRemovedFromManagerCompat = AccessTools.Method(typeof(OxideCompat), "OnRemovedFromManagerCompat", (Type[])null, (Type[])null);
 
-	private static MethodInfo onAddedToManagerCompat;
+	private static FieldInfo rustPluginTimer = AccessTools.Field(typeof(RustPlugin), "timer");
 
-	private static MethodInfo onRemovedFromManagerCompat;
-
-	private static FieldInfo rustPluginTimer;
-
-	private static readonly MethodInfo carbonLangGetMessage;
-
-	private static int carbonLangGetMessageArgLength;
-
-	public static CompatManager Singleton => Community.Runtime.Compat as CompatManager;
-
-	static OxideILSwitch()
-	{
-		pluginLoaderMethod = AccessTools.Method(typeof(OxideCompat), "RegisterPluginLoader", (Type[])null, (Type[])null);
-		consoleCommand1 = AccessTools.Method(typeof(OxideCompat), "AddConsoleCommand1", (Type[])null, (Type[])null);
-		chatCommand1 = AccessTools.Method(typeof(OxideCompat), "AddChatCommand1", (Type[])null, (Type[])null);
-		getExtensionDirectory = AccessTools.Method(typeof(OxideCompat), "GetExtensionDirectory", (Type[])null, (Type[])null);
-		timerOnce = AccessTools.Method(typeof(OxideCompat), "TimerOnce", (Type[])null, (Type[])null);
-		timerRepeat = AccessTools.Method(typeof(OxideCompat), "TimerRepeat", (Type[])null, (Type[])null);
-		onAddedToManagerCompat = AccessTools.Method(typeof(OxideCompat), "OnAddedToManagerCompat", (Type[])null, (Type[])null);
-		onRemovedFromManagerCompat = AccessTools.Method(typeof(OxideCompat), "OnRemovedFromManagerCompat", (Type[])null, (Type[])null);
-		rustPluginTimer = AccessTools.Field(typeof(RustPlugin), "timer");
-		carbonLangGetMessage = typeof(Lang).GetMethods().First((MethodInfo x) => x.Name == "GetMessage" && x.ReturnType == typeof(string));
-		carbonLangGetMessageArgLength = carbonLangGetMessage.GetParameters().Length;
-	}
+	private static MethodInfo pluginTimersLibrary = AccessTools.PropertyGetter(typeof(PluginTimers), "Library");
 
 	public override void Apply(ModuleDefinition assembly, ReferenceImporter importer, ref BaseConverter.Context context)
 	{
@@ -69,15 +43,13 @@ public class OxideILSwitch : BaseOxidePatch
 		//IL_03da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_04aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0545: Unknown result type (might be due to invalid IL or missing references)
-		//IL_054a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_054c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0551: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_07a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0662: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0667: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Expected O, but got Unknown
 		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
@@ -94,25 +66,27 @@ public class OxideILSwitch : BaseOxidePatch
 		//IL_0522: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0283: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_064a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0893: Unknown result type (might be due to invalid IL or missing references)
-		//IL_073d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0765: Unknown result type (might be due to invalid IL or missing references)
-		//IL_076a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0770: Expected O, but got Unknown
-		//IL_0772: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0777: Unknown result type (might be due to invalid IL or missing references)
-		//IL_077d: Expected O, but got Unknown
-		//IL_077f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_078f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0795: Expected O, but got Unknown
+		//IL_0795: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0627: Unknown result type (might be due to invalid IL or missing references)
+		//IL_064f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0654: Unknown result type (might be due to invalid IL or missing references)
+		//IL_065a: Expected O, but got Unknown
+		//IL_065c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0661: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0667: Expected O, but got Unknown
+		//IL_0669: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0679: Unknown result type (might be due to invalid IL or missing references)
+		//IL_067f: Expected O, but got Unknown
+		//IL_0681: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0691: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0697: Expected O, but got Unknown
 		foreach (TypeDefinition allType in assembly.GetAllTypes())
 		{
 			bool flag = allType.IsBaseType((ITypeDefOrRef x) => x.Name == "RustPlugin" && ((AssemblyDescriptor)((ITypeDescriptor)(object)x).DefinitionAssembly()).Name == "Carbon.Common");
 			bool flag2 = allType.IsBaseType((ITypeDefOrRef x) => ((IFullNameProvider)x).FullName == "Oxide.Core.Extensions.Extension" && ((AssemblyDescriptor)((ITypeDescriptor)(object)x).DefinitionAssembly()).Name == "Carbon.Common");
 			foreach (MethodDefinition method2 in allType.Methods)
 			{
-				bool flag3 = !method2.IsStatic && flag;
+				bool flag3 = !method2.IsStatic & flag;
 				MethodBody methodBody = method2.MethodBody;
 				CilMethodBody val = (CilMethodBody)(object)((methodBody is CilMethodBody) ? methodBody : null);
 				if (val == null)
@@ -134,7 +108,7 @@ public class OxideILSwitch : BaseOxidePatch
 							{
 								val2.OpCode = CilOpCodes.Call;
 								val2.Operand = importer.ImportMethod((MethodBase)pluginLoaderMethod);
-								val.Instructions.Insert(num++, new CilInstruction((!method2.IsStatic && flag2) ? CilOpCodes.Ldarg_0 : CilOpCodes.Ldnull));
+								val.Instructions.Insert(num++, new CilInstruction((!method2.IsStatic & flag2) ? CilOpCodes.Ldarg_0 : CilOpCodes.Ldnull));
 								continue;
 							}
 						}
@@ -223,64 +197,28 @@ public class OxideILSwitch : BaseOxidePatch
 							}
 						}
 					}
-					if (val2.OpCode == CilOpCodes.Callvirt)
-					{
-						object operand6 = val2.Operand;
-						MemberReference val15 = (MemberReference)((operand6 is MemberReference) ? operand6 : null);
-						if (val15 != null)
-						{
-							CallingConventionSignature signature3 = val15.Signature;
-							MethodSignature val16 = (MethodSignature)(object)((signature3 is MethodSignature) ? signature3 : null);
-							if (val16 != null)
-							{
-								IMemberRefParent parent6 = val15.Parent;
-								TypeReference val17 = (TypeReference)(object)((parent6 is TypeReference) ? parent6 : null);
-								if (val17 != null && val17.FullName == "Oxide.Core.Libraries.Timer")
-								{
-									IList<TypeSignature> parameterTypes = ((MethodSignatureBase)val16).ParameterTypes;
-									if (parameterTypes[parameterTypes.Count - 1].FullName == "Oxide.Core.Plugins.Plugin" && ((AssemblyDescriptor)((ITypeDescriptor)(object)val17).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name)
-									{
-										string text = ((object)val15.Name).ToString();
-										if (!(text == "Once"))
-										{
-											if (!(text == "Repeat"))
-											{
-												continue;
-											}
-											val2.Operand = importer.ImportMethod((MethodBase)timerRepeat);
-										}
-										else
-										{
-											val2.Operand = importer.ImportMethod((MethodBase)timerOnce);
-										}
-										val2.OpCode = CilOpCodes.Call;
-										continue;
-									}
-								}
-							}
-						}
-					}
 					if (flag3 && val2.OpCode == CilOpCodes.Callvirt)
 					{
-						object operand7 = val2.Operand;
-						MethodSpecification val18 = (MethodSpecification)((operand7 is MethodSpecification) ? operand7 : null);
-						if (val18 != null)
+						object operand6 = val2.Operand;
+						MethodSpecification val15 = (MethodSpecification)((operand6 is MethodSpecification) ? operand6 : null);
+						if (val15 != null)
 						{
-							IMethodDefOrRef method = val18.Method;
-							MemberReference val19 = (MemberReference)(object)((method is MemberReference) ? method : null);
-							if (val19 != null)
+							IMethodDefOrRef method = val15.Method;
+							MemberReference val16 = (MemberReference)(object)((method is MemberReference) ? method : null);
+							if (val16 != null)
 							{
-								IMemberRefParent parent7 = val19.Parent;
-								TypeReference val20 = (TypeReference)(object)((parent7 is TypeReference) ? parent7 : null);
-								if (val20 != null && val19.Name == "GetLibrary" && val20.FullName == "Oxide.Core.OxideMod" && val18.Signature.TypeArguments.Count == 1 && val18.Signature.TypeArguments[0].FullName == "Oxide.Core.Libraries.Timer" && ((AssemblyDescriptor)((ITypeDescriptor)(object)val20).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name)
+								IMemberRefParent parent6 = val16.Parent;
+								TypeReference val17 = (TypeReference)(object)((parent6 is TypeReference) ? parent6 : null);
+								if (val17 != null && val16.Name == "GetLibrary" && val17.FullName == "Oxide.Core.OxideMod" && val15.Signature.TypeArguments.Count == 1 && val15.Signature.TypeArguments[0].FullName == "Oxide.Core.Libraries.Timer" && ((AssemblyDescriptor)((ITypeDescriptor)(object)val17).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name)
 								{
 									val2.OpCode = CilOpCodes.Pop;
 									val2.Operand = null;
-									val.Instructions.InsertRange(++num, (IEnumerable<CilInstruction>)(object)new CilInstruction[3]
+									val.Instructions.InsertRange(++num, (IEnumerable<CilInstruction>)(object)new CilInstruction[4]
 									{
 										new CilInstruction(CilOpCodes.Pop),
 										new CilInstruction(CilOpCodes.Ldarg_0),
-										new CilInstruction(CilOpCodes.Ldfld, (object)importer.ImportField(rustPluginTimer))
+										new CilInstruction(CilOpCodes.Ldfld, (object)importer.ImportField(rustPluginTimer)),
+										new CilInstruction(CilOpCodes.Callvirt, (object)importer.ImportMethod((MethodBase)pluginTimersLibrary))
 									});
 									continue;
 								}
@@ -291,28 +229,28 @@ public class OxideILSwitch : BaseOxidePatch
 					{
 						continue;
 					}
-					object operand8 = val2.Operand;
-					MemberReference val21 = (MemberReference)((operand8 is MemberReference) ? operand8 : null);
-					if (val21 == null)
+					object operand7 = val2.Operand;
+					MemberReference val18 = (MemberReference)((operand7 is MemberReference) ? operand7 : null);
+					if (val18 == null)
 					{
 						continue;
 					}
-					CallingConventionSignature signature4 = val21.Signature;
-					FieldSignature val22 = (FieldSignature)(object)((signature4 is FieldSignature) ? signature4 : null);
-					if (val22 == null)
+					CallingConventionSignature signature3 = val18.Signature;
+					FieldSignature val19 = (FieldSignature)(object)((signature3 is FieldSignature) ? signature3 : null);
+					if (val19 == null)
 					{
 						continue;
 					}
-					IMemberRefParent parent8 = val21.Parent;
-					TypeReference val23 = (TypeReference)(object)((parent8 is TypeReference) ? parent8 : null);
-					if (val23 == null || !(val23.FullName == "Oxide.Core.Plugins.Plugin") || !(val22.FieldType.FullName == "Oxide.Core.Plugins.PluginManagerEvent") || !(((AssemblyDescriptor)((ITypeDescriptor)(object)val23).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name))
+					IMemberRefParent parent7 = val18.Parent;
+					TypeReference val20 = (TypeReference)(object)((parent7 is TypeReference) ? parent7 : null);
+					if (val20 == null || !(val20.FullName == "Oxide.Core.Plugins.Plugin") || !(val19.FieldType.FullName == "Oxide.Core.Plugins.PluginManagerEvent") || !(((AssemblyDescriptor)((ITypeDescriptor)(object)val20).DefinitionAssembly()).Name == ((AssemblyDescriptor)CompatManager.Common).Name))
 					{
 						continue;
 					}
-					string text2 = ((object)val21.Name).ToString();
-					if (!(text2 == "OnAddedToManager"))
+					string text = ((object)val18.Name).ToString();
+					if (!(text == "OnAddedToManager"))
 					{
-						if (!(text2 == "OnRemovedFromManager"))
+						if (!(text == "OnRemovedFromManager"))
 						{
 							continue;
 						}

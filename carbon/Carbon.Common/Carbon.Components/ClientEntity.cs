@@ -12,7 +12,7 @@ namespace Carbon.Components;
 
 public class ClientEntity : IDisposable
 {
-	internal List<Connection> watchers = new List<Connection>();
+	internal List<Connection> watchers;
 
 	internal NetworkableId _parentId;
 
@@ -172,6 +172,8 @@ public class ClientEntity : IDisposable
 		//IL_0055: Expected O, but got Unknown
 		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
+		watchers = new List<Connection>();
+		base._002Ector();
 		Proto = (Entity)(((object)proto) ?? ((object)new Entity()));
 		Entity proto2 = Proto;
 		if (proto2.baseNetworkable == null)

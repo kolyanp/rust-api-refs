@@ -367,10 +367,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 
 			public OptionName(string name, TextAnchor align, string tooltip = null, bool hidden = false)
-				: base(name, tooltip, hidden)
 			{
 				//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
+				base._002Ector(name, tooltip, hidden);
 				Align = align;
 			}
 		}
@@ -392,10 +392,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 
 			public OptionText(string name, int size, string color, TextAnchor align, CUI.Handler.FontTypes font, bool isInput, string tooltip = null, bool hidden = false)
-				: base(name, tooltip, hidden)
 			{
 				//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 				//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+				base._002Ector(name, tooltip, hidden);
 				Align = align;
 				Size = size;
 				Color = color;
@@ -463,19 +463,22 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 			public Action<PlayerSession> Callback;
 
-			public TextAnchor Align = (TextAnchor)4;
+			public TextAnchor Align;
 
 			public OptionButton()
 			{
-			}//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-
+				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				Align = (TextAnchor)4;
+				base._002Ector();
+			}
 
 			public OptionButton(string name, TextAnchor align, Action<PlayerSession> callback, Func<PlayerSession, Types> type = null, string tooltip = null, bool hidden = false)
-				: base(name, tooltip, hidden)
 			{
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0034: Unknown result type (might be due to invalid IL or missing references)
 				//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+				Align = (TextAnchor)4;
+				base._002Ector(name, tooltip, hidden);
 				Align = align;
 				Callback = delegate(PlayerSession ap)
 				{
@@ -503,9 +506,10 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 
 			public OptionButton(string name, Action<PlayerSession> callback, Func<PlayerSession, Types> type = null, string tooltip = null, bool hidden = false)
-				: base(name, tooltip, hidden)
 			{
 				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+				Align = (TextAnchor)4;
+				base._002Ector(name, tooltip, hidden);
 				Callback = callback;
 				Type = type;
 			}
@@ -2045,9 +2049,9 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		private const float _applyChangesCooldown = 60f;
 
-		private static TimeSince _applyChangesTimeSince = TimeSince.op_Implicit(60f);
+		private static TimeSince _applyChangesTimeSince;
 
-		public static readonly string[] AuthLevels = new string[4] { "User", "Moderator", "Admin", "Developer" };
+		public static readonly string[] AuthLevels;
 
 		public ConfigurationTab(string id, string name, RustPlugin plugin, Action<PlayerSession, Tab> onChange = null)
 			: base(id, name, plugin, onChange)
@@ -2169,7 +2173,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						Singleton.Draw(ap.Player);
 						Singleton.Save();
 					}
-				}, (PlayerSession ap) => (TimeSince.op_Implicit(_applyChangesTimeSince) > 60f) ? OptionButton.Types.Selected : OptionButton.Types.None, (TextAnchor)4);
+				}, delegate
+				{
+					//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+					return (TimeSince.op_Implicit(_applyChangesTimeSince) > 60f) ? OptionButton.Types.Selected : OptionButton.Types.None;
+				}, (TextAnchor)4);
 				tab.AddToggle(0, "Spectating Info Overlay", delegate
 				{
 					Singleton.ConfigInstance.SpectatingInfoOverlay = !Singleton.ConfigInstance.SpectatingInfoOverlay;
@@ -2512,7 +2520,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					foreach (string text in names)
 					{
 						ItemCategory parsedCategory = (ItemCategory)Enum.Parse(typeof(ItemCategory), text);
-						IEnumerable<ItemDefinition> enumerable = source.Where((ItemDefinition x) => x.category == parsedCategory);
+						IEnumerable<ItemDefinition> enumerable = source.Where(delegate(ItemDefinition x)
+						{
+							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+							return x.category == parsedCategory;
+						});
 						if (enumerable.Any())
 						{
 							tab.AddName(1, "<color=orange>></color> " + text, (TextAnchor)3);
@@ -2530,6 +2543,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				}
 				}
 			}
+		}
+
+		static ConfigurationTab()
+		{
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+			_applyChangesTimeSince = TimeSince.op_Implicit(60f);
+			AuthLevels = new string[4] { "User", "Moderator", "Admin", "Developer" };
 		}
 	}
 
@@ -2802,7 +2823,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						});
 					}));
 				}
-				tab.AddInput(column, "Id", (PlayerSession playerSession) => (!multiSelection) ? $"{((BaseNetworkable)entity).net.ID} [<b>{((object)entity).GetType().FullName}</b>]" : "-");
+				tab.AddInput(column, "Id", delegate
+				{
+					//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+					return (!multiSelection) ? $"{((BaseNetworkable)entity).net.ID} [<b>{((object)entity).GetType().FullName}</b>]" : "-";
+				});
 				tab.AddInput(column, "Name", delegate
 				{
 					object obj8;
@@ -2858,7 +2883,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					}
 					return (string)obj8;
 				});
-				tab.AddInput(column, "Flags", (PlayerSession playerSession) => (!multiSelection) ? (((int)entity.flags != 0) ? $"{entity.flags}" : "None") : "-");
+				tab.AddInput(column, "Flags", delegate
+				{
+					//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+					return (!multiSelection) ? (((int)entity.flags != 0) ? $"{entity.flags}" : "None") : "-";
+				});
 				tab.AddInput(column, "Skin", (PlayerSession playerSession) => (!multiSelection) ? entity.skinID.ToString() : "-", delegate(PlayerSession session, object[] args)
 				{
 					entity.skinID = ((string)args[0]).ToUlong(0uL);
@@ -2869,7 +2899,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					DrawEntitySettings(tab, 0, playerSession);
 					DrawEntityFlags(tab, playerSession);
 				}, null, (TextAnchor)4);
-				tab.AddInput(column, "Position", (PlayerSession playerSession) => (!multiSelection) ? $"{((Component)entity).transform.position} [{MapHelper.PositionToString(((Component)entity).transform.position)}]" : "-");
+				tab.AddInput(column, "Position", delegate
+				{
+					//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+					//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+					return (!multiSelection) ? $"{((Component)entity).transform.position} [{MapHelper.PositionToString(((Component)entity).transform.position)}]" : "-";
+				});
 				tab.AddInput(column, "Rotation", delegate
 				{
 					//IL_0013: Unknown result type (might be due to invalid IL or missing references)
@@ -3179,7 +3214,12 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 							if (val4 != null)
 							{
 								tab.AddName(column, "Building Block", (TextAnchor)3);
-								tab.AddDropdown(column, "Grade", (PlayerSession playerSession) => (int)val4.grade, delegate(PlayerSession ap4, int index)
+								tab.AddDropdown(column, "Grade", delegate
+								{
+									//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+									//IL_000c: Expected I4, but got Unknown
+									return (int)val4.grade;
+								}, delegate(PlayerSession ap4, int index)
 								{
 									DoAll<BuildingBlock>(delegate(BuildingBlock e)
 									{
@@ -3357,7 +3397,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				select x)
 			{
 				Flags flagValue = (Flags)Enum.Parse(typeof(Flags), item);
-				bool isDifferent = selectedEntitites.All((BaseEntity x) => x.HasFlag(flagValue));
+				bool isDifferent = selectedEntitites.All(delegate(BaseEntity x)
+				{
+					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+					return x.HasFlag(flagValue);
+				});
 				bool hasFlag = val.HasFlag(flagValue);
 				list.Add(new Tab.OptionButton(item, delegate(PlayerSession ap)
 				{
@@ -4374,8 +4418,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				playerSession.SetStorage(tab, "playerfilter", args.Select((object x) => x as string).ToString(" "));
 				RefreshPlayers(tab, playerSession);
 			});
-			IOrderedEnumerable<BasePlayer> orderedEnumerable = from x in BasePlayer.allPlayerList.Distinct()
-				where x.userID.IsSteamId() && x.IsConnected
+			IOrderedEnumerable<BasePlayer> orderedEnumerable = from x in BasePlayer.allPlayerList.Distinct().Where(delegate(BasePlayer x)
+				{
+					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+					return x.userID.IsSteamId() && x.IsConnected;
+				})
 				orderby x.Connection?.connectionTime
 				select x;
 			tab.AddName(0, $"Online ({orderedEnumerable.Count():n0})", (TextAnchor)3);
@@ -4387,9 +4434,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				tab.AddText(0, "No online players found.", 10, "1 1 1 0.4", (TextAnchor)4);
 			}
-			IEnumerable<BasePlayer> enumerable = from x in BasePlayer.allPlayerList.Distinct()
-				where x.userID.IsSteamId() && !x.IsConnected
-				select x;
+			IEnumerable<BasePlayer> enumerable = BasePlayer.allPlayerList.Distinct().Where(delegate(BasePlayer x)
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return x.userID.IsSteamId() && !x.IsConnected;
+			});
 			tab.AddName(0, $"Offline ({enumerable.Count():n0})", (TextAnchor)3);
 			foreach (BasePlayer item2 in enumerable)
 			{
@@ -4437,7 +4486,11 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				player.AsIPlayer().Rename(args.Select((object x) => x as string).ToString(" "));
 			});
 			tab.AddInput(column, "Steam ID", (PlayerSession _) => player.UserIDString);
-			tab.AddInput(column, "Net ID", (PlayerSession _) => $"{((BaseNetworkable)player).net?.ID}");
+			tab.AddInput(column, "Net ID", delegate
+			{
+				//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+				return $"{((BaseNetworkable)player).net?.ID}";
+			});
 			if (Singleton.HasAccess(aap.Player, "players.see_ips"))
 			{
 				tab.AddInput(column, "IP", delegate
@@ -4463,7 +4516,13 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			try
 			{
 				Vector3 position = ((Component)player).transform.position;
-				tab.AddInput(column, "Position", (PlayerSession _) => $"{position} [{MapHelper.PositionToGrid(position)}]");
+				tab.AddInput(column, "Position", delegate
+				{
+					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+					return $"{position} [{MapHelper.PositionToGrid(position)}]";
+				});
 			}
 			catch
 			{
@@ -6110,18 +6169,14 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 						CreateTabButton(cui, container, pair, text, vendor?.BarInfo.ToUpper(), isSelected, ref optionsOffset, disabled);
 					}
 					string storage = ap.GetStorage(tab3, "search", string.Empty);
-					int maxPages;
-					List<Plugin> plugins = GetPlugins(vendor, tab3, ap, out maxPages, 75);
+					List<Plugin> plugins = GetPlugins(vendor, tab3, ap, out var maxPages, 75);
 					PlayerSession.Page orCreatePage = ap.GetOrCreatePage(230);
 					float num = plugins.Count();
 					float num2 = Mathf.Ceil(num / 5f) - 2f;
 					float num3 = (150f + num2 * 200f).Clamp(30f, 2.1474836E+09f);
 					orCreatePage.TotalPages = maxPages;
 					orCreatePage.Check();
-					CuiRectTransform contentTransformComponent;
-					CuiScrollbar horizontalScrollBar;
-					CuiScrollbar verticalScrollBar;
-					CUI.Pair<string, CuiElement> pair2 = cui.CreateScrollView(container, panel, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 150f, out contentTransformComponent, out horizontalScrollBar, out verticalScrollBar, 0f, 1f, 0f, 0.93f);
+					CUI.Pair<string, CuiElement> pair2 = cui.CreateScrollView(container, panel, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 150f, out var contentTransformComponent, out var horizontalScrollBar, out var verticalScrollBar, 0f, 1f, 0f, 0.93f);
 					contentTransformComponent.AnchorMin = "0 0";
 					contentTransformComponent.AnchorMax = "1 1";
 					contentTransformComponent.OffsetMin = $"0 -{num3}";
@@ -6255,9 +6310,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					CUI.Pair<string, CuiElement> pair14 = cui.CreatePanel(container, panel, Cache.CUI.BlankColor, null, 0f, 0f, 1f, 1f, 0f, 0f, 0f, 0f, blur: false, 0f, 0f, needsCursor: false, needsKeyboard: false, null, null, outlineUseGraphicAlpha: false, "selectedpluginpnl");
 					cui.CreatePanel(container, pair14, "0 0 0 0.6", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, blur: true);
 					cui.CreatePanel(container, pair14, "0 0 0 0.6");
-					CuiRectTransform contentTransformComponent2;
-					CuiScrollbar verticalScrollBar2;
-					CUI.Pair<string, CuiElement> pair15 = cui.CreateScrollView(container, pair14, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 50f, out contentTransformComponent2, out horizontalScrollBar, out verticalScrollBar2);
+					CUI.Pair<string, CuiElement> pair15 = cui.CreateScrollView(container, pair14, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 50f, out var contentTransformComponent2, out horizontalScrollBar, out var verticalScrollBar2);
 					contentTransformComponent2.AnchorMin = "0 0";
 					contentTransformComponent2.AnchorMax = "1 1";
 					contentTransformComponent2.OffsetMin = "0 -250";
@@ -6285,9 +6338,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					cui.CreatePanel(container, pair18, "0.7 0.7 0.7 0.2", null, 0.3f, 0.7f, 0.55f, 0.55f, 0f, 0f, -2f);
 					cui.CreateText(container, pair18, "1 1 1 0.2", "RATING", 12, 0f, 1f, 0.65f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 					cui.CreateText(container, pair18, Cache.CUI.BlankColor, string.Empty, 0, 0.3f, 0.7f, 0.7f, 0.75f, 0f, 0f, 0f, 0f, (TextAnchor)1, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1, 0f, 0f, needsCursor: false, needsKeyboard: false, null, null, outlineUseGraphicAlpha: false, "selectedpluginrating");
-					CuiRectTransform contentTransformComponent3;
-					CuiScrollbar verticalScrollBar3;
-					CUI.Pair<string, CuiElement> pair19 = cui.CreateScrollView(container, pair17, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 50f, out contentTransformComponent3, out horizontalScrollBar, out verticalScrollBar3, 0.02f, 0.72f, 0.1f, 0.8f);
+					CUI.Pair<string, CuiElement> pair19 = cui.CreateScrollView(container, pair17, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 50f, out var contentTransformComponent3, out horizontalScrollBar, out var verticalScrollBar3, 0.02f, 0.72f, 0.1f, 0.8f);
 					contentTransformComponent3.AnchorMin = "0 0";
 					contentTransformComponent3.AnchorMax = "1 1";
 					contentTransformComponent3.OffsetMin = "0 -100";
@@ -6362,7 +6413,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			{
 				CUI.Pair<string, CuiElement, CuiElement> pair = cui.CreateProtectedButton(container, panel, isSelected ? "#af3726" : CUI.HexToRustColor("#454239", 0.5f), Cache.CUI.BlankColor, string.Empty, 0, null, 0.05f, 0.05f, 0f, 1f, optionsOffset, optionsOffset + 100f, 0f, 0f, disabled ? string.Empty : ("pluginbrowser.changetab " + text), (TextAnchor)4);
 				cui.CreateImage(container, pair, "fade", Cache.CUI.WhiteColor);
-				cui.CreateText(container, pair, (!isSelected) ? "1 1 1 0.4" : "1 0.8 0.8 1", text.ToUpper(), 12, 0f, 1f, (isSelected || disabled) ? 0.3f : 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
+				cui.CreateText(container, pair, (!isSelected) ? "1 1 1 0.4" : "1 0.8 0.8 1", text.ToUpper(), 12, 0f, 1f, (isSelected | disabled) ? 0.3f : 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedBold, (VerticalWrapMode)1);
 				if (isSelected)
 				{
 					cui.CreateText(container, pair, "1 0.8 0.8 0.5", subtext, 10, 0f, 1f, 0f, 0.5f, 0f, 0f, 0f, 0f, (TextAnchor)4, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
@@ -7480,10 +7531,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				cui.CreateText(container, pair, "0.8 0.8 0.8 0.5", context, 8, 0.036f, 0.97f, 0.2f, 0.9875f, 0f, 0f, 0f, 0f, (TextAnchor)2, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 				CUI.Pair<string, CuiElement, CuiElement> pair2 = cui.CreateProtectedButton(container, pair, "0.9 0.2 0.1 1", Cache.CUI.BlankColor, string.Empty, 0, null, 0.978f, 1f, 0.96f, 1f, 0f, 0f, 0f, 0f, "adminmodule.profilerpreviewclose", (TextAnchor)4);
 				cui.CreateImage(container, pair2, "close", "1 1 1 0.8", null, 0.2f, 0.8f, 0.2f, 0.8f);
-				CuiRectTransform contentTransformComponent;
-				CuiScrollbar horizontalScrollBar;
-				CuiScrollbar verticalScrollBar;
-				CUI.Pair<string, CuiElement> pair3 = cui.CreateScrollView(container, pair, vertical: true, horizontal: true, (MovementType)2, 0.5f, inertia: true, 0.2f, 75f, out contentTransformComponent, out horizontalScrollBar, out verticalScrollBar, 0f, 1f, 0f, 0.96f);
+				CUI.Pair<string, CuiElement> pair3 = cui.CreateScrollView(container, pair, vertical: true, horizontal: true, (MovementType)2, 0.5f, inertia: true, 0.2f, 75f, out var contentTransformComponent, out var horizontalScrollBar, out var verticalScrollBar, 0f, 1f, 0f, 0.96f);
 				cui.CreatePanel(container, pair, "0.2 0.2 0.2 1", null, 0f, 1f, 1f, 1f, 0f, 0f, -20f, -19f);
 				cui.CreatePanel(container, pair3, "0.2 0.2 0.2 1", null, 0f, 0f, 0f, 1f, 29f, 30f);
 				cui.CreatePanel(container, pair, "0.2 0.2 0.2 1", null, 0f, 0f, 0.96f, 1f, 29f, 30f);
@@ -7513,9 +7561,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 		public unsafe static SourceViewerTab MakeMethod(MonoProfiler.CallRecord call, int size = 8)
 		{
-			string type;
-			string method;
-			string content = SourceCodeBank.Parse(call.assembly_name.name, call.assembly_handle).ParseMethod(call.method_handle, out type, out method).Trim();
+			string content = SourceCodeBank.Parse(call.assembly_name.name, call.assembly_handle).ParseMethod(call.method_handle, out var type, out var method).Trim();
 			return Make("<color=#878787>" + type + ".</color>" + method, ProcessSyntaxHighlight(content), call.assembly_name.GetDisplayName(isCompared: true), size);
 		}
 
@@ -8440,10 +8486,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 		{
 			cui.CreatePanel(container, panel, "0.15 0.15 0.15 0.3", null, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 25f, blur: true);
 		}
-		CuiRectTransform contentTransformComponent;
-		CuiScrollbar horizontalScrollBar;
-		CuiScrollbar verticalScrollBar;
-		CUI.Pair<string, CuiElement> pair = cui.CreateScrollView(container, panel, vertical: false, horizontal: true, (MovementType)2, 0.5f, inertia: true, 0.3f, 120f, out contentTransformComponent, out horizontalScrollBar, out verticalScrollBar);
+		CUI.Pair<string, CuiElement> pair = cui.CreateScrollView(container, panel, vertical: false, horizontal: true, (MovementType)2, 0.5f, inertia: true, 0.3f, 120f, out var contentTransformComponent, out var horizontalScrollBar, out var _);
 		contentTransformComponent.AnchorMin = "0 0";
 		contentTransformComponent.AnchorMax = "0 1";
 		contentTransformComponent.OffsetMin = "0 0";
@@ -10753,7 +10796,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj3 is int || obj3 == null) ? true : false);
 				bool flag21 = flag;
 				int targetPos = (flag21 ? ((int)(obj3 ?? ((object)0))) : 0);
-				if (flag19 && flag20 && flag21)
+				if (flag19 & flag20 & flag21)
 				{
 					return CanAcceptItem(container, item, targetPos);
 				}
@@ -10850,7 +10893,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
 				bool flag26 = flag;
 				BasePlayer player = ((!flag26) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag25 && flag26)
+				if (flag25 & flag26)
 				{
 					return IModBackpack(mountable, player);
 				}
@@ -10864,7 +10907,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
 				bool flag58 = flag;
 				BasePlayer player5 = ((!flag58) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag57 && flag58)
+				if (flag57 & flag58)
 				{
 					return IValidDismountPosition(mountable2, player5);
 				}
@@ -10926,7 +10969,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
 				bool flag54 = flag;
 				BasePlayer player4 = ((!flag54) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag53 && flag54)
+				if (flag53 & flag54)
 				{
 					OnEntityDismounted(entity, player4);
 					return null;
@@ -10950,7 +10993,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj5 is float || obj5 == null) ? true : false);
 				bool flag40 = flag;
 				float maximumDistance = (flag40 ? ((float)(obj5 ?? ((object)0f))) : 0f);
-				if (flag36 && flag37 && flag38 && flag39 && flag40)
+				if (flag36 & flag37 & flag38 & flag39 & flag40)
 				{
 					return OnEntityDistanceCheck(ent, player2, id, debugName, maximumDistance);
 				}
@@ -10973,7 +11016,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj5 is float || obj5 == null) ? true : false);
 				bool flag49 = flag;
 				float maximumDistance2 = (flag49 ? ((float)(obj5 ?? ((object)0f))) : 0f);
-				if (flag45 && flag46 && flag47 && flag48 && flag49)
+				if (flag45 & flag46 & flag47 & flag48 & flag49)
 				{
 					return OnEntityVisibilityCheck(ent2, player3, id2, debugName2, maximumDistance2);
 				}
@@ -10990,7 +11033,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj3 is LogType || obj3 == null) ? true : false);
 				bool flag10 = flag;
 				LogType type = (LogType)(flag10 ? ((int)(LogType)(obj3 ?? ((object)(LogType)0))) : 0);
-				if (flag8 && flag9 && flag10)
+				if (flag8 & flag9 & flag10)
 				{
 					OnLog(condition, stackTrace, type);
 					return null;
@@ -11308,7 +11351,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 				flag = ((obj7 is float || obj7 == null) ? true : false);
 				bool flag67 = flag;
 				float offset = (flag67 ? ((float)(obj7 ?? ((object)0f))) : 0f);
-				if (flag61 && flag62 && flag63 && flag64 && flag65 && flag66 && flag67)
+				if (flag61 & flag62 & flag63 & flag64 & flag65 & flag66 & flag67)
 				{
 					TabButton(cui, container2, parent, text, command, width, offset, obj8 is bool flag68 && flag68, obj9 is bool flag69 && flag69);
 					return null;

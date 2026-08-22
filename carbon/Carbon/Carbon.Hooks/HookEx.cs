@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using API.Hooks;
 using Carbon.Extensions;
 using HarmonyLib;
@@ -14,6 +15,9 @@ public class HookEx : IDisposable, IHook
 
 	private readonly TypeInfo _patchMethod;
 
+	[CompilerGenerated]
+	private readonly MethodType _003CMethodType_003Ek__BackingField;
+
 	private bool hasDisposed;
 
 	public string HookName { get; }
@@ -24,7 +28,15 @@ public class HookEx : IDisposable, IHook
 
 	public Type TargetType { get; }
 
-	public MethodType MethodType { get; }
+	public MethodType MethodType
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CMethodType_003Ek__BackingField;
+		}
+	}
 
 	public string TargetMethod { get; }
 
@@ -120,6 +132,7 @@ public class HookEx : IDisposable, IHook
 		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01bb: Expected O, but got Unknown
+		base._002Ector();
 		try
 		{
 			Harmony.DEBUG = false;

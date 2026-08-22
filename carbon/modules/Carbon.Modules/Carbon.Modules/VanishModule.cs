@@ -275,9 +275,9 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 
 	private static VanishModule Singleton;
 
-	private readonly Handler Handler = new Handler();
+	private readonly Handler Handler;
 
-	private Dictionary<ulong, Vector3> _vanishedPlayers = new Dictionary<ulong, Vector3>(500);
+	private Dictionary<ulong, Vector3> _vanishedPlayers;
 
 	private BasePlayer _lastLooter;
 
@@ -291,7 +291,14 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 
 	public override Type Type => typeof(VanishModule);
 
-	public override VersionNumber Version => new VersionNumber(1, 0, 0);
+	public override VersionNumber Version
+	{
+		get
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			return new VersionNumber(1, 0, 0);
+		}
+	}
 
 	public override bool ForceModded => false;
 
@@ -540,7 +547,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				{
 					base.Puts((object)$"{player} just vanished at {((Component)player).transform.position}");
 				}
-				if (!flag && base.ConfigInstance.ToggleNoclipOnVanish && toggleNoclip && ((BaseNetworkable)player).net.connection.authLevel != 0 && !player.IsFlying)
+				if (((!flag && base.ConfigInstance.ToggleNoclipOnVanish) & toggleNoclip) && ((BaseNetworkable)player).net.connection.authLevel != 0 && !player.IsFlying)
 				{
 					player.SendConsoleCommand("noclip", Array.Empty<object>());
 				}
@@ -595,7 +602,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 			{
 				base.Puts((object)$"{player} unvanished at {((Component)player).transform.position}");
 			}
-			if (base.ConfigInstance.ToggleNoclipOnUnvanish && toggleNoclip && ((BaseNetworkable)player).net.connection.authLevel != 0 && player.IsFlying)
+			if ((base.ConfigInstance.ToggleNoclipOnUnvanish & toggleNoclip) && ((BaseNetworkable)player).net.connection.authLevel != 0 && player.IsFlying)
 			{
 				player.SendConsoleCommand("noclip", Array.Empty<object>());
 			}
@@ -737,7 +744,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				flag = ((obj2 is BasePlayer || obj2 == null) ? true : false);
 				bool flag13 = flag;
 				BasePlayer player6 = ((!flag13) ? ((BasePlayer)null) : ((BasePlayer)(obj2 ?? null)));
-				if (flag12 && flag13)
+				if (flag12 & flag13)
 				{
 					return CanBradleyApcTarget(apc, player6);
 				}
@@ -751,7 +758,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				flag = ((obj2 is ContainerIOEntity || obj2 == null) ? true : false);
 				bool flag11 = flag;
 				ContainerIOEntity container = ((!flag11) ? ((ContainerIOEntity)null) : ((ContainerIOEntity)(obj2 ?? null)));
-				if (flag10 && flag11)
+				if (flag10 & flag11)
 				{
 					CanLootEntity(player5, container);
 					return null;
@@ -766,7 +773,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				flag = ((obj2 is BaseLock || obj2 == null) ? true : false);
 				bool flag4 = flag;
 				BaseLock val = ((!flag4) ? ((BaseLock)null) : ((BaseLock)(obj2 ?? null)));
-				if (flag3 && flag4)
+				if (flag3 & flag4)
 				{
 					return CanUseLockedEntity(player2, val);
 				}
@@ -780,7 +787,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				flag = ((obj2 is HitInfo || obj2 == null) ? true : false);
 				bool flag15 = flag;
 				HitInfo hit = ((!flag15) ? ((HitInfo)null) : ((HitInfo)(obj2 ?? null)));
-				if (flag14 && flag15)
+				if (flag14 & flag15)
 				{
 					return OnPlayerAttack(player7, hit);
 				}
@@ -809,7 +816,7 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag8 = flag;
 				string[] args2 = (flag8 ? ((string[])(obj3 ?? null)) : null);
-				if (flag6 && flag7 && flag8)
+				if (flag6 & flag7 & flag8)
 				{
 					Vanish(player4, cmd, args2);
 					return null;
@@ -870,6 +877,8 @@ public class VanishModule : CarbonModule<VanishConfig, EmptyModuleData>
 		//IL_0047: Expected O, but got Unknown
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0052: Expected O, but got Unknown
+		Handler = new Handler();
+		_vanishedPlayers = new Dictionary<ulong, Vector3>(500);
 		GameObjectRef val = new GameObjectRef();
 		((ResourceRef<GameObject>)val).guid = "28ad47c8e6d313742a7a2740674a25b5";
 		_drownEffect = val;

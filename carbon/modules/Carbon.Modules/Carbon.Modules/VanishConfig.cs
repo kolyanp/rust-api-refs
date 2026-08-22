@@ -12,57 +12,85 @@ public class VanishConfig
 		public string Unvanishing = "assets/bundled/prefabs/fx/player/gutshot_scream.prefab";
 	}
 
-	public string VanishPermission = "vanish.allow";
+	public string VanishPermission;
 
-	public string VanishUnlockWhileVanishedPermission = "vanish.unlock";
+	public string VanishUnlockWhileVanishedPermission;
 
-	public string PermanentVanishPermission = "vanish.permanent";
+	public string PermanentVanishPermission;
 
-	public string VanishCommand = "vanish";
+	public string VanishCommand;
 
-	public bool ToggleNoclipOnVanish = true;
+	public bool ToggleNoclipOnVanish;
 
 	public bool ToggleNoclipOnUnvanish;
 
-	public string InvisibleText = "You are currently invisible.";
+	public string InvisibleText;
 
-	public int InvisibleTextSize = 10;
+	public int InvisibleTextSize;
 
-	public string InvisibleTextColor = "#8bba49";
+	public string InvisibleTextColor;
 
 	[JsonProperty("InvisibleTextAnchor [Anchor]")]
-	public TextAnchor InvisibleTextAnchor = (TextAnchor)7;
+	public TextAnchor InvisibleTextAnchor;
 
-	public float[] InvisibleTextAnchorX = new float[2] { 0f, 1f };
+	public float[] InvisibleTextAnchorX;
 
-	public float[] InvisibleTextAnchorY = new float[2] { 0f, 0.025f };
+	public float[] InvisibleTextAnchorY;
 
-	public string InvisibleIconUrl = "";
+	public string InvisibleIconUrl;
 
-	public string InvisibleIconColor = "1 1 1 0.3";
+	public string InvisibleIconColor;
 
-	public float[] InvisibleIconMinAnchor = new float[2] { 0.5f, 0f };
+	public float[] InvisibleIconMinAnchor;
 
-	public float[] InvisibleIconMaxAnchor = new float[2] { 0.5f, 0f };
+	public float[] InvisibleIconMaxAnchor;
 
-	public float[] InvisibleIconMinOffset = new float[2] { -350f, 15f };
+	public float[] InvisibleIconMinOffset;
 
-	public float[] InvisibleIconMaxOffset = new float[2] { -250f, 125f };
+	public float[] InvisibleIconMaxOffset;
 
-	public EffectConfig Effect = new EffectConfig();
+	public EffectConfig Effect;
 
 	public bool BroadcastVanishSounds;
 
-	public bool WhooshSoundOnVanish = true;
+	public bool WhooshSoundOnVanish;
 
-	public bool GutshotScreamOnUnvanish = true;
+	public bool GutshotScreamOnUnvanish;
 
-	public bool EnableLogs = true;
+	public bool EnableLogs;
 
 	public bool TeleportBackOnUnvanish;
 
-	public bool CanDamageWhenVanished = true;
+	public bool CanDamageWhenVanished;
 
 	[JsonProperty("[Anchor] Legend")]
 	public string AnchorLegend => "(0=UpperLeft, 1=UpperCenter, 2=UpperRight, 3=MiddleLeft, 4=MiddleCenter, 5=MiddleRight, 6=LowerLeft, 7=LowerCenter, 8=LowerRight)";
+
+	public VanishConfig()
+	{
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		VanishPermission = "vanish.allow";
+		VanishUnlockWhileVanishedPermission = "vanish.unlock";
+		PermanentVanishPermission = "vanish.permanent";
+		VanishCommand = "vanish";
+		ToggleNoclipOnVanish = true;
+		InvisibleText = "You are currently invisible.";
+		InvisibleTextSize = 10;
+		InvisibleTextColor = "#8bba49";
+		InvisibleTextAnchor = (TextAnchor)7;
+		InvisibleTextAnchorX = new float[2] { 0f, 1f };
+		InvisibleTextAnchorY = new float[2] { 0f, 0.025f };
+		InvisibleIconUrl = "";
+		InvisibleIconColor = "1 1 1 0.3";
+		InvisibleIconMinAnchor = new float[2] { 0.5f, 0f };
+		InvisibleIconMaxAnchor = new float[2] { 0.5f, 0f };
+		InvisibleIconMinOffset = new float[2] { -350f, 15f };
+		InvisibleIconMaxOffset = new float[2] { -250f, 125f };
+		Effect = new EffectConfig();
+		WhooshSoundOnVanish = true;
+		GutshotScreamOnUnvanish = true;
+		EnableLogs = true;
+		CanDamageWhenVanished = true;
+		base._002Ector();
+	}
 }

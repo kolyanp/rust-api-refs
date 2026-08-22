@@ -12,22 +12,15 @@ namespace Oxide.Game.Rust.Cui;
 
 public static class CuiHelper
 {
-	private static readonly JsonSerializerSettings _settings = new JsonSerializerSettings
-	{
-		DefaultValueHandling = (DefaultValueHandling)1,
-		NullValueHandling = (NullValueHandling)1,
-		DateParseHandling = (DateParseHandling)0,
-		FloatFormatHandling = (FloatFormatHandling)1,
-		StringEscapeHandling = (StringEscapeHandling)0
-	};
+	private static readonly JsonSerializerSettings _settings;
 
-	private static readonly JsonSerializer _serializer = JsonSerializer.Create(_settings);
+	private static readonly JsonSerializer _serializer;
 
-	private static readonly ThreadLocal<JsonContext> _jsonContext = new ThreadLocal<JsonContext>(() => new JsonContext());
+	private static readonly ThreadLocal<JsonContext> _jsonContext;
 
-	private static readonly ThreadLocal<StringBuilder> _colorSb = new ThreadLocal<StringBuilder>(() => new StringBuilder(32));
+	private static readonly ThreadLocal<StringBuilder> _colorSb;
 
-	public static Dictionary<BasePlayer, HashSet<string>> ActivePanels { get; } = new Dictionary<BasePlayer, HashSet<string>>();
+	public static Dictionary<BasePlayer, HashSet<string>> ActivePanels { get; }
 
 	public static HashSet<string> GetActivePanelList(BasePlayer player)
 	{
@@ -154,5 +147,28 @@ public static class CuiHelper
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		return ColorEx.Parse(elem.Color);
+	}
+
+	static CuiHelper()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Expected O, but got Unknown
+		ActivePanels = new Dictionary<BasePlayer, HashSet<string>>();
+		_settings = new JsonSerializerSettings
+		{
+			DefaultValueHandling = (DefaultValueHandling)1,
+			NullValueHandling = (NullValueHandling)1,
+			DateParseHandling = (DateParseHandling)0,
+			FloatFormatHandling = (FloatFormatHandling)1,
+			StringEscapeHandling = (StringEscapeHandling)0
+		};
+		_serializer = JsonSerializer.Create(_settings);
+		_jsonContext = new ThreadLocal<JsonContext>(() => new JsonContext());
+		_colorSb = new ThreadLocal<StringBuilder>(() => new StringBuilder(32));
 	}
 }

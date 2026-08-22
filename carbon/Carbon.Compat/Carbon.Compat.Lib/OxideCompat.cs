@@ -95,18 +95,6 @@ public static class OxideCompat
 		return Defines.GetExtensionsFolder();
 	}
 
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static Oxide.Plugins.Timer TimerOnce(PluginTimers timer, float delay, Action callback, Plugin owner = null)
-	{
-		return timer.Once(delay, callback);
-	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static Oxide.Plugins.Timer TimerRepeat(PluginTimers timer, float delay, int reps, Action callback, Plugin owner = null)
-	{
-		return timer.Repeat(delay, reps, callback);
-	}
-
 	static OxideCompat()
 	{
 		modPackages = new Dictionary<Assembly, ModLoader.Package>();

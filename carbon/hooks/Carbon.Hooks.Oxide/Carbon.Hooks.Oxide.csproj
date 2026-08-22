@@ -6,7 +6,7 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>15.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <Reference Include="Rust.Localization" />
     <Reference Include="UnityEngine.CoreModule" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.10/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Carbon.Common" />
     <Reference Include="Rust.Data" />

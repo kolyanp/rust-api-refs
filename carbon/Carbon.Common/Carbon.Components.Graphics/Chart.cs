@@ -248,7 +248,7 @@ public struct Chart
 			float y = chartY + chartHeight - (float)data[i] * (chartHeight / (float)num);
 			float nextX = (flag ? x : (chartX + num2 * (float)(i + 1)));
 			float nextY = (flag ? y : (chartY + chartHeight - (float)data[i + 1] * (chartHeight / (float)num)));
-			for (float num3 = 1f; num3 < (float)layerSettings.Shadows; num3 += 1f)
+			for (float num3 = 1f; num3 < (float)layerSettings.Shadows; num3++)
 			{
 				CreateShadow(num3.Scale(0f, layerSettings.Shadows, 1f, 0.75f), (int)num3.Scale(0f, layerSettings.Shadows, 25f, 0f));
 			}

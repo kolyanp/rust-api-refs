@@ -15,7 +15,14 @@ public class WhitelistModule : CarbonModule<WhitelistConfig, EmptyModuleData>
 
 	public override string Name => "Whitelist";
 
-	public override VersionNumber Version => new VersionNumber(1, 0, 0);
+	public override VersionNumber Version
+	{
+		get
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			return new VersionNumber(1, 0, 0);
+		}
+	}
 
 	public override Type Type => typeof(WhitelistModule);
 
@@ -117,7 +124,7 @@ public class WhitelistModule : CarbonModule<WhitelistConfig, EmptyModuleData>
 				flag = ((obj3 is string || obj3 == null) ? true : false);
 				bool flag4 = flag;
 				string ipAddress = (flag4 ? ((string)(obj3 ?? null)) : null);
-				if (flag2 && flag3 && flag4)
+				if (flag2 & flag3 & flag4)
 				{
 					return CanUserLogin(name, id, ipAddress);
 				}

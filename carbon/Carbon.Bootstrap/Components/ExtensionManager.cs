@@ -69,22 +69,13 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 
 	private readonly string[] _directories = new string[1] { Context.CarbonExtensions };
 
-	private static readonly string[] _references = new string[4]
-	{
-		Context.CarbonExtensions,
-		Context.CarbonManaged,
-		Context.CarbonLib,
-		Context.GameManaged
-	};
+	private static readonly string[] _references;
 
-	public static Dictionary<string, Assembly> ExtensionAssemblyCache = new Dictionary<string, Assembly>();
+	public static Dictionary<string, Assembly> ExtensionAssemblyCache;
 
 	public static Resolver ResolverInstance;
 
-	public static ReaderParameters ReadingParameters = new ReaderParameters
-	{
-		AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
-	};
+	public static ReaderParameters ReadingParameters;
 
 	internal List<string> _created = new List<string>();
 
@@ -287,5 +278,24 @@ internal sealed class ExtensionManager : AddonManager, IExtensionManager, IAddon
 		}
 		Pool.Free<CarbonEventArgs>(ref e);
 		base._loaded.Remove(item);
+	}
+
+	static ExtensionManager()
+	{
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		_references = new string[4]
+		{
+			Context.CarbonExtensions,
+			Context.CarbonManaged,
+			Context.CarbonLib,
+			Context.GameManaged
+		};
+		ExtensionAssemblyCache = new Dictionary<string, Assembly>();
+		ReadingParameters = new ReaderParameters
+		{
+			AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
+		};
 	}
 }

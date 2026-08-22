@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Immutable;
 using System.IO;
 using AsmResolver.DotNet;
@@ -20,9 +19,9 @@ public abstract class BaseConverter
 		public byte[] Buffer;
 	}
 
-	internal static ManagedPEImageBuilder _imageBuilder = new ManagedPEImageBuilder();
+	internal static ManagedPEImageBuilder _imageBuilder;
 
-	internal static ManagedPEFileBuilder _fileBuilder = new ManagedPEFileBuilder();
+	internal static ManagedPEFileBuilder _fileBuilder;
 
 	public abstract ImmutableList<IAssemblyPatch> Patches { get; }
 
@@ -32,22 +31,11 @@ public abstract class BaseConverter
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0007: Expected O, but got Unknown
-		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		ReferenceImporter importer = new ReferenceImporter(asm);
-		Enumerator<IAssemblyPatch> enumerator = Patches.GetEnumerator();
-		try
+		foreach (IAssemblyPatch patch in Patches)
 		{
-			while (enumerator.MoveNext())
-			{
-				IAssemblyPatch current = enumerator.Current;
-				current.Apply(asm, importer, ref ctx);
-			}
-		}
-		finally
-		{
-			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+			patch.Apply(asm, importer, ref ctx);
 		}
 		PEImageBuildResult val = _imageBuilder.CreateImage(asm);
 		if (val.HasFailed)
@@ -57,5 +45,15 @@ public abstract class BaseConverter
 		using MemoryStream memoryStream = new MemoryStream();
 		((PEFileBuilderBase<ManagedPEBuilderContext>)(object)_fileBuilder).CreateFile(val.ConstructedImage).Write((Stream)memoryStream);
 		return memoryStream.ToArray();
+	}
+
+	static BaseConverter()
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000a: Expected O, but got Unknown
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		_imageBuilder = new ManagedPEImageBuilder();
+		_fileBuilder = new ManagedPEFileBuilder();
 	}
 }

@@ -15,7 +15,7 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 
 	private readonly string _chroot;
 
-	public JsonSerializerSettings Settings { get; set; } = new JsonSerializerSettings();
+	public JsonSerializerSettings Settings { get; set; }
 
 	public object this[string key]
 	{
@@ -58,12 +58,13 @@ public class DynamicConfigFile : ConfigFile, IEnumerable<KeyValuePair<string, ob
 	}
 
 	public DynamicConfigFile(string filename)
-		: base(filename)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Expected O, but got Unknown
 		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Expected O, but got Unknown
+		Settings = new JsonSerializerSettings();
+		base._002Ector(filename);
 		_keyvalues = new Dictionary<string, object>();
 		_settings = new JsonSerializerSettings();
 		_settings.Converters.Add((JsonConverter)(object)new KeyValuesConverter());

@@ -16,6 +16,7 @@ public class Category_Plugin
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Plugin")]
 		[Info("Gets called right after config and lang phrases are read.")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class Init : Patch
 		{
@@ -29,6 +30,7 @@ public class Category_Plugin
 		[Category("Plugin")]
 		[Info("Gets called when originally there aren't message found in the `carbon/lang` folder.")]
 		[Info("Gets called when it initially creates the `carbon/lang` files for the plugin.")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class LoadDefaultMessages : Patch
 		{
@@ -41,6 +43,7 @@ public class Category_Plugin
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Plugin")]
 		[Info("Gets called when the plugin executes the Load method on the plugin.")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class Loaded : Patch
 		{
@@ -53,6 +56,7 @@ public class Category_Plugin
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Plugin")]
 		[Info("Gets called when the plugin executes the Load method on the plugin.")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnLoaded : Patch
 		{
@@ -67,6 +71,7 @@ public class Category_Plugin
 		[Info("Gets called whenever a plugin compilation fails.")]
 		[Parameter("pluginName", typeof(string), false)]
 		[Parameter("error", typeof(Exception), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnPluginCompileFailure : Patch
 		{
 		}
@@ -80,6 +85,7 @@ public class Category_Plugin
 		[Parameter("newVersion", typeof(VersionNumber), false)]
 		[Parameter("plugin", typeof(Plugin), false)]
 		[Parameter("vendorName", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnPluginOutdated : Patch
 		{
 		}
@@ -91,6 +97,7 @@ public class Category_Plugin
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Plugin")]
 		[Info("Gets called when the plugin has fully shut down and disposed.")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class Unload : Patch
 		{

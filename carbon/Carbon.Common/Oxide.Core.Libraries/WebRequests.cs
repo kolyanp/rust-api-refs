@@ -18,6 +18,8 @@ public class WebRequests : Library
 		{
 			public int StatusCode { get; private set; }
 
+			public int Timeout { get; set; }
+
 			public DecompressionMethods AutomaticDecompression { get; set; } = DecompressionMethods.GZip;
 
 			public Client()
@@ -38,6 +40,10 @@ public class WebRequests : Library
 				}
 				catch (WebException ex)
 				{
+					if (ex.Response == null)
+					{
+						throw;
+					}
 					webResponse = ex.Response;
 					if (webResponse is HttpWebResponse httpWebResponse2)
 					{
@@ -60,6 +66,10 @@ public class WebRequests : Library
 				}
 				catch (WebException ex)
 				{
+					if (ex.Response == null)
+					{
+						throw;
+					}
 					webResponse = ex.Response;
 					if (webResponse is HttpWebResponse httpWebResponse2)
 					{
@@ -72,11 +82,19 @@ public class WebRequests : Library
 			protected override System.Net.WebRequest GetWebRequest(Uri address)
 			{
 				HttpWebRequest httpWebRequest = base.GetWebRequest(address) as HttpWebRequest;
-				httpWebRequest.UserAgent = Community.Runtime.Analytics.UserAgent;
-				httpWebRequest.AutomaticDecompression = AutomaticDecompression;
-				if (Community.IsConfigReady && !string.IsNullOrEmpty(Community.Runtime.Config.WebRequestIp))
+				if (string.IsNullOrEmpty(httpWebRequest.UserAgent))
 				{
-					httpWebRequest.ServicePoint.BindIPEndPointDelegate = (ServicePoint _, IPEndPoint _, int _) => new IPEndPoint(IPAddress.Parse(Community.Runtime.Config.WebRequestIp), 0);
+					httpWebRequest.UserAgent = Community.Runtime.Analytics.UserAgent;
+				}
+				httpWebRequest.AutomaticDecompression = AutomaticDecompression;
+				if (Timeout > 0)
+				{
+					httpWebRequest.Timeout = Timeout;
+				}
+				if (!address.IsLoopback && Community.IsConfigReady && IPAddress.TryParse(Community.Runtime.Config.WebRequestIp, out IPAddress address2))
+				{
+					IPEndPoint bindEndPoint = new IPEndPoint(address2, 0);
+					httpWebRequest.ServicePoint.BindIPEndPointDelegate = (ServicePoint _, IPEndPoint _, int _) => bindEndPoint;
 				}
 				return httpWebRequest;
 			}
@@ -151,6 +169,8 @@ public class WebRequests : Library
 			_client.Proxy = null;
 			_client.Encoding = Encoding.UTF8;
 			_client.AutomaticDecompression = DecompressionMethod;
+			float num = ((Timeout <= 0f) ? WebRequests.Timeout : Timeout) * 1000f;
+			_client.Timeout = ((num >= 2.1474836E+09f) ? int.MaxValue : ((int)num));
 			if (RequestHeaders != null && RequestHeaders.Count > 0)
 			{
 				foreach (KeyValuePair<string, string> requestHeader in RequestHeaders)
@@ -352,6 +372,8 @@ public class WebRequests : Library
 			_client = null;
 		}
 	}
+
+	public static float Timeout = 30f;
 
 	public WebRequests()
 	{

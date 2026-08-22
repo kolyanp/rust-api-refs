@@ -14,13 +14,13 @@ public class Category_Electronic
 	public class Electronic_IOEntity
 	{
 		[Patch("OnOutputUpdate", "OnOutputUpdate", "IOEntity", "UpdateOutputs", new string[] { })]
-		[Identifier("4be095a6352643ae8751e1add16bd2bd")]
+		[Identifier("1e7c433b9acc4e6586db6954736be9cd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "IOEntity", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_IOEntity_4be095a6352643ae8751e1add16bd2bd : Patch
+		public class Electronic_IOEntity_1e7c433b9acc4e6586db6954736be9cd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -52,13 +52,13 @@ public class Category_Electronic
 		}
 
 		[Patch("OnInputUpdate", "OnInputUpdate", "IOEntity", "UpdateFromInput", new string[] { "System.Int32", "System.Int32" })]
-		[Identifier("6d5cc8206f074fde924348e79898857e")]
+		[Identifier("167a37741ee0460ca7e5b2eb50057b3f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "IOEntity", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_IOEntity_6d5cc8206f074fde924348e79898857e : Patch
+		public class Electronic_IOEntity_167a37741ee0460ca7e5b2eb50057b3f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -97,7 +97,7 @@ public class Category_Electronic
 	public class Electronic_CardReader
 	{
 		[Patch("OnCardSwipe", "OnCardSwipe", "CardReader", "ServerCardSwiped", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("8e42e74c09664858ad3ef72240f92608")]
+		[Identifier("2677005d5a0246d1a4f0fee0ffdf52af")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CardReader", false)]
 		[Parameter("local2", "Keycard", false)]
@@ -105,7 +105,7 @@ public class Category_Electronic
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_CardReader_8e42e74c09664858ad3ef72240f92608 : Patch
+		public class Electronic_CardReader_2677005d5a0246d1a4f0fee0ffdf52af : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -142,13 +142,13 @@ public class Category_Electronic
 	public class Electronic_DigitalClock
 	{
 		[Patch("OnDigitalClockRing", "OnDigitalClockRing", "DigitalClock", "Ring", new string[] { })]
-		[Identifier("24c21fad2113444ca93fc9d998b94463")]
+		[Identifier("03065cf67e2b42178825222e37188cdc")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DigitalClock", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_DigitalClock_24c21fad2113444ca93fc9d998b94463 : Patch
+		public class Electronic_DigitalClock_03065cf67e2b42178825222e37188cdc : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -178,13 +178,13 @@ public class Category_Electronic
 		}
 
 		[Patch("OnDigitalClockRingStop", "OnDigitalClockRingStop", "DigitalClock", "StopRinging", new string[] { })]
-		[Identifier("e3aabdbd57cb411eb5d7f1d1b8defbed")]
+		[Identifier("d27a9662815c41918b648fa8352af62c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DigitalClock", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_DigitalClock_e3aabdbd57cb411eb5d7f1d1b8defbed : Patch
+		public class Electronic_DigitalClock_d27a9662815c41918b648fa8352af62c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -214,14 +214,14 @@ public class Category_Electronic
 		}
 
 		[Patch("OnDigitalClockAlarmsSet", "OnDigitalClockAlarmsSet", "DigitalClock", "RPC_SetAlarms", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e16e896088c3434ea139272c45ecc426")]
+		[Identifier("0370b2d996df4baf9b529fde32a74218")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "DigitalClock", false)]
 		[Parameter("local0", "ProtoBuf.DigitalClockMessage", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_DigitalClock_e16e896088c3434ea139272c45ecc426 : Patch
+		public class Electronic_DigitalClock_0370b2d996df4baf9b529fde32a74218 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -258,14 +258,14 @@ public class Category_Electronic
 	public class Electronic_PressButton
 	{
 		[Patch("OnButtonPress", "OnButtonPress", "PressButton", "RPC_Press", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("57c181308d3044c793cb5bd34dd43875")]
+		[Identifier("9f612e18da074e1fac2c900bec88a98a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PressButton", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PressButton_57c181308d3044c793cb5bd34dd43875 : Patch
+		public class Electronic_PressButton_9f612e18da074e1fac2c900bec88a98a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -301,7 +301,7 @@ public class Category_Electronic
 	public class Electronic_PhoneController
 	{
 		[Patch("OnPhoneNameUpdate", "OnPhoneNameUpdate", "PhoneController", "UpdatePhoneName", new string[] { "System.String" })]
-		[Identifier("409157c3d2ca4d03b015e2c7fbc6167e")]
+		[Identifier("d095125cf27544819fbeb1638f24b90f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("newName", "System.String", false)]
@@ -309,7 +309,7 @@ public class Category_Electronic
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PhoneController_409157c3d2ca4d03b015e2c7fbc6167e : Patch
+		public class Electronic_PhoneController_d095125cf27544819fbeb1638f24b90f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -344,7 +344,7 @@ public class Category_Electronic
 		}
 
 		[Patch("OnPhoneNameUpdated", "OnPhoneNameUpdated", "PhoneController", "UpdatePhoneName", new string[] { "System.String" })]
-		[Identifier("9555a3f651da4d4baaa568de234d5f59")]
+		[Identifier("881989ffd4a6430c9c281dcf63ad584b")]
 		[Dependencies(new string[] { "OnPhoneNameUpdate" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
@@ -352,7 +352,7 @@ public class Category_Electronic
 		[Parameter("self2", "PhoneController", false)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PhoneController_9555a3f651da4d4baaa568de234d5f59 : Patch
+		public class Electronic_PhoneController_881989ffd4a6430c9c281dcf63ad584b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -387,14 +387,14 @@ public class Category_Electronic
 	public class Electronic_SolarPanel
 	{
 		[Patch("OnSolarPanelSunUpdate", "OnSolarPanelSunUpdate", "SolarPanel", "SunUpdate", new string[] { })]
-		[Identifier("c660eda5568642b8b64918d1bd3cdfc8")]
+		[Identifier("f6910b9870ef44d58abe35ba7f70aff2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SolarPanel", false)]
 		[Parameter("local0", "System.Int32", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_SolarPanel_c660eda5568642b8b64918d1bd3cdfc8 : Patch
+		public class Electronic_SolarPanel_f6910b9870ef44d58abe35ba7f70aff2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -430,13 +430,13 @@ public class Category_Electronic
 	public class Electronic_AutoTurret
 	{
 		[Patch("OnEntityControl", "OnEntityControl [AutoTurret]", "AutoTurret", "CanControl", new string[] { "System.UInt64" })]
-		[Identifier("d194231b5a334059965ef6885b432ff4")]
+		[Identifier("a837cc63b8bc45bbbb588948be9a6b0d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "AutoTurret", false)]
 		[Return(typeof(bool))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_AutoTurret_d194231b5a334059965ef6885b432ff4 : Patch
+		public class Electronic_AutoTurret_a837cc63b8bc45bbbb588948be9a6b0d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -478,13 +478,13 @@ public class Category_Electronic
 	public class Electronic_PoweredRemoteControlEntity
 	{
 		[Patch("OnEntityControl", "OnEntityControl [PoweredRemoteControl]", "PoweredRemoteControlEntity", "CanControl", new string[] { "System.UInt64" })]
-		[Identifier("4d9016a5499b423ead842f892de1b6f5")]
+		[Identifier("c26ebe8c139748158b1c57cbfcb13b87")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PoweredRemoteControlEntity", false)]
 		[Return(typeof(bool))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PoweredRemoteControlEntity_4d9016a5499b423ead842f892de1b6f5 : Patch
+		public class Electronic_PoweredRemoteControlEntity_c26ebe8c139748158b1c57cbfcb13b87 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -526,13 +526,13 @@ public class Category_Electronic
 	public class Electronic_RemoteControlEntity
 	{
 		[Patch("OnEntityControl", "OnEntityControl [RemoteControlEntity]", "RemoteControlEntity", "CanControl", new string[] { "System.UInt64" })]
-		[Identifier("2632ed23aa6143dda005ef746292d602")]
+		[Identifier("10ebb8daef554a8f9084d237314688ae")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RemoteControlEntity", false)]
 		[Return(typeof(bool))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_RemoteControlEntity_2632ed23aa6143dda005ef746292d602 : Patch
+		public class Electronic_RemoteControlEntity_10ebb8daef554a8f9084d237314688ae : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -574,13 +574,13 @@ public class Category_Electronic
 	public class Electronic_IOEntityIORef
 	{
 		[Patch("OnIORefCleared", "OnIORefCleared", "IOEntity/IORef", "Clear", new string[] { })]
-		[Identifier("12ee1d9c50a74ee29e83e4ae235ae6ac")]
+		[Identifier("5989543463dd4913b258a5f4d4025bba")]
 		[Dependencies(new string[] { "OnIORefCleared [patch]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "IOEntity+IORef", false)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_IOEntityIORef_12ee1d9c50a74ee29e83e4ae235ae6ac : Patch
+		public class Electronic_IOEntityIORef_5989543463dd4913b258a5f4d4025bba : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -608,11 +608,11 @@ public class Category_Electronic
 		}
 
 		[Patch("OnIORefCleared [patch]", "OnIORefCleared [patch]", "IOEntity/IORef", "Clear", new string[] { })]
-		[Identifier("27dce8e0081346eb9b05b38ba925bcd9")]
+		[Identifier("b769a9d898254aa6bea99f20c47834a1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_IOEntityIORef_27dce8e0081346eb9b05b38ba925bcd9 : Patch
+		public class Electronic_IOEntityIORef_b769a9d898254aa6bea99f20c47834a1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -638,14 +638,14 @@ public class Category_Electronic
 	public class Electronic_CCTVRC
 	{
 		[Patch("OnCCTVDirectionChange", "OnCCTVDirectionChange", "CCTV_RC", "Server_SetDir", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("efecb93240cc46eba1c2888dc4d18155")]
+		[Identifier("11df525ac1b54666836564d14375c9f1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CCTV_RC", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_CCTVRC_efecb93240cc46eba1c2888dc4d18155 : Patch
+		public class Electronic_CCTVRC_11df525ac1b54666836564d14375c9f1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -680,14 +680,14 @@ public class Category_Electronic
 	public class Electronic_ExcavatorSignalComputer
 	{
 		[Patch("OnExcavatorSuppliesRequest", "OnExcavatorSuppliesRequest", "ExcavatorSignalComputer", "RequestSupplies", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d77ca7247d5a41a5b72ba99062cafcd3")]
+		[Identifier("d8c4c950e7b143ad885602e26f06859d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ExcavatorSignalComputer", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_ExcavatorSignalComputer_d77ca7247d5a41a5b72ba99062cafcd3 : Patch
+		public class Electronic_ExcavatorSignalComputer_d8c4c950e7b143ad885602e26f06859d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -722,7 +722,7 @@ public class Category_Electronic
 		}
 
 		[Patch("OnExcavatorSuppliesRequested", "OnExcavatorSuppliesRequested", "ExcavatorSignalComputer", "RequestSupplies", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1d380ace899647e187d28611bdcd5788")]
+		[Identifier("a4afd02042624587a1b605a5eee82b66")]
 		[Dependencies(new string[] { "OnExcavatorSuppliesRequest" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ExcavatorSignalComputer", false)]
@@ -730,7 +730,7 @@ public class Category_Electronic
 		[Parameter("local0", "BaseEntity", false)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_ExcavatorSignalComputer_1d380ace899647e187d28611bdcd5788 : Patch
+		public class Electronic_ExcavatorSignalComputer_a4afd02042624587a1b605a5eee82b66 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -764,11 +764,11 @@ public class Category_Electronic
 	public class Electronic_PowerCounter
 	{
 		[Patch("OnCounterTargetChange", "OnCounterTargetChange", "PowerCounter", "SERVER_SetTarget", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("8d2ab527eae94d7a889b0a34e4504ef3")]
+		[Identifier("f4e9b3bc7c4d4c53bd38c8fca771dda5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PowerCounter_8d2ab527eae94d7a889b0a34e4504ef3 : Patch
+		public class Electronic_PowerCounter_f4e9b3bc7c4d4c53bd38c8fca771dda5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -828,12 +828,12 @@ public class Category_Electronic
 		}
 
 		[Patch("OnCounterTargetChange [patch]", "OnCounterTargetChange [patch]", "PowerCounter", "SERVER_SetTarget", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("9e230b6534444480bd5ac3d50c1db5f9")]
+		[Identifier("068fa6ed9e214f7e9404be637253afd0")]
 		[Dependencies(new string[] { "OnCounterTargetChange" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PowerCounter_9e230b6534444480bd5ac3d50c1db5f9 : Patch
+		public class Electronic_PowerCounter_068fa6ed9e214f7e9404be637253afd0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -873,11 +873,11 @@ public class Category_Electronic
 		}
 
 		[Patch("OnCounterModeToggle", "OnCounterModeToggle", "PowerCounter", "ToggleDisplayMode", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("45ee0f24a56e47528b079ae92db76ddc")]
+		[Identifier("d1bcf6a0957145389ed89684dbfef139")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PowerCounter_45ee0f24a56e47528b079ae92db76ddc : Patch
+		public class Electronic_PowerCounter_d1bcf6a0957145389ed89684dbfef139 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -937,12 +937,12 @@ public class Category_Electronic
 		}
 
 		[Patch("OnCounterModeToggle [patch]", "OnCounterModeToggle [patch]", "PowerCounter", "ToggleDisplayMode", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("afcfbafa553647e68c571657e1ebfe36")]
+		[Identifier("e2bc8c9a2cd84b3f93e7ccbc787cd0ca")]
 		[Dependencies(new string[] { "OnCounterModeToggle" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_PowerCounter_afcfbafa553647e68c571657e1ebfe36 : Patch
+		public class Electronic_PowerCounter_e2bc8c9a2cd84b3f93e7ccbc787cd0ca : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -985,11 +985,11 @@ public class Category_Electronic
 	public class Electronic_HBHFSensor
 	{
 		[Patch("OnSensorDetect", "OnSensorDetect", "HBHFSensor", "CountDetectedPlayers", new string[] { })]
-		[Identifier("10f19047c13646b286b2bf78a12ee88c")]
+		[Identifier("89f1cdb58ed5416494e1c82634cf7d9c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Electronic")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Electronic_HBHFSensor_10f19047c13646b286b2bf78a12ee88c : Patch
+		public class Electronic_HBHFSensor_89f1cdb58ed5416494e1c82634cf7d9c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -106,10 +106,7 @@ public class FileModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 				cui.CreateText(container, pair2, "1 1 1 0.2", "SIZE", 12, 0.8f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, (TextAnchor)0, CUI.Handler.FontTypes.RobotoCondensedRegular, (VerticalWrapMode)1);
 				CUI.Pair<string, CuiElement, CuiElement> pair3 = cui.CreateProtectedButton(container, pair, "0.5 0 0 0.4", Cache.CUI.BlankColor, string.Empty, 0, null, 0.955f, 0.99f, 0.95f, 0.99f, 0f, 0f, 0f, 0f, "file.action cancel", (TextAnchor)4);
 				cui.CreateImage(container, pair3, "close", "1 0.5 0.5 0.3", null, 0.2f, 0.8f, 0.2f, 0.8f);
-				CuiRectTransform contentTransformComponent;
-				CuiScrollbar horizontalScrollBar;
-				CuiScrollbar verticalScrollBar;
-				CUI.Pair<string, CuiElement> pair4 = cui.CreateScrollView(container, pair, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 30f, out contentTransformComponent, out horizontalScrollBar, out verticalScrollBar, 0.01f, 1f, 0f, 0.85f, 0f, 0f, 0.04f);
+				CUI.Pair<string, CuiElement> pair4 = cui.CreateScrollView(container, pair, vertical: true, horizontal: false, (MovementType)1, 0.1f, inertia: true, 0.1f, 30f, out var contentTransformComponent, out var _, out var verticalScrollBar, 0.01f, 1f, 0f, 0.85f, 0f, 0f, 0.04f);
 				cui.CreatePanel(container, pair4, Cache.CUI.BlankColor);
 				verticalScrollBar.Size = 3f;
 				verticalScrollBar.Invert = true;

@@ -160,7 +160,14 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 
 	public override string Name => "AutoWipe";
 
-	public override VersionNumber Version => new VersionNumber(2, 0, 0);
+	public override VersionNumber Version
+	{
+		get
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			return new VersionNumber(2, 0, 0);
+		}
+	}
 
 	public override Type Type => typeof(AutoWipeModule);
 
@@ -668,7 +675,7 @@ public class AutoWipeModule : CarbonModule<AutoWipeConfig, AutoWipeData>
 				flag = ((obj3 is string[] || obj3 == null) ? true : false);
 				bool flag7 = flag;
 				string[] args2 = (flag7 ? ((string[])(obj3 ?? null)) : null);
-				if (flag5 && flag6 && flag7)
+				if (flag5 & flag6 & flag7)
 				{
 					WipeChat(player, cmd, args2);
 					return null;

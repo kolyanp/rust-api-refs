@@ -13,6 +13,8 @@ public class Timer : Library
 	{
 		public Plugin Plugin { get; set; }
 
+		public Plugin Owner => Plugin;
+
 		internal Timer OwnerTimers { get; set; }
 
 		public Action Activity { get; set; }

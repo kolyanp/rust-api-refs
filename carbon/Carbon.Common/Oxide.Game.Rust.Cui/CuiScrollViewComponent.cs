@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine.UI;
@@ -6,6 +7,9 @@ namespace Oxide.Game.Rust.Cui;
 
 public class CuiScrollViewComponent : ICuiComponent, ICuiEnableable
 {
+	[CompilerGenerated]
+	private MovementType _003CMovementType_003Ek__BackingField;
+
 	public string Type => "UnityEngine.UI.ScrollView";
 
 	[JsonProperty(/*Could not decode attribute arguments.*/)]
@@ -16,7 +20,22 @@ public class CuiScrollViewComponent : ICuiComponent, ICuiEnableable
 
 	[JsonProperty("movementType")]
 	[JsonConverter(typeof(StringEnumConverter))]
-	public MovementType MovementType { get; set; }
+	public MovementType MovementType
+	{
+		[CompilerGenerated]
+		get
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			return _003CMovementType_003Ek__BackingField;
+		}
+		[CompilerGenerated]
+		set
+		{
+			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			_003CMovementType_003Ek__BackingField = value;
+		}
+	}
 
 	[JsonProperty("elasticity")]
 	public float Elasticity { get; set; }

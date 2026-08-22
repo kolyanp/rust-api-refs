@@ -138,29 +138,29 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 
 	public ListHashSet<Func<BaseEntity, bool, (string name, string color, string command, bool shouldShow)>> CustomButons = new ListHashSet<Func<BaseEntity, bool, (string, string, string, bool)>>();
 
-	private static readonly Phrase destroyingBuildingCancelledPhrase = new Phrase("destroyedbuildingCancelled", "Destroying building: <color=white>cancelled</color>");
+	private static readonly Phrase destroyingBuildingCancelledPhrase;
 
-	private static readonly Phrase destroyingBuildingPhrase = new Phrase("destroyedbuilding", "Destroying building: <color=white>{0}</color>/{1} entities ({2} dead)");
+	private static readonly Phrase destroyingBuildingPhrase;
 
-	private static readonly Phrase repairedCancelledPhrase = new Phrase("repairedCancelled", "Repairing: <color=white>cancelled</color>");
+	private static readonly Phrase repairedCancelledPhrase;
 
-	private static readonly Phrase repairedPhrase = new Phrase("repaired", "Repairing: <color=white>{0}</color>/{1} entities ({2} needed repair, {3} dead)");
+	private static readonly Phrase repairedPhrase;
 
-	private static readonly Dictionary<ulong, BaseEntity> lastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
+	private static readonly Dictionary<ulong, BaseEntity> lastCreativeModePlayers;
 
-	private static readonly Dictionary<ulong, BaseEntity> lastLastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
+	private static readonly Dictionary<ulong, BaseEntity> lastLastCreativeModePlayers;
 
-	private static readonly Dictionary<string, ModalModule.Modal.Field> temp = new Dictionary<string, ModalModule.Modal.Field>();
+	private static readonly Dictionary<string, ModalModule.Modal.Field> temp;
 
-	private static CuiDraggableComponent cachedDraggable = new CuiDraggableComponent();
+	private static CuiDraggableComponent cachedDraggable;
 
 	private static HammerModule ins;
 
-	private static bool isSubscribedToOnPlayerInput = true;
+	private static bool isSubscribedToOnPlayerInput;
 
 	private static bool forcefullySubscribeToOnPlayerInput;
 
-	private static readonly string[] blacklistedMovingPrefabs = new string[8] { "crudeoutput", "hopperoutput", "fuelstorage", "excavator_output_pile", "static", "caboose", "elevator", "mission" };
+	private static readonly string[] blacklistedMovingPrefabs;
 
 	public ModalModule Modal;
 
@@ -1795,7 +1795,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj2 is List<BaseEntity> || obj2 == null) ? true : false);
 				bool flag5 = flag;
 				List<BaseEntity> entities2 = (flag5 ? ((List<BaseEntity>)(obj2 ?? null)) : null);
-				if (flag4 && flag5)
+				if (flag4 & flag5)
 				{
 					return DestroyEntitiesOverTime(editor2, entities2);
 				}
@@ -1821,7 +1821,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj2 is BaseEntity || obj2 == null) ? true : false);
 				bool flag17 = flag;
 				BaseEntity entity2 = ((!flag17) ? ((BaseEntity)null) : ((BaseEntity)(obj2 ?? null)));
-				if (flag16 && flag17)
+				if (flag16 & flag17)
 				{
 					return MoveEntityRoutine(editor3, entity2);
 				}
@@ -1835,7 +1835,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj2 is Item || obj2 == null) ? true : false);
 				bool flag23 = flag;
 				Item oldItem = ((!flag23) ? ((Item)null) : ((Item)(obj2 ?? null)));
-				if (flag22 && flag23)
+				if (flag22 & flag23)
 				{
 					OnActiveItemChanged(player8, oldItem);
 					return null;
@@ -1856,7 +1856,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj4 is DraggablePositionSendType || obj4 == null) ? true : false);
 				bool flag21 = flag;
 				DraggablePositionSendType type = (DraggablePositionSendType)(flag21 ? ((int)(DraggablePositionSendType)(obj4 ?? ((object)(DraggablePositionSendType)0))) : 0);
-				if (flag18 && flag19 && flag20 && flag21)
+				if (flag18 & flag19 & flag20 & flag21)
 				{
 					OnCuiDraggableDrag(player7, name, position, type);
 					return null;
@@ -1871,7 +1871,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj2 is HitInfo || obj2 == null) ? true : false);
 				bool flag15 = flag;
 				HitInfo info = ((!flag15) ? ((HitInfo)null) : ((HitInfo)(obj2 ?? null)));
-				if (flag14 && flag15)
+				if (flag14 & flag15)
 				{
 					return OnHammerHit(player6, info);
 				}
@@ -1921,7 +1921,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj2 is InputState || obj2 == null) ? true : false);
 				bool flag9 = flag;
 				InputState state = ((!flag9) ? ((InputState)null) : ((InputState)(obj2 ?? null)));
-				if (flag8 && flag9)
+				if (flag8 & flag9)
 				{
 					OnPlayerInput(player3, state);
 					return null;
@@ -1960,7 +1960,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				flag = ((obj2 is List<BaseCombatEntity> || obj2 == null) ? true : false);
 				bool flag3 = flag;
 				List<BaseCombatEntity> entities = (flag3 ? ((List<BaseCombatEntity>)(obj2 ?? null)) : null);
-				if (flag2 && flag3)
+				if (flag2 & flag3)
 				{
 					return RepairEntitiesOverTime(editor, entities);
 				}
@@ -1980,5 +1980,27 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			OnException(hook);
 		}
 		return null;
+	}
+
+	static HammerModule()
+	{
+		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Expected O, but got Unknown
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Expected O, but got Unknown
+		destroyingBuildingCancelledPhrase = new Phrase("destroyedbuildingCancelled", "Destroying building: <color=white>cancelled</color>");
+		destroyingBuildingPhrase = new Phrase("destroyedbuilding", "Destroying building: <color=white>{0}</color>/{1} entities ({2} dead)");
+		repairedCancelledPhrase = new Phrase("repairedCancelled", "Repairing: <color=white>cancelled</color>");
+		repairedPhrase = new Phrase("repaired", "Repairing: <color=white>{0}</color>/{1} entities ({2} needed repair, {3} dead)");
+		lastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
+		lastLastCreativeModePlayers = new Dictionary<ulong, BaseEntity>();
+		temp = new Dictionary<string, ModalModule.Modal.Field>();
+		cachedDraggable = new CuiDraggableComponent();
+		isSubscribedToOnPlayerInput = true;
+		blacklistedMovingPrefabs = new string[8] { "crudeoutput", "hopperoutput", "fuelstorage", "excavator_output_pile", "static", "caboose", "elevator", "mission" };
 	}
 }

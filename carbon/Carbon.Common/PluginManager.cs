@@ -15,7 +15,7 @@ public class PluginManager
 
 	public bool AddPlugin(RustPlugin plugin)
 	{
-		this.OnPluginAdded?.Invoke(plugin);
+		OnPluginAdded?.Invoke(plugin);
 		ModLoader.Package package = plugin.Package;
 		if (!package.IsValid || package.Plugins == null || package.Plugins.Contains(plugin))
 		{
@@ -27,7 +27,7 @@ public class PluginManager
 
 	public bool RemovePlugin(RustPlugin plugin)
 	{
-		this.OnPluginRemoved?.Invoke(plugin);
+		OnPluginRemoved?.Invoke(plugin);
 		ModLoader.Package package = plugin.Package;
 		if (!package.IsValid || package.Plugins == null || !package.Plugins.Contains(plugin))
 		{

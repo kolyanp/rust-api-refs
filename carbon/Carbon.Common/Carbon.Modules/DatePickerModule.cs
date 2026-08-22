@@ -111,7 +111,7 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 		float num4 = 1f;
 		float num5 = 0f;
 		float num6 = 1f / (float)(Months.Length / 2);
-		for (float num7 = 0f; num7 < (float)Months.Length; num7 += 1f)
+		for (float num7 = 0f; num7 < (float)Months.Length; num7++)
 		{
 			cUI.CreateProtectedButton(container, pair4, $"1 1 1 {(((float)Month == num7 + 1f) ? 0.2 : 0.1)}", "1 1 1 0.7", Months[(int)num7], 8, null, num5, num5 + num6, num4 - 0.5f, num4, 0f, 0f, 0f, 0f, "carbonuidatepicker" + $".action monthchange {num7 + 1f}", (TextAnchor)4);
 			num5 += num6;
@@ -127,7 +127,7 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 		float num10 = 0.2f;
 		float num11 = 1f / 7f;
 		float num12 = 1f;
-		for (float num13 = 0f; num13 < (float)num8; num13 += 1f)
+		for (float num13 = 0f; num13 < (float)num8; num13++)
 		{
 			cUI.CreateProtectedButton(container, pair5, $"1 1 1 {(((float)Day == num13 + 1f) ? 0.2 : 0.05)}", "1 1 1 0.7", $"{num13 + 1f}", 8, null, num9, num9 + num11, num12 - num10, num12, 0f, 0f, 0f, 0f, "carbonuidatepicker" + $".action daychange {num13 + 1f}", (TextAnchor)4);
 			num9 += num11;
@@ -235,7 +235,7 @@ public class DatePickerModule : CarbonModule<EmptyModuleConfig, EmptyModuleData>
 				flag = ((obj2 is Action<DateTime> || obj2 == null) ? true : false);
 				bool flag6 = flag;
 				Action<DateTime> onDatePicked = (flag6 ? ((Action<DateTime>)(obj2 ?? null)) : null);
-				if (flag5 && flag6)
+				if (flag5 & flag6)
 				{
 					Draw(player2, onDatePicked);
 					return null;

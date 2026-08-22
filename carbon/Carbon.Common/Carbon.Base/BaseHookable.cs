@@ -198,7 +198,14 @@ public class BaseHookable : Integrations.ITestable
 	public virtual VersionNumber Version { get; set; }
 
 	[JsonProperty]
-	public double Uptime => TimeSince.op_Implicit(_initializationTime.GetValueOrDefault());
+	public double Uptime
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return TimeSince.op_Implicit(_initializationTime.GetValueOrDefault());
+		}
+	}
 
 	public bool HasBuiltHookCache { get; internal set; }
 

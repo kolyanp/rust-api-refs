@@ -68,23 +68,13 @@ internal sealed class ModuleManager : AddonManager
 		}
 	}
 
-	private static readonly string[] _references = new string[5]
-	{
-		Context.CarbonModules,
-		Context.CarbonExtensions,
-		Context.CarbonManaged,
-		Context.CarbonLib,
-		Context.GameManaged
-	};
+	private static readonly string[] _references;
 
-	public static Dictionary<string, Assembly> ModuleAssemblyCache = new Dictionary<string, Assembly>();
+	public static Dictionary<string, Assembly> ModuleAssemblyCache;
 
 	public static Resolver ResolverInstance;
 
-	public static ReaderParameters ReadingParameters = new ReaderParameters
-	{
-		AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
-	};
+	public static ReaderParameters ReadingParameters;
 
 	internal void Awake()
 	{
@@ -273,5 +263,25 @@ internal sealed class ModuleManager : AddonManager
 				item2.SetValue(assembly, Bootstrap.Events);
 			}
 		}
+	}
+
+	static ModuleManager()
+	{
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Expected O, but got Unknown
+		_references = new string[5]
+		{
+			Context.CarbonModules,
+			Context.CarbonExtensions,
+			Context.CarbonManaged,
+			Context.CarbonLib,
+			Context.GameManaged
+		};
+		ModuleAssemblyCache = new Dictionary<string, Assembly>();
+		ReadingParameters = new ReaderParameters
+		{
+			AssemblyResolver = (IAssemblyResolver)(object)(ResolverInstance = new Resolver())
+		};
 	}
 }

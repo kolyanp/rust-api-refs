@@ -24,17 +24,17 @@ namespace Carbon;
 
 public class Community
 {
-	private readonly Lazy<IAnalyticsManager> _analyticsManager = new Lazy<IAnalyticsManager>((Func<IAnalyticsManager>)GameObject.GetComponent<IAnalyticsManager>);
+	private readonly Lazy<IAnalyticsManager> _analyticsManager;
 
-	private readonly Lazy<IAssemblyManager> _assemblyEx = new Lazy<IAssemblyManager>((Func<IAssemblyManager>)GameObject.GetComponent<IAssemblyManager>);
+	private readonly Lazy<IAssemblyManager> _assemblyEx;
 
-	private readonly Lazy<ICommandManager> _commandManager = new Lazy<ICommandManager>((Func<ICommandManager>)GameObject.GetComponent<ICommandManager>);
+	private readonly Lazy<ICommandManager> _commandManager;
 
-	private readonly Lazy<IDownloadManager> _downloadManager = new Lazy<IDownloadManager>((Func<IDownloadManager>)GameObject.GetComponent<IDownloadManager>);
+	private readonly Lazy<IDownloadManager> _downloadManager;
 
-	private readonly Lazy<IEventManager> _eventManager = new Lazy<IEventManager>((Func<IEventManager>)GameObject.GetComponent<IEventManager>);
+	private readonly Lazy<IEventManager> _eventManager;
 
-	private readonly Lazy<ICompatManager> _compatManager = new Lazy<ICompatManager>((Func<ICompatManager>)GameObject.GetComponent<ICompatManager>);
+	private readonly Lazy<ICompatManager> _compatManager;
 
 	private static readonly Lazy<GameObject> _gameObject = new Lazy<GameObject>(delegate
 	{
@@ -320,6 +320,13 @@ public class Community
 	{
 		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0113: Expected O, but got Unknown
+		_analyticsManager = new Lazy<IAnalyticsManager>((Func<IAnalyticsManager>)GameObject.GetComponent<IAnalyticsManager>);
+		_assemblyEx = new Lazy<IAssemblyManager>((Func<IAssemblyManager>)GameObject.GetComponent<IAssemblyManager>);
+		_commandManager = new Lazy<ICommandManager>((Func<ICommandManager>)GameObject.GetComponent<ICommandManager>);
+		_downloadManager = new Lazy<IDownloadManager>((Func<IDownloadManager>)GameObject.GetComponent<IDownloadManager>);
+		_eventManager = new Lazy<IEventManager>((Func<IEventManager>)GameObject.GetComponent<IEventManager>);
+		_compatManager = new Lazy<ICompatManager>((Func<ICompatManager>)GameObject.GetComponent<ICompatManager>);
+		base._002Ector();
 		try
 		{
 			Events.Subscribe(CarbonEvent.CarbonStartup, delegate

@@ -14,7 +14,14 @@ public class StackManagerModule : CarbonModule<StackManagerConfig, StackManagerD
 
 	public override bool ForceModded => true;
 
-	public override VersionNumber Version => new VersionNumber(1, 0, 0);
+	public override VersionNumber Version
+	{
+		get
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			return new VersionNumber(1, 0, 0);
+		}
+	}
 
 	public override Type Type => typeof(StackManagerModule);
 

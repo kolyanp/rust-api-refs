@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 
 namespace API.Hooks;
@@ -10,6 +11,9 @@ public class HookAttribute : Attribute
 	[AttributeUsage(AttributeTargets.Class)]
 	public class Patch : Attribute
 	{
+		[CompilerGenerated]
+		private readonly MethodType _003CMethodType_003Ek__BackingField;
+
 		public string Name { get; }
 
 		public string FullName { get; }
@@ -20,7 +24,15 @@ public class HookAttribute : Attribute
 
 		public string[] MethodArgs { get; }
 
-		public MethodType MethodType { get; }
+		public MethodType MethodType
+		{
+			[CompilerGenerated]
+			get
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				return _003CMethodType_003Ek__BackingField;
+			}
+		}
 
 		public Patch(string name, string fullName)
 			: this(name, fullName, (string)null, (string)null)
@@ -34,9 +46,9 @@ public class HookAttribute : Attribute
 		}
 
 		public Patch(string name, string fullName, string target, string method, string[] args, MethodType type)
-			: this(name, fullName, target, method, type)
 		{
 			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			this._002Ector(name, fullName, target, method, type);
 			MethodArgs = args;
 		}
 
@@ -47,15 +59,16 @@ public class HookAttribute : Attribute
 		}
 
 		public Patch(string name, string fullName, Type target, string method, Type[] args, MethodType type)
-			: this(name, fullName, target.FullName, method, type)
 		{
 			//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+			this._002Ector(name, fullName, target.FullName, method, type);
 			MethodArgs = ((args == null) ? Array.Empty<string>() : args.Select((Type x) => x.FullName).ToArray());
 		}
 
 		public Patch(string name, string fullName, string target, string method)
 		{
 			//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			FullName = fullName;
 			Method = method;
 			Name = name;
@@ -67,6 +80,7 @@ public class HookAttribute : Attribute
 		{
 			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			FullName = fullName;
 			Method = method;
 			Name = name;
@@ -77,6 +91,7 @@ public class HookAttribute : Attribute
 		public Patch(string name, string fullName, Type target, string method)
 		{
 			//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			FullName = fullName;
 			Method = method;
 			Name = name;
@@ -88,6 +103,7 @@ public class HookAttribute : Attribute
 		{
 			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			FullName = fullName;
 			Method = method;
 			Name = name;
@@ -98,6 +114,7 @@ public class HookAttribute : Attribute
 		public Patch(string name, string fullName, string target)
 		{
 			//IL_001d: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			Name = name;
 			Target = target;
 			FullName = fullName;
@@ -108,6 +125,7 @@ public class HookAttribute : Attribute
 		{
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			Name = name;
 			Target = target;
 			FullName = fullName;
@@ -117,6 +135,7 @@ public class HookAttribute : Attribute
 		public Patch(string name, string fullName, Type target)
 		{
 			//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			Name = name;
 			Target = target.FullName;
 			FullName = fullName;
@@ -127,6 +146,7 @@ public class HookAttribute : Attribute
 		{
 			//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+			base._002Ector();
 			Name = name;
 			Target = target.FullName;
 			FullName = fullName;

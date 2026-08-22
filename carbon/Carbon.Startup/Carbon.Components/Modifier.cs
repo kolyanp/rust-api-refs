@@ -427,7 +427,12 @@ public class Modifier
 					iLProcessor.Append(iLProcessor.Create(OpCodes.Ret));
 					type.Methods.Add(val3);
 				}
-				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault((Instruction x) => x.OpCode == OpCodes.Call && x.Operand == loadBaseMethod)) + 1;
+				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault(delegate(Instruction x)
+				{
+					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+					return x.OpCode == OpCodes.Call && x.Operand == loadBaseMethod;
+				})) + 1;
 				iLProcessor.Body.Instructions.Insert(num, iLProcessor.Create(OpCodes.Ldarg_0));
 				iLProcessor.Body.Instructions.Insert(num + 1, iLProcessor.Create(OpCodes.Ldarg_0));
 				iLProcessor.Body.Instructions.Insert(num + 2, iLProcessor.Create(OpCodes.Ldflda, (FieldReference)(object)carbonDataField));
@@ -475,7 +480,12 @@ public class Modifier
 					iLProcessor.Append(iLProcessor.Create(OpCodes.Ret));
 					type.Methods.Add(val3);
 				}
-				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault((Instruction x) => x.OpCode == OpCodes.Call && x.Operand == save)) + 1;
+				int num = val3.Body.Instructions.IndexOf(((IEnumerable<Instruction>)val3.Body.Instructions).FirstOrDefault(delegate(Instruction x)
+				{
+					//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+					return x.OpCode == OpCodes.Call && x.Operand == save;
+				})) + 1;
 				iLProcessor.Body.Instructions.Insert(num, iLProcessor.Create(OpCodes.Ldarg_0));
 				iLProcessor.Body.Instructions.Insert(num + 1, iLProcessor.Create(OpCodes.Ldarg_0));
 				iLProcessor.Body.Instructions.Insert(num + 2, iLProcessor.Create(OpCodes.Ldfld, module.ImportReference((FieldReference)(object)carbonDataField)));

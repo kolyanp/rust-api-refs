@@ -34,34 +34,50 @@ public class AdminData
 
 	public bool HidePluginIcons;
 
-	public bool DisableUMod = true;
+	public bool DisableUMod;
 
 	public bool Maximize;
 
-	public bool BackgroundBlur = true;
+	public bool BackgroundBlur;
 
-	public float BackgroundOpacity = 0.75f;
+	public float BackgroundOpacity;
 
-	public float BackgroundImageOpacity = 0.75f;
+	public float BackgroundImageOpacity;
 
-	public string BackgroundImage = "https://cdn.carbonmod.gg/content/carbon-background.png";
+	public string BackgroundImage;
 
-	public Vector2 BackgroundImageYAnchor = new Vector2(0.15f, 1f);
+	public Vector2 BackgroundImageYAnchor;
 
-	public float BackgroundColumnOpacity = 0.5f;
+	public float BackgroundColumnOpacity;
 
-	public DataColors Colors = new DataColors();
+	public DataColors Colors;
 
-	public Dictionary<string, bool> TabsHiddenStatus = new Dictionary<string, bool>();
+	public Dictionary<string, bool> TabsHiddenStatus;
 
 	public bool IsTabHidden(string id)
 	{
 		bool value;
-		return TabsHiddenStatus.TryGetValue(id, out value) && value;
+		return TabsHiddenStatus.TryGetValue(id, out value) & value;
 	}
 
 	public void MarkTabHidden(string id, bool wants)
 	{
 		TabsHiddenStatus[id] = wants;
+	}
+
+	public AdminData()
+	{
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
+		DisableUMod = true;
+		BackgroundBlur = true;
+		BackgroundOpacity = 0.75f;
+		BackgroundImageOpacity = 0.75f;
+		BackgroundImage = "https://cdn.carbonmod.gg/content/carbon-background.png";
+		BackgroundImageYAnchor = new Vector2(0.15f, 1f);
+		BackgroundColumnOpacity = 0.5f;
+		Colors = new DataColors();
+		TabsHiddenStatus = new Dictionary<string, bool>();
+		base._002Ector();
 	}
 }

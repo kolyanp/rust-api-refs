@@ -25,7 +25,14 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 
 	public override string Name => "GatherManager";
 
-	public override VersionNumber Version => new VersionNumber(1, 0, 0);
+	public override VersionNumber Version
+	{
+		get
+		{
+			//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+			return new VersionNumber(1, 0, 0);
+		}
+	}
 
 	public override bool ForceModded => true;
 
@@ -210,7 +217,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj4 is KindTypes || obj4 == null) ? true : false);
 				bool flag27 = flag;
 				KindTypes kind3 = (flag27 ? ((KindTypes)(obj4 ?? ((object)KindTypes.Pickup))) : KindTypes.Pickup);
-				if (flag24 && flag25 && flag26 && flag27)
+				if (flag24 & flag25 & flag26 & flag27)
 				{
 					return ByDefinition(itemDefinition2, amount3, skin2, kind3);
 				}
@@ -230,7 +237,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj4 is KindTypes || obj4 == null) ? true : false);
 				bool flag17 = flag;
 				KindTypes kind2 = (flag17 ? ((KindTypes)(obj4 ?? ((object)KindTypes.Pickup))) : KindTypes.Pickup);
-				if (flag14 && flag15 && flag16 && flag17)
+				if (flag14 & flag15 & flag16 & flag17)
 				{
 					return ByID(itemID, amount2, skin, kind2);
 				}
@@ -247,7 +254,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj3 is KindTypes || obj3 == null) ? true : false);
 				bool flag13 = flag;
 				KindTypes kind = (flag13 ? ((KindTypes)(obj3 ?? ((object)KindTypes.Pickup))) : KindTypes.Pickup);
-				if (flag11 && flag12 && flag13)
+				if (flag11 & flag12 & flag13)
 				{
 					return GetAmount(itemDefinition, amount, kind);
 				}
@@ -264,7 +271,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj3 is bool || obj3 == null) ? true : false);
 				bool flag20 = flag;
 				bool eat = flag20 && (bool)(obj3 ?? ((object)false));
-				if (flag18 && flag19 && flag20)
+				if (flag18 & flag19 & flag20)
 				{
 					return OnCollectiblePickup(entity3, reciever, eat);
 				}
@@ -281,7 +288,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj3 is Item || obj3 == null) ? true : false);
 				bool flag23 = flag;
 				Item item5 = ((!flag23) ? ((Item)null) : ((Item)(obj3 ?? null)));
-				if (flag21 && flag22 && flag23)
+				if (flag21 & flag22 & flag23)
 				{
 					OnDispenserBonus(dispenser2, player2, item5);
 					return null;
@@ -299,7 +306,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj3 is Item || obj3 == null) ? true : false);
 				bool flag9 = flag;
 				Item item3 = ((!flag9) ? ((Item)null) : ((Item)(obj3 ?? null)));
-				if (flag7 && flag8 && flag9)
+				if (flag7 & flag8 & flag9)
 				{
 					OnDispenserGather(dispenser, entity2, item3);
 					return null;
@@ -314,7 +321,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj2 is Item || obj2 == null) ? true : false);
 				bool flag29 = flag;
 				Item item6 = ((!flag29) ? ((Item)null) : ((Item)(obj2 ?? null)));
-				if (flag28 && flag29)
+				if (flag28 & flag29)
 				{
 					OnExcavatorGather(arm, item6);
 					return null;
@@ -344,7 +351,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj3 is BasePlayer || obj3 == null) ? true : false);
 				bool flag6 = flag;
 				BasePlayer player = ((!flag6) ? ((BasePlayer)null) : ((BasePlayer)(obj3 ?? null)));
-				if (flag4 && flag5 && flag6)
+				if (flag4 & flag5 & flag6)
 				{
 					OnGrowableGathered(entity, item2, player);
 					return null;
@@ -359,7 +366,7 @@ public class GatherManagerModule : CarbonModule<GatherManagerConfig, EmptyModule
 				flag = ((obj2 is Item || obj2 == null) ? true : false);
 				bool flag3 = flag;
 				Item item = ((!flag3) ? ((Item)null) : ((Item)(obj2 ?? null)));
-				if (flag2 && flag3)
+				if (flag2 & flag3)
 				{
 					OnQuarryGather(quarry, item);
 					return null;

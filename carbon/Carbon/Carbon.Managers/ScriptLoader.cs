@@ -75,6 +75,8 @@ public class ScriptLoader : IScriptLoader, IDisposable
 
 	public const int BusyFileAttempts = 10;
 
+	private IEnumerator _compileRoutine;
+
 	public ISource InitialSource
 	{
 		get
@@ -121,7 +123,8 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		{
 			string directoryName = Path.GetDirectoryName(InitialSource.FilePath);
 			IsExtension = directoryName.EndsWith("extensions");
-			Community.Runtime.ScriptProcessor.StartCoroutine(Compile());
+			_compileRoutine = Compile();
+			Community.Runtime.ScriptProcessor.StartCoroutine(_compileRoutine);
 		}
 		catch (Exception ex)
 		{
@@ -333,7 +336,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		yield return null;
 		if (AsyncLoader != null)
 		{
-			AsyncLoader.Sources = Sources;
+			AsyncLoader.Sources = new List<ISource>(Sources);
 			AsyncLoader.References = resultReferences?.ToArray();
 			AsyncLoader.Requires = resultRequires?.ToArray();
 			AsyncLoader.IsExtension = IsExtension;
@@ -384,6 +387,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 			}
 			yield break;
 		}
+		Pool.FreeUnmanaged<string>(ref missingRequires);
 		yield return null;
 		Plugin[] requiresResult = requires.ToArray();
 		AsyncLoader?.Start();
@@ -395,7 +399,6 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		{
 			HasFinished = true;
 			Pool.FreeUnmanaged<Plugin>(ref requires);
-			Pool.FreeUnmanaged<string>(ref missingRequires);
 			yield break;
 		}
 		yield return null;
@@ -462,7 +465,6 @@ public class ScriptLoader : IScriptLoader, IDisposable
 			AsyncLoader.Exceptions = (AsyncLoader.Warnings = null);
 			HasFinished = true;
 			Pool.FreeUnmanaged<Plugin>(ref requires);
-			Pool.FreeUnmanaged<string>(ref missingRequires);
 			if (Community.AllProcessorsFinalized)
 			{
 				ModLoader.OnPluginProcessFinished();
@@ -472,7 +474,6 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		if (AsyncLoader == null)
 		{
 			Pool.FreeUnmanaged<Plugin>(ref requires);
-			Pool.FreeUnmanaged<string>(ref missingRequires);
 			yield break;
 		}
 		Assembly assembly = AsyncLoader.Assembly;
@@ -493,7 +494,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 				{
 					continue;
 				}
-				if (!IsExtension && firstPlugin && !BypassFileNameChecks)
+				if ((!IsExtension & firstPlugin) && !BypassFileNameChecks)
 				{
 					string text3 = Path.GetFileNameWithoutExtension(InitialSource.FilePath).ToLower().Replace(" ", "")
 						.Replace(".", "")
@@ -543,7 +544,7 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					Plugin.InternalApplyAllPluginReferences();
 					HookCaller.CallStaticHook(3051933177u, plugin3);
 				}
-				goto IL_0d19;
+				goto IL_0d08;
 			}
 			catch (Exception ex2)
 			{
@@ -553,9 +554,9 @@ public class ScriptLoader : IScriptLoader, IDisposable
 					HookCaller.CallStaticHook(1298319061u, (!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>", ex2);
 					Logger.Error("Failed to compile '" + ((!string.IsNullOrEmpty(InitialSource.ContextFilePath)) ? Path.GetFileNameWithoutExtension(InitialSource.ContextFilePath) : "<unknown>") + "': ", ex2);
 				}
-				goto IL_0d19;
+				goto IL_0d08;
 			}
-			IL_0d19:
+			IL_0d08:
 			yield return null;
 		}
 		if (firstPlugin)
@@ -569,13 +570,16 @@ public class ScriptLoader : IScriptLoader, IDisposable
 			ModLoader.OnPluginProcessFinished();
 		}
 		Pool.FreeUnmanaged<Plugin>(ref requires);
-		Pool.FreeUnmanaged<string>(ref missingRequires);
 		yield return null;
 	}
 
 	public void Dispose()
 	{
-		Community.Runtime.ScriptProcessor.StopCoroutine(Compile());
+		if (_compileRoutine != null)
+		{
+			Community.Runtime.ScriptProcessor.StopCoroutine(_compileRoutine);
+			_compileRoutine = null;
+		}
 		HasFinished = true;
 		AsyncLoader?.Abort();
 		AsyncLoader = null;
@@ -586,14 +590,6 @@ public class ScriptLoader : IScriptLoader, IDisposable
 				script.Dispose();
 			}
 		}
-		if (Sources != null)
-		{
-			foreach (ISource source in Sources)
-			{
-				source.Dispose();
-			}
-		}
-		Sources?.Clear();
 		Scripts?.Clear();
 		Sources = null;
 		Scripts = null;

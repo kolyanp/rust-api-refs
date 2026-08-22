@@ -131,7 +131,12 @@ public class OxideEntrypoint : BaseOxidePatch
 					}
 					else
 					{
-						CilInstruction? obj3 = ((IEnumerable<CilInstruction>)cilMethodBody.Instructions).FirstOrDefault((CilInstruction x) => x.OpCode == CilOpCodes.Ldstr);
+						CilInstruction? obj3 = ((IEnumerable<CilInstruction>)cilMethodBody.Instructions).FirstOrDefault(delegate(CilInstruction x)
+						{
+							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+							return x.OpCode == CilOpCodes.Ldstr;
+						});
 						obj2 = ((obj3 != null) ? obj3.Operand : null);
 					}
 				}

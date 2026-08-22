@@ -10,6 +10,8 @@ public class PluginTimers
 
 	private Plugin plugin;
 
+	public Oxide.Core.Libraries.Timer Library => timer;
+
 	public PluginTimers(Plugin plugin)
 	{
 		this.plugin = plugin;

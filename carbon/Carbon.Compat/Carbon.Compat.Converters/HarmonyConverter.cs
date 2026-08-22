@@ -10,7 +10,7 @@ namespace Carbon.Compat.Converters;
 [UsedImplicitly]
 public class HarmonyConverter : BaseConverter
 {
-	private readonly ImmutableList<IAssemblyPatch> _patches = ImmutableList.ToImmutableList<IAssemblyPatch>((IEnumerable<IAssemblyPatch>)new List<IAssemblyPatch>
+	private readonly ImmutableList<IAssemblyPatch> _patches = new List<IAssemblyPatch>
 	{
 		new HarmonyTypeRef(),
 		new OxideTypeRef(),
@@ -19,7 +19,7 @@ public class HarmonyConverter : BaseConverter
 		new ReflectionFlagsPatch(),
 		new AssemblyVersionPatch(),
 		new AssemblyDebugPatch()
-	});
+	}.ToImmutableList();
 
 	public override ImmutableList<IAssemblyPatch> Patches => _patches;
 

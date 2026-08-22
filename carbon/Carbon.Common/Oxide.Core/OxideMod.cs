@@ -80,10 +80,17 @@ public class OxideMod
 		{
 			RootDirectory = AppDomain.CurrentDomain.BaseDirectory;
 		}
-		JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+		JsonConvert.DefaultSettings = delegate
 		{
-			Culture = CultureInfo.InvariantCulture,
-			ReferenceLoopHandling = (ReferenceLoopHandling)1
+			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0018: Expected O, but got Unknown
+			return new JsonSerializerSettings
+			{
+				Culture = CultureInfo.InvariantCulture,
+				ReferenceLoopHandling = (ReferenceLoopHandling)1
+			};
 		};
 		ConfigDirectory = Defines.GetConfigsFolder();
 		DataDirectory = Defines.GetDataFolder();
@@ -444,7 +451,7 @@ public class OxideMod
 		}
 		if (typeFromHandle == typeof(Oxide.Core.Libraries.Timer))
 		{
-			return Community.Runtime.Core.timer as T;
+			return Community.Runtime.Core.timer?.Library as T;
 		}
 		if (name == null)
 		{

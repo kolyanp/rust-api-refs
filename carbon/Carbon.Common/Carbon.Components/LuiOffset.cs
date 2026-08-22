@@ -3,13 +3,23 @@ using UnityEngine;
 
 namespace Carbon.Components;
 
-public readonly struct LuiOffset(float xMin, float yMin, float xMax, float yMax)
+public readonly struct LuiOffset
 {
 	public static readonly LuiOffset None = new LuiOffset(0f, 0f, 0f, 0f);
 
-	public readonly Vector2 offsetMin = new Vector2(xMin, yMin);
+	public readonly Vector2 offsetMin;
 
-	public readonly Vector2 offsetMax = new Vector2(xMax, yMax);
+	public readonly Vector2 offsetMax;
+
+	public LuiOffset(float xMin, float yMin, float xMax, float yMax)
+	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		offsetMin = new Vector2(xMin, yMin);
+		offsetMax = new Vector2(xMax, yMax);
+	}
 
 	public static bool operator ==(LuiOffset a, LuiOffset b)
 	{

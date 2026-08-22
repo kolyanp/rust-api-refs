@@ -282,7 +282,11 @@ public class CorePlugin : CarbonPlugin
 	[AuthLevel(2)]
 	public float ExcavatorBeltSpeedMaxMultiplier = -1f;
 
-	public List<string> OvenBlacklistCache = new List<string>();
+	private const string DefaultOvenBlacklist = "furnace,bbq.static,furnace.large";
+
+	public List<string> OvenBlacklistCache = "furnace,bbq.static,furnace.large".SplitEnumerable(',').ToList();
+
+	private Dictionary<uint, bool> _ovenBlacklistLookup = new Dictionary<uint, bool>();
 
 	private string _ovenBlacklist = "furnace,bbq.static,furnace.large";
 
@@ -377,9 +381,11 @@ public class CorePlugin : CarbonPlugin
 		}
 		set
 		{
+			_ovenBlacklistLookup.Clear();
 			if (string.IsNullOrEmpty(value))
 			{
 				OvenBlacklistCache.Clear();
+				_ovenBlacklist = string.Empty;
 				return;
 			}
 			if (_ovenBlacklist != value || OvenBlacklistCache.Count == 0)
@@ -975,20 +981,16 @@ public class CorePlugin : CarbonPlugin
 	[Conditional("!MINIMAL")]
 	internal object IOvenSmeltSpeedMultiplier(BaseOven oven)
 	{
-		bool flag = false;
-		if (OvenBlacklistCache != null)
+		if (OvenSpeedMultiplier == -1f && OvenBlacklistSpeedMultiplier == -1f)
 		{
-			for (int i = 0; i < OvenBlacklistCache.Count; i++)
-			{
-				string text = OvenBlacklistCache[i];
-				if (StringEx.Contains(((BaseNetworkable)oven).ShortPrefabName, text, CompareOptions.IgnoreCase))
-				{
-					flag = true;
-					break;
-				}
-			}
+			return null;
 		}
-		if (flag)
+		if (!_ovenBlacklistLookup.TryGetValue(((BaseNetworkable)oven).prefabID, out var value))
+		{
+			value = IsOvenBlacklisted(OvenBlacklistCache, ((BaseNetworkable)oven).ShortPrefabName);
+			_ovenBlacklistLookup[((BaseNetworkable)oven).prefabID] = value;
+		}
+		if (value)
 		{
 			if (OvenBlacklistSpeedMultiplier != -1f)
 			{
@@ -1001,6 +1003,22 @@ public class CorePlugin : CarbonPlugin
 			return OvenSpeedMultiplier;
 		}
 		return null;
+	}
+
+	private static bool IsOvenBlacklisted(List<string> cache, string shortPrefabName)
+	{
+		if (cache == null)
+		{
+			return false;
+		}
+		for (int i = 0; i < cache.Count; i++)
+		{
+			if (StringEx.Contains(shortPrefabName, cache[i], CompareOptions.IgnoreCase))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	[Conditional("!MINIMAL")]
@@ -1816,8 +1834,7 @@ public class CorePlugin : CarbonPlugin
 			return;
 		}
 		string text = arg.GetString(0, "");
-		uint result;
-		bool flag = uint.TryParse(text, out result);
+		bool flag = uint.TryParse(text, out var _);
 		string arg2 = (flag ? HookStringPool.GetOrAdd(text.ToUint()) : text);
 		uint hookId = (flag ? text.ToUint() : HookStringPool.GetOrAdd(text));
 		StringBuilder stringBuilder = Pool.Get<StringBuilder>();
@@ -2550,7 +2567,7 @@ public class CorePlugin : CarbonPlugin
 				PrintWarn(arg);
 				break;
 			}
-			if (text2 != null && flag)
+			if ((text2 != null) & flag)
 			{
 				arg.ReplyWith("To target a specific user or group, specify the scope: c.show orphans <user|group> <name|id>");
 				break;
@@ -2654,7 +2671,7 @@ public class CorePlugin : CarbonPlugin
 				PrintWarn(arg);
 				return;
 			}
-			if (text3 != null && flag)
+			if ((text3 != null) & flag)
 			{
 				arg.ReplyWith("To target a specific user or group, specify the scope: c.cleanup orphans <user|group> <name|id>");
 				return;
@@ -3108,7 +3125,7 @@ public class CorePlugin : CarbonPlugin
 		static void SplitMessageUp(bool initial, StringTable table2, ModLoader.CompilationResult compilation, ModLoader.Trace trace2, int skip)
 		{
 			bool flag2 = trace2.Message.Length - skip > 150;
-			table2.AddRow(string.Empty, initial ? Path.GetFileName(compilation.File) : string.Empty, (flag2 || initial) ? $"{trace2.Line}:{trace2.Column}" : string.Empty, trace2.Message.Substring(skip, 150.Clamp(0, trace2.Message.Length - skip)) + (flag2 ? "..." : string.Empty));
+			table2.AddRow(string.Empty, initial ? Path.GetFileName(compilation.File) : string.Empty, (flag2 | initial) ? $"{trace2.Line}:{trace2.Column}" : string.Empty, trace2.Message.Substring(skip, 150.Clamp(0, trace2.Message.Length - skip)) + (flag2 ? "..." : string.Empty));
 			if (flag2)
 			{
 				SplitMessageUp(initial: false, table2, compilation, trace2, skip + 150);
@@ -5192,7 +5209,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj3 is bool || obj3 == null) ? true : false);
 				bool flag52 = flag;
 				bool isInTutorial = flag52 && (bool)(obj3 ?? ((object)false));
-				if (flag50 && flag51 && flag52)
+				if (flag50 & flag51 & flag52)
 				{
 					return ICraftDurationMultiplier(bp, workbenchLevel, isInTutorial);
 				}
@@ -5206,7 +5223,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj2 is float || obj2 == null) ? true : false);
 				bool flag96 = flag;
 				float originalValue = (flag96 ? ((float)(obj2 ?? ((object)0f))) : 0f);
-				if (flag95 && flag96)
+				if (flag95 & flag96)
 				{
 					return IMixingSpeedMultiplier(table, originalValue);
 				}
@@ -5396,7 +5413,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj3 is ChatChannel || obj3 == null) ? true : false);
 				bool flag41 = flag;
 				ChatChannel channel = (ChatChannel)(flag41 ? ((int)(ChatChannel)(obj3 ?? ((object)(ChatChannel)0))) : 0);
-				if (flag39 && flag40 && flag41)
+				if (flag39 & flag40 & flag41)
 				{
 					OnPlayerChat(player, message, channel);
 					return null;
@@ -5411,7 +5428,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj2 is string || obj2 == null) ? true : false);
 				bool flag100 = flag;
 				string reason3 = (flag100 ? ((string)(obj2 ?? null)) : null);
-				if (flag99 && flag100)
+				if (flag99 & flag100)
 				{
 					OnPlayerDisconnected(player2, reason3);
 					return null;
@@ -5426,7 +5443,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj2 is string || obj2 == null) ? true : false);
 				bool flag71 = flag;
 				string reason2 = (flag71 ? ((string)(obj2 ?? null)) : null);
-				if (flag70 && flag71)
+				if (flag70 & flag71)
 				{
 					OnPlayerKicked(basePlayer3, reason2);
 					return null;
@@ -5467,7 +5484,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj3 is string || obj3 == null) ? true : false);
 				bool flag77 = flag;
 				string val2 = (flag77 ? ((string)(obj3 ?? null)) : null);
-				if (flag75 && flag76 && flag77)
+				if (flag75 & flag76 & flag77)
 				{
 					OnPlayerSetInfo(connection, key, val2);
 					return null;
@@ -5536,7 +5553,7 @@ public class CorePlugin : CarbonPlugin
 				flag = ((obj5 is long || obj5 == null) ? true : false);
 				bool flag23 = flag;
 				long expiry = (flag23 ? ((long)(obj5 ?? ((object)0L))) : 0);
-				if (flag19 && flag20 && flag21 && flag22 && flag23)
+				if (flag19 & flag20 & flag21 & flag22 & flag23)
 				{
 					OnServerUserSet(steamId, val, playerName, reason, expiry);
 					return null;

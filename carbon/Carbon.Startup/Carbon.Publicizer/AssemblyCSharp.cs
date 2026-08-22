@@ -43,7 +43,12 @@ public class AssemblyCSharp : Patch
 			MethodDefinition val2 = ((IEnumerable<MethodDefinition>)val.Methods).Single((MethodDefinition x) => ((MemberReference)x).Name == "Initialize") ?? throw new Exception("Unable to get a method definition for 'Tier0'");
 			TypeDefinition val3 = assembly.MainModule.GetType("Bootstrap") ?? throw new Exception("Unable to get a type for 'Bootstrap'");
 			MethodDefinition val4 = ((IEnumerable<MethodDefinition>)val3.Methods).Single((MethodDefinition x) => ((MemberReference)x).Name == "Init_Tier0") ?? throw new Exception("Unable to get a method definition for 'Init_Tier0'");
-			if (!((IEnumerable<Instruction>)val4.Body.Instructions).Any((Instruction x) => x.OpCode == OpCodes.Call && x.Operand.ToString().Contains("Carbon.Bootstrap::Initialize")))
+			if (!((IEnumerable<Instruction>)val4.Body.Instructions).Any(delegate(Instruction x)
+			{
+				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+				return x.OpCode == OpCodes.Call && x.Operand.ToString().Contains("Carbon.Bootstrap::Initialize");
+			}))
 			{
 				ILProcessor iLProcessor = val4.Body.GetILProcessor();
 				Instruction val5 = iLProcessor.Create(OpCodes.Call, assembly.MainModule.ImportReference((MethodReference)(object)val2));

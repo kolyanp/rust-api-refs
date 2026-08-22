@@ -27,6 +27,7 @@ public class JsonContext
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0080: Expected O, but got Unknown
+		base._002Ector();
 		sb = new StringBuilder(65536);
 		sw = new StringWriter(sb, CultureInfo.InvariantCulture);
 		jw = new JsonTextWriter((TextWriter)sw)

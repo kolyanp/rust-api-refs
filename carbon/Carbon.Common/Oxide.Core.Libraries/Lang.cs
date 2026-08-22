@@ -124,7 +124,7 @@ public class Lang : Library
 				flag = true;
 			}
 		}
-		if (newPhrases == value || flag)
+		if ((newPhrases == value) | flag)
 		{
 			SaveMessageFile(plugin.Name, lang);
 		}

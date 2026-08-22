@@ -254,7 +254,7 @@ public static class ModLoader
 			{
 				foreach (RustPlugin plugin in enumerator.Current.Plugins)
 				{
-					if (!(plugin.IsCorePlugin && ignoreCore))
+					if (!(plugin.IsCorePlugin & ignoreCore))
 					{
 						plugins.Add(plugin);
 					}

@@ -861,31 +861,48 @@ public static class WebControlPanel
 		}
 	}
 
-	public struct PlayerInfo(BasePlayer player)
+	public struct PlayerInfo
 	{
-		private ulong steamId = EncryptedValue<ulong>.op_Implicit(player.userID);
+		private ulong steamId;
 
-		private ulong ownerSteamId = ((BaseEntity)player).OwnerID;
+		private ulong ownerSteamId;
 
-		private string displayName = player.displayName;
+		private string displayName;
 
-		private int ping = (player.IsConnected ? Net.sv.GetAveragePing(player.Connection) : (-1));
+		private int ping;
 
-		private string address = (player.IsConnected ? player.Connection.ipaddress : string.Empty);
+		private string address;
 
-		private ulong entityId = ((BaseNetworkable)player).net.ID.Value;
+		private ulong entityId;
 
-		private int connectedSeconds = player.secondsConnected;
+		private int connectedSeconds;
 
-		private float violationLevel = player.ViolationLevel;
+		private float violationLevel;
 
-		private int currentLevel = 0;
+		private int currentLevel;
 
-		private int unspentXp = 0;
+		private int unspentXp;
 
-		private float health = ((BaseCombatEntity)player).health;
+		private float health;
 
-		private TeamInfo team = new TeamInfo(player.Team);
+		private TeamInfo team;
+
+		public PlayerInfo(BasePlayer player)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			steamId = EncryptedValue<ulong>.op_Implicit(player.userID);
+			ownerSteamId = ((BaseEntity)player).OwnerID;
+			displayName = player.displayName;
+			ping = (player.IsConnected ? Net.sv.GetAveragePing(player.Connection) : (-1));
+			address = (player.IsConnected ? player.Connection.ipaddress : string.Empty);
+			entityId = ((BaseNetworkable)player).net.ID.Value;
+			connectedSeconds = player.secondsConnected;
+			violationLevel = player.ViolationLevel;
+			currentLevel = 0;
+			unspentXp = 0;
+			health = ((BaseCombatEntity)player).health;
+			team = new TeamInfo(player.Team);
+		}
 
 		public void Serialize(BridgeWrite write, bool excludeIps)
 		{
@@ -2373,10 +2390,7 @@ public static class WebControlPanel
 		foreach (string item in orderedEnumerable)
 		{
 			FileInfo fileInfo = new FileInfo(item);
-			int protocol;
-			double duration;
-			bool isCompared;
-			bool flag = MonoProfiler.ValidateFile(item, out protocol, out duration, out isCompared);
+			bool flag = MonoProfiler.ValidateFile(item, out var protocol, out var duration, out var isCompared);
 			NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, item);
 			NetworkWriteEx.WriteObject<string>((NetWrite)(object)bridgeWrite, Path.GetFileNameWithoutExtension(item));
 			NetworkWriteEx.WriteObject<long>((NetWrite)(object)bridgeWrite, fileInfo.Length);
