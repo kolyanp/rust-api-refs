@@ -78,13 +78,13 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	private Transform hydraulics;
 
-	[SerializeField]
 	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
+	[SerializeField]
 	[Header("MLRS Weaponry")]
 	public float minRange = 200f;
 
-	[SerializeField]
 	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
+	[SerializeField]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -96,8 +96,8 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public RocketTube[] rocketTubes;
 
-	[SerializeField]
 	[Header("MLRS Dashboard/FX")]
+	[SerializeField]
 	private GameObject screensChild;
 
 	[SerializeField]
@@ -763,8 +763,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Fire_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -774,8 +774,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

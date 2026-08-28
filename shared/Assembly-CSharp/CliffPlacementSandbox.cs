@@ -71,8 +71,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Header("Terrain source")]
 	public TerrainSource Source;
 
-	[Tooltip("World seed fed to the real generator. 0 = auto.")]
 	[Header("Procedural (real Rust base heightmap)")]
+	[Tooltip("World seed fed to the real generator. 0 = auto.")]
 	public uint Seed;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -86,8 +86,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle;
 
-	[Header("Terrain")]
 	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
+	[Header("Terrain")]
 	public int HeightmapResolution;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -99,8 +99,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch;
 
-	[Header("Map file region (real .map crop)")]
 	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
+	[Header("Map file region (real .map crop)")]
 	public string MapFilePath;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -130,8 +130,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Procedural-generation scene the one-click 'Bake pre-cliff T0' button drives to capture T0. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene. Only used by the editor bake button.")]
 	public string GenerationScenePath;
 
-	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	[Header("Placement")]
+	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]
@@ -182,15 +182,15 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Click-to-select mode: instead of drawing every gizmo in range, left-click a cliff to toggle its gizmos on, click again to turn them off. Several cliffs can be selected at once.")]
 	public bool GizmoSelectionMode;
 
-	[Tooltip("Spawn a bright, roughly player-sized capsule on the terrain so you can judge scale against the cliffs. Use 'Marker where I'm looking' or the J key to drop it under the aim.")]
 	[Header("Scale reference")]
+	[Tooltip("Spawn a bright, roughly player-sized capsule on the terrain so you can judge scale against the cliffs. Use 'Marker where I'm looking' or the J key to drop it under the aim.")]
 	public bool ShowPlayerScaleReference;
 
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]
 	public float PlayerReferenceHeight;
 
-	[Header("Camera (play-mode freecam)")]
 	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
+	[Header("Camera (play-mode freecam)")]
 	public bool EnableFreecam;
 
 	[Tooltip("Base freecam move speed in metres/second (adjust live with the scroll wheel while flying).")]

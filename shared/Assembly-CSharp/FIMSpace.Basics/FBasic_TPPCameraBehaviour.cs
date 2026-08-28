@@ -27,16 +27,16 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 
 	private Vector2 animatedSphericRotation;
 
-	[Tooltip("Sensitivity value for rotating camera around following object")]
 	[Space(10f)]
+	[Tooltip("Sensitivity value for rotating camera around following object")]
 	public float RotationSensitivity;
 
 	[Header("If you want camera rotation to be smooth")]
 	[Range(0.1f, 1f)]
 	public float RotationSpeed;
 
-	[Range(0f, 1f)]
 	[Header("If you want camera to follow target with some smoothness")]
+	[Range(0f, 1f)]
 	public float HardFollowValue;
 
 	[Header("If you want to hold cursor (cursor switch on TAB)")]

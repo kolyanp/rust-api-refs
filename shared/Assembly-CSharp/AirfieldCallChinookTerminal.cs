@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class AirfieldCallChinookTerminal : ChargeUpIOEntity
 {
-	[Header("Airfield Call Chinook Terminal")]
 	[Tooltip("Only used for reference")]
+	[Header("Airfield Call Chinook Terminal")]
 	public EventSchedule chinookEventPrefab;
 
 	public CH47DropZone associatedDropZone;

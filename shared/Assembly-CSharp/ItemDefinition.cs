@@ -148,8 +148,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	[Tooltip("If true, this item will support item ownership even if it's stacksize is >1")]
 	public bool supportsStackableOwnership;
 
-	[Tooltip("How rare this item is and how much it costs to research")]
 	[Header("Spawn Tables")]
+	[Tooltip("How rare this item is and how much it costs to research")]
 	public Rarity rarity;
 
 	public Rarity despawnRarity;

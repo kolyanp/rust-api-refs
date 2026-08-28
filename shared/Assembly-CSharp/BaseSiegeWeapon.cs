@@ -293,8 +293,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 		base.OnDied(info);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_StartPulling(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

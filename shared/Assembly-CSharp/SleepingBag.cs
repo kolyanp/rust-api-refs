@@ -1104,8 +1104,8 @@ public class SleepingBag : DecayEntity
 		return false;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void Rename(RPCMessage msg)
 	{
 		if (!CanAccessBed(msg.player))
@@ -1130,8 +1130,8 @@ public class SleepingBag : DecayEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AssignToFriend(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || deployerUserID != (ulong)msg.player.userID || !canReassignToFriends)

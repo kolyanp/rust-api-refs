@@ -46,8 +46,8 @@ public class BoatBuildingStation : DecayEntity
 	[ServerVar]
 	public static bool StaticStationsEnabled;
 
-	[ServerVar]
 	[Help("When set above zero, enables a global shared cooldown for boat edit/finishing.")]
+	[ServerVar]
 	public static float GlobalEditFinishUseInterval;
 
 	public static float NextGlobalEditFinishUseTime;
@@ -513,9 +513,9 @@ public class BoatBuildingStation : DecayEntity
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void FinishBuilding(RPCMessage msg)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
@@ -647,8 +647,8 @@ public class BoatBuildingStation : DecayEntity
 		Pool.FreeUnmanaged<PlayerBoat>(ref playerBoats);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void ClearArea(RPCMessage msg)
 	{

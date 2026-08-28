@@ -8,8 +8,8 @@ using UnityEngine.Assertions;
 
 public class Mortar : Cannon
 {
-	[Header("Mortar")]
 	[SerializeField]
+	[Header("Mortar")]
 	private Vector2 minMaxDistance;
 
 	[SerializeField]
@@ -59,8 +59,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private float recoilPitchDuration;
 
-	[Header("Mortar Handle")]
 	[SerializeField]
+	[Header("Mortar Handle")]
 	private Transform handleBone;
 
 	[SerializeField]

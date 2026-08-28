@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(CommandBufferManager))]
 [RequireComponent(typeof(DeferredIndirectLightingPass))]
+[RequireComponent(typeof(CommandBufferManager))]
 [ExecuteInEditMode]
 public class SpatialEnvironmentVolumePass : MonoBehaviour
 {

@@ -208,8 +208,8 @@ public class DecayEntity : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void DoImmediateDemolish(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && msg.player.IsAdmin && Interface.CallHook("OnStructureDemolish", this, msg.player, true) == null)

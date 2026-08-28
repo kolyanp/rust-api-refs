@@ -7,9 +7,9 @@ using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
-[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [DisallowMultipleComponent]
 [ExecuteAlways]
+[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [RequireComponent(typeof(Camera))]
 [ImageEffectAllowedInSceneView]
 public class PostProcessLayer : MonoBehaviour
@@ -72,8 +72,8 @@ public class PostProcessLayer : MonoBehaviour
 	[Preserve]
 	private bool m_ShowToolkit;
 
-	[Preserve]
 	[SerializeField]
+	[Preserve]
 	private bool m_ShowCustomSorter;
 
 	public bool breakBeforeColorGrading;

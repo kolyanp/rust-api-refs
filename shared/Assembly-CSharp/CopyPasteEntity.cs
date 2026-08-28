@@ -106,8 +106,8 @@ public class CopyPasteEntity : PointEntity
 			select Path.GetFileNameWithoutExtension(x)).ToArray();
 	}
 
-	[RPC_Server.IgnoreProtoFieldOperationLimit]
 	[RPC_Server]
+	[RPC_Server.IgnoreProtoFieldOperationLimit]
 	[RPC_Server.IgnoreProtoFieldOrder]
 	public void Paste(RPCMessage rpc)
 	{

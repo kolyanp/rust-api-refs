@@ -7,8 +7,8 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private CoverImage coverImage;
 
-	[Header("Parallax")]
 	[SerializeField]
+	[Header("Parallax")]
 	private float maxYaw = 8f;
 
 	[SerializeField]
@@ -20,7 +20,7 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private float responseCurve = 1.5f;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private bool fullScreenOnly;
 }

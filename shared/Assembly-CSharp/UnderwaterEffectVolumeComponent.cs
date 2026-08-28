@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [Serializable]
-[VolumeComponentMenu("RRP/Underwater Post Effect")]
 [SupportedOnRenderPipeline(typeof(RustRenderPipelineAsset))]
+[VolumeComponentMenu("RRP/Underwater Post Effect")]
 public class UnderwaterEffectVolumeComponent : VolumeComponent, IPostProcessComponent
 {
 	[Header("Wiggle")]
@@ -22,8 +22,8 @@ public class UnderwaterEffectVolumeComponent : VolumeComponent, IPostProcessComp
 
 	public FloatParameter waterLineBlurSize;
 
-	[Header("Blur")]
 	[Range(0f, 2f)]
+	[Header("Blur")]
 	public IntParameter downsample;
 
 	[Range(1f, 4f)]

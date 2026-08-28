@@ -112,8 +112,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -1039,8 +1039,8 @@ public class BallistaGun : BaseVehicleSeat
 		((Collider)playerServerCollider).enabled = active;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	private void SERVER_SwitchAmmoTo(RPCMessage msg)
 	{
 		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
@@ -1078,9 +1078,9 @@ public class BallistaGun : BaseVehicleSeat
 		mounted.inventory.ServerUpdate(0f);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxRepeatedElements(1)]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
@@ -1346,9 +1346,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.FromMounted]
-	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)

@@ -1218,9 +1218,9 @@ public class IndustrialConveyor : IndustrialEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.MaxRepeatedElements(30)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
 	private void RPC_ChangeFilters(RPCMessage msg)
 	{
@@ -1266,8 +1266,8 @@ public class IndustrialConveyor : IndustrialEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void SvSwitch(RPCMessage msg)
 	{

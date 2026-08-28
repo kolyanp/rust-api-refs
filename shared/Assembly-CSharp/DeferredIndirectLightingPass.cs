@@ -1,8 +1,8 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-[ExecuteInEditMode]
 [RequireComponent(typeof(CommandBufferManager))]
+[ExecuteInEditMode]
 public class DeferredIndirectLightingPass : MonoBehaviour
 {
 }

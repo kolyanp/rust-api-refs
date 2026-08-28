@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class BikeVehicleAudio : GroundVehicleAudio
 {
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private EngineAudioSet engineAudioSet;
 
-	[Header("Suspension")]
 	[SerializeField]
+	[Header("Suspension")]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -16,8 +16,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[SerializeField]
 	[Header("Tires")]
+	[SerializeField]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -32,8 +32,8 @@ public class BikeVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[SerializeField]
 	[Header("Skid")]
+	[SerializeField]
 	private SoundDefinition skidSoundLoop;
 
 	[SerializeField]

@@ -729,8 +729,8 @@ public class VineMountable : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SV_Descend(RPCMessage msg)
 	{
 		if (!IsMounted() && ConVar.Server.allowVineSwinging)

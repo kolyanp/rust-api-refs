@@ -19,8 +19,8 @@ public sealed class Vignette : PostProcessEffectSettings
 	[Tooltip("Amount of vignetting on screen.")]
 	public FloatParameter intensity;
 
-	[Tooltip("Smoothness of the vignette borders.")]
 	[Range(0.01f, 1f)]
+	[Tooltip("Smoothness of the vignette borders.")]
 	public FloatParameter smoothness;
 
 	[Range(0f, 1f)]

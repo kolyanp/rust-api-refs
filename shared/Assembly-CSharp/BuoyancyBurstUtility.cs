@@ -50,8 +50,8 @@ public class BuoyancyBurstUtility
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(FillPointData_000057E9_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(FillPointData_000057E9_0024PostfixBurstDelegate))]
 	public static void FillPointData(in int pointIndexOffset, ref NativeArray<Vector2> pointPositionArray, ref NativeArray<Vector2> pointPositionUVArray, in Matrix4x4 rootToWorld, ref NativeArray<Buoyancy.BuoyancyPointData> pointData, in Bounds deepSeaBounds, in Vector3 terrainPosition, in Vector3 terrainOneOverSize, in bool isDeepSea, ref NativeArray<Vector3> allPositions3D, out int pointCount)
 	{
 		FillPointData_000057E9_0024BurstDirectCall.Invoke(in pointIndexOffset, ref pointPositionArray, ref pointPositionUVArray, in rootToWorld, ref pointData, in deepSeaBounds, in terrainPosition, in terrainOneOverSize, in isDeepSea, ref allPositions3D, out pointCount);

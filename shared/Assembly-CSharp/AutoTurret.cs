@@ -1197,8 +1197,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void Server_SetID(RPCMessage msg)
 	{
 		string oldID = msg.read.String();
@@ -1227,9 +1227,9 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
@@ -1502,8 +1502,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (!booting && !IsOnline() && IsAuthed(rpc.player) && Interface.CallHook("OnTurretDeauthorize", this, rpc.player) == null)
@@ -1516,8 +1516,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ClearList(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -1531,8 +1531,8 @@ public class AutoTurret : ContainerIOEntity, IRemoteControllable, IHostileWarnin
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AssignToFriend(RPCMessage msg)
 	{
 		if (!AtMaxAuthCapacity() && !((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && CanChangeSettings(msg.player))

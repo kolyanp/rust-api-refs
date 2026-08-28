@@ -19,14 +19,14 @@ using UnityEngine;
 
 namespace ConVar;
 
-[Factory("debug")]
 [ResetStaticFields]
+[Factory("debug")]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
 
-	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
+	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	public static bool checktriggers = false;
 
 	[ServerVar(Help = "(Generated) When enabled, validates that trigger colliders are correctly parented to their entities during physics updates; helps catch mis-parenting bugs")]
@@ -133,8 +133,8 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(text, (ConsoleColor)color);
 	}
 
-	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
+	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0), 0f, 1f);
@@ -1999,8 +1999,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	[ClientVar(Help = "Logs a test error and exception for testing error display.")]
+	[ServerVar(Help = "Logs a test error and exception for testing error display.")]
 	public static void testerror(Arg arg)
 	{
 		Debug.LogError((object)"Test error message");

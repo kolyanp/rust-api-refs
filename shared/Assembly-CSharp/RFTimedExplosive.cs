@@ -279,8 +279,8 @@ public class RFTimedExplosive : TimedExplosive, IRFObject
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void PickupTimer(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && IsArmed())

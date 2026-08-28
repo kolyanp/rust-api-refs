@@ -119,8 +119,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride;
 
-	[Tooltip("How far away this attack effect can be heard")]
 	[Header("Effects")]
+	[Tooltip("How far away this attack effect can be heard")]
 	public float maxAttackEffectDistance;
 
 	public GameObjectRef attackFX;
@@ -1451,8 +1451,8 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
 	private void ToggleFireMode(RPCMessage msg)
 	{
@@ -1542,8 +1542,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1572,8 +1572,8 @@ public class BaseProjectile : AttackEntity
 		UpdateShieldState(bHeld: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void ServerFractionalReloadInsert(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1630,8 +1630,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Reload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1682,10 +1682,10 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.MaxRepeatedElements(64)]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.MaxRepeatedElements(64)]
+	[RPC_Server.IsActiveItem]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)

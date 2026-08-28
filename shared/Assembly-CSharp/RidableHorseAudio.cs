@@ -34,15 +34,15 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private Transform[] feet;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObjectRef swimmingSloshEffect;
 
 	[SerializeField]
 	private string BaseFolder;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private SoundDefinition skidLoopSoundDef;
 
 	[SerializeField]

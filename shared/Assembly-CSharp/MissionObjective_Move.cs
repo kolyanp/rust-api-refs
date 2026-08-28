@@ -7,15 +7,15 @@ public class MissionObjective_Move : MissionObjective
 	[BaseMission.PositionGenerator.PositionPoint]
 	public string positionName = "default";
 
-	[InspectorName("Distance For Completion (m)")]
 	[Tooltip("Distance threshold to player for objective to complete.")]
+	[InspectorName("Distance For Completion (m)")]
 	public float distForCompletion = 3f;
 
 	[Tooltip("If true, this objective will no longer be marked as completed if the objective criteria are no longer met.")]
 	public bool canBeReset;
 
-	[Tooltip("If \"Can Be Reset\" is true, then distance ")]
 	[InspectorName("Distance For Reset (m)")]
+	[Tooltip("If \"Can Be Reset\" is true, then distance ")]
 	public float distanceForReset = 3f;
 
 	[FormerlySerializedAs("use2D")]

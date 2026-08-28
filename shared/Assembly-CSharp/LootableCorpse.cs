@@ -266,8 +266,8 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 		return num;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_LootCorpse(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;

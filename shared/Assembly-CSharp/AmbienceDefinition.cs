@@ -25,8 +25,8 @@ public class AmbienceDefinition : ScriptableObject
 	[Horizontal(2, -1)]
 	public ValueRange stingFrequency;
 
-	[Header("Environment")]
 	[InspectorFlags]
+	[Header("Environment")]
 	public Enum biomes;
 
 	[InspectorFlags]

@@ -6,16 +6,16 @@ public class MissionObjective_MetalDetectorDeepSeaTreasure : MissionObjective
 
 	public Phrase notePhrase;
 
-	[Tooltip("Player must have dug this many metal detector sources already for the treasure to spawn.")]
 	[Min(0f)]
+	[Tooltip("Player must have dug this many metal detector sources already for the treasure to spawn.")]
 	public int minimumDigAttempts;
 
 	[Min(0f)]
 	[Tooltip("After this many dug up metal detector sources treasure spawn is guaranteed.")]
 	public int maximumDigAttempts;
 
-	[Tooltip("Random chance of treasure spawning after Minimum Dig Attempts.")]
 	[Range(0f, 1f)]
+	[Tooltip("Random chance of treasure spawning after Minimum Dig Attempts.")]
 	public float successfulDigChange = 0.33f;
 
 	public override bool IsObjectiveValid(int index, BaseMission.MissionInstance instance)

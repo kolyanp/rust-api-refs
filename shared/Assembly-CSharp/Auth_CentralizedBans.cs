@@ -110,6 +110,12 @@ public static class Auth_CentralizedBans
 		}
 		if (request.responseCode == 404)
 		{
+			PlayerState val = SingletonComponent<ServerMgr>.Instance.playerStateManager.Get(steamId);
+			if (val.chatMuted || val.chatMuteExpiryTimestamp != 0.0)
+			{
+				val.chatMuted = false;
+				val.chatMuteExpiryTimestamp = 0.0;
+			}
 			return false;
 		}
 		if (request.isHttpError)
@@ -147,21 +153,19 @@ public static class Auth_CentralizedBans
 			string text2 = ((payloadData.expiryDate > 0) ? (" for " + NumberExtensions.FormatSecondsLong(payloadData.expiryDate - Epoch.Current)) : "");
 			if (payloadData.isMute)
 			{
-				PlayerState val = SingletonComponent<ServerMgr>.Instance.playerStateManager.Get(steamId);
-				val.chatMuted = true;
+				PlayerState val2 = SingletonComponent<ServerMgr>.Instance.playerStateManager.Get(steamId);
+				val2.chatMuted = true;
 				if (payloadData.expiryDate > 0)
 				{
-					val.chatMuteExpiryTimestamp = payloadData.expiryDate;
+					val2.chatMuteExpiryTimestamp = payloadData.expiryDate;
 				}
 				else
 				{
-					val.chatMuteExpiryTimestamp = 0.0;
+					val2.chatMuteExpiryTimestamp = 0.0;
 				}
+				return false;
 			}
-			else
-			{
-				Reject("You are banned from this server" + text2 + " (" + text + ")");
-			}
+			Reject("You are banned from this server" + text2 + " (" + text + ")");
 			return true;
 		}
 		catch (Exception ex)

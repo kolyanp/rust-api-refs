@@ -159,8 +159,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Entity.SV.Savelist.Counts.txt", stringBuilder3.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of LOD Groups into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of LOD Groups into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of LOD Groups into a diagnostics subfolder")]
 	public static void dumpLODGroups(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -190,8 +190,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "LODGroups.Objects.txt", stringBuilder.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of network info into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of network info into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of network info into a diagnostics subfolder")]
 	public static void dumpNetwork(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -234,8 +234,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "Network.Server.txt", stringBuilder.ToString());
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of objects into a diagnostics subfolder")]
 	public static void dumpObjects(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -288,8 +288,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.ScriptableObject.Count.txt", stringBuilder3.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of physics into a diagnostics subfolder")]
 	public static void dumpPhysics(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -400,8 +400,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "Physics.RigidBody.All.txt", stringBuilder2.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of root objects (all gameobjects across all scenes) into a /diagnostics/ subfolder. WARNING: this will stall the server and can cause it to crash.")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of root objects (all gameobjects across all scenes) into a /diagnostics/ subfolder. WARNING: this will stall the server and can cause it to crash.")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of root objects (all gameobjects across all scenes) into a /diagnostics/ subfolder. WARNING: this will stall the server and can cause it to crash.")]
 	public static void dumpRootObjects(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -830,8 +830,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		args.ReplyWith("Dumped diagnostics to: " + targetFolder);
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
 	public static void dumpSystemInformation(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

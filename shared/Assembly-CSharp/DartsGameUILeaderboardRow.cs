@@ -13,8 +13,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public RustText TimeTaken;
 
-	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
 	[Header("Row Styles")]
+	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
 	public Image rowImage;
 
 	public Color lightColour;
@@ -23,8 +23,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public Color currentWinnerColour;
 
-	[Header("Text Colours")]
 	[Tooltip("Every text in here gets the normal colour, or the winner colour on the current winner row.")]
+	[Header("Text Colours")]
 	public List<RustText> rowTexts;
 
 	public Color normalTextColour;

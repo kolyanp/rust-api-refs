@@ -22,8 +22,8 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 		[Header("Seating & Controls")]
 		public bool doorsAreLockable = true;
 
-		[Obsolete("Use BaseVehicle.mountPoints instead")]
 		[HideInInspector]
+		[Obsolete("Use BaseVehicle.mountPoints instead")]
 		public MountPointInfo[] mountPoints;
 
 		public Transform steeringWheel;
@@ -71,28 +71,28 @@ public class VehicleModuleSeating : BaseVehicleModule, IPrefabPreProcess
 	[SerializeField]
 	private Seating seating;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 steerAngle;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 accelAngle;
 
 	[SerializeField]
 	[HideInInspector]
 	private Vector3 brakeAngle;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Vector3 speedometerAngle;
 
 	[SerializeField]
 	[HideInInspector]
 	private Vector3 fuelAngle;
 
-	[Header("Horn")]
 	[SerializeField]
+	[Header("Horn")]
 	private SoundDefinition hornLoop;
 
 	[SerializeField]

@@ -33,23 +33,23 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Occlusion contribution amount on relation to radius.")]
 	public float RadiusIntensity;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
+	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent;
 
-	[Tooltip("Controls the initial occlusion contribution offset.")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias;
 
-	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the thickness occlusion contribution.")]
 	public float Thickness;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
 	public bool Downsample;
 
-	[Header("Distance Fade")]
 	[Tooltip("Control parameters at faraway.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance in Unity unities that start to fade.")]
@@ -64,8 +64,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public Color FadeToTint;
 
-	[Tooltip("Final Radius parameter.")]
 	[Range(0f, 32f)]
+	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius;
 
 	[Tooltip("Final PowerExponent parameter.")]
@@ -83,24 +83,24 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(1f, 4f)]
 	public int BlurRadius;
 
-	[Range(1f, 4f)]
 	[Tooltip("Number of times that the Blur will repeat.")]
+	[Range(1f, 4f)]
 	public int BlurPasses;
 
 	[Tooltip("0 - Blured, 1 - Sharpened.")]
 	[Range(0f, 20f)]
 	public float BlurSharpness;
 
-	[Tooltip("Accumulates the effect over the time.")]
 	[Header("Temporal Filter")]
+	[Tooltip("Accumulates the effect over the time.")]
 	public bool FilterEnabled;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
+	[Range(0f, 1f)]
 	public float FilterBlending;
 
-	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	public float FilterResponse;
 
 	[NonSerialized]

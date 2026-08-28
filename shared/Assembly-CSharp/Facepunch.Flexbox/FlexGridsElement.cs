@@ -6,9 +6,9 @@ using UnityEngine.Serialization;
 
 namespace Facepunch.Flexbox;
 
-[DisallowMultipleComponent]
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
+[DisallowMultipleComponent]
 public class FlexGridsElement : FlexElementBase
 {
 	private struct GridSlot
@@ -27,8 +27,8 @@ public class FlexGridsElement : FlexElementBase
 	[Tooltip("Spacing to add from this elements borders to where children are laid out.")]
 	public FlexPadding Padding;
 
-	[Min(0f)]
 	[Tooltip("Spacing to add between each child flex item.")]
+	[Min(0f)]
 	public float Gap;
 
 	[Tooltip("The number of columns to use when using a fixed number of columns.")]

@@ -81,8 +81,8 @@ public static class BuoyancyForceAccumulationBurst
 		}
 	}
 
-	[MonoPInvokeCallback(typeof(Compute_000057EB_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(Compute_000057EB_0024PostfixBurstDelegate))]
 	public static void Compute(in NativeArray<InstanceInput> instances, in NativeArray<float3> allPositions3D, in NativeArray<float> pointShoreDistance, in NativeArray<WaterLevel.WaterInfo> pointWaterInfo, in NativeArray<float> pointSize, in NativeArray<float> pointBuoyancyForce, in NativeArray<float> pointRandomOffset, in NativeArray<float> pointWaveFrequency, in NativeArray<float> pointWaveScale, in NativeArray<float3> pointFlowDirection, float time, ref NativeArray<InstanceOutput> results)
 	{
 		Compute_000057EB_0024BurstDirectCall.Invoke(in instances, in allPositions3D, in pointShoreDistance, in pointWaterInfo, in pointSize, in pointBuoyancyForce, in pointRandomOffset, in pointWaveFrequency, in pointWaveScale, in pointFlowDirection, time, ref results);

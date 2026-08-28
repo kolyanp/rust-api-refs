@@ -6,26 +6,26 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.ColorGradingRenderer), "Unity/Color Grading", true)]
 public sealed class ColorGrading : PostProcessEffectSettings
 {
-	[Tooltip("Select a color grading mode that fits your dynamic range and workflow. Use HDR if your camera is set to render in HDR and your target platform supports it. Use LDR for low-end mobiles or devices that don't support HDR. Use External if you prefer authoring a Log LUT in an external software.")]
 	[DisplayName("Mode")]
+	[Tooltip("Select a color grading mode that fits your dynamic range and workflow. Use HDR if your camera is set to render in HDR and your target platform supports it. Use LDR for low-end mobiles or devices that don't support HDR. Use External if you prefer authoring a Log LUT in an external software.")]
 	public GradingModeParameter gradingMode;
 
-	[DisplayName("Lookup Texture")]
 	[Tooltip("A custom 3D log-encoded texture.")]
+	[DisplayName("Lookup Texture")]
 	public TextureParameter externalLut;
 
-	[DisplayName("Mode")]
 	[Tooltip("Select a tonemapping algorithm to use at the end of the color grading process.")]
+	[DisplayName("Mode")]
 	public TonemapperParameter tonemapper;
 
-	[DisplayName("Toe Strength")]
-	[Range(0f, 1f)]
 	[Tooltip("Affects the transition between the toe and the mid section of the curve. A value of 0 means no toe, a value of 1 means a very hard transition.")]
+	[Range(0f, 1f)]
+	[DisplayName("Toe Strength")]
 	public FloatParameter toneCurveToeStrength;
 
+	[Tooltip("Affects how much of the dynamic range is in the toe. With a small value, the toe will be very short and quickly transition into the linear section, with a larger value, the toe will be longer.")]
 	[DisplayName("Toe Length")]
 	[Range(0f, 1f)]
-	[Tooltip("Affects how much of the dynamic range is in the toe. With a small value, the toe will be very short and quickly transition into the linear section, with a larger value, the toe will be longer.")]
 	public FloatParameter toneCurveToeLength;
 
 	[DisplayName("Shoulder Strength")]
@@ -39,8 +39,8 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	public FloatParameter toneCurveShoulderLength;
 
 	[DisplayName("Shoulder Angle")]
-	[Range(0f, 1f)]
 	[Tooltip("Affects how much overshoot to add to the shoulder.")]
+	[Range(0f, 1f)]
 	public FloatParameter toneCurveShoulderAngle;
 
 	[DisplayName("Gamma")]
@@ -52,14 +52,14 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[Tooltip("Custom lookup texture (strip format, for example 256x16) to apply before the rest of the color grading operators. If none is provided, a neutral one will be generated internally.")]
 	public TextureParameter ldrLut;
 
-	[Tooltip("How much of the lookup texture will contribute to the color grading effect.")]
-	[Range(0f, 1f)]
 	[DisplayName("Contribution")]
+	[Range(0f, 1f)]
+	[Tooltip("How much of the lookup texture will contribute to the color grading effect.")]
 	public FloatParameter ldrLutContribution;
 
-	[Tooltip("Sets the white balance to a custom color temperature.")]
 	[DisplayName("Temperature")]
 	[Range(-100f, 100f)]
+	[Tooltip("Sets the white balance to a custom color temperature.")]
 	public FloatParameter temperature;
 
 	[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
@@ -67,14 +67,14 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[DisplayName("Tint")]
 	public FloatParameter tint;
 
-	[ColorUsage(false, true)]
-	[Tooltip("Tint the render by multiplying a color.")]
 	[DisplayName("Color Filter")]
+	[Tooltip("Tint the render by multiplying a color.")]
+	[ColorUsage(false, true)]
 	public ColorParameter colorFilter;
 
+	[DisplayName("Hue Shift")]
 	[Range(-180f, 180f)]
 	[Tooltip("Shift the hue of all colors.")]
-	[DisplayName("Hue Shift")]
 	public FloatParameter hueShift;
 
 	[DisplayName("Saturation")]
@@ -82,9 +82,9 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[Tooltip("Pushes the intensity of all colors.")]
 	public FloatParameter saturation;
 
-	[DisplayName("Brightness")]
 	[Tooltip("Makes the image brighter or darker.")]
 	[Range(-100f, 100f)]
+	[DisplayName("Brightness")]
 	public FloatParameter brightness;
 
 	[Tooltip("Adjusts the overall exposure of the scene in EV units. This is applied after the HDR effect and right before tonemapping so it won't affect previous effects in the chain.")]
@@ -96,13 +96,13 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[DisplayName("Contrast")]
 	public FloatParameter contrast;
 
-	[DisplayName("Mode")]
 	[Tooltip("Select masking type to avoid applying grading to certain areas.")]
+	[DisplayName("Mode")]
 	public MaskingModeParameter maskMode;
 
-	[DisplayName("Intensity")]
-	[Range(0f, 10f)]
 	[Tooltip("Mask intensity.")]
+	[Range(0f, 10f)]
+	[DisplayName("Intensity")]
 	public FloatParameter maskIntensity;
 
 	[Tooltip("Modify influence of the red channel in the overall mix.")]
@@ -115,29 +115,29 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[Range(-200f, 200f)]
 	public FloatParameter mixerRedOutGreenIn;
 
-	[Tooltip("Modify influence of the blue channel in the overall mix.")]
 	[Range(-200f, 200f)]
+	[Tooltip("Modify influence of the blue channel in the overall mix.")]
 	[DisplayName("Blue")]
 	public FloatParameter mixerRedOutBlueIn;
 
-	[Tooltip("Modify influence of the red channel in the overall mix.")]
 	[Range(-200f, 200f)]
+	[Tooltip("Modify influence of the red channel in the overall mix.")]
 	[DisplayName("Red")]
 	public FloatParameter mixerGreenOutRedIn;
 
-	[Tooltip("Modify influence of the green channel in the overall mix.")]
 	[Range(-200f, 200f)]
+	[Tooltip("Modify influence of the green channel in the overall mix.")]
 	[DisplayName("Green")]
 	public FloatParameter mixerGreenOutGreenIn;
 
-	[Tooltip("Modify influence of the blue channel in the overall mix.")]
 	[Range(-200f, 200f)]
+	[Tooltip("Modify influence of the blue channel in the overall mix.")]
 	[DisplayName("Blue")]
 	public FloatParameter mixerGreenOutBlueIn;
 
 	[DisplayName("Red")]
-	[Tooltip("Modify influence of the red channel in the overall mix.")]
 	[Range(-200f, 200f)]
+	[Tooltip("Modify influence of the red channel in the overall mix.")]
 	public FloatParameter mixerBlueOutRedIn;
 
 	[DisplayName("Green")]
@@ -145,9 +145,9 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[Tooltip("Modify influence of the green channel in the overall mix.")]
 	public FloatParameter mixerBlueOutGreenIn;
 
-	[DisplayName("Blue")]
 	[Range(-200f, 200f)]
 	[Tooltip("Modify influence of the blue channel in the overall mix.")]
+	[DisplayName("Blue")]
 	public FloatParameter mixerBlueOutBlueIn;
 
 	[DisplayName("Lift")]
@@ -155,14 +155,14 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[Trackball(TrackballAttribute.Mode.Lift)]
 	public Vector4Parameter lift;
 
+	[Tooltip("Power function that controls mid-range tones.")]
 	[Trackball(TrackballAttribute.Mode.Gamma)]
 	[DisplayName("Gamma")]
-	[Tooltip("Power function that controls mid-range tones.")]
 	public Vector4Parameter gamma;
 
-	[Trackball(TrackballAttribute.Mode.Gain)]
-	[Tooltip("Controls the lightest portions of the render.")]
 	[DisplayName("Gain")]
+	[Tooltip("Controls the lightest portions of the render.")]
+	[Trackball(TrackballAttribute.Mode.Gain)]
 	public Vector4Parameter gain;
 
 	public SplineParameter masterCurve;

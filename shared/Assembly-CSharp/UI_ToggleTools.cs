@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class UI_ToggleTools : UI_Window
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObjectRef hudTogglePrefabRef;
 
 	[SerializeField]

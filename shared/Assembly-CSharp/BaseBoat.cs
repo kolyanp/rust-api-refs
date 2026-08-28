@@ -95,8 +95,8 @@ public class BaseBoat : BaseVehicle
 		return secondsUntilShoreDrift;
 	}
 
-	[Help("Seconds between shore drift teleport ticks")]
 	[ServerVar]
+	[Help("Seconds between shore drift teleport ticks")]
 	public static int seconds_between_shore_drift(ConsoleSystem.Arg arg)
 	{
 		secondsBetweenShoreDrift = arg.GetInt(0, secondsBetweenShoreDrift);

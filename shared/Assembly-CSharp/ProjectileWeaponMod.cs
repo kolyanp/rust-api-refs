@@ -189,8 +189,8 @@ public class ProjectileWeaponMod : BaseEntity
 		info.msg.projectileWeaponMod.zoomLevel = serverZoomLevel;
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void SetZoomLevel(int zoomLevel)
 	{
 		serverZoomLevel = zoomLevel;

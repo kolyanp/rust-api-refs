@@ -1098,8 +1098,8 @@ public class RelationshipManager : BaseEntity
 		return playerRelationships;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void SERVER_SendFreshContacts(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1109,8 +1109,8 @@ public class RelationshipManager : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void SERVER_ChangeRelationship(RPCMessage msg)
 	{
 		EncryptedValue<ulong> userID = msg.player.userID;
@@ -1150,8 +1150,8 @@ public class RelationshipManager : BaseEntity
 		MarkRelationshipsDirtyFor(userID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server]
 	public void SERVER_ReceiveMugshot(RPCMessage msg)
 	{
 		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)

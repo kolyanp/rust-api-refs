@@ -7,8 +7,8 @@ using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
 [ResetStaticFields]
+[RequireComponent(typeof(Camera))]
 public class CoverageQueries : MonoBehaviour
 {
 	public class BufferSet

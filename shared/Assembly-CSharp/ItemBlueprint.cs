@@ -68,8 +68,8 @@ public class ItemBlueprint : MonoBehaviour
 
 	public int scrapFromRecycle;
 
-	[Header("Unlocking")]
 	[Tooltip("This item won't show anywhere unless you have the corresponding SteamItem in your inventory - which is defined on the ItemDefinition")]
+	[Header("Unlocking")]
 	public bool NeedsSteamItem;
 
 	public ItemDefinition RequireUnlockedItem;

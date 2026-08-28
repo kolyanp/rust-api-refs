@@ -26,8 +26,8 @@ public class Admin : ConsoleSystem
 		Downgrade
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct PlayerInfo
 	{
 		public string SteamID;
@@ -117,8 +117,8 @@ public class Admin : ConsoleSystem
 		public string Protocol;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerConvarInfo
 	{
 		public string FullName;
@@ -1682,6 +1682,7 @@ public class Admin : ConsoleSystem
 		}
 		else
 		{
+			playerOrSleeper.State.chatMuteExpiryTimestamp = 0.0;
 			playerOrSleeper.ChatMessage("You have been permanently muted");
 		}
 		playerOrSleeper.State.chatMuted = true;

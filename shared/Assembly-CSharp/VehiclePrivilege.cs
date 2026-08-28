@@ -273,8 +273,8 @@ public class VehiclePrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanModifyAuth(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null)

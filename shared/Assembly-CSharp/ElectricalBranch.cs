@@ -64,8 +64,8 @@ public class ElectricalBranch : IOEntity
 		return 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetBranchOffPower(RPCMessage msg)
 	{

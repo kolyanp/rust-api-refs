@@ -277,8 +277,8 @@ public class FrankensteinTable : StorageContainer
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void CreateFrankenstein(RPCMessage msg)
 	{
 	}

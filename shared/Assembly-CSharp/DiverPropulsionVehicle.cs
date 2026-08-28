@@ -84,8 +84,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float maxRollDegrees = 30f;
 
-	[Header("DPV - UI")]
 	[SerializeField]
+	[Header("DPV - UI")]
 	private Canvas dashboardCanvas;
 
 	[SerializeField]
@@ -106,8 +106,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private RustText healthWarningText;
 
-	[SerializeField]
 	[Header("DPV - FX")]
+	[SerializeField]
 	private Transform leftHandGrip;
 
 	[SerializeField]

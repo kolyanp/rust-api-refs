@@ -633,8 +633,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Editor_SpawnTestPlayer(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -676,8 +676,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Editor_MakeRandomMove(RPCMessage msg)
 	{
 		if (Application.isEditor)

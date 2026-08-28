@@ -16,8 +16,8 @@ namespace ConVar;
 [Factory("pool")]
 public class Pool : ConsoleSystem
 {
-	[ClientVar(ClientAdmin = true)]
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
+	[ClientVar(ClientAdmin = true)]
 	public static int mode = 2;
 
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
@@ -32,8 +32,8 @@ public class Pool : ConsoleSystem
 	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	public static bool debug = false;
 
-	[ClientVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
 	[ServerVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
+	[ClientVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
 	public static bool UseMutexPool
 	{
 		get

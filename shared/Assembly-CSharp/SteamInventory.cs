@@ -135,8 +135,8 @@ public class SteamInventory : EntityComponent<BasePlayer>
 		workshopSkinVersion = -1;
 	}
 
-	[BaseEntity.RPC_Server.FromOwner]
 	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.FromOwner]
 	private async Task UpdateSteamInventory(BaseEntity.RPCMessage msg)
 	{
 		byte[] array = msg.read.BytesWithSize();

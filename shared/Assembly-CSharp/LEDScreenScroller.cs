@@ -11,8 +11,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 		public Mesh Mesh;
 	}
 
-	[Tooltip("One pre-made mesh plane per supported letter/number, UV mapped into the shared atlas. Matching is case-insensitive.")]
 	[Header("Glyphs")]
+	[Tooltip("One pre-made mesh plane per supported letter/number, UV mapped into the shared atlas. Matching is case-insensitive.")]
 	public CharacterGlyph[] Glyphs;
 
 	[Tooltip("Shown for spaces and any character with no entry in Glyphs (e.g. punctuation).")]
@@ -32,8 +32,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Extra blank glyph slots inserted between repeats of the text so it doesn't run into itself when it loops.")]
 	public int LoopGapSlots = 3;
 
-	[Header("Scrolling")]
 	[Tooltip("Local units per second.")]
+	[Header("Scrolling")]
 	public float ScrollSpeed = 0.05f;
 
 	[Tooltip("Flip travel direction (left-to-right instead of right-to-left) without touching letter order.")]
@@ -42,8 +42,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Quantizes the visual scroll position to multiples of this value, so the strip jumps between fixed positions instead of sliding smoothly - set to match the physical spacing between individual LEDs on the screen mesh. 0 = smooth, unstepped scroll.")]
 	public float StepSize = 0.00933f;
 
-	[Tooltip("Used verbatim if ReadStationNameFromBoomBox is false, and as a fallback whenever no station name can be resolved.")]
 	[Header("Text Source")]
+	[Tooltip("Used verbatim if ReadStationNameFromBoomBox is false, and as a fallback whenever no station name can be resolved.")]
 	public string OverrideText = "RUST RADIO";
 
 	[Tooltip("Shown while a cassette is loaded, taking priority over any tuned station. Only used when ReadStationNameFromBoomBox is enabled.")]

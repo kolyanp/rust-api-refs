@@ -13,8 +13,8 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 	[Range(0f, 4f)]
 	public FloatParameter intensity;
 
-	[ColorUsage(false)]
 	[Tooltip("The custom color to use for the ambient occlusion. The default is black.")]
+	[ColorUsage(false)]
 	public ColorParameter color;
 
 	[Tooltip("Check this box to mark this Volume as to only affect ambient lighting. This mode is only available with the Deferred rendering path and HDR rendering. Objects rendered with the Forward rendering path won't get any ambient occlusion.")]

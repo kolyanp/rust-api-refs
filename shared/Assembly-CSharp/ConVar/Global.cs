@@ -23,12 +23,12 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
-	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
+	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	public static bool forceUnloadBundles = true;
 
 	[ServerVar(Help = "(Generated) When true, the server network position is updated to match the debug camera world position while spectating; useful for testing position-dependent server logic from the spectator view")]
@@ -46,8 +46,8 @@ public class Global : ConsoleSystem
 
 	private static bool _forceOffAdminStatusOverlay = false;
 
-	[ServerVar(ClientAdmin = true, ServerAdmin = true, Help = "When enabled a player wearing a gingerbread suit will gib like the gingerbread NPC's")]
 	[ClientVar]
+	[ServerVar(ClientAdmin = true, ServerAdmin = true, Help = "When enabled a player wearing a gingerbread suit will gib like the gingerbread NPC's")]
 	public static bool cinematicGingerbreadCorpses = false;
 
 	private static uint _gingerbreadMaterialID = 0u;
@@ -91,8 +91,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	[ServerVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
+	[ClientVar(Help = "(Generated) Number of Unity job worker threads; 0 or -1 sets the default (auto); higher values improve parallel job throughput on many-core CPUs")]
 	public static int job_system_threads
 	{
 		get
@@ -143,8 +143,8 @@ public class Global : ConsoleSystem
 		ServerMgr.RestartServer(args.GetString(1, string.Empty), args.GetInt(0, 300));
 	}
 
-	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	[ClientVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
+	[ServerVar(Help = "(Generated) Quits the application cleanly with no arguments; rejects calls with arguments to prevent accidental exit; in the editor exits play mode")]
 	public static void quit(Arg args)
 	{
 		if (args != null && args.HasArgs())
@@ -174,8 +174,8 @@ public class Global : ConsoleSystem
 		ServerPerformance.DoReport();
 	}
 
-	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
+	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	public static void objects(Arg args)
 	{
 		Object[] array = Object.FindObjectsByType<Object>((FindObjectsSortMode)0);
@@ -214,8 +214,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ServerVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
+	[ServerVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	public static void textures(Arg args)
 	{
 		Texture[] array = Object.FindObjectsByType<Texture>((FindObjectsSortMode)0);
@@ -243,8 +243,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(strValue);
 	}
 
-	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
+	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	public static void queue(Arg args)
 	{
 		string text = "";
@@ -1302,8 +1302,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	[ServerVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
+	[ClientVar(Help = "(Generated) Clears prefab pools and releases pooled objects; delegates to pool.clear_prefabs; admin/developer only")]
 	public static void free(Arg args)
 	{
 		Pool.clear_prefabs(args);
@@ -1327,15 +1327,15 @@ public class Global : ConsoleSystem
 		}));
 	}
 
-	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
+	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);
 	}
 
-	[ClientVar(Help = "(Generated) Prints the unique device identifier for the current machine as reported by Unity SystemInfo.deviceUniqueIdentifier")]
 	[ServerVar(Help = "(Generated) Prints the unique device identifier for the current machine as reported by Unity SystemInfo.deviceUniqueIdentifier")]
+	[ClientVar(Help = "(Generated) Prints the unique device identifier for the current machine as reported by Unity SystemInfo.deviceUniqueIdentifier")]
 	public static void sysuid(Arg arg)
 	{
 		arg.ReplyWith(SystemInfo.deviceUniqueIdentifier);
@@ -1366,8 +1366,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
+	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)

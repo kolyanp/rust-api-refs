@@ -16,14 +16,14 @@ public abstract class AnimationSubSystem : MonoBehaviour, IClientComponent
 
 	public const int TotalPriorityLevels = 3;
 
-	[SerializeField]
 	[SubSystemVariable]
+	[SerializeField]
 	[Tooltip("Used for debugging, should describe what this system does")]
 	private string SubSystemName = string.Empty;
 
-	[SerializeField]
-	[SubSystemVariable]
 	[Tooltip("Controls what part of the body this system modifies, if none full body mask will be used")]
+	[SubSystemVariable]
+	[SerializeField]
 	protected AvatarMask Mask;
 
 	[SerializeField]

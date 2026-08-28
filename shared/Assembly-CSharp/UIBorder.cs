@@ -36,8 +36,8 @@ public class UIBorder : MonoBehaviour
 	[SerializeField]
 	private float bottomLeftRadius;
 
-	[SerializeField]
 	[Range(1f, 32f)]
+	[SerializeField]
 	private int segmentsPerCorner;
 
 	[SerializeField]

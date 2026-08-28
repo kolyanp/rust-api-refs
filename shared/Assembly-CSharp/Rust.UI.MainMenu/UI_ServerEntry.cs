@@ -80,7 +80,7 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private bool _joinOnClick;
 }

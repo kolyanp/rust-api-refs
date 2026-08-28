@@ -364,8 +364,8 @@ public class ContainerCorpse : ConstructableEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void SERVER_RequestOwnerData(RPCMessage msg)
 	{
