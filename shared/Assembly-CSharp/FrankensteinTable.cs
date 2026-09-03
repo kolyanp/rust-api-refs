@@ -246,7 +246,7 @@ public class FrankensteinTable : StorageContainer
 	{
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 	}
 
@@ -256,7 +256,7 @@ public class FrankensteinTable : StorageContainer
 		SendNetworkUpdateImmediate();
 	}
 
-	private bool CanAcceptItem(Item item, int targetSlot)
+	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		if (item == null)
 		{

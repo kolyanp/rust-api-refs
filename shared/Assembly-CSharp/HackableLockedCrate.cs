@@ -1,8 +1,10 @@
 using System;
 using ConVar;
+using Facepunch;
 using Facepunch.Rust;
 using Network;
 using Oxide.Core;
+using ProtoBuf;
 using Rust;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -12,7 +14,9 @@ public class HackableLockedCrate : LootContainer
 {
 	public const Flags Flag_Hacking = Flags.Reserved1;
 
-	public const Flags Flag_FullyHacked = Flags.Reserved2;
+	public const Flags Flag_FullyHacked = Flags.Reserved3;
+
+	public const Flags Flag_HasBeenLooted = Flags.Reserved4;
 
 	public Text timerText;
 
@@ -38,11 +42,7 @@ public class HackableLockedCrate : LootContainer
 
 	public string achievementStartHacking;
 
-	public BasePlayer originalHackerPlayer;
-
 	public ulong originalHackerPlayerId;
-
-	public bool hasBeenOpened;
 
 	public BaseEntity mapMarkerInstance;
 
@@ -102,7 +102,33 @@ public class HackableLockedCrate : LootContainer
 
 	public bool IsFullyHacked()
 	{
-		return HasFlag(Flags.Reserved2);
+		return HasFlag(Flags.Reserved3);
+	}
+
+	public new bool HasBeenLooted()
+	{
+		return HasFlag(Flags.Reserved4);
+	}
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (base.isServer && info.forDisk)
+		{
+			info.msg.hackableLockedCrate = Pool.Get<HackableLockedCrate>();
+			info.msg.hackableLockedCrate.hackSeconds = hackSeconds;
+			info.msg.hackableLockedCrate.originalHackerPlayerId = originalHackerPlayerId;
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		base.Load(info);
+		if (base.isServer && info.fromDisk && info.msg.hackableLockedCrate != null)
+		{
+			hackSeconds = info.msg.hackableLockedCrate.hackSeconds;
+			originalHackerPlayerId = info.msg.hackableLockedCrate.originalHackerPlayerId;
+		}
 	}
 
 	public override void DestroyShared()
@@ -184,25 +210,34 @@ public class HackableLockedCrate : LootContainer
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		if (base.isClient)
+		if (base.isServer && !Application.isLoadingSave)
 		{
-			return;
+			Init();
 		}
-		if (!Application.isLoadingSave)
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		Init();
+	}
+
+	public void Init()
+	{
+		if (wasDropped)
 		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
-			{
-				flagsUpdateScope.Set(Flags.Reserved1, b: false);
-				flagsUpdateScope.Set(Flags.Reserved2, b: false);
-			}
-			if (wasDropped)
-			{
-				InvokeRepeating(LandCheck, 0f, 0.015f);
-			}
+			InvokeRepeating(LandCheck, 0f, 0.015f);
+		}
+		if (IsBeingHacked())
+		{
+			InvokeRepeating(HackProgress, 1f, 1f);
+		}
+		if (!HasBeenLooted())
+		{
+			CreateMapMarker(120f);
 		}
 		RefreshDecay();
 		isLootable = IsFullyHacked();
-		CreateMapMarker(120f);
 		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 	}
 
@@ -211,6 +246,8 @@ public class HackableLockedCrate : LootContainer
 		if (!added && (Object)(object)mapMarkerInstance != (Object)null)
 		{
 			mapMarkerInstance.Kill();
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local);
+			flagsUpdateScope.Set(Flags.Reserved4, b: true);
 		}
 		base.OnItemAddedOrRemoved(item, added);
 	}
@@ -235,13 +272,6 @@ public class HackableLockedCrate : LootContainer
 		}
 	}
 
-	public override void PostServerLoad()
-	{
-		base.PostServerLoad();
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved1, b: false);
-	}
-
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	public void RPC_Hack(RPCMessage msg)
@@ -250,7 +280,6 @@ public class HackableLockedCrate : LootContainer
 		{
 			Facepunch.Rust.Analytics.Azure.OnLockedCrateStarted(msg.player, this);
 			originalHackerPlayerId = msg.player.userID;
-			originalHackerPlayer = msg.player;
 			if (!string.IsNullOrEmpty(achievementStartHacking))
 			{
 				msg.player?.GiveAchievement(achievementStartHacking);
@@ -267,14 +296,9 @@ public class HackableLockedCrate : LootContainer
 		{
 			flagsUpdateScope.Set(Flags.Reserved1, b: true);
 		}
-		OnStartHacking();
 		InvokeRepeating(HackProgress, 1f, 1f);
 		ClientRPC(RpcTarget.NetworkGroup("UpdateHackProgress"), 0, (int)requiredHackSeconds);
 		RefreshDecay();
-	}
-
-	protected virtual void OnStartHacking()
-	{
 	}
 
 	public void HackProgress()
@@ -284,14 +308,16 @@ public class HackableLockedCrate : LootContainer
 		{
 			Interface.CallHook("OnCrateHackEnd", this);
 			Facepunch.Rust.Analytics.Azure.OnLockedCrateFinished(originalHackerPlayerId, this);
-			if ((Object)(object)originalHackerPlayer != (Object)null && originalHackerPlayer.serverClan != null)
+			BasePlayer basePlayer = BasePlayer.FindByID(originalHackerPlayerId);
+			if ((Object)(object)basePlayer != (Object)null && basePlayer.serverClan != null)
 			{
-				originalHackerPlayer.AddClanScore((ClanScoreEventType)5);
+				basePlayer.AddClanScore((ClanScoreEventType)5);
 			}
 			RefreshDecay();
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope.Set(Flags.Reserved2, b: true);
+				flagsUpdateScope.Set(Flags.Reserved3, b: true);
+				flagsUpdateScope.Set(Flags.Reserved1, b: false);
 			}
 			isLootable = true;
 			CancelInvoke(HackProgress);
@@ -302,9 +328,8 @@ public class HackableLockedCrate : LootContainer
 	public override bool OnStartBeingLooted(BasePlayer player)
 	{
 		bool num = base.OnStartBeingLooted(player);
-		if (num && !hasBeenOpened)
+		if (num && !HasBeenLooted())
 		{
-			hasBeenOpened = true;
 			player.AddClanScore((ClanScoreEventType)6);
 		}
 		return num;

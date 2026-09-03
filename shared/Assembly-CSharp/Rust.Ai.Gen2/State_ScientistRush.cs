@@ -1,6 +1,6 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -17,42 +17,28 @@ public class State_ScientistRush : State_MoveToTarget
 
 	private NpcShootingComponent Shooting => _shooting ?? (_shooting = ((Component)Owner).GetComponent<NpcShootingComponent>());
 
-	protected override bool GetMoveDestination(out Vector3 destination)
+	protected override bool GetMoveDestination(out NavVector3 destination)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		destination = default(Vector3);
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		destination = default(NavVector3);
 		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 		{
 			return false;
 		}
-		Matrix4x4 worldToNavMeshSpace = Owner.WorldToNavMeshSpace;
-		Vector3 positionNS = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(lkp);
+		NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp);
 		if (!base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && !base.Agent.SamplePosition(positionNS, out hitNS, 20f))
 		{
 			return false;
 		}
-		Matrix4x4 navMeshToWorldSpace = Owner.NavMeshToWorldSpace;
-		Vector3 position = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(((NavMeshHit)(ref hitNS)).position);
-		if (base.Agent.IsInWater(position))
+		Vector3 positionWS = base.Agent.NavToWorldSpace(hitNS.position);
+		if (base.Agent.IsInWater(positionWS))
 		{
 			return false;
 		}
-		destination = ((NavMeshHit)(ref hitNS)).position;
+		destination = hitNS.position;
 		return true;
 	}
 

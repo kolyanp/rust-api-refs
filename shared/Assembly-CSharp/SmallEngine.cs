@@ -13,8 +13,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Small Engine")]
+	[SerializeField]
 	private float maxThrust = 1000f;
 
 	[SerializeField]
@@ -30,7 +30,7 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 
 	private IFuelSystem fuelSystem;
 
-	private const Flags Flag_HasFuel = Flags.Reserved2;
+	private const Flags Flag_HasFuel = Flags.Reserved4;
 
 	private const Flags Flag_InReverse = Flags.Reserved3;
 
@@ -291,7 +291,7 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	private void FuelAddedRemovedCallback(bool added)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved2, fuelSystem.HasFuel());
+		flagsUpdateScope.Set(Flags.Reserved4, fuelSystem.HasFuel());
 	}
 
 	[RPC_Server]
@@ -312,8 +312,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void TurnOff(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnEngineStop", this, msg.player) == null && PlayerBoat.IsPlayerAuthedOnChildEntity(this, msg.player, authedIfNoPrivOrLock: true))
@@ -328,8 +328,8 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 		flagsUpdateScope.Set(Flags.On, b: false);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void SV_ToggleReverse(RPCMessage msg)
 	{
@@ -375,7 +375,7 @@ public class SmallEngine : DecayEntity, global::IBoatBuildingPiece, IBoatPropuls
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope.Set(Flags.Reserved2, b: true);
+				flagsUpdateScope.Set(Flags.Reserved4, b: true);
 			}
 			if (IsOn())
 			{

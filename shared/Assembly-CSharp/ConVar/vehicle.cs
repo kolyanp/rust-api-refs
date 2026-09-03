@@ -8,8 +8,8 @@ namespace ConVar;
 [Factory("vehicle")]
 public class vehicle : ConsoleSystem
 {
-	[Help("how long until boat corpses despawn (excluding tugboat - use tugboat_corpse_seconds)")]
 	[ServerVar]
+	[Help("how long until boat corpses despawn (excluding tugboat - use tugboat_corpse_seconds)")]
 	public static float boat_corpse_seconds = 300f;
 
 	[ServerVar(Help = "(Generated) When enabled, wheel colliders are disabled on vehicles that have gone to sleep in the physics engine, reducing CPU overhead for parked vehicles")]
@@ -327,7 +327,7 @@ public class vehicle : ConsoleSystem
 					float num = ((trainEngine.completeTrain != null) ? trainEngine.completeTrain.GetTrackSpeedFor(trainEngine) : 0f);
 					val.AddRow(new string[4]
 					{
-						((object)Unsafe.As<NetworkableId, NetworkableId>(ref trainEngine.net.ID)/*cast due to constrained. prefix*/).ToString(),
+						((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref trainEngine.net.ID)/*cast due to constrained. prefix*/).ToString(),
 						trainEngine.ShortPrefabName,
 						$"{num:F1} m/s",
 						((object)((Component)trainEngine).transform.position/*cast due to constrained. prefix*/).ToString()
@@ -457,7 +457,7 @@ public class vehicle : ConsoleSystem
 					string driftStatus = baseBoat.GetDriftStatus();
 					val.AddRow(new string[5]
 					{
-						((object)Unsafe.As<NetworkableId, NetworkableId>(ref baseBoat.net.ID)/*cast due to constrained. prefix*/).ToString(),
+						((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref baseBoat.net.ID)/*cast due to constrained. prefix*/).ToString(),
 						baseBoat.ShortPrefabName,
 						((object)((Component)baseBoat).transform.position/*cast due to constrained. prefix*/).ToString(),
 						text,

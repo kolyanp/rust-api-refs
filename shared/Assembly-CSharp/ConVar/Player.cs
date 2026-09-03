@@ -35,8 +35,7 @@ public class Player : ConsoleSystem
 
 	public static EncryptedValue<float> clientTickInterval = 1f / 32f;
 
-	[ClientVar(ClientInfo = true, Help = "(Generated) When enabled, the local player has unlimited ammo and never needs to reload; intended for testing and cinematic use only")]
-	public static bool InfiniteAmmo = false;
+	private static bool _infiniteAmmo = false;
 
 	[ServerVar(Help = "(Generated) When enabled, tea/buff effects active on a player at the time of death are carried over to their next life instead of being lost")]
 	public static bool keepteaondeath = false;
@@ -81,8 +80,21 @@ public class Player : ConsoleSystem
 		}
 	}
 
-	[ClientVar(AllowRunFromServer = true)]
+	[ClientVar(ClientInfo = true, Help = "(Generated) When enabled, the local player has unlimited ammo and never needs to reload; intended for testing and cinematic use only")]
+	public static bool InfiniteAmmo
+	{
+		get
+		{
+			return _infiniteAmmo;
+		}
+		set
+		{
+			_infiniteAmmo = value;
+		}
+	}
+
 	[ServerUserVar]
+	[ClientVar(AllowRunFromServer = true)]
 	public static void cinematic_play(Arg arg)
 	{
 		if (!arg.HasArgs() || !arg.IsServerside)
@@ -95,7 +107,7 @@ public class Player : ConsoleSystem
 			string strCommand = string.Empty;
 			if (basePlayer.IsAdmin || basePlayer.IsDeveloper)
 			{
-				strCommand = arg.cmd.FullName + " " + ((object)Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
+				strCommand = arg.cmd.FullName + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
 			}
 			else if (Server.cinematic)
 			{
@@ -126,7 +138,7 @@ public class Player : ConsoleSystem
 			string strCommand = string.Empty;
 			if (basePlayer.IsAdmin || basePlayer.IsDeveloper)
 			{
-				strCommand = arg.cmd.FullName + " " + ((object)Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
+				strCommand = arg.cmd.FullName + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref arg.FullString)/*cast due to constrained. prefix*/).ToString() + " " + basePlayer.UserIDString;
 			}
 			else if (Server.cinematic)
 			{

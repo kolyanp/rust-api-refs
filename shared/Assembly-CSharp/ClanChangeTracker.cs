@@ -122,7 +122,7 @@ public class ClanChangeTracker : IClanChangeSink
 		IClan clan = default(IClan);
 		if (_clanManager.Backend.TryGet(data.ClanId, ref clan))
 		{
-			_clanManager.SendClanChanged(clan);
+			_clanManager.OnClanChanged(clan);
 			AppBroadcast val = Pool.Get<AppBroadcast>();
 			try
 			{
@@ -165,14 +165,19 @@ public class ClanChangeTracker : IClanChangeSink
 			{
 				_clanManager.ClientRPC(RpcTarget.Player("Client_CurrentClanChanged", basePlayer));
 			}
-			IClan serverClan = default(IClan);
-			if (_clanManager.Backend.TryGet(basePlayer.clanId, ref serverClan))
+			IClan val = default(IClan);
+			if (_clanManager.Backend.TryGet(basePlayer.clanId, ref val))
 			{
-				basePlayer.serverClan = serverClan;
+				basePlayer.serverClan = val;
 			}
 			else
 			{
 				basePlayer.LoadClanInfo();
+			}
+			if (data.ClanId != 0L)
+			{
+				basePlayer.GiveClanJoinedAchievement();
+				basePlayer.CheckClanProgressiveAchievements(val);
 			}
 		}
 	}

@@ -69,7 +69,6 @@ public class ModularCarOven : BaseOven
 	public override void ResetState()
 	{
 		base.ResetState();
-		moduleParent = null;
 	}
 
 	protected override void SVSwitch(RPCMessage msg)

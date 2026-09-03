@@ -86,7 +86,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 
 	public int containerVolume;
 
-	public Func<Item, int, bool> canAcceptItem;
+	public Func<BasePlayer, Item, int, bool> canAcceptItem;
 
 	public Func<Item, int, bool> slotIsReserved;
 
@@ -807,12 +807,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		Clear();
 	}
 
-	public int GetAmount(int itemid, bool onlyUsableAmounts, bool redirectAllowed = false)
+	public int GetAmount(int itemid, bool onlyUsableAmounts = false, bool redirectAllowed = false)
 	{
 		int num = 0;
 		foreach (Item item in itemList)
 		{
-			if (item.info.MatchesItemId(itemid, redirectAllowed) && (!onlyUsableAmounts || !item.IsBusy()))
+			if (item.info.MatchesItemId(itemid, redirectAllowed))
 			{
 				num += item.amount;
 			}
@@ -820,12 +820,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		return num;
 	}
 
-	public int GetAmount(int blueprintBaseId, int itemId, bool onlyUsableAmounts)
+	public int GetAmount(int blueprintBaseId, int itemId, bool onlyUsableAmounts = false)
 	{
 		int num = 0;
 		foreach (Item item in itemList)
 		{
-			if (item.info.itemid == blueprintBaseId && item.blueprintTarget == itemId && (!onlyUsableAmounts || !item.IsBusy()))
+			if (item.info.itemid == blueprintBaseId && item.blueprintTarget == itemId)
 			{
 				num += item.amount;
 			}
@@ -833,12 +833,12 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		return num;
 	}
 
-	public int GetOkConditionAmount(int itemid, bool onlyUsableAmounts, bool redirectAllowed = false)
+	public int GetOkConditionAmount(int itemid, bool onlyUsableAmounts = false, bool redirectAllowed = false)
 	{
 		int num = 0;
 		foreach (Item item in itemList)
 		{
-			if (item.info.MatchesItemId(itemid, redirectAllowed) && (!onlyUsableAmounts || !item.IsBusy()) && !(item.condition <= 0f))
+			if (item.info.MatchesItemId(itemid, redirectAllowed) && !(item.condition <= 0f))
 			{
 				num += item.amount;
 			}
@@ -922,46 +922,54 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 
 	public ItemContainer Save(bool bIncludeContainer = true, bool stripBelt = false)
 	{
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		ItemContainer val = Pool.Get<ItemContainer>();
-		val.contents = Pool.Get<List<Item>>();
-		val.UID = uid;
-		val.slots = capacity;
-		val.temperature = temperature;
-		val.allowedContents = (int)allowedContents;
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		bool flag = stripBelt && ConVar.AntiHack.hotbar_network_mode == 1;
+		ItemId val = (ItemId)((flag && (Object)(object)playerOwner != (Object)null) ? playerOwner.svActiveItemID : default(ItemId));
+		ItemContainer val2 = Pool.Get<ItemContainer>();
+		val2.contents = Pool.Get<List<Item>>();
+		val2.UID = uid;
+		val2.slots = capacity;
+		val2.temperature = temperature;
+		val2.allowedContents = (int)allowedContents;
 		if (HasLimitedAllowedItems)
 		{
-			val.allowedItems = Pool.Get<List<int>>();
+			val2.allowedItems = Pool.Get<List<int>>();
 			for (int i = 0; i < onlyAllowedItems.Length; i++)
 			{
 				if ((Object)(object)onlyAllowedItems[i] != (Object)null)
 				{
-					val.allowedItems.Add(onlyAllowedItems[i].itemid);
+					val2.allowedItems.Add(onlyAllowedItems[i].itemid);
 				}
 			}
 		}
-		val.flags = (int)flags;
-		val.maxStackSize = maxStackSize;
-		val.allowItemsToIncreaseToMaxStackSize = allowItemsToIncreaseToMaxStackSize;
-		val.volume = containerVolume;
+		val2.flags = (int)flags;
+		val2.maxStackSize = maxStackSize;
+		val2.allowItemsToIncreaseToMaxStackSize = allowItemsToIncreaseToMaxStackSize;
+		val2.volume = containerVolume;
 		if (availableSlots != null && availableSlots.Count > 0)
 		{
-			val.availableSlots = Pool.Get<List<int>>();
+			val2.availableSlots = Pool.Get<List<int>>();
 			for (int j = 0; j < availableSlots.Count; j++)
 			{
-				val.availableSlots.Add((int)availableSlots[j]);
+				val2.availableSlots.Add((int)availableSlots[j]);
 			}
 		}
 		for (int k = 0; k < itemList.Count; k++)
 		{
 			Item item = itemList[k];
-			if (item.IsValid() && (!stripBelt || ConVar.AntiHack.hotbar_network_mode <= 0 || (ConVar.AntiHack.hotbar_network_mode != 2 && !item.info.HasItemModEntity)))
+			if (item.IsValid() && (!flag || (!(item.uid != val) && item.GetHeldEntity() is HeldEntity)))
 			{
-				val.contents.Add(item.Save(bIncludeContainer));
+				val2.contents.Add(item.Save(bIncludeContainer));
 			}
 		}
-		return val;
+		return val2;
 	}
 
 	public void Load(ItemContainer container)
@@ -1609,9 +1617,9 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 		return null;
 	}
 
-	public CanAcceptResult CanAcceptItem(Item item, int targetPos)
+	public CanAcceptResult CanAcceptItem(BasePlayer player, Item item, int targetPos)
 	{
-		if (canAcceptItem != null && !canAcceptItem(item, targetPos))
+		if (canAcceptItem != null && !canAcceptItem(player, item, targetPos))
 		{
 			return CanAcceptResult.CannotAccept;
 		}
@@ -1655,7 +1663,7 @@ public sealed class ItemContainer : IAmmoContainer, IPooled
 				return CanAcceptResult.CannotAccept;
 			}
 		}
-		object obj = Interface.CallHook("CanAcceptItem", this, item, targetPos);
+		object obj = Interface.CallHook("CanAcceptItem", this, item, targetPos, player);
 		if (obj is CanAcceptResult)
 		{
 			return (CanAcceptResult)obj;

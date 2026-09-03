@@ -15,6 +15,8 @@ public class Shield : HeldEntity
 
 	public float ShieldOnBackToggleCooldown = 3f;
 
+	public float ShieldStowAimDelay = 0.75f;
+
 	public ProtectionProperties Protection;
 
 	[Range(0f, 1f)]
@@ -158,9 +160,9 @@ public class Shield : HeldEntity
 		return AssetNameCache.GetName(ShieldCollider.sharedMaterial);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void ServerToggleBlock(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Rust.UI;
 using UnityEngine;
 
-public class RepairBenchPanel : LootPanel
+public class RepairBenchPanel : LootPanel, IInventoryChanged
 {
 	public RustText infoText;
 

@@ -9,7 +9,7 @@ public class MemSnap : ConsoleSystem
 {
 	private static string NeedProfileFolder()
 	{
-		string path = "profile";
+		string path = "profile/memory";
 		if (!Directory.Exists(path))
 		{
 			return Directory.CreateDirectory(path).FullName;
@@ -17,22 +17,22 @@ public class MemSnap : ConsoleSystem
 		return new DirectoryInfo(path).FullName;
 	}
 
-	[ClientVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/ folder")]
-	[ServerVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/ folder")]
+	[ServerVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
+	[ClientVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
 	public static void managed(Arg arg)
 	{
 		MemoryProfiler.TakeSnapshot(NeedProfileFolder() + "/memdump-" + DateTime.Now.ToString("MM-dd-yyyy-h-mm-ss") + ".snap", (Action<string, bool>)null, (CaptureFlags)1);
 	}
 
-	[ServerVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing native (C++) heap allocations and saves it as a timestamped .snap file in the profile/ folder")]
-	[ClientVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing native (C++) heap allocations and saves it as a timestamped .snap file in the profile/ folder")]
+	[ServerVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing native (C++) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
+	[ClientVar(Help = "(Generated) Takes a Unity Memory Profiler snapshot capturing native (C++) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder")]
 	public static void native(Arg arg)
 	{
 		MemoryProfiler.TakeSnapshot(NeedProfileFolder() + "/memdump-" + DateTime.Now.ToString("MM-dd-yyyy-h-mm-ss") + ".snap", (Action<string, bool>)null, (CaptureFlags)2);
 	}
 
-	[ClientVar(Help = "(Generated) Takes a full Unity Memory Profiler snapshot capturing all managed, native, and graphics memory and saves it as a timestamped .snap file in profile/")]
-	[ServerVar(Help = "(Generated) Takes a full Unity Memory Profiler snapshot capturing all managed, native, and graphics memory and saves it as a timestamped .snap file in profile/")]
+	[ClientVar(Help = "(Generated) Takes a full Unity Memory Profiler snapshot capturing all managed, native, and graphics memory and saves it as a timestamped .snap file in profile/memory/")]
+	[ServerVar(Help = "(Generated) Takes a full Unity Memory Profiler snapshot capturing all managed, native, and graphics memory and saves it as a timestamped .snap file in profile/memory/")]
 	public static void full(Arg arg)
 	{
 		MemoryProfiler.TakeSnapshot(NeedProfileFolder() + "/memdump-" + DateTime.Now.ToString("MM-dd-yyyy-h-mm-ss") + ".snap", (Action<string, bool>)null, (CaptureFlags)31);

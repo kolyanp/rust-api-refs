@@ -60,8 +60,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 
 	public TimeCachedValue<float> artificialTemperatureExposure;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing growable quality updates per frame")]
+	[ServerVar]
 	public static float framebudgetms = 0.25f;
 
 	public const Flags GodSpawn = Flags.Reserved1;
@@ -1085,9 +1085,9 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		TakeClones(msg.player);
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_TakeCloneAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -1230,16 +1230,16 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_PickFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_EatFruit(RPCMessage msg)
 	{
@@ -1479,8 +1479,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_RequestQualityUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)

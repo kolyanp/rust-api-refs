@@ -20,7 +20,7 @@ public class TeslaCoil : IOEntity
 
 	public const Flags Flag_WeakShorting = Flags.Reserved1;
 
-	public const Flags Flag_StrongShorting = Flags.Reserved2;
+	public const Flags Flag_StrongShorting = Flags.Reserved3;
 
 	public int powerForHeavyShorting = 10;
 
@@ -59,14 +59,14 @@ public class TeslaCoil : IOEntity
 			float time = Mathf.Min(dischargeTickRate - num, dischargeTickRate);
 			InvokeRepeating(Discharge, time, dischargeTickRate);
 			flagsUpdateScope.Set(Flags.Reserved1, inputAmount < powerForHeavyShorting);
-			flagsUpdateScope.Set(Flags.Reserved2, inputAmount >= powerForHeavyShorting);
+			flagsUpdateScope.Set(Flags.Reserved3, inputAmount >= powerForHeavyShorting);
 			flagsUpdateScope.Set(Flags.On, b: true);
 		}
 		else
 		{
 			CancelInvoke(Discharge);
 			flagsUpdateScope.Set(Flags.Reserved1, b: false);
-			flagsUpdateScope.Set(Flags.Reserved2, b: false);
+			flagsUpdateScope.Set(Flags.Reserved3, b: false);
 			flagsUpdateScope.Set(Flags.On, b: false);
 		}
 	}

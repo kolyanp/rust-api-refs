@@ -263,7 +263,7 @@ public class RespawnableLootFridge : Fridge, ILootContainer
 	{
 		if (base.inventory != null)
 		{
-			Func<Item, int, bool> canAcceptItem = base.inventory.canAcceptItem;
+			Func<BasePlayer, Item, int, bool> canAcceptItem = base.inventory.canAcceptItem;
 			base.inventory.canAcceptItem = null;
 			if (fullSpawn)
 			{

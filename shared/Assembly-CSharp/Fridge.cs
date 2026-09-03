@@ -28,7 +28,7 @@ public class Fridge : ContainerIOEntity, IFoodSpoilModifier
 		base.inventory.canAcceptItem = CanAcceptItem;
 	}
 
-	private bool CanAcceptItem(Item item, int targetSlot)
+	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		if (OnlyAcceptCategory == ItemCategory.All)
 		{

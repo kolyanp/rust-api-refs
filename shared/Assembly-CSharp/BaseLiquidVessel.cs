@@ -42,6 +42,8 @@ public class BaseLiquidVessel : AttackEntity
 
 	public static Phrase DifferentLiquidType;
 
+	public static Phrase CannotHoldCrude;
+
 	private float lastFillTime;
 
 	private TimeSince timeSinceLastToast;
@@ -260,7 +262,10 @@ public class BaseLiquidVessel : AttackEntity
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
 		if (base.isClient)
@@ -296,11 +301,20 @@ public class BaseLiquidVessel : AttackEntity
 		}
 		else if ((Object)(object)facingLiquidContainer != (Object)null && facingLiquidContainer.HasLiquidItem())
 		{
+			Item liquidItem = facingLiquidContainer.GetLiquidItem();
+			if ((Object)(object)liquidItem.info == (Object)(object)LiquidContainerCrude.CrudeItem)
+			{
+				if (TimeSince.op_Implicit(timeSinceLastToast) > 5f)
+				{
+					timeSinceLastToast = TimeSince.op_Implicit(0f);
+					ownerPlayer.ShowToast(GameTip.Styles.Red_Normal, CannotHoldCrude, false);
+				}
+				SetFilling(isFilling: false);
+				return;
+			}
 			int num2 = Mathf.CeilToInt((1f - HeldFraction()) * (float)MaxHoldable());
 			if (num2 > 0)
 			{
-				GetContents();
-				Item liquidItem = facingLiquidContainer.GetLiquidItem();
 				int num3 = Mathf.Min(Mathf.CeilToInt(num), Mathf.Min(liquidItem.amount, num2));
 				AddLiquid(liquidItem.info, num3);
 				liquidItem.UseItem(num3);
@@ -336,8 +350,17 @@ public class BaseLiquidVessel : AttackEntity
 		if (item2 == null)
 		{
 			Item item3 = ItemManager.Create(liquidType, amount, 0uL, isServerSide: true, 0uL);
-			item3?.MoveToContainer(item.contents);
-			item.contents?.onItemAddedToStack?.Invoke(item3, amount);
+			if (item3 != null)
+			{
+				if (!item3.MoveToContainer(item.contents))
+				{
+					item3.Remove();
+				}
+				else
+				{
+					item.contents?.onItemAddedToStack?.Invoke(item3, amount);
+				}
+			}
 			return;
 		}
 		int num = Mathf.Clamp(item2.amount + amount, 0, component.maxStackSize);
@@ -472,8 +495,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void ThrowContents(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -542,8 +565,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void SendFilling(RPCMessage msg)
 	{
 		bool filling = msg.read.Bit();
@@ -596,6 +619,9 @@ public class BaseLiquidVessel : AttackEntity
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
 		DifferentLiquidType = new Phrase("fill_different_liquid_type", "You can't mix different liquids");
+		CannotHoldCrude = new Phrase("fill_cannot_hold_crude", "You can't collect crude oil in this");
 	}
 }

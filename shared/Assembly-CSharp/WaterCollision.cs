@@ -137,8 +137,9 @@ public class WaterCollision : MonoBehaviour
 		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WaterCollision.GetIgnore"))
 		{
 			FillJob<bool> fillJob = new FillJob<bool>
@@ -184,7 +185,7 @@ public class WaterCollision : MonoBehaviour
 					Value = 262144
 				};
 				IJobExtensions.RunByRef<FillJob<int>>(ref fillJob2);
-				GamePhysics.CheckSpheres<WaterVisibilityTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), NativeArray<bool>.op_Implicit(ref results), GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
+				GamePhysics.CheckSpheres<WaterVisibilityTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), results, GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
 				Span<bool> values2 = NativeArray<bool>.op_Implicit(ref results);
 				ReadOnly<int> val2 = indicesToCheck.AsReadOnly();
 				CollectionUtil.ScatterOutInplace(values2, ReadOnly<int>.op_Implicit(ref val2), defValue: false);
@@ -223,8 +224,9 @@ public class WaterCollision : MonoBehaviour
 		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WaterCollision.GetIgnoreIndirect"))
 		{
 			FillJob<bool> fillJob = new FillJob<bool>
@@ -272,14 +274,14 @@ public class WaterCollision : MonoBehaviour
 					Value = 262144
 				};
 				IJobExtensions.RunByRef<FillJob<int>>(ref fillJob2);
-				NativeArray<bool> val2 = default(NativeArray<bool>);
-				val2._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
-				GamePhysics.CheckSpheres<WaterVisibilityTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), NativeArray<bool>.op_Implicit(ref val2), GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
-				ReadOnlySpan<bool> readOnlySpan = NativeArray<bool>.op_Implicit(ref val2);
+				NativeArray<bool> results4 = default(NativeArray<bool>);
+				results4._002Ector(indicesToCheck.Length, (Allocator)3, (NativeArrayOptions)0);
+				GamePhysics.CheckSpheres<WaterVisibilityTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), results4, GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
+				ReadOnlySpan<bool> readOnlySpan = NativeArray<bool>.op_Implicit(ref results4);
 				Span<bool> to = NativeArray<bool>.op_Implicit(ref results);
-				ReadOnly<int> val3 = indicesToCheck.AsReadOnly();
-				CollectionUtil.ScatterTo(readOnlySpan, to, ReadOnly<int>.op_Implicit(ref val3));
-				val2.Dispose();
+				ReadOnly<int> val2 = indicesToCheck.AsReadOnly();
+				CollectionUtil.ScatterTo(readOnlySpan, to, ReadOnly<int>.op_Implicit(ref val2));
+				results4.Dispose();
 				values.Dispose();
 				results3.Dispose();
 				results2.Dispose();

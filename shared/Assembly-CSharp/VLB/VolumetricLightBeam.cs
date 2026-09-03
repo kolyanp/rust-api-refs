@@ -5,18 +5,18 @@ using UnityEngine.Serialization;
 
 namespace VLB;
 
-[SelectionBase]
-[HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
 [ExecuteInEditMode]
 [DisallowMultipleComponent]
+[SelectionBase]
+[HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
 public class VolumetricLightBeam : MonoBehaviour
 {
 	public bool colorFromLight;
 
 	public ColorMode colorMode;
 
-	[ColorUsage(true, true)]
 	[FormerlySerializedAs("colorValue")]
+	[ColorUsage(true, true)]
 	public Color color;
 
 	public Gradient colorGradient;
@@ -24,8 +24,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[Range(0f, 1f)]
 	public float alphaInside;
 
-	[Range(0f, 1f)]
 	[FormerlySerializedAs("alpha")]
+	[Range(0f, 1f)]
 	public float alphaOutside;
 
 	public BlendingMode blendingMode;
@@ -97,8 +97,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[SerializeField]
 	private int pluginVersion;
 
-	[SerializeField]
 	[FormerlySerializedAs("trackChangesDuringPlaytime")]
+	[SerializeField]
 	private bool _TrackChangesDuringPlaytime;
 
 	[SerializeField]

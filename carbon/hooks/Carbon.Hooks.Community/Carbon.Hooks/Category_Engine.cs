@@ -19,7 +19,7 @@ public class Category_Engine
 		[Info("Gets called when an UI is about to be sent to a player.")]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("json", typeof(string), false)]
-		[Return(typeof(bool))]
+		[Return(typeof(void))]
 		[Assembly("Carbon.Common.dll")]
 		[OxideCompatible]
 		public class CanUseUI : Patch
@@ -34,6 +34,7 @@ public class Category_Engine
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("name", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnDestroyUI : Patch
 		{
@@ -45,6 +46,7 @@ public class Category_Engine
 		[Info("Gets called when a plugin should initialize default config.")]
 		[Info("You should not use this. Override `LoadDefaultConfig` virtual method instead.")]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class LoadDefaultConfig : Patch
 		{
@@ -57,6 +59,7 @@ public class Category_Engine
 		[Parameter("file", typeof(string), false)]
 		[Parameter("result", typeof(CompilationResult), false)]
 		[Assembly("Carbon.dll")]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCompilationFail : Patch
 		{
 		}
@@ -69,6 +72,7 @@ public class Category_Engine
 		[Parameter("plugin", typeof(RustPlugin), false)]
 		[Parameter("exception", typeof(Exception), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		public class OnConstructorFail : Patch
 		{
 		}
@@ -79,6 +83,7 @@ public class Category_Engine
 		[Info("Gets called when a plugin is loaded.")]
 		[Parameter("plugin", typeof(RustPlugin), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPluginLoaded : Patch
 		{
@@ -90,6 +95,7 @@ public class Category_Engine
 		[Info("Gets called when a plugin is unloaded.")]
 		[Parameter("plugin", typeof(RustPlugin), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPluginUnloaded : Patch
 		{
@@ -103,6 +109,7 @@ public class Category_Engine
 		[Parameter("title", typeof(string), false)]
 		[Parameter("rank", typeof(int), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupCreated : Patch
 		{
@@ -114,6 +121,7 @@ public class Category_Engine
 		[Info("Gets called when group got obliterated.")]
 		[Parameter("group", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupDeleted : Patch
 		{
@@ -126,6 +134,7 @@ public class Category_Engine
 		[Parameter("group", typeof(string), false)]
 		[Parameter("parentGroup", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupParentSet : Patch
 		{
@@ -138,6 +147,7 @@ public class Category_Engine
 		[Parameter("group", typeof(string), false)]
 		[Parameter("permission", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupPermissionGranted : Patch
 		{
@@ -150,6 +160,7 @@ public class Category_Engine
 		[Parameter("group", typeof(string), false)]
 		[Parameter("permission", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupPermissionRevoked : Patch
 		{
@@ -162,6 +173,7 @@ public class Category_Engine
 		[Parameter("group", typeof(string), false)]
 		[Parameter("rank", typeof(int), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupRankSet : Patch
 		{
@@ -174,6 +186,7 @@ public class Category_Engine
 		[Parameter("group", typeof(string), false)]
 		[Parameter("title", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnGroupTitleSet : Patch
 		{
@@ -186,6 +199,7 @@ public class Category_Engine
 		[Parameter("permission", typeof(string), false)]
 		[Parameter("plugin", typeof(Plugin), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPermissionRegistered : Patch
 		{
@@ -197,6 +211,7 @@ public class Category_Engine
 		[Info("Gets called when all permission of a plugin have been unregistered.")]
 		[Parameter("plugin", typeof(Plugin), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPermissionsUnregistered : Patch
 		{
@@ -209,6 +224,7 @@ public class Category_Engine
 		[Parameter("playerId", typeof(string), false)]
 		[Parameter("group", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserGroupAdded : Patch
 		{
@@ -221,6 +237,7 @@ public class Category_Engine
 		[Parameter("playerId", typeof(string), false)]
 		[Parameter("group", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserGroupRemoved : Patch
 		{
@@ -234,6 +251,7 @@ public class Category_Engine
 		[Parameter("oldName", typeof(string), false)]
 		[Parameter("newName", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserNameUpdated : Patch
 		{
@@ -246,6 +264,7 @@ public class Category_Engine
 		[Parameter("playerId", typeof(string), false)]
 		[Parameter("permission", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserPermissionGranted : Patch
 		{
@@ -258,6 +277,7 @@ public class Category_Engine
 		[Parameter("playerId", typeof(string), false)]
 		[Parameter("permission", typeof(string), false)]
 		[Assembly("Carbon.Common.dll")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserPermissionRevoked : Patch
 		{

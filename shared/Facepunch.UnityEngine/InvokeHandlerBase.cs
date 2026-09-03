@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Facepunch;
 using UnityEngine;
 
 public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : MonoBehaviour
@@ -17,6 +18,8 @@ public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : Mon
 
 	protected const int nullChecks = 50;
 
+	private DebugMTLock mtGuard = new DebugMTLock(typeof(T).Name);
+
 	private Stopwatch doTickTimer = new Stopwatch();
 
 	private Stopwatch invokeTimer = new Stopwatch();
@@ -27,12 +30,15 @@ public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : Mon
 		{
 			profiler = InvokeProfiler.update;
 		}
-		ApplyRemoves();
-		ApplyAdds();
-		DoTick();
-		RemoveExpired();
-		ApplyRemoves();
-		ApplyAdds();
+		using (mtGuard.Lock())
+		{
+			ApplyRemoves();
+			ApplyAdds();
+			DoTick();
+			RemoveExpired();
+			ApplyRemoves();
+			ApplyAdds();
+		}
 	}
 
 	protected abstract float GetTime();
@@ -129,16 +135,22 @@ public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : Mon
 			Debug.LogError((object)$"Trying to add an invoke with a null action: {new StackTrace()}");
 			return;
 		}
-		delList.Remove(invoke);
-		addList.Remove(invoke);
-		addList.Add(invoke);
+		using (mtGuard.Lock())
+		{
+			delList.Remove(invoke);
+			addList.Remove(invoke);
+			addList.Add(invoke);
+		}
 	}
 
 	protected void QueueRemove(InvokeAction invoke)
 	{
-		delList.Remove(invoke);
-		addList.Remove(invoke);
-		delList.Add(invoke);
+		using (mtGuard.Lock())
+		{
+			delList.Remove(invoke);
+			addList.Remove(invoke);
+			delList.Add(invoke);
+		}
 	}
 
 	protected bool Contains(InvokeAction invoke)
@@ -189,6 +201,33 @@ public abstract class InvokeHandlerBase<T> : SingletonComponent<T> where T : Mon
 		foreach (var (obj, _) in curList)
 		{
 			callback(obj);
+		}
+	}
+
+	public void CancelInvokes(HashSet<Behaviour> senders)
+	{
+		if (senders.Count == 0)
+		{
+			return;
+		}
+		InvokeAction[] buffer = curList.Keys.Buffer;
+		int count = curList.Count;
+		for (int i = 0; i < count; i++)
+		{
+			InvokeAction invoke = buffer[i];
+			if (senders.Contains(invoke.sender))
+			{
+				QueueRemove(invoke);
+			}
+		}
+		InvokeAction[] buffer2 = addList.Values.Buffer;
+		for (int num = addList.Count - 1; num >= 0; num--)
+		{
+			InvokeAction invoke2 = buffer2[num];
+			if (senders.Contains(invoke2.sender))
+			{
+				QueueRemove(invoke2);
+			}
 		}
 	}
 }

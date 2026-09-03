@@ -16,8 +16,8 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Info("Gets called when a client should or not should join the server.")]
+		[Info("Return false to reject the connection, or a string to reject it with that message.")]
 		[Parameter("connection", typeof(Connection), false)]
-		[Return(typeof(bool))]
 		[OxideCompatible]
 		public class CanClientLogin : Patch
 		{
@@ -27,10 +27,10 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Info("Gets called when a client should or not should join the server.")]
+		[Info("Return false to reject the connection, or a string to reject it with that message.")]
 		[Parameter("username", typeof(string), false)]
 		[Parameter("userid", typeof(string), false)]
 		[Parameter("ip", typeof(string), false)]
-		[Return(typeof(bool))]
 		[OxideCompatible]
 		public class CanUserLogin : Patch
 		{
@@ -44,6 +44,7 @@ public class Category_Player
 		[Parameter("target", typeof(BasePlayer), false)]
 		[Parameter("reason", typeof(string), false)]
 		[Parameter("expiry", typeof(long), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonBanPlayer : Patch
 		{
 		}
@@ -55,6 +56,7 @@ public class Category_Player
 		[Info("Their screen and input will become obscured and blocked.")]
 		[Parameter("invoker", typeof(BasePlayer), false)]
 		[Parameter("target", typeof(BasePlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonBlinded : Patch
 		{
 		}
@@ -65,6 +67,7 @@ public class Category_Player
 		[Info("Called when a player's health, metabolism, and stats are maxed out.")]
 		[Parameter("invoker", typeof(BasePlayer), false)]
 		[Parameter("target", typeof(BasePlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonEmpowerPlayerStats : Patch
 		{
 		}
@@ -76,6 +79,7 @@ public class Category_Player
 		[Parameter("invoker", typeof(BasePlayer), false)]
 		[Parameter("target", typeof(BasePlayer), false)]
 		[Parameter("reason", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonKickPlayer : Patch
 		{
 		}
@@ -88,6 +92,7 @@ public class Category_Player
 		[Parameter("target", typeof(BasePlayer), false)]
 		[Parameter("container", typeof(ItemContainer), false)]
 		[Parameter("locked", typeof(bool), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonLockPlayerContainer : Patch
 		{
 		}
@@ -100,6 +105,7 @@ public class Category_Player
 		[Parameter("target", typeof(BasePlayer), false)]
 		[Parameter("wants", typeof(bool), false)]
 		[Parameter("reason", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonMutePlayer : Patch
 		{
 		}
@@ -111,6 +117,7 @@ public class Category_Player
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("target", typeof(BasePlayer), false)]
 		[Parameter("message", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonPrivateMessage : Patch
 		{
 		}
@@ -141,6 +148,7 @@ public class Category_Player
 		[Info("Called when a player becomes banned.")]
 		[Parameter("invoker", typeof(BasePlayer), false)]
 		[Parameter("target", typeof(BasePlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonUnbanPlayer : Patch
 		{
 		}
@@ -151,6 +159,7 @@ public class Category_Player
 		[Info("Called when a player becomes unblinded.")]
 		[Parameter("invoker", typeof(BasePlayer), false)]
 		[Parameter("target", typeof(BasePlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnCarbonUnblinded : Patch
 		{
 		}
@@ -161,6 +170,7 @@ public class Category_Player
 		[Info("Gets called when a connection gets banned.")]
 		[Parameter("connection", typeof(Connection), false)]
 		[Parameter("reason", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPlayerBanned : Patch
 		{
@@ -170,6 +180,7 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Info("Gets called when a player sends a chat message.")]
+		[Info("Return a bool to block the chat message.")]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("message", typeof(string), false)]
 		[Parameter("channel", typeof(ChatChannel), false)]
@@ -185,7 +196,7 @@ public class Category_Player
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("command", typeof(string), false)]
 		[Parameter("args", typeof(string[]), false)]
-		[Return(typeof(object))]
+		[Return(typeof(void))]
 		[OxideCompatible]
 		public class OnPlayerCommand : Patch
 		{
@@ -195,6 +206,7 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Parameter("player", typeof(BasePlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPlayerConnected : Patch
 		{
@@ -206,6 +218,7 @@ public class Category_Player
 		[Info("Gets called when a player's language gets changed.")]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("var", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPlayerLanguageChanged_BasePlayer : Patch
 		{
@@ -217,6 +230,7 @@ public class Category_Player
 		[Info("Gets called when a player's language gets changed.")]
 		[Parameter("player", typeof(IPlayer), false)]
 		[Parameter("var", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPlayerLanguageChanged_IPlayer : Patch
 		{
@@ -226,6 +240,7 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Info("Gets called when a player sends an offline chat message.")]
+		[Info("Return a bool to block the chat message.")]
 		[Parameter("playerid", typeof(ulong), false)]
 		[Parameter("username", typeof(string), false)]
 		[Parameter("message", typeof(string), false)]
@@ -242,6 +257,7 @@ public class Category_Player
 		[Parameter("playerName", typeof(string), false)]
 		[Parameter("steamId", typeof(ulong), false)]
 		[Parameter("address", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnPlayerUnbanned : Patch
 		{
@@ -264,6 +280,7 @@ public class Category_Player
 		[Parameter("username", typeof(string), false)]
 		[Parameter("userid", typeof(string), false)]
 		[Parameter("ip", typeof(string), false)]
+		[Return(typeof(void))]
 		[OxideCompatible]
 		public class OnUserApproved : Patch
 		{
@@ -278,6 +295,7 @@ public class Category_Player
 		[Parameter("address", typeof(string), false)]
 		[Parameter("reason", typeof(string), false)]
 		[Parameter("expiry", typeof(long), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserBanned : Patch
 		{
@@ -287,6 +305,7 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Info("Gets called when a player sends a chat message.")]
+		[Info("Return a bool to block the chat message.")]
 		[Parameter("player", typeof(IPlayer), false)]
 		[Parameter("message", typeof(string), false)]
 		[OxideCompatible]
@@ -301,7 +320,7 @@ public class Category_Player
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("command", typeof(string), false)]
 		[Parameter("args", typeof(string[]), false)]
-		[Return(typeof(object))]
+		[Return(typeof(void))]
 		[OxideCompatible]
 		public class OnUserCommand_BasePlayer : Patch
 		{
@@ -314,7 +333,7 @@ public class Category_Player
 		[Parameter("player", typeof(IPlayer), false)]
 		[Parameter("command", typeof(string), false)]
 		[Parameter("args", typeof(string[]), false)]
-		[Return(typeof(object))]
+		[Return(typeof(void))]
 		[OxideCompatible]
 		public class OnUserCommand_IPlayer : Patch
 		{
@@ -324,6 +343,7 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Parameter("player", typeof(IPlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserConnected : Patch
 		{
@@ -334,6 +354,7 @@ public class Category_Player
 		[Category("Player")]
 		[Parameter("player", typeof(IPlayer), false)]
 		[Parameter("reason", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserDisconnected : Patch
 		{
@@ -345,6 +366,7 @@ public class Category_Player
 		[Info("Gets called when a covalence player gets kicked.")]
 		[Parameter("player", typeof(IPlayer), false)]
 		[Parameter("reason", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserKicked : Patch
 		{
@@ -354,6 +376,7 @@ public class Category_Player
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Player")]
 		[Info("Gets called when a covalence player respawns.")]
+		[Info("Return a BasePlayer.SpawnPoint, or a SleepingBag when respawning at a bag, to change where the player respawns.")]
 		[Parameter("player", typeof(IPlayer), false)]
 		[OxideCompatible]
 		public class OnUserRespawn : Patch
@@ -365,6 +388,7 @@ public class Category_Player
 		[Category("Player")]
 		[Info("Gets called when a covalence player fully respawned.")]
 		[Parameter("player", typeof(IPlayer), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserRespawned : Patch
 		{
@@ -377,6 +401,7 @@ public class Category_Player
 		[Parameter("playerName", typeof(string), false)]
 		[Parameter("playerId", typeof(string), false)]
 		[Parameter("address", typeof(string), false)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnUserUnbanned : Patch
 		{

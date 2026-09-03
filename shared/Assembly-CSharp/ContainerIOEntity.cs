@@ -276,7 +276,7 @@ public class ContainerIOEntity : IOEntity, IItemContainerEntity, IIdealSlotEntit
 		if (_inventory != null)
 		{
 			BasePlayer player = rpc.player;
-			if (Object.op_Implicit((Object)(object)player) && player.CanInteract())
+			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && !player.IsBlockedFromLootingByMountable())
 			{
 				PlayerOpenLoot(player, lootPanelName);
 			}

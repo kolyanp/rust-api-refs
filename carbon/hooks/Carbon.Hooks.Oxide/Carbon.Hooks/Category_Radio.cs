@@ -14,14 +14,14 @@ public class Category_Radio
 	public class Radio_RFManager
 	{
 		[Patch("OnRfListenerAdd", "OnRfListenerAdd", "RFManager", "AddListener", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("dcfcf9aba3a441b3992981b9953e39f8")]
+		[Identifier("dfee2340aba84bac99b049828aeadc6e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_dcfcf9aba3a441b3992981b9953e39f8 : Patch
+		public class Radio_RFManager_dfee2340aba84bac99b049828aeadc6e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -54,14 +54,14 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfListenerRemove", "OnRfListenerRemove", "RFManager", "RemoveListener", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("2ecbbf69e3a14810be848d697e222ff5")]
+		[Identifier("019c668607c04c9aa8136d2c198775b9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_2ecbbf69e3a14810be848d697e222ff5 : Patch
+		public class Radio_RFManager_019c668607c04c9aa8136d2c198775b9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -94,14 +94,14 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfBroadcasterAdd", "OnRfBroadcasterAdd", "RFManager", "AddBroadcaster", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("1597449e3fc24addba15053c4af3f748")]
+		[Identifier("60f50a0dec114182b3de9c5621555cd3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_1597449e3fc24addba15053c4af3f748 : Patch
+		public class Radio_RFManager_60f50a0dec114182b3de9c5621555cd3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -134,14 +134,14 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfBroadcasterRemove", "OnRfBroadcasterRemove", "RFManager", "RemoveBroadcaster", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("f6b610186a484fe3ac5b65233fc24a75")]
+		[Identifier("a9069846a42a48289eae0a2cb3e750c9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_f6b610186a484fe3ac5b65233fc24a75 : Patch
+		public class Radio_RFManager_a9069846a42a48289eae0a2cb3e750c9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -174,14 +174,15 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfBroadcasterAdded", "OnRfBroadcasterAdded", "RFManager", "AddBroadcaster", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("5bd1bbe43b1a43a0acb9c60e592f3946")]
+		[Identifier("306d64ca6a204e44a010c2db9af518e5")]
 		[Dependencies(new string[] { "OnRfBroadcasterAdd" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_5bd1bbe43b1a43a0acb9c60e592f3946 : Patch
+		public class Radio_RFManager_306d64ca6a204e44a010c2db9af518e5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -210,14 +211,15 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfListenerRemoved", "OnRfListenerRemoved", "RFManager", "RemoveListener", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("9e853fb011f9482fa85a687671cc6e91")]
+		[Identifier("363458b1cf4c478c85934aa0c303cdee")]
 		[Dependencies(new string[] { "OnRfListenerRemove" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_9e853fb011f9482fa85a687671cc6e91 : Patch
+		public class Radio_RFManager_363458b1cf4c478c85934aa0c303cdee : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -246,14 +248,15 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfListenerAdded", "OnRfListenerAdded", "RFManager", "AddListener", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("191fe0095f3a4e48a101314dbd9f8c8f")]
+		[Identifier("1626b8825f174dd1a2201e87da00e71d")]
 		[Dependencies(new string[] { "OnRfListenerAdd" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_191fe0095f3a4e48a101314dbd9f8c8f : Patch
+		public class Radio_RFManager_1626b8825f174dd1a2201e87da00e71d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -282,14 +285,15 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfBroadcasterRemoved", "OnRfBroadcasterRemoved", "RFManager", "RemoveBroadcaster", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("1665ab77e2bd4baea656bc5ae57b772f")]
+		[Identifier("4c9f2526fb4543b3ae54c88f827db6b0")]
 		[Dependencies(new string[] { "OnRfBroadcasterRemove" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("obj", "IRFObject", false)]
 		[Parameter("frequency", "System.Int32", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_1665ab77e2bd4baea656bc5ae57b772f : Patch
+		public class Radio_RFManager_4c9f2526fb4543b3ae54c88f827db6b0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -318,12 +322,12 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfListenerRemoved [patch]", "OnRfListenerRemoved [patch]", "RFManager", "RemoveListener", new string[] { "System.Int32", "IRFObject" })]
-		[Identifier("424a60ec28b449b680bd7244435cae1b")]
+		[Identifier("d0ea708a60f74b37ac9bea18396d6724")]
 		[Dependencies(new string[] { "OnRfListenerRemoved" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFManager_424a60ec28b449b680bd7244435cae1b : Patch
+		public class Radio_RFManager_d0ea708a60f74b37ac9bea18396d6724 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -353,7 +357,7 @@ public class Category_Radio
 	public class Radio_RFBroadcaster
 	{
 		[Patch("OnRfFrequencyChange", "OnRfFrequencyChange [Broadcaster]", "RFBroadcaster", "ServerSetFrequency", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("6e760bd2fd9d4b818c805f839500ab8b")]
+		[Identifier("e867a0f6f9c744e7904f9c764226f80a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RFBroadcaster", false)]
 		[Parameter("local0", "System.Int32", false)]
@@ -361,7 +365,7 @@ public class Category_Radio
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFBroadcaster_6e760bd2fd9d4b818c805f839500ab8b : Patch
+		public class Radio_RFBroadcaster_e867a0f6f9c744e7904f9c764226f80a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -397,15 +401,16 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfFrequencyChanged", "OnRfFrequencyChanged [Broadcaster]", "RFBroadcaster", "ServerSetFrequency", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("0b373ed9d57f4f659ca585f473b15bc4")]
+		[Identifier("cbaeb4272f9d44e398d27a97e8edfd05")]
 		[Dependencies(new string[] { "OnRfFrequencyChange [Broadcaster]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RFBroadcaster", false)]
 		[Parameter("local0", "System.Int32", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFBroadcaster_0b373ed9d57f4f659ca585f473b15bc4 : Patch
+		public class Radio_RFBroadcaster_cbaeb4272f9d44e398d27a97e8edfd05 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -440,7 +445,7 @@ public class Category_Radio
 	public class Radio_RFReceiver
 	{
 		[Patch("OnRfFrequencyChange", "OnRfFrequencyChange [Receiver]", "RFReceiver", "ServerSetFrequency", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("cb6603fa8e0348269dc89c3aa010cbe5")]
+		[Identifier("9c7a82225217443c91b80f14d84b0664")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RFReceiver", false)]
 		[Parameter("local0", "System.Int32", false)]
@@ -448,7 +453,7 @@ public class Category_Radio
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFReceiver_cb6603fa8e0348269dc89c3aa010cbe5 : Patch
+		public class Radio_RFReceiver_9c7a82225217443c91b80f14d84b0664 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -484,15 +489,16 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfFrequencyChanged", "OnRfFrequencyChanged [Receiver]", "RFReceiver", "ServerSetFrequency", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d9edbc12c1e543beba0ed2a1deb1ed49")]
+		[Identifier("efca5f5df23d4435809fc67175a2287d")]
 		[Dependencies(new string[] { "OnRfFrequencyChange [Receiver]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RFReceiver", false)]
 		[Parameter("local0", "System.Int32", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_RFReceiver_d9edbc12c1e543beba0ed2a1deb1ed49 : Patch
+		public class Radio_RFReceiver_efca5f5df23d4435809fc67175a2287d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -527,7 +533,7 @@ public class Category_Radio
 	public class Radio_Detonator
 	{
 		[Patch("OnRfFrequencyChange", "OnRfFrequencyChange [Detonator]", "Detonator", "ServerSetFrequency", new string[] { "BasePlayer", "System.Int32" })]
-		[Identifier("2eb0f24ed2bc484590042094f42ff1a6")]
+		[Identifier("feaf8a606dfc46c482667d780fc542a7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Detonator", false)]
 		[Parameter("freq", "System.Int32", false)]
@@ -535,7 +541,7 @@ public class Category_Radio
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_Detonator_2eb0f24ed2bc484590042094f42ff1a6 : Patch
+		public class Radio_Detonator_feaf8a606dfc46c482667d780fc542a7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -570,15 +576,16 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfFrequencyChanged", "OnRfFrequencyChanged [Detonator]", "Detonator", "ServerSetFrequency", new string[] { "BasePlayer", "System.Int32" })]
-		[Identifier("144241099d2b40b39a30a4a6fba53ddf")]
+		[Identifier("c3e415d1232a40508c336e8230f9c9a6")]
 		[Dependencies(new string[] { "OnRfFrequencyChange [Detonator]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "Detonator", false)]
 		[Parameter("freq", "System.Int32", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_Detonator_144241099d2b40b39a30a4a6fba53ddf : Patch
+		public class Radio_Detonator_c3e415d1232a40508c336e8230f9c9a6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -612,7 +619,7 @@ public class Category_Radio
 	public class Radio_PagerEntity
 	{
 		[Patch("OnRfFrequencyChange", "OnRfFrequencyChange [PagerEntity]", "PagerEntity", "ServerSetFrequency", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("0b667022c4d94075974650704ecf687d")]
+		[Identifier("dffdc6c6fba94ec584692c79b27694b7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PagerEntity", false)]
 		[Parameter("local0", "System.Int32", false)]
@@ -620,7 +627,7 @@ public class Category_Radio
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_PagerEntity_0b667022c4d94075974650704ecf687d : Patch
+		public class Radio_PagerEntity_dffdc6c6fba94ec584692c79b27694b7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -656,15 +663,16 @@ public class Category_Radio
 		}
 
 		[Patch("OnRfFrequencyChanged", "OnRfFrequencyChanged [PagerEntity]", "PagerEntity", "ServerSetFrequency", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("afc2bf6c251c49508119b3c554dd73aa")]
+		[Identifier("023b2bea716548fbb97966edf3c45707")]
 		[Dependencies(new string[] { "OnRfFrequencyChange [PagerEntity]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PagerEntity", false)]
 		[Parameter("local0", "System.Int32", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_PagerEntity_afc2bf6c251c49508119b3c554dd73aa : Patch
+		public class Radio_PagerEntity_023b2bea716548fbb97966edf3c45707 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -699,13 +707,13 @@ public class Category_Radio
 	public class Radio_BoomBox
 	{
 		[Patch("OnBoomboxStationValidate", "OnBoomboxStationValidate", "BoomBox", "IsStationValid", new string[] { "System.String" })]
-		[Identifier("fc875bf8a9334c9593d36976723cb2a2")]
+		[Identifier("f00bc321322c4ffeb33198dedf140d01")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("url", "System.String", false)]
 		[Return(typeof(bool))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_BoomBox_fc875bf8a9334c9593d36976723cb2a2 : Patch
+		public class Radio_BoomBox_f00bc321322c4ffeb33198dedf140d01 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -741,7 +749,7 @@ public class Category_Radio
 		}
 
 		[Patch("OnBoomboxToggle", "OnBoomboxToggle", "BoomBox", "ServerTogglePlay", new string[] { "BaseEntity/RPCMessage", "System.Boolean" })]
-		[Identifier("69febb6e75f84f73a030ff8f25ae916a")]
+		[Identifier("7b55d141efcf40f69a5b180596d07408")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BoomBox", false)]
 		[Parameter("player", "BasePlayer", false)]
@@ -749,7 +757,7 @@ public class Category_Radio
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_BoomBox_69febb6e75f84f73a030ff8f25ae916a : Patch
+		public class Radio_BoomBox_7b55d141efcf40f69a5b180596d07408 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -785,7 +793,7 @@ public class Category_Radio
 		}
 
 		[Patch("OnBoomboxStationUpdate", "OnBoomboxStationUpdate", "BoomBox", "Server_UpdateRadioIP", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ec27886409014c29bd45114fbc456c69")]
+		[Identifier("05c5cde287b3464db65fa2c029589b98")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BoomBox", false)]
 		[Parameter("local0", "System.String", false)]
@@ -793,7 +801,7 @@ public class Category_Radio
 		[Return(typeof(void))]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_BoomBox_ec27886409014c29bd45114fbc456c69 : Patch
+		public class Radio_BoomBox_05c5cde287b3464db65fa2c029589b98 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -828,15 +836,16 @@ public class Category_Radio
 		}
 
 		[Patch("OnBoomboxStationUpdated", "OnBoomboxStationUpdated", "BoomBox", "Server_UpdateRadioIP", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("36d2a7011aab408b997386490fb8b54b")]
+		[Identifier("fe8fa74a5777491fb8f213cb69878310")]
 		[Dependencies(new string[] { "OnBoomboxStationUpdate" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BoomBox", false)]
 		[Parameter("local0", "System.String", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Radio")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Radio_BoomBox_36d2a7011aab408b997386490fb8b54b : Patch
+		public class Radio_BoomBox_fe8fa74a5777491fb8f213cb69878310 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

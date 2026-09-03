@@ -21,13 +21,13 @@ internal class Trans_CrocHasStraightPathToTarget : FSMTransitionBase
 			{
 				return false;
 			}
-			Vector3 targetPositionNS = ((Component)target).transform.position;
+			Vector3 targetPositionWS = ((Component)target).transform.position;
 			if (target.IsNonNpcPlayer() && base.Agent.canSwim && base.Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
 			{
-				targetPositionNS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
+				targetPositionWS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
 			}
-			NavMeshHit hitNS;
-			return !base.Agent.Raycast(targetPositionNS, out hitNS);
+			NavMeshHit hitWS;
+			return !base.Agent.Raycast(targetPositionWS, out hitWS);
 		}
 	}
 }

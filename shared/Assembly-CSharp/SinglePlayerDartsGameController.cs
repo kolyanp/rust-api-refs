@@ -164,11 +164,22 @@ public class SinglePlayerDartsGameController : IDartsGameController, IDisposable
 		val.playerName = playerName;
 		val.dartsThrown = GetActivePlayerData().DartsThrown;
 		val.timeTaken = GetActivePlayerData().TimeTaken;
+		DartsGameBoard board = Board;
+		if (board.Leaderboard == null)
+		{
+			board.Leaderboard = new List<DartsGameLeaderboardEntry>();
+		}
 		Board.Leaderboard.Add(val);
 		Board.Leaderboard.Sort((DartsGameLeaderboardEntry x, DartsGameLeaderboardEntry y) => (x.dartsThrown.CompareTo(y.dartsThrown) == 0) ? x.timeTaken.CompareTo(y.timeTaken) : x.dartsThrown.CompareTo(y.dartsThrown));
-		if (Board.Leaderboard.Count > 5)
+		while (Board.Leaderboard.Count > 5)
 		{
-			Board.Leaderboard.RemoveRange(5, Board.Leaderboard.Count - 5);
+			int index = Board.Leaderboard.Count - 1;
+			DartsGameLeaderboardEntry obj = Board.Leaderboard[index];
+			if (obj != null)
+			{
+				obj.ResetToPool();
+			}
+			Board.Leaderboard.RemoveAt(index);
 		}
 		Board.DartsDebug($"[DartsGameController] Player {val.playerName} finished game with {val.dartsThrown} darts thrown and time taken {val.timeTaken}");
 		Board.DartsDebug($"[DartsGameController] Leaderboard now has {Board.Leaderboard.Count} entries");

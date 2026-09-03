@@ -12,6 +12,8 @@ public class Nexus : ConsoleSystem
 
 	private const string DefaultEndpoint = "https://gw.facepunch.com/nexus/";
 
+	private const string DefaultServerListEndpoint = "https://gw.facepunch.com/nexus/browserList";
+
 	[ReplicatedVar(Help = "URL endpoint to use for the Nexus API", Default = "https://gw.facepunch.com/nexus/")]
 	public static string endpoint;
 
@@ -35,6 +37,9 @@ public class Nexus : ConsoleSystem
 
 	[ServerVar(Help = "Default distance between zones to allow boat travel, if map.contactRadius isn't set in the nexus (uses normalized coordinates)")]
 	public static float defaultZoneContactRadius;
+
+	[ServerVar(Help = "Hide islands that we know are full, preventing players from being transferred to them")]
+	public static bool hideFullIslands;
 
 	[ServerVar(Help = "Time offset in hours from the nexus clock")]
 	public static float timeOffset;
@@ -212,6 +217,7 @@ public class Nexus : ConsoleSystem
 		transferFlushTime = 60;
 		islandSpawnDistance = 1.5f;
 		defaultZoneContactRadius = 0.33f;
+		hideFullIslands = false;
 		timeOffset = 0f;
 		rpcTimeoutMultiplier = 1f;
 		loadingTimeout = 900f;

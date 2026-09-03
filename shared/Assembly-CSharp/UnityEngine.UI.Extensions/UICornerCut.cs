@@ -5,8 +5,8 @@ public class UICornerCut : UIPrimitiveBase
 {
 	public Vector2 cornerSize;
 
-	[Header("Corners to cut")]
 	[SerializeField]
+	[Header("Corners to cut")]
 	private bool m_cutUL;
 
 	[SerializeField]
@@ -18,12 +18,12 @@ public class UICornerCut : UIPrimitiveBase
 	[SerializeField]
 	private bool m_cutLR;
 
-	[Tooltip("Up-Down colors become Left-Right colors")]
 	[SerializeField]
+	[Tooltip("Up-Down colors become Left-Right colors")]
 	private bool m_makeColumns;
 
-	[SerializeField]
 	[Header("Color the cut bars differently")]
+	[SerializeField]
 	private bool m_useColorUp;
 
 	[SerializeField]

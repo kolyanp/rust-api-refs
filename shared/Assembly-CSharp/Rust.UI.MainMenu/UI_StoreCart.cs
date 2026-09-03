@@ -8,8 +8,8 @@ public class UI_StoreCart : UI_Window
 
 	public static readonly Phrase CartPhrase;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private StyleAsset emptyStyle;
 
 	[SerializeField]

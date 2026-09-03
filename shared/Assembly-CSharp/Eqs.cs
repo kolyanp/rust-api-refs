@@ -1,61 +1,79 @@
 using System;
 using System.Collections.Generic;
+using Rust.Ai.Gen2;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 public static class Eqs
 {
-	public sealed class PooledScoreList : BasePooledList<(Vector3 pos, float score), PooledScoreList>
+	public sealed class PooledScoreList : BasePooledList<(NavVector3 pos, float score), PooledScoreList>
 	{
 		public void SortByScoreDesc(BaseEntity baseEntity = null, string debugCategory = "navigation")
 		{
 			using (TimeWarning.New("SortByScoreDesc"))
 			{
-				((List<(Vector3, float)>)(object)this).Sort((Comparison<(Vector3, float)>)(((Vector3 pos, float score) a, (Vector3 pos, float score) b) => b.score.CompareTo(a.score)));
+				((List<(NavVector3, float)>)(object)this).Sort((Comparison<(NavVector3, float)>)(((NavVector3 pos, float score) a, (NavVector3 pos, float score) b) => b.score.CompareTo(a.score)));
 			}
 		}
 
-		public void Reorder(List<Vector3> positions)
+		public void Reorder(List<NavVector3> positions)
 		{
-			//IL_0019: Unknown result type (might be due to invalid IL or missing references)
 			using (TimeWarning.New("Reorder"))
 			{
 				for (int i = 0; i < positions.Count; i++)
 				{
-					positions[i] = ((List<(Vector3, float)>)(object)this)[i].Item1;
+					positions[i] = ((List<(NavVector3, float)>)(object)this)[i].Item1;
 				}
 			}
 		}
 	}
 
-	public static void SamplePositionsInDonutShape(Vector3 center, List<Vector3> sampledPositions, float radius = 10f, int itemsPerRing = 8)
+	public static bool SampleNavigablePositions(RustNavMeshAgent agent, NavVector3 center, List<NavVector3> sampledPositions, float outerRadius, float innerRadius, int numPoints, bool preValidate = true)
 	{
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("SampleNavigablePositions"))
+		{
+			if (preValidate && agent.SampleConnectedPositions(center, outerRadius, innerRadius, numPoints, sampledPositions))
+			{
+				return true;
+			}
+			sampledPositions.Clear();
+			if (innerRadius <= 0f || Mathf.Approximately(innerRadius, outerRadius))
+			{
+				SamplePositionsInDonutShape(center, sampledPositions, outerRadius, numPoints);
+			}
+			else
+			{
+				SamplePositionsInMultiDonutShape(center, sampledPositions, outerRadius, innerRadius, 2, Mathf.Max(1, numPoints / 2));
+			}
+			return false;
+		}
+	}
+
+	public static void SamplePositionsInDonutShape(NavVector3 center, List<NavVector3> sampledPositions, float radius = 10f, int itemsPerRing = 8)
+	{
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SamplePositionsInDonutShape"))
 		{
 			float num = Random.Range(0f, MathF.PI * 2f);
 			for (int i = 0; i < itemsPerRing; i++)
 			{
 				float num2 = MathF.PI * 2f * (float)i / (float)itemsPerRing + num;
-				Vector3 item = center + new Vector3(Mathf.Cos(num2), 0f, Mathf.Sin(num2)) * radius;
+				NavVector3 item = new NavVector3(center.Value + new Vector3(Mathf.Cos(num2), 0f, Mathf.Sin(num2)) * radius);
 				sampledPositions.Add(item);
 			}
-			ListEx.Shuffle<Vector3>(sampledPositions, (uint)Environment.TickCount);
+			ListEx.Shuffle<NavVector3>(sampledPositions, (uint)Environment.TickCount);
 		}
 	}
 
-	public static void SamplePositionsInMultiDonutShape(Vector3 center, List<Vector3> sampledPositions, float outerRadius = 10f, float innerRadius = 10f, int numRings = 1, int itemsPerRing = 8)
+	public static void SamplePositionsInMultiDonutShape(NavVector3 center, List<NavVector3> sampledPositions, float outerRadius = 10f, float innerRadius = 10f, int numRings = 1, int itemsPerRing = 8)
 	{
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SamplePositionsInMultiDonutShape"))
 		{
 			float num = Random.Range(0f, MathF.PI * 2f);
@@ -66,11 +84,11 @@ public static class Eqs
 				{
 					float num3 = num + (float)i * MathF.PI / (float)numRings;
 					float num4 = MathF.PI * 2f * (float)j / (float)itemsPerRing + num3;
-					Vector3 item = center + new Vector3(Mathf.Cos(num4), 0f, Mathf.Sin(num4)) * num2;
+					NavVector3 item = new NavVector3(center.Value + new Vector3(Mathf.Cos(num4), 0f, Mathf.Sin(num4)) * num2);
 					sampledPositions.Add(item);
 				}
 			}
-			ListEx.Shuffle<Vector3>(sampledPositions, (uint)Environment.TickCount);
+			ListEx.Shuffle<NavVector3>(sampledPositions, (uint)Environment.TickCount);
 		}
 	}
 }

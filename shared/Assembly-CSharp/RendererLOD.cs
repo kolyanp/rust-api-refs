@@ -39,7 +39,7 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 
 	public float minDistanceMultiplier;
 
-	public State[] States;
+	public State[] States = Array.Empty<State>();
 
 	public bool shouldNotifyOnLODChange;
 

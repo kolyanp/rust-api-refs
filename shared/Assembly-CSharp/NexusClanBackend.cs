@@ -61,13 +61,21 @@ public class NexusClanBackend : IClanBackend, IDisposable
 
 	public async ValueTask<ClanValueResult<IClan>> Get(long clanId)
 	{
-		NexusClanResult<NexusClan> val = await _client.GetClan(clanId);
-		NexusClan clan = default(NexusClan);
-		if (val.IsSuccess && val.TryGetResponse(ref clan))
+		try
 		{
-			return ClanValueResult<IClan>.op_Implicit((IClan)(object)Wrap(clan));
+			NexusClanResult<NexusClan> val = await _client.GetClan(clanId);
+			NexusClan clan = default(NexusClan);
+			if (val.IsSuccess && val.TryGetResponse(ref clan))
+			{
+				return ClanValueResult<IClan>.op_Implicit((IClan)(object)Wrap(clan));
+			}
+			return ClanValueResult<IClan>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
 		}
-		return ClanValueResult<IClan>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return new ClanValueResult<IClan>((ClanResult)0);
+		}
 	}
 
 	public bool TryGet(long clanId, out IClan clan)
@@ -84,76 +92,108 @@ public class NexusClanBackend : IClanBackend, IDisposable
 
 	public async ValueTask<ClanValueResult<IClan>> GetByMember(ulong steamId)
 	{
-		NexusClanResult<NexusClan> val = await _client.GetClanByMember(NexusClanUtil.GetPlayerId(steamId));
-		NexusClan clan = default(NexusClan);
-		if (val.IsSuccess && val.TryGetResponse(ref clan))
+		try
 		{
-			return ClanValueResult<IClan>.op_Implicit((IClan)(object)Wrap(clan));
+			NexusClanResult<NexusClan> val = await _client.GetClanByMember(steamId);
+			NexusClan clan = default(NexusClan);
+			if (val.IsSuccess && val.TryGetResponse(ref clan))
+			{
+				return ClanValueResult<IClan>.op_Implicit((IClan)(object)Wrap(clan));
+			}
+			return ClanValueResult<IClan>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
 		}
-		return ClanValueResult<IClan>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return new ClanValueResult<IClan>((ClanResult)0);
+		}
 	}
 
 	public async ValueTask<ClanValueResult<IClan>> Create(ulong leaderSteamId, string name)
 	{
-		ClanCreateParameters val = default(ClanCreateParameters);
-		((ClanCreateParameters)(ref val)).ClanName = name;
-		((ClanCreateParameters)(ref val)).ClanNameNormalized = name.ToLowerInvariant().Normalize(NormalizationForm.FormKC);
-		((ClanCreateParameters)(ref val)).LeaderPlayerId = NexusClanUtil.GetPlayerId(leaderSteamId);
-		((ClanCreateParameters)(ref val)).LeaderRoleName = "Leader";
-		((ClanCreateParameters)(ref val)).LeaderRoleVariables = NexusClanUtil.DefaultLeaderVariables;
-		((ClanCreateParameters)(ref val)).MemberRoleName = "Member";
-		ClanCreateParameters val2 = val;
-		NexusClanResult<NexusClan> val3 = await _client.CreateClan(val2);
-		NexusClan clan = default(NexusClan);
-		if (val3.IsSuccess && val3.TryGetResponse(ref clan))
+		try
 		{
-			return ClanValueResult<IClan>.op_Implicit((IClan)(object)Wrap(clan));
+			ClanCreateParameters val = default(ClanCreateParameters);
+			((ClanCreateParameters)(ref val)).ClanName = name;
+			((ClanCreateParameters)(ref val)).ClanNameNormalized = name.ToLowerInvariant().Normalize(NormalizationForm.FormKC);
+			((ClanCreateParameters)(ref val)).LeaderPlayerId = leaderSteamId;
+			((ClanCreateParameters)(ref val)).LeaderRoleName = "Leader";
+			((ClanCreateParameters)(ref val)).LeaderRoleVariables = NexusClanUtil.DefaultLeaderVariables;
+			((ClanCreateParameters)(ref val)).MemberRoleName = "Member";
+			ClanCreateParameters val2 = val;
+			NexusClanResult<NexusClan> val3 = await _client.CreateClan(val2);
+			NexusClan clan = default(NexusClan);
+			if (val3.IsSuccess && val3.TryGetResponse(ref clan))
+			{
+				return ClanValueResult<IClan>.op_Implicit((IClan)(object)Wrap(clan));
+			}
+			return ClanValueResult<IClan>.op_Implicit(NexusClanUtil.ToClanResult(val3.ResultCode));
 		}
-		return ClanValueResult<IClan>.op_Implicit(NexusClanUtil.ToClanResult(val3.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return new ClanValueResult<IClan>((ClanResult)0);
+		}
 	}
 
 	public async ValueTask<ClanValueResult<List<ClanInvitation>>> ListInvitations(ulong steamId)
 	{
-		NexusClanResult<List<ClanInvitation>> val = await _client.ListClanInvitations(NexusClanUtil.GetPlayerId(steamId));
-		List<ClanInvitation> source = default(List<ClanInvitation>);
-		if (val.IsSuccess && val.TryGetResponse(ref source))
+		try
 		{
-			List<ClanInvitation> list = ((IEnumerable<ClanInvitation>)source).Select((Func<ClanInvitation, ClanInvitation>)delegate(ClanInvitation i)
+			NexusClanResult<List<ClanInvitation>> val = await _client.ListClanInvitations(steamId);
+			List<ClanInvitation> source = default(List<ClanInvitation>);
+			if (val.IsSuccess && val.TryGetResponse(ref source))
 			{
-				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-				return new ClanInvitation
+				List<ClanInvitation> list = ((IEnumerable<ClanInvitation>)source).Select((Func<ClanInvitation, ClanInvitation>)delegate(ClanInvitation i)
 				{
-					ClanId = ((ClanInvitation)(ref i)).ClanId,
-					Recruiter = NexusClanUtil.GetSteamId(((ClanInvitation)(ref i)).RecruiterPlayerId),
-					Timestamp = ((ClanInvitation)(ref i)).Timestamp
-				};
-			}).ToList();
-			return new ClanValueResult<List<ClanInvitation>>(list);
+					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+					return new ClanInvitation
+					{
+						ClanId = ((ClanInvitation)(ref i)).ClanId,
+						Recruiter = ((ClanInvitation)(ref i)).RecruiterPlayerId,
+						Timestamp = ((ClanInvitation)(ref i)).Timestamp
+					};
+				}).ToList();
+				return new ClanValueResult<List<ClanInvitation>>(list);
+			}
+			return ClanValueResult<List<ClanInvitation>>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
 		}
-		return ClanValueResult<List<ClanInvitation>>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return new ClanValueResult<List<ClanInvitation>>((ClanResult)0);
+		}
 	}
 
 	public async ValueTask<ClanValueResult<List<ClanLeaderboardEntry>>> GetLeaderboard(int limit = 100)
 	{
-		NexusClanResult<List<ClanLeaderboardEntry>> val = await _client.GetClanLeaderboard(limit);
-		List<ClanLeaderboardEntry> source = default(List<ClanLeaderboardEntry>);
-		if (val.IsSuccess && val.TryGetResponse(ref source))
+		try
 		{
-			List<ClanLeaderboardEntry> list = ((IEnumerable<ClanLeaderboardEntry>)source).Select((Func<ClanLeaderboardEntry, ClanLeaderboardEntry>)delegate(ClanLeaderboardEntry c)
+			NexusClanResult<List<ClanLeaderboardEntry>> val = await _client.GetClanLeaderboard(limit);
+			List<ClanLeaderboardEntry> source = default(List<ClanLeaderboardEntry>);
+			if (val.IsSuccess && val.TryGetResponse(ref source))
 			{
-				//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-				return new ClanLeaderboardEntry
+				List<ClanLeaderboardEntry> list = ((IEnumerable<ClanLeaderboardEntry>)source).Select((Func<ClanLeaderboardEntry, ClanLeaderboardEntry>)delegate(ClanLeaderboardEntry c)
 				{
-					ClanId = ((ClanLeaderboardEntry)(ref c)).ClanId,
-					Name = ((ClanLeaderboardEntry)(ref c)).Name,
-					Score = ((ClanLeaderboardEntry)(ref c)).Score
-				};
-			}).ToList();
-			return new ClanValueResult<List<ClanLeaderboardEntry>>(list);
+					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+					//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+					return new ClanLeaderboardEntry
+					{
+						ClanId = ((ClanLeaderboardEntry)(ref c)).ClanId,
+						Name = ((ClanLeaderboardEntry)(ref c)).Name,
+						Score = ((ClanLeaderboardEntry)(ref c)).Score
+					};
+				}).ToList();
+				return new ClanValueResult<List<ClanLeaderboardEntry>>(list);
+			}
+			return ClanValueResult<List<ClanLeaderboardEntry>>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
 		}
-		return ClanValueResult<List<ClanLeaderboardEntry>>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return new ClanValueResult<List<ClanLeaderboardEntry>>((ClanResult)0);
+		}
 	}
 
 	public void HandleClanChatBatch(ClanChatBatchRequest request)

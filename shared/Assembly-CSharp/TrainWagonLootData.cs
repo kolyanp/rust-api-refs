@@ -30,8 +30,8 @@ public class TrainWagonLootData : ScriptableObject
 	[SerializeField]
 	private LootOption[] oreOptions;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private LootOption lootWagonContent;
 
 	[SerializeField]
@@ -153,7 +153,7 @@ public class TrainWagonLootData : ScriptableObject
 		if (sc.IsValid())
 		{
 			int maxLootAmount = lootOption.maxLootAmount;
-			result = (((float)maxLootAmount != 0f) ? Mathf.Clamp01((float)sc.inventory.GetAmount(lootOption.lootItem.itemid, onlyUsableAmounts: false) / (float)maxLootAmount) : 0f);
+			result = (((float)maxLootAmount != 0f) ? Mathf.Clamp01((float)sc.inventory.GetAmount(lootOption.lootItem.itemid) / (float)maxLootAmount) : 0f);
 		}
 		return result;
 	}

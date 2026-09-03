@@ -490,6 +490,13 @@ public class LocalClanDatabase : Database
 		Commit();
 	}
 
+	public long ReadClanScore(long clanId)
+	{
+		IntPtr stmHandle = Prepare("SELECT score FROM clans WHERE clan_id = ? AND deleted IS NULL");
+		Database.Bind(stmHandle, 1, clanId);
+		return ExecuteAndReadQueryResult<long>(stmHandle);
+	}
+
 	public List<ClanScoreEvent> ReadScoreEvents(long clanId, int limit)
 	{
 		IntPtr stmHandle = Prepare("SELECT timestamp, type, score, multiplier, user_id, other_user_id, other_clan_id, arg1, arg2 FROM score_events WHERE clan_id = ? ORDER BY timestamp DESC LIMIT ?");

@@ -21,6 +21,8 @@ public class ElectricGenerator : IOEntity, IPowergridEntity
 
 	private int currentPowergridStage;
 
+	private PuzzleReset cachedPuzzleReset;
+
 	public override bool IsRootEntity()
 	{
 		return true;
@@ -120,84 +122,49 @@ public class ElectricGenerator : IOEntity, IPowergridEntity
 		Invoke(ForcePuzzleReset, 4f);
 	}
 
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		cachedPuzzleReset = ((Component)this).GetComponent<PuzzleReset>();
+		if (!enableSaving)
+		{
+			Invoke(ForcePuzzleReset, 4f);
+		}
+	}
+
 	private void ForcePuzzleReset()
 	{
 		PuzzleReset component = ((Component)this).GetComponent<PuzzleReset>();
 		if ((Object)(object)component != (Object)null)
 		{
-			component.DoReset();
-			component.ResetTimer();
+			component.TryForceReset();
 		}
 	}
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (!info.forDisk)
+		if (info.forDisk)
 		{
-			return;
-		}
-		PuzzleReset puzzleReset = default(PuzzleReset);
-		if (((Component)this).TryGetComponent<PuzzleReset>(ref puzzleReset))
-		{
-			info.msg.puzzleReset = Pool.Get<PuzzleReset>();
-			info.msg.puzzleReset.playerBlocksReset = puzzleReset.playersBlockReset;
-			if ((Object)(object)puzzleReset.playerDetectionOrigin != (Object)null)
+			if ((Object)(object)cachedPuzzleReset != (Object)null)
 			{
-				info.msg.puzzleReset.playerDetectionOrigin = puzzleReset.playerDetectionOrigin.position;
+				cachedPuzzleReset.Save(info);
 			}
-			info.msg.puzzleReset.playerDetectionRadius = puzzleReset.playerDetectionRadius;
-			info.msg.puzzleReset.scaleWithServerPopulation = puzzleReset.scaleWithServerPopulation;
-			info.msg.puzzleReset.timeBetweenResets = puzzleReset.timeBetweenResets;
-			info.msg.puzzleReset.checkSleepingAIZForPlayers = puzzleReset.CheckSleepingAIZForPlayers;
-			info.msg.puzzleReset.ignoreAboveGroundPlayers = puzzleReset.ignoreAboveGroundPlayers;
-			info.msg.puzzleReset.broadcastResetMessage = puzzleReset.broadcastResetMessage;
-			info.msg.puzzleReset.resetPhrase = puzzleReset.resetPhrase?.token ?? "";
-			info.msg.puzzleReset.radiationReset = puzzleReset.radiationReset;
-			info.msg.puzzleReset.pauseUntilLooted = puzzleReset.pauseUntilLooted;
+			info.msg.electricGenerator = Pool.Get<ElectricGenerator>();
+			info.msg.electricGenerator.requiredPowergridStage = requiredPowergridStage;
 		}
-		info.msg.electricGenerator = Pool.Get<ElectricGenerator>();
-		info.msg.electricGenerator.requiredPowergridStage = requiredPowergridStage;
 	}
 
 	public override void Load(LoadInfo info)
 	{
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		if (!info.fromDisk)
 		{
 			return;
 		}
-		if (info.msg.puzzleReset != null)
+		if (info.msg.puzzleReset != null && (Object)(object)cachedPuzzleReset != (Object)null)
 		{
-			PuzzleReset component = ((Component)this).GetComponent<PuzzleReset>();
-			if ((Object)(object)component != (Object)null)
-			{
-				component.playersBlockReset = info.msg.puzzleReset.playerBlocksReset;
-				if ((Object)(object)component.playerDetectionOrigin != (Object)null)
-				{
-					component.playerDetectionOrigin.position = info.msg.puzzleReset.playerDetectionOrigin;
-				}
-				component.playerDetectionRadius = info.msg.puzzleReset.playerDetectionRadius;
-				component.scaleWithServerPopulation = info.msg.puzzleReset.scaleWithServerPopulation;
-				component.timeBetweenResets = info.msg.puzzleReset.timeBetweenResets;
-				component.CheckSleepingAIZForPlayers = info.msg.puzzleReset.checkSleepingAIZForPlayers;
-				component.ignoreAboveGroundPlayers = info.msg.puzzleReset.ignoreAboveGroundPlayers;
-				component.broadcastResetMessage = info.msg.puzzleReset.broadcastResetMessage;
-				if (!string.IsNullOrEmpty(info.msg.puzzleReset.resetPhrase))
-				{
-					Phrase phrase = Translate.GetPhrase(info.msg.puzzleReset.resetPhrase);
-					if (phrase != null)
-					{
-						component.resetPhrase = phrase;
-					}
-				}
-				component.radiationReset = info.msg.puzzleReset.radiationReset;
-				component.pauseUntilLooted = info.msg.puzzleReset.pauseUntilLooted;
-				component.ResetTimer();
-			}
+			cachedPuzzleReset.Load(info);
 		}
 		if (info.msg.electricGenerator != null)
 		{

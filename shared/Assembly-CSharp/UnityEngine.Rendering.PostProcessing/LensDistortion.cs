@@ -30,22 +30,22 @@ public sealed class LensDistortion : PostProcessEffectSettings
 	};
 
 	[Tooltip("Distortion center point (x-axis).")]
-	[Space]
 	[Range(-1f, 1f)]
+	[Space]
 	public FloatParameter centerX = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[Range(-1f, 1f)]
 	[Tooltip("Distortion center point (y-axis).")]
+	[Range(-1f, 1f)]
 	public FloatParameter centerY = new FloatParameter
 	{
 		value = 0f
 	};
 
-	[Tooltip("Global screen scaling.")]
 	[Range(0.01f, 5f)]
+	[Tooltip("Global screen scaling.")]
 	[Space]
 	public FloatParameter scale = new FloatParameter
 	{

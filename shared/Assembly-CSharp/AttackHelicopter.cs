@@ -76,6 +76,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	private GameObject damageSoundTarget;
 
+	public HealthThresholdToggle healthThresholdToggle;
+
 	[SerializeField]
 	private MeshRenderer monitorStaticRenderer;
 
@@ -85,8 +87,8 @@ public class AttackHelicopter : PlayerHelicopter
 	[SerializeField]
 	private Material monitorStaticSafeZone;
 
-	[Header("Heli Pilot Flares")]
 	[SerializeField]
+	[Header("Heli Pilot Flares")]
 	public GameObjectRef flareFireFX;
 
 	[SerializeField]
@@ -759,8 +761,8 @@ public class AttackHelicopter : PlayerHelicopter
 		GameManager.server.CreatePrefab(pilotFlare.resourcePath, rightFlareLaunchPos.position, Quaternion.identity).GetComponent<HeliPilotFlare>().Init(((Component)this).transform.right * flareLaunchVel);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenTurret(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -812,8 +814,8 @@ public class AttackHelicopter : PlayerHelicopter
 		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_CloseGunnerView(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -858,6 +860,24 @@ public class AttackHelicopter : PlayerHelicopter
 				ammoList.RemoveAt(i);
 				i--;
 			}
+		}
+	}
+
+	public override void OnHealthChanged(float oldvalue, float newvalue)
+	{
+		base.OnHealthChanged(oldvalue, newvalue);
+		if ((Object)(object)healthThresholdToggle != (Object)null)
+		{
+			healthThresholdToggle.UpdateHealth(base.healthFraction);
+		}
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		if ((Object)(object)healthThresholdToggle != (Object)null)
+		{
+			healthThresholdToggle.UpdateHealth(base.healthFraction);
 		}
 	}
 

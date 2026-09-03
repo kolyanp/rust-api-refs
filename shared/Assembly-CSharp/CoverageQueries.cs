@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
-[RequireComponent(typeof(Camera))]
 [ResetStaticFields]
+[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(Camera))]
 public class CoverageQueries : MonoBehaviour
 {
@@ -117,6 +117,16 @@ public class CoverageQueries : MonoBehaviour
 				coverageMat.SetTexture("_Input", (Texture)(object)inputTexture);
 				Graphics.Blit((Texture)(object)inputTexture, resultTexture, coverageMat, 0);
 				Graphics.SetRenderTarget(activeColorBuffer, activeDepthBuffer);
+			}
+		}
+
+		public void Dispatch(CommandBuffer cmd)
+		{
+			//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+			if (inputData.Length != 0)
+			{
+				coverageMat.SetTexture("_Input", (Texture)(object)inputTexture);
+				cmd.Blit((Texture)(object)inputTexture, RenderTargetIdentifier.op_Implicit((Texture)(object)resultTexture), coverageMat, 0);
 			}
 		}
 

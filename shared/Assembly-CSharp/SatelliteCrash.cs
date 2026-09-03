@@ -120,9 +120,9 @@ public class SatelliteCrash : BaseCombatEntity
 	[Tooltip("Visual effect played at the crash position when the satellite hits the ground")]
 	public GameObjectRef groundImpactEffect;
 
-	[FormerlySerializedAs("maxCratesToSpawn")]
-	[Tooltip("Loot budget at 1.0x mass scale, in crate-equivalents. Multiplied by the mass-to-loot curve; the result spawns as crates up to Max Crates Per Crash, with any overflow going into extra items per crate.")]
 	[Header("Crash Config")]
+	[Tooltip("Loot budget at 1.0x mass scale, in crate-equivalents. Multiplied by the mass-to-loot curve; the result spawns as crates up to Max Crates Per Crash, with any overflow going into extra items per crate.")]
+	[FormerlySerializedAs("maxCratesToSpawn")]
 	public int baselineCrateSpawnCount = 6;
 
 	public int maxFireballs = 10;
@@ -131,14 +131,14 @@ public class SatelliteCrash : BaseCombatEntity
 
 	public float safetyDespawnTime = 120f;
 
-	public float crateLifetimeMinutes = 60f;
+	public float crateLifetimeMinutes = 30f;
 
 	public float debrisMarkerDurationMinutes = 30f;
 
 	public float startHeight = 200f;
 
-	[Header("Loot Scaling")]
 	[Tooltip("Maps satellite mass (kg) to the loot multiplier. The multiplier scales fireball count and the total crate loot budget (crate count up to Max Crates Per Crash, overflow into extra items per crate). Flat outside the first/last key.")]
+	[Header("Loot Scaling")]
 	public AnimationCurve massToLootScale = AnimationCurve.Linear(1000f, 0.5f, 6000f, 3f);
 
 	[Tooltip("Hard cap on crates spawned per crash, regardless of the loot multiplier. Budget beyond this goes into extra items per crate.")]
@@ -1208,12 +1208,12 @@ public class SatelliteCrash : BaseCombatEntity
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
 		if (cratesToDrop == null || cratesToDrop.Length == 0)
 		{
 			return;
@@ -1258,10 +1258,6 @@ public class SatelliteCrash : BaseCombatEntity
 				{
 					lootContainer.Invoke(lootContainer.RemoveMe, crateLifetimeMinutes * 60f);
 				}
-				if (baseEntity is TimedUnlootableCrate timedUnlootableCrate)
-				{
-					timedUnlootableCrate.SetUnlootableFor(Satellite.crate_fire_duration);
-				}
 				Rigidbody obj = ((Component)baseEntity).gameObject.AddComponent<Rigidbody>();
 				ConfigureScatterRigidbody(obj, 2f, 0.2f, 0.080000006f, useGravity: true);
 				obj.velocity = Vector3.zero;
@@ -1278,6 +1274,7 @@ public class SatelliteCrash : BaseCombatEntity
 						fireBall.CancelInvoke(fireBall.TryToSpread);
 						fireBall.CancelInvoke(fireBall.Extinguish);
 						fireBall.Invoke(fireBall.Extinguish, Satellite.crate_fire_duration);
+						((Component)baseEntity).SendMessage("SetLockingEnt", (object)fireBall, (SendMessageOptions)1);
 					}
 				}
 				Collider component = ((Component)baseEntity).GetComponent<Collider>();

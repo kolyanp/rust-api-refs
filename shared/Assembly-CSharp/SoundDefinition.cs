@@ -93,6 +93,10 @@ public class SoundDefinition : ScriptableObject
 			{
 				return 0f;
 			}
+			if ((Object)(object)template.Get() == (Object)null)
+			{
+				return 0f;
+			}
 			AudioSource component = template.Get().GetComponent<AudioSource>();
 			if ((Object)(object)component == (Object)null)
 			{

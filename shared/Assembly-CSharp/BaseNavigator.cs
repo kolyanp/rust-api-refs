@@ -168,6 +168,8 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	protected bool paused;
 
+	private const float DestinationSampleHeight = 2f;
+
 	private int frameCount;
 
 	private float accumDelta;
@@ -433,9 +435,9 @@ public class BaseNavigator : BaseMonoBehaviour
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		position = ((Component)this).transform.position;
 		bool result = true;
-		if (Agent.SamplePosition(target, out var hitNS, maxRange))
+		if (Agent.SamplePosition(target, out var hitWS, maxRange))
 		{
-			position = ((NavMeshHit)(ref hitNS)).position;
+			position = ((NavMeshHit)(ref hitWS)).position;
 		}
 		else
 		{
@@ -542,31 +544,31 @@ public class BaseNavigator : BaseMonoBehaviour
 
 	public bool SetDestination(Vector3 pos, float speedFraction = 1f, float updateInterval = 0f, float navmeshSampleDistance = 0f)
 	{
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0266: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0239: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
 		if (!AI.move)
 		{
 			return false;
@@ -575,7 +577,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		{
 			return false;
 		}
-		if (!AI.useUnityNavmesh && !Agent.isOnNavMesh)
+		if (!AI.useUnityNavmesh && CanUseNavMesh && !Agent.isOnNavMesh)
 		{
 			return false;
 		}
@@ -653,11 +655,11 @@ public class BaseNavigator : BaseMonoBehaviour
 			}
 			if (navmeshSampleDistance > 0f && AI.setdestinationsamplenavmesh)
 			{
-				if (!Agent.SamplePosition(pos, out var hitNS, navmeshSampleDistance))
+				if (!SampleDestination(pos, Mathf.Min(navmeshSampleDistance, 1f), out var sampledPos))
 				{
 					return false;
 				}
-				pos = ((NavMeshHit)(ref hitNS)).position;
+				pos = sampledPos;
 			}
 			SetCurrentNavigationType(NavigationType.NavMesh);
 			if (!Agent.isOnNavMesh)
@@ -697,6 +699,36 @@ public class BaseNavigator : BaseMonoBehaviour
 			return flag;
 		}
 		}
+	}
+
+	private bool SampleDestination(Vector3 pos, float snapRange, out Vector3 sampledPos)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		if (Agent.SamplePosition(pos, out var hitWS, snapRange))
+		{
+			sampledPos = ((NavMeshHit)(ref hitWS)).position;
+			return true;
+		}
+		sampledPos = pos;
+		if (snapRange >= 2f)
+		{
+			return false;
+		}
+		if (!Agent.SamplePosition(pos, out hitWS, 2f) || Vector3Ex.Distance2D(((NavMeshHit)(ref hitWS)).position, pos) > snapRange)
+		{
+			return false;
+		}
+		sampledPos = ((NavMeshHit)(ref hitWS)).position;
+		return true;
 	}
 
 	private NavigationType DetermineNavigationType(Vector3 location, out Vector3 navMeshPos)
@@ -927,7 +959,7 @@ public class BaseNavigator : BaseMonoBehaviour
 			}
 			return iAIPathNode.Position;
 		}
-		return Agent.nextPosition;
+		return Agent.nextPositionWS;
 	}
 
 	private bool ValidateNextPosition(ref Vector3 moveToPosition)
@@ -936,7 +968,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		bool flag = ValidBounds.Test(BaseEntity, moveToPosition);
 		if ((Object)(object)BaseEntity != (Object)null && !flag && (Object)(object)((Component)this).transform != (Object)null && !BaseEntity.IsDestroyed)
 		{
-			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
+			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
 			BaseEntity.Kill();
 			return false;
 		}
@@ -1029,7 +1061,7 @@ public class BaseNavigator : BaseMonoBehaviour
 		}
 		if (CurrentNavigationType == NavigationType.NavMesh)
 		{
-			if (ReachedPosition(Agent.destination))
+			if (ReachedPosition(Agent.destinationWS))
 			{
 				Stop();
 			}
@@ -1168,9 +1200,9 @@ public class BaseNavigator : BaseMonoBehaviour
 		Vector3 val = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
 		Vector3 normalized = ((Vector3)(ref val)).normalized;
 		normalized.y = 0f;
-		Vector3 desiredVelocity = Agent.desiredVelocity;
-		desiredVelocity.y = 0f;
-		if (Vector3.Dot(desiredVelocity, normalized) < 0.1f)
+		Vector3 desiredVelocityWS = Agent.desiredVelocityWS;
+		desiredVelocityWS.y = 0f;
+		if (Vector3.Dot(desiredVelocityWS, normalized) < 0.1f)
 		{
 			CompleteNavMeshLink();
 			return false;

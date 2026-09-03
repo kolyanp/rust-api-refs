@@ -12,8 +12,8 @@ public sealed class ScreenSpaceReflections : PostProcessEffectSettings
 		value = ScreenSpaceReflectionPreset.Medium
 	};
 
-	[Range(0f, 256f)]
 	[Tooltip("Maximum number of steps in the raymarching pass. Higher values mean more reflections.")]
+	[Range(0f, 256f)]
 	public IntParameter maximumIterationCount = new IntParameter
 	{
 		value = 16
@@ -38,15 +38,15 @@ public sealed class ScreenSpaceReflections : PostProcessEffectSettings
 		value = 100f
 	};
 
-	[Range(0f, 1f)]
 	[Tooltip("Fades reflections close to the near planes.")]
+	[Range(0f, 1f)]
 	public FloatParameter distanceFade = new FloatParameter
 	{
 		value = 0.5f
 	};
 
-	[Range(0f, 1f)]
 	[Tooltip("Fades reflections close to the screen edges.")]
+	[Range(0f, 1f)]
 	public FloatParameter vignette = new FloatParameter
 	{
 		value = 0.5f

@@ -8,8 +8,8 @@ public class UI_ServerAdmin : UI_Window
 {
 	public static UI_ServerAdmin Instance;
 
-	[Header("Player List")]
 	[SerializeField]
+	[Header("Player List")]
 	private GameObjectRef playerEntryPrefab;
 
 	[SerializeField]
@@ -53,8 +53,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RectTransform convarInfoParent;
 
-	[SerializeField]
 	[Header("UGC")]
+	[SerializeField]
 	private FlexVirtualScroll ugcVirtualScroll;
 
 	[SerializeField]
@@ -74,4 +74,7 @@ public class UI_ServerAdmin : UI_Window
 
 	[SerializeField]
 	private RawImage expandedUgcImage;
+
+	[SerializeField]
+	private UI_ServerAdminExpandedUgc expandedUgcController;
 }

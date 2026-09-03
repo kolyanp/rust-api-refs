@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ConVar;
 using Facepunch;
 using Oxide.Core;
+using ProtoBuf;
 using UnityEngine;
 
 public class Sprinkler : IOEntity
@@ -31,9 +32,21 @@ public class Sprinkler : IOEntity
 
 	private bool forceUpdateSplashables;
 
+	private TimeSince timeSinceFuelTypeRequest;
+
 	private Action DoSplashCB;
 
 	public override bool BlockFluidDraining => (Object)(object)currentFuelSource != (Object)null;
+
+	public override void Save(SaveInfo info)
+	{
+		base.Save(info);
+		if (info.forDisk)
+		{
+			info.msg.sprinkler = Pool.Get<Sprinkler>();
+			info.msg.sprinkler.currentFuelType = (((Object)(object)currentFuelType != (Object)null) ? currentFuelType.itemid : 0);
+		}
+	}
 
 	public override int ConsumptionAmount()
 	{
@@ -42,13 +55,17 @@ public class Sprinkler : IOEntity
 
 	public override int DesiredPower(int inputIndex = 0)
 	{
-		return Mathf.Clamp(currentEnergy, 0, ConsumptionAmount());
+		if (currentEnergy < ConsumptionAmount())
+		{
+			return 0;
+		}
+		return ConsumptionAmount();
 	}
 
 	public override void UpdateHasPower(int inputAmount, int inputSlot)
 	{
 		base.UpdateHasPower(inputAmount, inputSlot);
-		SetSprinklerState(inputAmount > 0);
+		RefreshSprinklerState(inputAmount);
 	}
 
 	public override int CalculateCurrentEnergy(int inputAmount, int inputSlot)
@@ -58,49 +75,61 @@ public class Sprinkler : IOEntity
 
 	public void DoSplash()
 	{
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031f: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)currentFuelType == (Object)null)
+		{
+			if (TimeSince.op_Implicit(timeSinceFuelTypeRequest) > SplashFrequency * 2f)
+			{
+				timeSinceFuelTypeRequest = TimeSince.op_Implicit(0f);
+				SendChangedToRoot(forceUpdate: true);
+			}
+			return;
+		}
 		using (TimeWarning.New("SprinklerSplash"))
 		{
-			int waterAmount = WaterPerSplash;
+			int num = WaterPerSplash;
 			PooledList<ISplashable> val = Pool.Get<PooledList<ISplashable>>();
 			try
 			{
@@ -112,9 +141,9 @@ public class Sprinkler : IOEntity
 					updateSplashableCache = TimeSince.op_Implicit(0f);
 					Vector3 up = ((Component)this).transform.up;
 					float sprinklerEyeHeightOffset = Server.sprinklerEyeHeightOffset;
-					float num = Vector3.Angle(up, Vector3.up) / 180f;
-					num = Mathf.Clamp(num, 0.2f, 1f);
-					sprinklerEyeHeightOffset *= num;
+					float num2 = Vector3.Angle(up, Vector3.up) / 180f;
+					num2 = Mathf.Clamp(num2, 0.2f, 1f);
+					sprinklerEyeHeightOffset *= num2;
 					Vector3 val2 = position + up * (Server.sprinklerRadius * 0.5f);
 					Vector3 val3 = position + up * sprinklerEyeHeightOffset;
 					List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
@@ -134,7 +163,7 @@ public class Sprinkler : IOEntity
 						((OBB)(ref val7))._002Ector(transform2, new Bounds(center, ((Bounds)(ref val6)).extents * 2f));
 						foreach (BaseEntity item in list)
 						{
-							if ((Object)(object)item != (Object)null && ((OBB)(ref val7)).Intersects(item.WorldSpaceBounds()) && ProcessEntity(item, out var foundSplashable) && item.IsVisible(position))
+							if ((Object)(object)item != (Object)null && ((OBB)(ref val7)).Intersects(item.WorldSpaceBounds()) && CanEverSplashEntity(item, out var foundSplashable) && item.IsVisible(position))
 							{
 								cachedSplashables.Add(foundSplashable);
 							}
@@ -144,7 +173,10 @@ public class Sprinkler : IOEntity
 				}
 				foreach (ISplashable cachedSplashable in cachedSplashables)
 				{
-					((List<ISplashable>)(object)val).Add(cachedSplashable);
+					if (!ObjectEx.IsUnityNull(cachedSplashable) && cachedSplashable.WantsSplash(currentFuelType, num))
+					{
+						((List<ISplashable>)(object)val).Add(cachedSplashable);
+					}
 				}
 				using (TimeWarning.New("UpdateDynamicSplashables"))
 				{
@@ -152,7 +184,7 @@ public class Sprinkler : IOEntity
 					{
 						foreach (BaseEntity entityContent in DynamicObjectsTrigger.entityContents)
 						{
-							if (ProcessEntity(entityContent, out var foundSplashable2))
+							if (CanEverSplashEntity(entityContent, out var foundSplashable2) && foundSplashable2.WantsSplash(currentFuelType, num))
 							{
 								if (DynamicObjectsTrigger.ShouldCheckLineOfSight(entityContent))
 								{
@@ -168,16 +200,16 @@ public class Sprinkler : IOEntity
 				}
 				if (((List<ISplashable>)(object)val).Count > 0)
 				{
-					int num2 = waterAmount / ((List<ISplashable>)(object)val).Count;
-					float num3 = (float)(waterAmount % ((List<ISplashable>)(object)val).Count) / (float)((List<ISplashable>)(object)val).Count;
+					int num3 = num / ((List<ISplashable>)(object)val).Count;
+					float num4 = (float)(num % ((List<ISplashable>)(object)val).Count) / (float)((List<ISplashable>)(object)val).Count;
 					foreach (ISplashable item2 in (List<ISplashable>)(object)val)
 					{
-						int amount = num2 + ((Random.value < num3) ? 1 : 0);
+						int amount = num3 + ((Random.value < num4) ? 1 : 0);
 						if (!ObjectEx.IsUnityNull(item2) && item2.WantsSplash(currentFuelType, amount))
 						{
-							int num4 = item2.DoSplash(currentFuelType, amount);
-							waterAmount -= num4;
-							if (waterAmount <= 0)
+							int num5 = item2.DoSplash(currentFuelType, amount);
+							num -= num5;
+							if (num <= 0)
 							{
 								break;
 							}
@@ -193,120 +225,91 @@ public class Sprinkler : IOEntity
 			{
 				((IDisposable)val)?.Dispose();
 			}
-			bool ProcessEntity(BaseEntity targetEnt, out ISplashable reference)
+		}
+		Interface.CallHook("OnSprinklerSplashed", this);
+		bool CanEverSplashEntity(BaseEntity targetEnt, out ISplashable reference)
+		{
+			reference = null;
+			if (targetEnt.isClient)
 			{
-				reference = null;
-				if (targetEnt.isClient)
+				return false;
+			}
+			if (targetEnt is ISplashable splashable)
+			{
+				if (targetEnt is IOEntity entity && IsConnectedTo(entity, IOEntity.backtracking))
 				{
 					return false;
 				}
-				if (targetEnt is ISplashable splashable && splashable.WantsSplash(currentFuelType, waterAmount))
+				if (targetEnt is BasePlayer && currentFuelType.baseRadioactivity > 0f)
 				{
-					if (targetEnt is IOEntity entity && IsConnectedTo(entity, IOEntity.backtracking))
-					{
-						return false;
-					}
-					if (targetEnt is BasePlayer && currentFuelType.baseRadioactivity > 0f)
-					{
-						return false;
-					}
-					reference = splashable;
-					return true;
+					return false;
 				}
-				return false;
+				reference = splashable;
+				return true;
 			}
-		}
-		Interface.CallHook("OnSprinklerSplashed", this);
-	}
-
-	public void SetSprinklerState(bool wantsOn)
-	{
-		if (wantsOn)
-		{
-			TurnOn();
-		}
-		else
-		{
-			TurnOff();
+			return false;
 		}
 	}
 
-	public void TurnOn()
+	public void RefreshSprinklerState()
 	{
-		if (IsOn())
-		{
-			return;
-		}
+		RefreshSprinklerState(currentEnergy);
+	}
+
+	private void RefreshSprinklerState(int availableFlow)
+	{
+		bool flag = availableFlow >= ConsumptionAmount();
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.On, b: true);
-			if ((Object)(object)currentFuelType != (Object)null)
-			{
-				flagsUpdateScope.Set(Flags.Reserved3, currentFuelType.baseRadioactivity > 0f);
-			}
+			flagsUpdateScope.Set(Flags.On, flag);
+			flagsUpdateScope.Set(Flags.Reserved3, flag && (Object)(object)currentFuelType != (Object)null && currentFuelType.baseRadioactivity > 0f);
 		}
-		forceUpdateSplashables = true;
 		if (DoSplashCB == null)
 		{
 			DoSplashCB = DoSplash;
 		}
-		if (!IsInvoking(DoSplashCB))
+		if (flag)
 		{
-			InvokeRandomized(DoSplashCB, SplashFrequency * 0.5f, SplashFrequency, SplashFrequency * 0.2f);
+			if (!IsInvoking(DoSplashCB))
+			{
+				InvokeRandomized(DoSplashCB, SplashFrequency * 0.5f, SplashFrequency, SplashFrequency * 0.2f);
+				forceUpdateSplashables = true;
+			}
 		}
-	}
-
-	public void TurnOff()
-	{
-		if (IsOn())
+		else
 		{
-			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
-			{
-				flagsUpdateScope.Set(Flags.On, b: false);
-				flagsUpdateScope.Set(Flags.Reserved3, b: false);
-			}
-			if (DoSplashCB == null)
-			{
-				DoSplashCB = DoSplash;
-			}
 			if (IsInvoking(DoSplashCB))
 			{
 				CancelInvoke(DoSplashCB);
 			}
 			currentFuelSource = null;
-			currentFuelType = null;
 		}
+	}
+
+	public override void PostServerLoad()
+	{
+		base.PostServerLoad();
+		RefreshSprinklerState();
 	}
 
 	public override void SetFuelType(ItemDefinition def, IOEntity source)
 	{
 		base.SetFuelType(def, source);
+		if ((Object)(object)currentFuelType != (Object)(object)def)
+		{
+			forceUpdateSplashables = true;
+		}
 		currentFuelType = def;
 		currentFuelSource = source;
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		if ((Object)(object)currentFuelType != (Object)null)
-		{
-			flagsUpdateScope.Set(Flags.Reserved3, currentFuelType.baseRadioactivity > 0f && IsOn());
-		}
-		else
-		{
-			flagsUpdateScope.Set(Flags.Reserved3, b: false);
-		}
+		RefreshSprinklerState();
 	}
 
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.fromDisk)
+		if (info.fromDisk && info.msg.sprinkler != null)
 		{
-			if (Server.useLegacySprinklerLoadProcess)
-			{
-				SetFlagLocal(Flags.On, b: false);
-			}
-			else if (HasFlag(Flags.On) && !IsInvoking(DoSplash))
-			{
-				InvokeRandomized(DoSplash, SplashFrequency * 0.5f, SplashFrequency, SplashFrequency * 0.2f);
-			}
+			currentFuelType = ItemManager.FindItemDefinition(info.msg.sprinkler.currentFuelType);
 		}
 	}
 }

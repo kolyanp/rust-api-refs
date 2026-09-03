@@ -11,8 +11,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	protected GameObject staticIconGroup;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected HttpImage iconImage;
 
 	[SerializeField]
@@ -21,8 +21,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	protected UI_SkinInfoPanel skinInfoPanel;
 
-	[SerializeField]
 	[Header("Gallery")]
+	[SerializeField]
 	private GameObject gallery;
 
 	[SerializeField]
@@ -43,8 +43,8 @@ public class UI_SteamInventoryItemBaseModal : UI_Window
 	[SerializeField]
 	private CanvasGroup rightArrow;
 
-	[SerializeField]
 	[Header("Skin Viewer")]
+	[SerializeField]
 	public CoverImage skinViewerImage;
 
 	[SerializeField]

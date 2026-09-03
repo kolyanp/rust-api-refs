@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class DiverPropulsionVehicleAudio : MonoBehaviour
 {
-	[SerializeField]
 	[Header("Engine")]
+	[SerializeField]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]

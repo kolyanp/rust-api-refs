@@ -21,6 +21,31 @@ public class ZoomImage : MonoBehaviour, IScrollHandler, IEventSystemHandler
 
 	private RectTransform _thisTransform;
 
+	public float MinimumScale => _minimumScale;
+
+	public float MaximumScale => _maximumScale;
+
+	public float CurrentScale
+	{
+		get
+		{
+			//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+			return ((Component)this).transform.localScale.x;
+		}
+	}
+
+	public float NormalizedZoom
+	{
+		get
+		{
+			if (_maximumScale <= _minimumScale)
+			{
+				return 0f;
+			}
+			return Mathf.Clamp01((CurrentScale - _minimumScale) / (_maximumScale - _minimumScale));
+		}
+	}
+
 	private void Awake()
 	{
 		//IL_0034: Unknown result type (might be due to invalid IL or missing references)

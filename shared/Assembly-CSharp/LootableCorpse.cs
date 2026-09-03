@@ -224,11 +224,6 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 		return !IsOpen();
 	}
 
-	public virtual bool CanLoot()
-	{
-		return true;
-	}
-
 	public override bool OnStartBeingLooted(BasePlayer baseEntity)
 	{
 		if (!firstLooted)
@@ -271,7 +266,7 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 	private void RPC_LootCorpse(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
-		if (!Object.op_Implicit((Object)(object)player) || !player.CanInteract() || !CanLoot() || containers == null || Interface.CallHook("CanLootEntity", player, this) != null || !player.inventory.loot.StartLootingEntity(this))
+		if (!Object.op_Implicit((Object)(object)player) || !player.CanInteract() || !CanLoot(player) || containers == null || Interface.CallHook("CanLootEntity", player, this) != null || !player.inventory.loot.StartLootingEntity(this))
 		{
 			return;
 		}
@@ -402,5 +397,10 @@ public class LootableCorpse : BaseCorpse, LootPanel.IHasLootPanel, IInventoryPro
 				containers[i].Load(info.msg.lootableCorpse.privateData.container[i]);
 			}
 		}
+	}
+
+	public virtual bool CanLoot(BasePlayer player)
+	{
+		return !player.IsBlockedFromLootingByMountable();
 	}
 }

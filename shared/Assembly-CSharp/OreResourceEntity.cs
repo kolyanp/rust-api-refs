@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class OreResourceEntity : StagedResourceEntity
 {
+	[Header("Ore Resource Entity")]
 	public GameObjectRef bonusPrefab;
 
 	public GameObjectRef finishEffect;
@@ -232,15 +233,15 @@ public class OreResourceEntity : StagedResourceEntity
 
 	private OreHotSpot SpawnBonusSpotOnRay(Ray r)
 	{
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		if (base.isClient)
 		{
 			return null;
@@ -254,7 +255,7 @@ public class OreResourceEntity : StagedResourceEntity
 			return null;
 		}
 		RaycastHit val = default(RaycastHit);
-		if (((Collider)ResourceMeshCollider).Raycast(r, ref val, 15f))
+		if (((Collider)ResourceMeshColliders[0]).Raycast(r, ref val, 15f))
 		{
 			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, ((RaycastHit)(ref val)).point - ((Ray)(ref r)).direction * 0.025f, Quaternion.LookRotation(((RaycastHit)(ref val)).normal, Vector3.up)) as OreHotSpot;
 			obj.Spawn();
@@ -268,74 +269,74 @@ public class OreResourceEntity : StagedResourceEntity
 	{
 		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0154: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0185: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0197: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0215: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022d: Unknown result type (might be due to invalid IL or missing references)
 		if (base.isClient)
 		{
 			return null;
@@ -349,11 +350,11 @@ public class OreResourceEntity : StagedResourceEntity
 			return null;
 		}
 		Vector3 zero = Vector3.zero;
-		MeshCollider resourceMeshCollider = ResourceMeshCollider;
+		MeshCollider val = ResourceMeshColliders[0];
 		Transform transform = ((Component)this).transform;
-		Bounds val = ((Collider)resourceMeshCollider).bounds;
-		Vector3 val2 = transform.InverseTransformPoint(((Bounds)(ref val)).center);
-		Vector3 val6;
+		Bounds val2 = ((Collider)val).bounds;
+		Vector3 val3 = transform.InverseTransformPoint(((Bounds)(ref val2)).center);
+		Vector3 val7;
 		if (lastDirection == Vector3.zero)
 		{
 			float num = 0.5f;
@@ -361,30 +362,30 @@ public class OreResourceEntity : StagedResourceEntity
 			{
 				num = heightOffset;
 			}
-			Vector3 val3 = RandomCircle();
-			Vector3 val4 = (lastNodeDir = ((Component)this).transform.TransformDirection(((Vector3)(ref val3)).normalized));
-			val3 = ((Component)this).transform.position + ((Component)this).transform.up * (val2.y + num) + ((Vector3)(ref val4)).normalized * 5f;
-			zero = val3;
+			Vector3 val4 = RandomCircle();
+			Vector3 val5 = (lastNodeDir = ((Component)this).transform.TransformDirection(((Vector3)(ref val4)).normalized));
+			val4 = ((Component)this).transform.position + ((Component)this).transform.up * (val3.y + num) + ((Vector3)(ref val5)).normalized * 5f;
+			zero = val4;
 		}
 		else
 		{
-			Vector3 val5 = Vector3.Cross(lastNodeDir, Vector3.up);
+			Vector3 val6 = Vector3.Cross(lastNodeDir, Vector3.up);
 			float num2 = Random.Range(0.25f, 0.5f) + (float)stage * 0.25f;
 			float num3 = ((Random.Range(0, 2) == 0) ? (-1f) : 1f);
-			val6 = lastNodeDir + val5 * (num2 * num3);
-			Vector3 val7 = (lastNodeDir = ((Vector3)(ref val6)).normalized);
-			zero = ((Component)this).transform.position + ((Component)this).transform.TransformDirection(val7) * 2f;
+			val7 = lastNodeDir + val6 * (num2 * num3);
+			Vector3 val8 = (lastNodeDir = ((Vector3)(ref val7)).normalized);
+			zero = ((Component)this).transform.position + ((Component)this).transform.TransformDirection(val8) * 2f;
 			float num4 = Random.Range(1f, 1.5f);
-			zero += ((Component)this).transform.up * (val2.y + num4);
+			zero += ((Component)this).transform.up * (val3.y + num4);
 		}
 		bonusesSpawned++;
-		val = ((Collider)resourceMeshCollider).bounds;
-		val6 = ((Bounds)(ref val)).center - zero;
-		Vector3 normalized = ((Vector3)(ref val6)).normalized;
-		RaycastHit val8 = default(RaycastHit);
-		if (((Collider)resourceMeshCollider).Raycast(new Ray(zero, normalized), ref val8, 15f))
+		val2 = ((Collider)val).bounds;
+		val7 = ((Bounds)(ref val2)).center - zero;
+		Vector3 normalized = ((Vector3)(ref val7)).normalized;
+		RaycastHit val9 = default(RaycastHit);
+		if (((Collider)val).Raycast(new Ray(zero, normalized), ref val9, 15f))
 		{
-			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, ((RaycastHit)(ref val8)).point - normalized * 0.025f, Quaternion.LookRotation(((RaycastHit)(ref val8)).normal, Vector3.up)) as OreHotSpot;
+			OreHotSpot obj = GameManager.server.CreateEntity(bonusPrefab.resourcePath, ((RaycastHit)(ref val9)).point - normalized * 0.025f, Quaternion.LookRotation(((RaycastHit)(ref val9)).normal, Vector3.up)) as OreHotSpot;
 			obj.Spawn();
 			obj.OreOwner(this);
 			return obj;

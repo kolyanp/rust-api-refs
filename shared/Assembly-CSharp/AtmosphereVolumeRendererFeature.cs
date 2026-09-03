@@ -1,7 +1,6 @@
 using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(AtmosphereVolumeCamera), typeof(AtmosphereVolumeCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AtmosphereVolumeRendererFeature")]
 public class AtmosphereVolumeRendererFeature : RustRendererFeature
 {
@@ -12,6 +11,16 @@ public class AtmosphereVolumeRendererFeature : RustRendererFeature
 	public bool HeightFog;
 
 	public Shader fogVolumeShader;
+
+	public override RustRendererFeatureCameraBase CreateCameraComponent()
+	{
+		return (RustRendererFeatureCameraBase)(object)new AtmosphereVolumeCamera();
+	}
+
+	public override RustRendererFeatureCameraContext CreateCameraContext()
+	{
+		return (RustRendererFeatureCameraContext)(object)new AtmosphereVolumeCameraContext();
+	}
 
 	public override void Create()
 	{

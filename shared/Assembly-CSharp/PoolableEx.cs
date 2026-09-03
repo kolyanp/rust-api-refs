@@ -22,6 +22,16 @@ public static class PoolableEx
 		return false;
 	}
 
+	public static bool IsPooledPrefabChild(this GameObject gameObject)
+	{
+		Poolable componentInParent = gameObject.GetComponentInParent<Poolable>(true);
+		if ((Object)(object)componentInParent != (Object)null && componentInParent.prefabID != 0)
+		{
+			return (Object)(object)((Component)componentInParent).gameObject != (Object)(object)gameObject;
+		}
+		return false;
+	}
+
 	public static void AwakeFromInstantiate(this GameObject gameObject)
 	{
 		if (gameObject.activeSelf)

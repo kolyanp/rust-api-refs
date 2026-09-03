@@ -17,21 +17,21 @@ public class Compass : HeldEntity
 	[Min(0f)]
 	private float needleStiffness = 50f;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float needleDamping = 0.5f;
 
 	[Min(0f)]
 	[SerializeField]
 	private float maxAcceleration = 1500f;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	private float maxSpeed = 360f;
 
-	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
-	[MinMax(0f, 180f)]
 	[SerializeField]
+	[MinMax(0f, 180f)]
+	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
 	private MinMax startingAngleDelta;
 
 	[SerializeField]
@@ -40,8 +40,8 @@ public class Compass : HeldEntity
 	[SerializeField]
 	private float wiggleFrequency = 1.5f;
 
-	[Min(0f)]
-	[Tooltip("Velocity change when the admire animation taps the needle")]
 	[SerializeField]
+	[Tooltip("Velocity change when the admire animation taps the needle")]
+	[Min(0f)]
 	private float admireTapNeedleVelocity = 300f;
 }

@@ -30,8 +30,8 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
 	public static float animalframebudgetms = 2f;
 
-	[Help("How many miliseconds to budget for processing pet AI entities per server frame")]
 	[ServerVar]
+	[Help("How many miliseconds to budget for processing pet AI entities per server frame")]
 	public static float petframebudgetms = 1f;
 
 	private static int lastIndex = 0;
@@ -129,7 +129,7 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 
 	public static void Remove(IThinker toRemove)
 	{
-		_removalQueue.Add(toRemove);
+		_removalQueue.TryAdd(toRemove);
 	}
 
 	public static void AddAnimal(IThinker toAdd)
@@ -139,7 +139,7 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 
 	public static void RemoveAnimal(IThinker toRemove)
 	{
-		_animalremovalQueue.Add(toRemove);
+		_animalremovalQueue.TryAdd(toRemove);
 	}
 
 	public static void AddPet(IThinker toAdd)
@@ -149,6 +149,6 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 
 	public static void RemovePet(IThinker toRemove)
 	{
-		_petRemovalQueue.Add(toRemove);
+		_petRemovalQueue.TryAdd(toRemove);
 	}
 }

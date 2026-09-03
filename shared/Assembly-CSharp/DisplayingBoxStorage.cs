@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Facepunch;
 using Network;
 using ProtoBuf;
@@ -49,8 +50,8 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	[Header("WARNING: DO NOT REARRANGE, please only replace prefabs with upgraded versions if necessary, don't change the order of existing ones")]
 	public GameObjectRef[] itemDisplayPrefabs;
 
-	[Header("Okay you're good now. You can rearrange these.")]
 	[Tooltip("Overrides for specific items to display in certain categories.")]
+	[Header("Okay you're good now. You can rearrange these.")]
 	public List<DisplayItemOverride> displayItemOverrides;
 
 	[Tooltip("Anchors for displaying the conditional prefabs, add as many as you want.")]
@@ -75,7 +76,7 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 
 	private HashSet<BasePlayer> openAccessPlayers;
 
-	private List<float> cachedResourceProportions;
+	private float[] cachedResourceProportions;
 
 	private bool dirtyCache;
 
@@ -230,30 +231,18 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 				proportions.AddRange(cachedResourceProportions);
 				return true;
 			}
-			if (cachedResourceProportions == null)
+			if (Volatile.Read(in cachedResourceProportions) == null)
 			{
-				cachedResourceProportions = new List<float>();
+				float[] value = new float[17];
+				Interlocked.CompareExchange(ref cachedResourceProportions, value, null);
 			}
 			Dictionary<DisplayCategory, int> categorySlotCache = Pool.Get<Dictionary<DisplayCategory, int>>();
 			BuildCategorySlotCache(ref categorySlotCache);
-			cachedResourceProportions.Clear();
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Charcoal));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Sulfur));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Ore));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Stone));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Wood));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Metal));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Components));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Scrap));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Explosives));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Ammo));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Clothing));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Armour));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Weapons));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Tools));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Medical));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Food));
-			cachedResourceProportions.Add(GetResourceCategoryProportion(ref categorySlotCache, DisplayCategory.Misc));
+			for (int i = 0; i < 17; i++)
+			{
+				DisplayCategory category = (DisplayCategory)i;
+				cachedResourceProportions[i] = GetResourceCategoryProportion(ref categorySlotCache, category);
+			}
 			Pool.FreeUnmanaged<DisplayCategory, int>(ref categorySlotCache);
 			dirtyCache = false;
 			proportions.AddRange(cachedResourceProportions);

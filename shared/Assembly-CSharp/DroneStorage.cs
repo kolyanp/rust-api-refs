@@ -34,10 +34,10 @@ public class DroneStorage : StorageContainer
 		}
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		if (!base.ItemFilter(item, targetSlot))
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		if (!base.ItemFilter(player, item, targetSlot))
 		{
 			return false;
 		}
@@ -164,6 +164,10 @@ public class DroneStorage : StorageContainer
 		Vector3 throwVelocityOverride = GetInheritedThrowVelocity(val * Vector3.down) + ReleaseVelocity;
 		BasePlayer owningPlayer = Drone.ToPlayer();
 		weapon.DoThrowImpl(eyePos, val * Vector3.down, owningPlayer, out var thrownEntity, 1f, throwVelocityOverride, item);
+		if (thrownEntity is TimedExplosive timedExplosive)
+		{
+			timedExplosive.wasDroneDropped = true;
+		}
 		if (weapon is GrenadeWeapon)
 		{
 			weapon.StartAttackCooldown(weapon.repeatDelay * GrenadeWeaponDelayMod);

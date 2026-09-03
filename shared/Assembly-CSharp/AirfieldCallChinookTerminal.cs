@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Facepunch;
 using Facepunch.Extend;
+using Facepunch.Rust;
 using UnityEngine;
 
 public class AirfieldCallChinookTerminal : ChargeUpIOEntity
 {
-	[Tooltip("Only used for reference")]
 	[Header("Airfield Call Chinook Terminal")]
+	[Tooltip("Only used for reference")]
 	public EventSchedule chinookEventPrefab;
 
 	public CH47DropZone associatedDropZone;
@@ -94,6 +95,7 @@ public class AirfieldCallChinookTerminal : ChargeUpIOEntity
 		{
 			TriggerChinookEvent();
 		}
+		Analytics.Azure.OnAirfieldChinookCall();
 	}
 
 	public override void Deactivate()

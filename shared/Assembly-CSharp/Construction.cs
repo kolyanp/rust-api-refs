@@ -196,9 +196,17 @@ public class Construction : PrefabAttribute
 	[Tooltip("Axis Snapping for IO Entities.")]
 	public bool canSnap;
 
+	[Tooltip("Force placement to be at a specific height.")]
 	public bool forceY;
 
+	[Tooltip("Height value to force the placement at.")]
 	public float forceYValue;
+
+	[Tooltip("Force placement height to the ocean level. Overrides forceY.")]
+	public bool forceYToOceanLevel;
+
+	[Tooltip("Optional Y offset to apply to the ocean level height placement.")]
+	public float OceanLevelYOffset;
 
 	public float holdToPlaceDuration;
 
@@ -269,53 +277,55 @@ public class Construction : PrefabAttribute
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0474: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0481: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0447: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0404: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0524: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0534: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0589: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0590: Unknown result type (might be due to invalid IL or missing references)
-		//IL_054f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_055c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_04fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0509: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0378: Unknown result type (might be due to invalid IL or missing references)
-		//IL_061f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0626: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_05af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0635: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0642: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0661: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0668: Unknown result type (might be due to invalid IL or missing references)
-		//IL_066e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0706: Unknown result type (might be due to invalid IL or missing references)
-		//IL_070d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_067e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_049e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0464: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0471: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0421: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_054e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_055e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0579: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0586: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0526: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0533: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0395: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0649: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0650: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_05d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_065f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_066c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06dd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_068b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_06e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0783: Unknown result type (might be due to invalid IL or missing references)
-		//IL_078a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_079d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0692: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0698: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0730: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0737: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_06ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_070c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_07c7: Unknown result type (might be due to invalid IL or missing references)
 		if (common.deployable == null && !TargetIsInteractable(target))
 		{
 			return false;
@@ -323,6 +333,10 @@ public class Construction : PrefabAttribute
 		if (common.forceY)
 		{
 			transform.position = Vector3Ex.WithY(transform.position, forceYValue);
+		}
+		if (common.forceYToOceanLevel)
+		{
+			transform.position = Vector3Ex.WithY(transform.position, Env.oceanlevel + common.OceanLevelYOffset);
 		}
 		if (!target.valid)
 		{
@@ -423,7 +437,7 @@ public class Construction : PrefabAttribute
 						BaseEntity entity2 = target.entity;
 						if (!(entity2 is PlayerBoat) && !(entity2 is Tugboat) && !target.entity.HasParentBoat(out var _))
 						{
-							goto IL_0391;
+							goto IL_03bb;
 						}
 					}
 					transform.position = placement.position;
@@ -432,8 +446,8 @@ public class Construction : PrefabAttribute
 					continue;
 				}
 			}
-			goto IL_0391;
-			IL_0391:
+			goto IL_03bb;
+			IL_03bb:
 			if (!TestPlacingThroughRock(ref placement, target))
 			{
 				transform.position = placement.position;

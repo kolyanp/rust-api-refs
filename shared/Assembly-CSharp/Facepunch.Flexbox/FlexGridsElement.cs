@@ -35,9 +35,9 @@ public class FlexGridsElement : FlexElementBase
 	[Min(1f)]
 	public int ColumnCount = 1;
 
+	[FormerlySerializedAs("ColumnWidth")]
 	[Min(1f)]
 	[Tooltip("The minimum width of each column when not using a fixed number of columns.")]
-	[FormerlySerializedAs("ColumnWidth")]
 	public int ColumnMinWidth = 100;
 
 	public bool FixedRowCount;

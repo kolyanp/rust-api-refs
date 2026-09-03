@@ -15,7 +15,7 @@ public class ServerBrowserInfo : SingletonComponent<ServerBrowserInfo>
 
 	public Button refresh;
 
-	public ServerInfo? currentServer;
+	public ServerInfo currentServer;
 
 	public HttpImage headerImage;
 

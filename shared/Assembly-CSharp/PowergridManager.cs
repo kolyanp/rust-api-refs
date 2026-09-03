@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
+using Oxide.Core;
 using ProtoBuf;
 using Rust;
 using UnityEngine;
@@ -45,6 +47,8 @@ public class PowergridManager : PointEntity<PowergridManager>
 	private static List<InsertedFuseEntry> insertedFuses = new List<InsertedFuseEntry>();
 
 	private static int currentInsertedFusesCount;
+
+	private static int fuseSocketsCount;
 
 	private List<ItemId> loadedFuseInsertionOrder;
 
@@ -244,12 +248,22 @@ public class PowergridManager : PointEntity<PowergridManager>
 
 	public static void Server_AddPowergridFuseBox(PowergridFuseBox fuseBox)
 	{
-		fuseBoxes.TryAdd(fuseBox);
+		if (fuseBoxes.TryAdd(fuseBox))
+		{
+			fuseSocketsCount += fuseBox.GetMaxNoOfFuses();
+		}
 	}
 
 	public static void Server_RemovePowergridFuseBox(PowergridFuseBox fuseBox)
 	{
-		fuseBoxes.Remove(fuseBox);
+		if (fuseBoxes.Remove(fuseBox))
+		{
+			fuseSocketsCount -= fuseBox.GetMaxNoOfFuses();
+			if (fuseSocketsCount < 0)
+			{
+				fuseSocketsCount = 0;
+			}
+		}
 		for (int num = insertedFuses.Count - 1; num >= 0; num--)
 		{
 			if ((Object)(object)insertedFuses[num].FuseBox == (Object)(object)fuseBox)
@@ -268,7 +282,10 @@ public class PowergridManager : PointEntity<PowergridManager>
 		};
 		insertedFuses.Add(item);
 		currentInsertedFusesCount++;
-		_ = Application.isServerStarted;
+		if (Application.isServerStarted)
+		{
+			Facepunch.Rust.Analytics.Azure.OnPowerGridFuseInserted(byPlayer, fuse, currentInsertedFusesCount);
+		}
 	}
 
 	public static void Server_OnFuseRemovedFromFuseBox(Item fuse)
@@ -438,14 +455,7 @@ public class PowergridManager : PointEntity<PowergridManager>
 
 	public int Server_GetFuseSocketsCount()
 	{
-		int num = 0;
-		int i = 0;
-		for (int count = fuseBoxes.Count; i < count; i++)
-		{
-			PowergridFuseBox powergridFuseBox = fuseBoxes[i];
-			num += powergridFuseBox.GetMaxNoOfFuses();
-		}
-		return num;
+		return fuseSocketsCount;
 	}
 
 	public int Server_GetPowerPlantInsertedFuses()
@@ -482,12 +492,18 @@ public class PowergridManager : PointEntity<PowergridManager>
 				int num2 = CalculateCurrentStage();
 				if (CurrentStage != num2 || !hasTickedOnce)
 				{
+					if (Interface.CallHook("OnPowergridStageChange", this, num2) != null)
+					{
+						return;
+					}
+					Facepunch.Rust.Analytics.Azure.OnPowerGridStageChanged(CurrentStage, num2);
 					CurrentStage = num2;
 					bool b = num2 > 0;
 					using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags))
 					{
 						flagsUpdateScope.Set(Flags.On, b);
 					}
+					Interface.CallHook("OnPowergridStageChanged", this, num2);
 					stageChangeWorkQueue.RestartWorkQueue();
 					int i = 0;
 					for (int count = fuseBoxes.Count; i < count; i++)

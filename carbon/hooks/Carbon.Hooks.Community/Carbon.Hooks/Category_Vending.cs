@@ -19,7 +19,7 @@ public class Category_Vending
 		[Parameter("sellOrderIndex", typeof(int), false)]
 		[Parameter("amount", typeof(int), false)]
 		[Info("Called before making a purchase at the Marketplace terminal.")]
-		[Return(typeof(bool))]
+		[Return(typeof(void))]
 		public class OnMarketplaceTerminalPurchase : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)

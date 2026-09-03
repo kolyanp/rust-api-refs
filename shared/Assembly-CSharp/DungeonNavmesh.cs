@@ -62,9 +62,9 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 			}
 			if ((Object)(object)independantNavmesh != (Object)null)
 			{
-				return independantNavmesh.IsBuilt();
+				return !independantNavmesh.IsBuilt();
 			}
-			return false;
+			return true;
 		}
 	}
 

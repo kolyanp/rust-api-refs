@@ -128,10 +128,18 @@ public class CameraRendererManager : SingletonComponent<CameraRendererManager>
 		}
 		if (list.Count > 0)
 		{
-			int maxSampleCount = CameraRenderer.maxRaysPerFrame / list.Count;
+			int maxSampleCount = Math.Max(1, CameraRenderer.maxRaysPerFrame / list.Count);
 			foreach (CameraRenderer item in list)
 			{
-				item.Render(maxSampleCount);
+				try
+				{
+					item.Render(maxSampleCount);
+				}
+				catch (Exception arg)
+				{
+					Debug.LogError((object)$"Exception rendering Rust+ camera, invalidating renderer: {arg}");
+					item.state = CameraRendererState.Invalid;
+				}
 			}
 		}
 		Pool.Free<CameraRenderer>(ref list, false);

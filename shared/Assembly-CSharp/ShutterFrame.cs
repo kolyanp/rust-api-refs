@@ -11,8 +11,8 @@ using UnityEngine.Assertions;
 
 public class ShutterFrame : PhotoFrame, IFlagNotify
 {
-	[Tooltip("Tiling for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
 	[Header("Shutter Frame")]
+	[Tooltip("Tiling for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
 	public Vector2 shutterDefaultTiling;
 
 	[Tooltip("Offsets for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
@@ -168,8 +168,8 @@ public class ShutterFrame : PhotoFrame, IFlagNotify
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(6f)]
 	public void RPC_ToggleShutter(RPCMessage msg)
 	{

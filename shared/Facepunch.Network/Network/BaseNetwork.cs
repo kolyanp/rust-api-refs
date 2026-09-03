@@ -354,6 +354,7 @@ public abstract class BaseNetwork
 		{
 			return;
 		}
+		NetProfileCapture.Tick(this);
 		if (Multithreading)
 		{
 			stopwatch.Restart();
@@ -501,6 +502,7 @@ public abstract class BaseNetwork
 		message.peer = this;
 		message.type = type;
 		message.read = read;
+		NetProfileCapture.OnReceive(this, type, read);
 		return message;
 	}
 

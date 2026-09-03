@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
@@ -432,7 +431,24 @@ public class DartsGameBoard : BaseCombatEntity
 			_disposed = true;
 			base.DestroyShared();
 			EndGame();
+			FreeLeaderboardEntries();
 		}
+	}
+
+	private void FreeLeaderboardEntries()
+	{
+		if (Leaderboard == null)
+		{
+			return;
+		}
+		foreach (DartsGameLeaderboardEntry item in Leaderboard)
+		{
+			if (item != null)
+			{
+				item.ResetToPool();
+			}
+		}
+		Leaderboard.Clear();
 	}
 
 	public void EndGame()
@@ -466,22 +482,27 @@ public class DartsGameBoard : BaseCombatEntity
 
 	public override void Save(SaveInfo info)
 	{
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
 		base.Save(info);
-		if (info.msg.dartsGameLeaderboard == null)
+		if (Leaderboard != null)
 		{
-			info.msg.dartsGameLeaderboard = Pool.Get<DartsGameLeaderboard>();
-		}
-		info.msg.dartsGameLeaderboard.entries = Pool.Get<List<DartsGameLeaderboardEntry>>();
-		foreach (DartsGameLeaderboardEntry item in Leaderboard)
-		{
-			DartsGameLeaderboardEntry val = Pool.Get<DartsGameLeaderboardEntry>();
-			val.userid = item.userid;
-			val.playerName = item.playerName;
-			val.dartsThrown = item.dartsThrown;
-			val.timeTaken = item.timeTaken;
-			info.msg.dartsGameLeaderboard.entries.Add(val);
+			if (info.msg.dartsGameLeaderboard == null)
+			{
+				info.msg.dartsGameLeaderboard = Pool.Get<DartsGameLeaderboard>();
+			}
+			DartsGameLeaderboard dartsGameLeaderboard = info.msg.dartsGameLeaderboard;
+			if (dartsGameLeaderboard.entries == null)
+			{
+				dartsGameLeaderboard.entries = Pool.Get<List<DartsGameLeaderboardEntry>>();
+			}
+			foreach (DartsGameLeaderboardEntry item in Leaderboard)
+			{
+				if (item != null)
+				{
+					info.msg.dartsGameLeaderboard.entries.Add(item.Copy());
+				}
+			}
 		}
 		if (!info.forDisk)
 		{
@@ -506,16 +527,22 @@ public class DartsGameBoard : BaseCombatEntity
 	public override void Load(LoadInfo info)
 	{
 		base.Load(info);
-		if (info.msg.dartsGameLeaderboard != null)
+		if (info.msg.dartsGameLeaderboard?.entries == null)
 		{
-			Leaderboard = info.msg.dartsGameLeaderboard.entries.ToList();
+			return;
 		}
-	}
-
-	public override void ServerInit()
-	{
-		base.ServerInit();
-		Leaderboard = new List<DartsGameLeaderboardEntry>();
+		if (Leaderboard == null)
+		{
+			Leaderboard = new List<DartsGameLeaderboardEntry>();
+		}
+		FreeLeaderboardEntries();
+		foreach (DartsGameLeaderboardEntry entry in info.msg.dartsGameLeaderboard.entries)
+		{
+			if (entry != null)
+			{
+				Leaderboard.Add(entry.Copy());
+			}
+		}
 	}
 
 	[RPC_Server]
@@ -534,9 +561,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (GameController == null)
@@ -549,9 +576,9 @@ public class DartsGameBoard : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_EndGame(RPCMessage msg)
 	{
 		EndGame();
@@ -568,8 +595,8 @@ public class DartsGameBoard : BaseCombatEntity
 		lastUsedDart = 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void RPC_ReceiveDartThrow(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)

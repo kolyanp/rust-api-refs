@@ -7,6 +7,8 @@ public class PrefabPool
 
 	public string PrefabName { get; private set; }
 
+	public GameObject PrefabTemplate { get; private set; }
+
 	public int Missed { get; private set; }
 
 	public int Pushed { get; private set; }
@@ -17,17 +19,18 @@ public class PrefabPool
 
 	public int TargetCapacity { get; private set; }
 
-	public PrefabPool(uint prefabId, int targetCapacity)
+	public PrefabPool(uint prefabId, int targetCapacity, GameObject prefabTemplate)
 	{
 		PrefabName = StringPool.Get(prefabId);
 		TargetCapacity = targetCapacity;
+		PrefabTemplate = prefabTemplate;
 	}
 
 	public void Push(Poolable info)
 	{
 		Pushed++;
 		stack.Push(info);
-		info.EnterPool();
+		info.EnterPool(PrefabTemplate);
 	}
 
 	public void Push(GameObject instance)

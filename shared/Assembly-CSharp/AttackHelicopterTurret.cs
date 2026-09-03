@@ -161,7 +161,7 @@ public class AttackHelicopterTurret : StorageContainer
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 		InvokeRandomized(RefreshGunState, 0f, 0.25f, 0.05f);
 		turretHorHandle = ((Component)turretHorizontal).transformHandle;
 		turretVerHandle = ((Component)turretVertical).transformHandle;
@@ -212,7 +212,7 @@ public class AttackHelicopterTurret : StorageContainer
 		return null;
 	}
 
-	public bool CanAcceptItem(Item item, int targetSlot)
+	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		Item slot = base.inventory.GetSlot(0);
 		if (IsValidWeapon(item) && targetSlot == 0)

@@ -135,8 +135,8 @@ public class EntityPrivilege : SimplePrivilege
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void AddSelfAuthorize(RPCMessage rpc)
 	{
 		if (CanAdministrate(rpc.player))
@@ -169,8 +169,8 @@ public class EntityPrivilege : SimplePrivilege
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void ClearList(RPCMessage rpc)
 	{
 		if (CanAdministrate(rpc.player))

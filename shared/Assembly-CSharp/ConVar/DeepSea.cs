@@ -19,6 +19,9 @@ public class DeepSea : ConsoleSystem
 	[ReplicatedVar]
 	public static bool block_building = true;
 
+	[ReplicatedVar(Saved = true, Help = "Applies the deep sea terrain config and foliage to the whole map, not just inside the deep sea")]
+	public static bool terrain_everywhere = false;
+
 	[ServerVar(Help = "When enabled, logs each deep sea portal spawn attempt to the console including whether it succeeded or failed")]
 	public static bool debug_portal_spawnattempts = false;
 
@@ -461,7 +464,7 @@ public class DeepSea : ConsoleSystem
 		Transform portalEntranceTransform = DeepSeaManager.PortalEntranceTransform;
 		Transform portalEntranceTransform2 = DeepSeaManager.PortalEntranceTransform;
 		stringBuilder.AppendLine($"Entrance Portal Transform: {portalEntranceTransform}, {((portalEntranceTransform2 != null) ? portalEntranceTransform2.position : Vector3.zero)}");
-		stringBuilder.AppendLine("Entrance Portal Bounds: pos:" + ((object)Unsafe.As<Vector3, Vector3>(ref DeepSeaManager.PortalEntranceBounds.position)/*cast due to constrained. prefix*/).ToString() + ", extents:" + ((object)Unsafe.As<Vector3, Vector3>(ref DeepSeaManager.PortalEntranceBounds.extents)/*cast due to constrained. prefix*/).ToString());
+		stringBuilder.AppendLine("Entrance Portal Bounds: pos:" + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref DeepSeaManager.PortalEntranceBounds.position)/*cast due to constrained. prefix*/).ToString() + ", extents:" + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref DeepSeaManager.PortalEntranceBounds.extents)/*cast due to constrained. prefix*/).ToString());
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("Portals:");
 		foreach (DeepSeaPortal serverPortal in DeepSeaManager.ServerPortals)

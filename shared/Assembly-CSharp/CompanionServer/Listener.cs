@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using CompanionServer.Handlers;
 using ConVar;
 using Facepunch;
@@ -47,6 +48,8 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 
 	private readonly Stopwatch _stopwatch;
 
+	private readonly SynchronizationContext _syncContext;
+
 	private RealTimeSince _lastCleanup;
 
 	private long _nextConnectionId;
@@ -65,10 +68,9 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 
 	public Listener(IPAddress ipAddress, int port)
 	{
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cc: Expected O, but got Unknown
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Expected O, but got Unknown
 		base._002Ector();
-		Listener listener = this;
 		Address = ipAddress;
 		Port = port;
 		_ipTokenBuckets = new TokenBucketList<IPAddress>(50.0, 15.0);
@@ -76,36 +78,67 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		_playerTokenBuckets = new TokenBucketList<ulong>(25.0, 3.0);
 		_pairingTokenBuckets = new TokenBucketList<ulong>(5.0, 0.1);
 		_messageQueue = new Queue<Message>();
-		SynchronizationContext syncContext = SynchronizationContext.Current;
+		_syncContext = SynchronizationContext.Current;
 		_server = new WebSocketServer($"ws://{Address}:{Port}/", true, 100, App.maxconnections, App.maxconnectionsperip);
 		_server.Start((Action<IWebSocketConnection>)delegate(IWebSocketConnection socket)
 		{
-			//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0080: Expected O, but got Unknown
+			//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0056: Expected O, but got Unknown
+			//IL_017e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0188: Expected O, but got Unknown
+			//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+			//IL_00f8: Expected O, but got Unknown
 			IPAddress clientIpAddress = socket.ConnectionInfo.ClientIpAddress;
-			if (listener._ipBans.IsBanned(clientIpAddress))
+			if (_ipBans.IsBanned(clientIpAddress))
 			{
 				socket.Close();
 			}
 			else
 			{
-				long connectionId = Interlocked.Increment(ref listener._nextConnectionId);
-				Connection conn = new Connection(connectionId, listener, socket);
-				socket.OnClose = delegate
+				socket.OnPing = (BinaryDataHandler)delegate(Span<byte> data)
 				{
-					syncContext.Post(delegate(object c)
-					{
-						((Connection)c).OnClose();
-					}, conn);
+					//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+					//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+					MemoryBuffer val = default(MemoryBuffer);
+					((MemoryBuffer)(ref val))._002Ector(data.Length);
+					data.CopyTo(MemoryBuffer.op_Implicit(val));
+					socket.SendPong(((MemoryBuffer)(ref val)).Slice(data.Length));
 				};
-				socket.OnBinary = new BinaryDataHandler(conn.OnMessage);
-				socket.OnError = delegate(Exception ex)
+				string path = socket.ConnectionInfo.Path;
+				if (path != null && path.StartsWith("/backhaul/", StringComparison.Ordinal))
 				{
-					if (App.logexceptions && !(ex is WebSocketException))
+					if (!IsValidBackhaulSecret(path.Substring("/backhaul/".Length)))
 					{
-						Debug.LogError((object)ex);
+						socket.Close();
 					}
-				};
+					else
+					{
+						BackhaulConnection backhaul = new BackhaulConnection(this, socket, _syncContext);
+						socket.OnBinary = new BinaryDataHandler(backhaul.OnMessage);
+						socket.OnClose = delegate
+						{
+							_syncContext.Post(delegate(object c)
+							{
+								((BackhaulConnection)c).OnBackhaulClosed();
+							}, backhaul);
+						};
+						socket.OnError = LogSocketError;
+					}
+				}
+				else
+				{
+					long connectionId = NextConnectionId();
+					Connection conn = new Connection(connectionId, this, new FleckTransport(socket), 0uL);
+					socket.OnClose = delegate
+					{
+						_syncContext.Post(delegate(object c)
+						{
+							((Connection)c).OnClose();
+						}, conn);
+					};
+					socket.OnBinary = new BinaryDataHandler(conn.OnMessage);
+					socket.OnError = LogSocketError;
+				}
 			}
 		});
 		_stopwatch = new Stopwatch();
@@ -113,6 +146,38 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		EntitySubscribers = new SubscriberList<EntityTarget, AppBroadcast>(this);
 		ClanSubscribers = new SubscriberList<ClanTarget, AppBroadcast>(this);
 		CameraSubscribers = new SubscriberList<CameraTarget, AppBroadcast>(this, 30.0);
+	}
+
+	internal long NextConnectionId()
+	{
+		return Interlocked.Increment(ref _nextConnectionId);
+	}
+
+	private static bool IsValidBackhaulSecret(string provided)
+	{
+		string secret = Server.Secret;
+		if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(provided))
+		{
+			return false;
+		}
+		if (provided.Length != secret.Length)
+		{
+			return false;
+		}
+		int num = 0;
+		for (int i = 0; i < provided.Length; i++)
+		{
+			num |= provided[i] ^ secret[i];
+		}
+		return num == 0;
+	}
+
+	private static void LogSocketError(Exception ex)
+	{
+		if (App.logexceptions && !(ex is WebSocketException))
+		{
+			Debug.LogError((object)ex);
+		}
 	}
 
 	public void Dispose()
@@ -203,7 +268,7 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		{
 			((MemoryBuffer)(ref buffer)).Dispose();
 		}
-		if (!Handle<AppEmpty, Info>(val.getInfo, message.Connection, val) && !Handle<AppEmpty, CompanionServer.Handlers.Time>(val.getTime, message.Connection, val) && !Handle<AppEmpty, Map>(val.getMap, message.Connection, val) && !Handle<AppEmpty, TeamInfo>(val.getTeamInfo, message.Connection, val) && !Handle<AppEmpty, TeamChat>(val.getTeamChat, message.Connection, val) && !Handle<AppSendMessage, SendTeamChat>(val.sendTeamMessage, message.Connection, val) && !Handle<AppEmpty, EntityInfo>(val.getEntityInfo, message.Connection, val) && !Handle<AppSetEntityValue, SetEntityValue>(val.setEntityValue, message.Connection, val) && !Handle<AppEmpty, CheckSubscription>(val.checkSubscription, message.Connection, val) && !Handle<AppFlag, SetSubscription>(val.setSubscription, message.Connection, val) && !Handle<AppEmpty, MapMarkers>(val.getMapMarkers, message.Connection, val) && !Handle<AppPromoteToLeader, PromoteToLeader>(val.promoteToLeader, message.Connection, val) && !Handle<AppEmpty, ClanInfo>(val.getClanInfo, message.Connection, val) && !Handle<AppEmpty, ClanChat>(val.getClanChat, message.Connection, val) && !Handle<AppSendMessage, SetClanMotd>(val.setClanMotd, message.Connection, val) && !Handle<AppSendMessage, SendClanChat>(val.sendClanMessage, message.Connection, val) && !Handle<AppGetNexusAuth, NexusAuth>(val.getNexusAuth, message.Connection, val) && !Handle<AppCameraSubscribe, CameraSubscribe>(val.cameraSubscribe, message.Connection, val) && !Handle<AppEmpty, CameraUnsubscribe>(val.cameraUnsubscribe, message.Connection, val) && !Handle<AppCameraInput, CameraInput>(val.cameraInput, message.Connection, val))
+		if (!Handle<AppEmpty, Info>(val.getInfo, message.Connection, val) && !Handle<AppEmpty, CompanionServer.Handlers.Time>(val.getTime, message.Connection, val) && !Handle<AppEmpty, Map>(val.getMap, message.Connection, val) && !Handle<AppEmpty, TeamInfo>(val.getTeamInfo, message.Connection, val) && !Handle<AppEmpty, TeamChat>(val.getTeamChat, message.Connection, val) && !Handle<AppSendMessage, SendTeamChat>(val.sendTeamMessage, message.Connection, val) && !Handle<AppEmpty, EntityInfo>(val.getEntityInfo, message.Connection, val) && !Handle<AppSetEntityValue, SetEntityValue>(val.setEntityValue, message.Connection, val) && !Handle<AppEmpty, CheckSubscription>(val.checkSubscription, message.Connection, val) && !Handle<AppFlag, SetSubscription>(val.setSubscription, message.Connection, val) && !Handle<AppEmpty, MapMarkers>(val.getMapMarkers, message.Connection, val) && !Handle<AppPromoteToLeader, PromoteToLeader>(val.promoteToLeader, message.Connection, val) && !Handle<AppEmpty, ClanInfo>(val.getClanInfo, message.Connection, val) && !Handle<AppEmpty, ClanChat>(val.getClanChat, message.Connection, val) && !Handle<AppSendMessage, SetClanMotd>(val.setClanMotd, message.Connection, val) && !Handle<AppSendMessage, SendClanChat>(val.sendClanMessage, message.Connection, val) && !Handle<AppGetNexusAuth, NexusAuth>(val.getNexusAuth, message.Connection, val) && !Handle<AppCameraSubscribe, CameraSubscribe>(val.cameraSubscribe, message.Connection, val) && !Handle<AppEmpty, CameraUnsubscribe>(val.cameraUnsubscribe, message.Connection, val) && !Handle<AppCameraInput, CameraInput>(val.cameraInput, message.Connection, val) && !Handle<AppTeamKick, TeamKick>(val.kickFromTeam, message.Connection, val))
 		{
 			AppResponse val2 = Pool.Get<AppResponse>();
 			val2.seq = val.seq;
@@ -234,8 +299,16 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 				val.SendError(validationResult.ToErrorCode());
 				break;
 			case ValidationResult.Success:
-				val.Execute();
+			{
+				ValueTask execution = val.Execute();
+				if (!execution.IsCompleted)
+				{
+					AwaitExecution(execution, val);
+					return true;
+				}
+				execution.GetAwaiter().GetResult();
 				break;
+			}
 			}
 		}
 		catch (Exception arg)
@@ -245,6 +318,27 @@ public class Listener : IDisposable, IBroadcastSender<AppBroadcast>
 		}
 		Pool.Free<THandler>(ref val);
 		return true;
+	}
+
+	private static async void AwaitExecution<THandler>(ValueTask execution, THandler handler) where THandler : class, IHandler, new()
+	{
+		try
+		{
+			await execution;
+		}
+		catch (Exception arg)
+		{
+			Debug.LogError((object)$"AppRequest threw an exception: {arg}");
+			try
+			{
+				handler.SendError("server_error");
+			}
+			catch (Exception arg2)
+			{
+				Debug.LogError((object)$"Failed to send the error response: {arg2}");
+			}
+		}
+		Pool.Free<THandler>(ref handler);
 	}
 
 	public void BroadcastTo(List<Connection> targets, AppBroadcast broadcast)

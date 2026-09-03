@@ -32,12 +32,18 @@ public class Projectile : ListComponent<Projectile>
 
 		public float distanceOffset;
 
+		public float farDamageScale;
+
+		public float farDistanceScale;
+
 		public static Modifier Default = new Modifier
 		{
 			damageScale = 1f,
 			damageOffset = 0f,
 			distanceScale = 1f,
-			distanceOffset = 0f
+			distanceOffset = 0f,
+			farDamageScale = -1f,
+			farDistanceScale = -1f
 		};
 	}
 
@@ -205,15 +211,19 @@ public class Projectile : ListComponent<Projectile>
 
 	public void CalculateDamage(HitInfo info, Modifier mod, float scale)
 	{
-		float num = damageMultipliers.Lerp(mod.distanceOffset + mod.distanceScale * damageDistances.x, mod.distanceOffset + mod.distanceScale * damageDistances.y, info.ProjectileDistance);
-		float num2 = scale * (mod.damageOffset + mod.damageScale * num);
+		float num = mod.distanceOffset + mod.distanceScale * damageDistances.x;
+		float num2 = ((mod.farDistanceScale >= 0f) ? mod.farDistanceScale : 1f);
+		float num3 = mod.distanceOffset + mod.distanceScale * num2 * damageDistances.y;
+		float num4 = ((mod.farDamageScale >= 0f) ? mod.farDamageScale : damageMultipliers.y);
+		float num5 = Mathf.Lerp(damageMultipliers.x, num4, Mathf.InverseLerp(num, num3, info.ProjectileDistance));
+		float num6 = scale * (mod.damageOffset + mod.damageScale * num5);
 		foreach (DamageTypeEntry damageType in damageTypes)
 		{
-			info.damageTypes.Add(damageType.type, damageType.amount * num2);
+			info.damageTypes.Add(damageType.type, damageType.amount * num6);
 		}
 		if (Global.developer > 0)
 		{
-			Debug.Log((object)(" Projectile damage: " + info.damageTypes.Total() + " (scalar=" + num2 + ")"));
+			Debug.Log((object)(" Projectile damage: " + info.damageTypes.Total() + " (scalar=" + num6 + ")"));
 		}
 	}
 

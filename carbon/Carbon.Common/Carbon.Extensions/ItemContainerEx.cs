@@ -2,14 +2,15 @@ namespace Carbon.Extensions;
 
 public static class ItemContainerEx
 {
-	public static int TakeSkinned(this ItemContainer container, int itemid, ulong skinId, bool onlyUsableAmounts)
+	public static int TakeSkinned(this ItemContainer container, int itemid, ulong skinId)
 	{
 		int num = 0;
-		foreach (Item item in container.itemList)
+		for (int i = 0; i < container.itemList.Count; i++)
 		{
-			if (item.info.itemid == itemid && item.skin == skinId && (!onlyUsableAmounts || !item.IsBusy()))
+			Item val = container.itemList[i];
+			if (val.info.itemid == itemid && val.skin == skinId)
 			{
-				num += item.amount;
+				num += val.amount;
 			}
 		}
 		return num;

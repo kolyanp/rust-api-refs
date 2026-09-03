@@ -134,8 +134,8 @@ public class TerrainHeightMap : TerrainMap<short>
 
 	public Texture2D NormalTexture;
 
-	[Header("Collider Sampling")]
 	[Min(1f)]
+	[Header("Collider Sampling")]
 	public int ColliderSamplesPerAxis = 1;
 
 	[Range(0f, 1f)]

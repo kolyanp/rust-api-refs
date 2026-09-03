@@ -39,8 +39,8 @@ public class NPCVendingOrder : ScriptableObject
 	{
 		public bool useRandom;
 
-		[Range(0f, 1f)]
 		[Tooltip("The higher this number, the more likely this will be chosen")]
+		[Range(0f, 1f)]
 		public float weight;
 
 		[Tooltip("Minimum price for the currency item")]
@@ -49,8 +49,8 @@ public class NPCVendingOrder : ScriptableObject
 		[Tooltip("Maximum price for the currency item")]
 		public int maxPrice;
 
-		[Tooltip("Chance for a very low price to occur (0 to 1)")]
 		[Range(0f, 1f)]
+		[Tooltip("Chance for a very low price to occur (0 to 1)")]
 		public float veryLowPriceChance;
 
 		[Tooltip("Minimum very low price")]

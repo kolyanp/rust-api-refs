@@ -23,7 +23,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 
 	public const Flags HasTorch = Flags.Reserved1;
 
-	public const Flags UseBuiltInFx = Flags.Reserved2;
+	public const Flags UseBuiltInFx = Flags.Reserved4;
 
 	public const Flags AlwaysOn = Flags.Reserved3;
 
@@ -120,7 +120,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 		Sprinkler.SplashableGrid.DeregisterEntity(this);
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		AllowedTorch[] allowedTorches = AllowedTorches;
 		for (int i = 0; i < allowedTorches.Length; i++)
@@ -193,7 +193,7 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 		if ((Object)(object)itemDefinition != (Object)(object)spawnedTorchDef)
 		{
 			spawnedTorchDef = itemDefinition;
-			flagsUpdateScope.Set(Flags.Reserved2, ShouldUseBuiltInFx(itemDefinition));
+			flagsUpdateScope.Set(Flags.Reserved4, ShouldUseBuiltInFx(itemDefinition));
 			TorchWeapon torchWeapon = spawnedTorch.Get(serverside: true);
 			if ((Object)(object)torchWeapon != (Object)null)
 			{
@@ -239,8 +239,8 @@ public class TorchDeployableLightSource : StorageContainer, ISplashable, IIgnite
 		UpdateTorch();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RequestTurnOnOff(RPCMessage msg)
 	{
 		bool wantsOn = msg.read.Bit();

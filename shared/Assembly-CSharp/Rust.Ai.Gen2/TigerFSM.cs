@@ -169,7 +169,7 @@ public class TigerFSM : FSMComponent
 			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + (state_Nothing3.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing8.AddTickTransition(hurt, StaggerTrans) + (state_Nothing5.AddTickTransition(approach, new Trans_HasTarget()).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddEndTransition(sleep, new Trans_RandomChance
 			{
 				Chance = 0.25f
-			}).AddFailureTransition(dead).AddEndTransition(randomIdle) + sleep.AddEndTransition(roam) + randomIdle.AddEndTransition(state_Nothing9) + state_Nothing9.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
+			}).AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(randomIdle) + sleep.AddEndTransition(roam) + randomIdle.AddEndTransition(state_Nothing9) + state_Nothing9.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 0.0,
 				MaxDuration = 3.0
@@ -225,10 +225,11 @@ public class TigerFSM : FSMComponent
 			}).AddFailureTransition(state_MoveToLastReachablePointNearTarget)) + charge.AddTickTransition(attack, new Trans_TargetInRange
 			{
 				Range = attack.range
-			}).AddTickTransition(approach, new Trans_ElapsedTime
+			} & new Trans_HasStraightPathToTarget()).AddTickTransition(state_MoveToLastReachablePointNearTarget2, ~new Trans_CanReachTarget_Slow()).AddTickTransition(approach, new Trans_ElapsedTime
 			{
 				Duration = 5.0
-			}).AddFailureTransition(state_MoveToLastReachablePointNearTarget2) + attack.AddEndTransition(comboCircle, new Trans_IsTargetDown()).AddEndTransition(flee) + comboCircle.AddTickTransition(charge, new Trans_ElapsedTimeRandomized
+			})
+				.AddFailureTransition(state_MoveToLastReachablePointNearTarget2) + attack.AddEndTransition(comboCircle, new Trans_IsTargetDown()).AddEndTransition(flee) + comboCircle.AddTickTransition(charge, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 0.75,
 				MaxDuration = 1.5
@@ -241,7 +242,7 @@ public class TigerFSM : FSMComponent
 			}).AddTickTransition(permaFlee, FireMeleeTrans).AddTickTransition(approach, new Trans_CanReachTarget_Slow())
 				.AddFailureTransition(permaFlee)
 				.AddEndTransition(attackUnreachable) + state_MoveToLastReachablePointNearTarget2.AddTickTransition(permaFlee, FireMeleeTrans).AddTickTransition(charge, new Trans_CanReachTarget_Slow()).AddFailureTransition(permaFlee)
-				.AddEndTransition(attackUnreachable) + flee.AddFailureTransition(dead).AddEndTransition(approach)) + (state_Nothing4.AddTickTransition(growlFire, transition).AddTickTransition(flee, trans_Or2) + approachFood.AddTickTransition(roam, ~new Trans_SeesFood()).AddTickTransition(charge, new Trans_TargetInRange
+				.AddEndTransition(attackUnreachable) + flee.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(approach)) + (state_Nothing4.AddTickTransition(growlFire, transition).AddTickTransition(flee, trans_Or2) + approachFood.AddTickTransition(roam, ~new Trans_SeesFood()).AddTickTransition(charge, new Trans_TargetInRange
 			{
 				Range = 10f
 			}).AddFailureTransition(roam)
@@ -263,7 +264,7 @@ public class TigerFSM : FSMComponent
 				Range = 30f
 			})
 				.AddFailureTransition(permaFlee)
-				.AddEndTransition(permaFlee)) + permaFlee.AddFailureTransition(dead).AddEndTransition(roam)) + hurt.AddEndTransition(flee)) + attackUnreachable.AddFailureTransition(permaFlee).AddEndTransition(permaFlee, new Trans_HasBlackboardBool
+				.AddEndTransition(permaFlee)) + permaFlee.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(roam)) + hurt.AddEndTransition(flee)) + attackUnreachable.AddFailureTransition(permaFlee).AddEndTransition(permaFlee, new Trans_HasBlackboardBool
 			{
 				Key = "HitDuringCharge"
 			}).AddEndTransition(flee)) + dead;

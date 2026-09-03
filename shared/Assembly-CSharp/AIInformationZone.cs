@@ -373,16 +373,16 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ad: Invalid comparison between Unknown and I4
-		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0240: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
 		if (!UseCalculatedCoverDistances)
 		{
 			return true;
@@ -432,13 +432,13 @@ public class AIInformationZone : BaseMonoBehaviour, IServerComponent
 					int count = pathCache.corners.Count;
 					if (count > 1)
 					{
-						Vector3 val = pathCache.corners[0];
+						Vector3 val = pathCache.corners[0].Value;
 						float num5 = 0f;
 						for (int i = 0; i < count; i++)
 						{
-							Vector3 val2 = pathCache.corners[i];
-							num5 += Vector3.Distance(val, val2);
-							val = val2;
+							Vector3 value = pathCache.corners[i].Value;
+							num5 += Vector3.Distance(val, value);
+							val = value;
 						}
 						num4 = num5;
 						pathSuccesses++;

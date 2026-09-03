@@ -1,5 +1,6 @@
 using System;
 using Facepunch;
+using Facepunch.Rust;
 using ProtoBuf;
 using UnityEngine;
 
@@ -68,6 +69,7 @@ public class OilSwitchBroadcast : IOEntity
 			if (hasPower && inputs.Length != 0 && inputs[0].IsConnected() && inputs[0].connectedTo.Get(base.isServer) is TimerSwitch timerSwitch && (Object)(object)timerSwitch.lastUsedPlayer != (Object)null)
 			{
 				timerSwitch.lastUsedPlayer.AddClanScore((ClanScoreEventType)17);
+				Analytics.Azure.OnOilRigFuelSwitchStarted(timerSwitch.lastUsedPlayer);
 			}
 		}
 		return hasPower;

@@ -126,7 +126,7 @@ public class LiquidContainer : ContainerIOEntity
 		return true;
 	}
 
-	private bool CanAcceptItem(Item item, int count)
+	private bool CanAcceptItem(BasePlayer player, Item item, int count)
 	{
 		if (ValidItems == null || ValidItems.Length == 0)
 		{
@@ -159,7 +159,7 @@ public class LiquidContainer : ContainerIOEntity
 			UpdatePushLiquidTargets();
 		}
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 	}
 
 	public override void OnCircuitChanged(bool forceUpdate)
@@ -372,8 +372,8 @@ public class LiquidContainer : ContainerIOEntity
 		return GetLiquidItem().amount;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SVDrink(RPCMessage rpc)
 	{
 		if (!rpc.player.metabolism.CanConsume() || Interface.CallHook("OnPlayerDrink", rpc.player, this) != null)
@@ -459,7 +459,7 @@ public class LiquidContainer : ContainerIOEntity
 						Invoke(updatePushLiquidTargetsAction, 0.1f);
 					}
 				}
-				else if (pushTarget.inventory.CanAcceptItem(liquidItem, 0) == ItemContainer.CanAcceptResult.CanAccept && (pushTarget.inventory.CanAccept(liquidItem) || pushTarget.inventory.FindItemByItemID(liquidItem.info.itemid) != null))
+				else if (pushTarget.inventory.CanAcceptItem(null, liquidItem, 0) == ItemContainer.CanAcceptResult.CanAccept && (pushTarget.inventory.CanAccept(liquidItem) || pushTarget.inventory.FindItemByItemID(liquidItem.info.itemid) != null))
 				{
 					int num3 = Mathf.Clamp(num2, 0, pushTarget.inventory.GetMaxTransferAmount(liquidItem.info));
 					pushTarget.inventory.AddItem(liquidItem.info, num3, 0uL);
@@ -500,10 +500,10 @@ public class LiquidContainer : ContainerIOEntity
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		if (depth <= 0 || ourFuel.amount <= 0)
 		{
 			return;
@@ -514,7 +514,7 @@ public class LiquidContainer : ContainerIOEntity
 		{
 			return;
 		}
-		if (connected is ContainerIOEntity containerIOEntity && !pushTargets.Contains(containerIOEntity) && containerIOEntity.inventory.CanAcceptItem(ourFuel, 0) == ItemContainer.CanAcceptResult.CanAccept)
+		if (connected is ContainerIOEntity containerIOEntity && !pushTargets.Contains(containerIOEntity) && containerIOEntity.inventory.CanAcceptItem(null, ourFuel, 0) == ItemContainer.CanAcceptResult.CanAccept)
 		{
 			pushTargets.Add(containerIOEntity);
 			return;

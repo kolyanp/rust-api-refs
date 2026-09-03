@@ -120,7 +120,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		Flags flags = base.flags;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
-			float num = base.inventory.GetAmount(HoneyCombDefinition.itemid, onlyUsableAmounts: false);
+			float num = base.inventory.GetAmount(HoneyCombDefinition.itemid);
 			flagsUpdateScope.Set(Flags.Reserved13, num > 0f && hasNucleus);
 			if (!added && (Object)(object)item.info == (Object)(object)HoneyCombDefinition)
 			{
@@ -211,7 +211,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
 		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		float num = base.inventory.GetAmount(HoneyCombDefinition.itemid, onlyUsableAmounts: false);
+		float num = base.inventory.GetAmount(HoneyCombDefinition.itemid);
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved13, num > 0f && hasNucleus);
@@ -243,7 +243,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		}
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (targetSlot == 0)
 		{
@@ -253,7 +253,7 @@ public class Beehive : StorageContainer, IHeatSourceListener, ISplashable
 		{
 			return item.info.shortname.Equals(allowedItem2.shortname);
 		}
-		return base.ItemFilter(item, targetSlot);
+		return base.ItemFilter(player, item, targetSlot);
 	}
 
 	public bool WantsSplash(ItemDefinition splashType, int amount)

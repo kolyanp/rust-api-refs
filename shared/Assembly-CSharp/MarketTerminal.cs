@@ -16,6 +16,8 @@ public class MarketTerminal : StorageContainer
 {
 	private static readonly Phrase _cantFitPhrase;
 
+	private static readonly Phrase _noPowerPhrase;
+
 	public Action<BasePlayer, Item> _onCurrencyRemovedCached;
 
 	public Action<BasePlayer, Item> _onItemPurchasedCached;
@@ -30,7 +32,9 @@ public class MarketTerminal : StorageContainer
 
 	public const Flags Flag_HasItems = Flags.Reserved1;
 
-	public const Flags Flag_InventoryFull = Flags.Reserved2;
+	public const Flags Flag_InventoryFull = Flags.Reserved3;
+
+	public const Flags Flag_MarketplaceHasPower = Flags.Reserved4;
 
 	[Header("Market Terminal")]
 	public GameObjectRef menuPrefab;
@@ -56,6 +60,8 @@ public class MarketTerminal : StorageContainer
 	private EntityRef<Marketplace> _marketplace;
 
 	public List<PendingOrder> pendingOrders;
+
+	public bool MarketplaceHasPower => HasFlag(Flags.Reserved4);
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -159,6 +165,12 @@ public class MarketTerminal : StorageContainer
 		_onCurrencyRemovedCached = OnCurrencyRemoved;
 		_onItemPurchasedCached = OnItemPurchased;
 		_checkForExpiredOrdersCached = CheckForExpiredOrders;
+	}
+
+	public void Server_SetMarketplaceHasPower(bool hasPower)
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.Reserved4, hasPower);
 	}
 
 	private void RegisterOrder(BasePlayer player, VendingMachine vendingMachine)
@@ -311,9 +323,9 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void Server_TryOpenMarket(RPCMessage msg)
 	{
 		if (!CanPlayerInteract(msg.player))
@@ -338,24 +350,24 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void Server_Purchase(RPCMessage msg)
 	{
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0241: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
 		if (!CanPlayerInteract(msg.player))
 		{
 			return;
 		}
-		if (!_marketplace.IsValid(serverside: true))
+		if (!_marketplace.TryGet(serverside: true, out var entity))
 		{
 			Debug.LogError((object)"Marketplace is not set", (Object)(object)this);
 			return;
@@ -371,6 +383,11 @@ public class MarketTerminal : StorageContainer
 		GetDeliveryEligibleVendingMachines(null);
 		if (_deliveryEligible == null || !_deliveryEligible.Contains(val))
 		{
+			return;
+		}
+		if (!entity.Server_CanAcceptOrder())
+		{
+			msg.player.ShowToast(GameTip.Styles.Red_Normal, _noPowerPhrase, true);
 			return;
 		}
 		try
@@ -423,7 +440,7 @@ public class MarketTerminal : StorageContainer
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(sendNetworkUpdate ? FlagsUpdateMode.SendNetworkUpdate : FlagsUpdateMode.Local))
 			{
 				flagsUpdateScope.Set(Flags.Reserved1, flag && !flag2);
-				flagsUpdateScope.Set(Flags.Reserved2, base.inventory.IsFull());
+				flagsUpdateScope.Set(Flags.Reserved3, base.inventory.IsFull());
 			}
 			if (!flag && !flag2)
 			{
@@ -475,7 +492,7 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (_transactionActive)
 		{
@@ -641,6 +658,11 @@ public class MarketTerminal : StorageContainer
 		}
 	}
 
+	public Marketplace GetMarketplace()
+	{
+		return _marketplace.Get(base.isServer);
+	}
+
 	public bool HasPendingOrderFor(NetworkableId vendingMachineId)
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
@@ -711,7 +733,10 @@ public class MarketTerminal : StorageContainer
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
 		_cantFitPhrase = new Phrase("marketterminal.cantfit", "This drone marketplace is full. Can't process sale.");
+		_noPowerPhrase = new Phrase("marketterminal.nopower", "This drone marketplace is out of power. Can't process sale.");
 		_deliveryEligible = new List<NetworkableId>(128);
 	}
 }

@@ -80,7 +80,7 @@ public class AnalyticsManager
 			((Utf8ValueStringBuilder)(ref stringBuilder)).WriteTo((compressStream != null) ? ((Stream)compressStream) : ((Stream)buffer));
 			if (Analytics.Log)
 			{
-				logString += ((object)Unsafe.As<Utf8ValueStringBuilder, Utf8ValueStringBuilder>(ref stringBuilder)/*cast due to constrained. prefix*/).ToString();
+				logString += ((object)System.Runtime.CompilerServices.Unsafe.As<Utf8ValueStringBuilder, Utf8ValueStringBuilder>(ref stringBuilder)/*cast due to constrained. prefix*/).ToString();
 			}
 			((Utf8ValueStringBuilder)(ref stringBuilder)).Clear();
 			itemsWritten++;
@@ -116,7 +116,7 @@ public class AnalyticsManager
 				((Utf8ValueStringBuilder)(ref stringBuilder)).WriteTo((compressStream != null) ? ((Stream)compressStream) : ((Stream)buffer));
 				if (Analytics.Log)
 				{
-					logString += ((object)Unsafe.As<Utf8ValueStringBuilder, Utf8ValueStringBuilder>(ref stringBuilder)/*cast due to constrained. prefix*/).ToString();
+					logString += ((object)System.Runtime.CompilerServices.Unsafe.As<Utf8ValueStringBuilder, Utf8ValueStringBuilder>(ref stringBuilder)/*cast due to constrained. prefix*/).ToString();
 				}
 			}
 			((Utf8ValueStringBuilder)(ref stringBuilder)).Dispose();

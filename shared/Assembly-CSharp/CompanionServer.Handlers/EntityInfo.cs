@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 
@@ -5,7 +6,7 @@ namespace CompanionServer.Handlers;
 
 public class EntityInfo : BaseEntityHandler<AppEmpty>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
@@ -16,5 +17,6 @@ public class EntityInfo : BaseEntityHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.entityInfo = val;
 		Send(val2);
+		return default(ValueTask);
 	}
 }

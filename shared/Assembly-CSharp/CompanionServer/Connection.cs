@@ -13,7 +13,7 @@ public class Connection : IConnection
 {
 	private readonly Listener _listener;
 
-	private readonly IWebSocketConnection _connection;
+	private readonly IConnectionTransport _transport;
 
 	private PlayerTarget? _subscribedPlayer;
 
@@ -29,7 +29,9 @@ public class Connection : IConnection
 
 	public long ConnectionId { get; private set; }
 
-	public IPAddress Address => _connection.ConnectionInfo.ClientIpAddress;
+	public IPAddress Address => _transport.Address;
+
+	public ulong ChannelSteamId { get; }
 
 	public IRemoteControllable CurrentCamera => _currentCamera;
 
@@ -39,11 +41,12 @@ public class Connection : IConnection
 
 	public InputState InputState { get; set; }
 
-	public Connection(long connectionId, Listener listener, IWebSocketConnection connection)
+	public Connection(long connectionId, Listener listener, IConnectionTransport transport, ulong channelSteamId = 0uL)
 	{
 		ConnectionId = connectionId;
 		_listener = listener;
-		_connection = connection;
+		_transport = transport;
+		ChannelSteamId = channelSteamId;
 		_subscribedEntities = new HashSet<EntityTarget>();
 		_subscribedClans = new HashSet<ClanTarget>();
 	}
@@ -90,11 +93,7 @@ public class Connection : IConnection
 
 	public void Close()
 	{
-		IWebSocketConnection connection = _connection;
-		if (connection != null)
-		{
-			connection.Close();
-		}
+		_transport?.Close();
 	}
 
 	public void Send(AppResponse response)
@@ -230,12 +229,12 @@ public class Connection : IConnection
 
 	public void SendRaw(MemoryBuffer data)
 	{
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		if (((MemoryBuffer)(ref data)).Length == 0)
 		{
 			return;
 		}
-		if (_connection == null || !_connection.IsAvailable)
+		if (!_transport.IsAvailable)
 		{
 			DebugEx.LogWarning($"Ignoring Rust+ message send to disconnected client (connectionID={ConnectionId} steamID={_subscribedPlayer?.SteamId})", (StackTraceLogType)0);
 			((MemoryBuffer)(ref data)).Dispose();
@@ -243,11 +242,11 @@ public class Connection : IConnection
 		}
 		try
 		{
-			_connection.Send(data);
+			_transport.Send(data);
 		}
 		catch (Exception arg)
 		{
-			Debug.LogError((object)$"Failed to send message to app client {_connection.ConnectionInfo.ClientIpAddress}: {arg}");
+			Debug.LogError((object)$"Failed to send message to app client {_transport.Address}: {arg}");
 		}
 	}
 

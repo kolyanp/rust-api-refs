@@ -175,13 +175,13 @@ public class HuntingTrophy : StorageContainer
 		return 0;
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if ((Object)(object)ItemModAssociatedEntity<HeadEntity>.GetAssociatedEntity(item) == (Object)null)
 		{
 			return false;
 		}
-		return base.ItemFilter(item, targetSlot);
+		return base.ItemFilter(player, item, targetSlot);
 	}
 
 	[RPC_Server]
@@ -223,8 +223,8 @@ public class HuntingTrophy : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerRequestClear(RPCMessage msg)
 	{
 		if (CurrentTrophyData != null)

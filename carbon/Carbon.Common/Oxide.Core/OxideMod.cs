@@ -194,14 +194,14 @@ public class OxideMod
 		{
 			if (skip == null || !skip.Any((string x) => plugin.Key.Contains(x)))
 			{
-				plugin.Value.MarkDirty();
+				plugin.Value?.MarkDirty();
 			}
 		}
 		foreach (KeyValuePair<string, IBaseProcessor.IProcess> plugin2 in Community.Runtime.ZipScriptProcessor.InstanceBuffer)
 		{
 			if (skip == null || !skip.Any((string x) => plugin2.Key.Contains(x)))
 			{
-				plugin2.Value.MarkDirty();
+				plugin2.Value?.MarkDirty();
 			}
 		}
 	}

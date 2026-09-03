@@ -7,7 +7,7 @@ public class RespawnAtBagHandler : BaseNexusRequestHandler<SleepingBagRespawnReq
 {
 	protected override void Handle()
 	{
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
 		BasePlayer basePlayer = BasePlayer.FindByID(base.Request.userId) ?? BasePlayer.FindSleeping(base.Request.userId);
 		if ((Object)(object)basePlayer != (Object)null)
 		{
@@ -22,6 +22,7 @@ public class RespawnAtBagHandler : BaseNexusRequestHandler<SleepingBagRespawnReq
 		basePlayer2.UserIDString = base.Request.userId.ToString();
 		basePlayer2.displayName = basePlayer2.UserIDString;
 		basePlayer2.SetPlayerFlag(BasePlayer.PlayerFlags.LoadingAfterTransfer, b: true);
+		basePlayer2.UpdateGender();
 		if (!SleepingBag.TrySpawnPlayer(basePlayer2, base.Request.sleepingBagId, out var errorMessage))
 		{
 			basePlayer2.Kill();

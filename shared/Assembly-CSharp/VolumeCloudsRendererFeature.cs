@@ -1,7 +1,7 @@
 using Rust.RenderPipeline.Runtime;
+using Unity.Profiling;
 using UnityEngine;
 
-[RustRendererFeatureCameraComponent(typeof(VolumeCloudsCamera), typeof(VolumeCloudsCameraContext))]
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/VolumeCloudsRendererFeature")]
 public class VolumeCloudsRendererFeature : RustRendererFeature
 {
@@ -12,6 +12,16 @@ public class VolumeCloudsRendererFeature : RustRendererFeature
 	private VolumeCloudsUpscalePass _upscalePass;
 
 	private VolumeCloudsAtmosphericScatteringPass _scatteringPass;
+
+	public override RustRendererFeatureCameraBase CreateCameraComponent()
+	{
+		return (RustRendererFeatureCameraBase)(object)new VolumeCloudsCamera();
+	}
+
+	public override RustRendererFeatureCameraContext CreateCameraContext()
+	{
+		return (RustRendererFeatureCameraContext)(object)new VolumeCloudsCameraContext();
+	}
 
 	public override void AddRenderPasses(RustRenderer renderer)
 	{
@@ -24,16 +34,26 @@ public class VolumeCloudsRendererFeature : RustRendererFeature
 
 	public override void Create()
 	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		if (_shadowPass == null)
 		{
 			VolumeCloudsShadowPass volumeCloudsShadowPass = new VolumeCloudsShadowPass();
 			((RustRenderPass)volumeCloudsShadowPass).renderPassEvent = (RenderPassEvent)5;
+			((RustRenderPass)volumeCloudsShadowPass).profilerMarker = new ProfilerMarker("VolumeCloudsShadowPass");
 			_shadowPass = volumeCloudsShadowPass;
 		}
 		if (_drawPass == null)
 		{
 			VolumeCloudsDrawPass volumeCloudsDrawPass = new VolumeCloudsDrawPass();
 			((RustRenderPass)volumeCloudsDrawPass).renderPassEvent = (RenderPassEvent)8;
+			((RustRenderPass)volumeCloudsDrawPass).profilerMarker = new ProfilerMarker("VolumeCloudsDrawPass");
 			((RustRenderPass)volumeCloudsDrawPass).sort = 2;
 			_drawPass = volumeCloudsDrawPass;
 		}
@@ -41,6 +61,7 @@ public class VolumeCloudsRendererFeature : RustRendererFeature
 		{
 			VolumeCloudsUpscalePass volumeCloudsUpscalePass = new VolumeCloudsUpscalePass();
 			((RustRenderPass)volumeCloudsUpscalePass).renderPassEvent = (RenderPassEvent)8;
+			((RustRenderPass)volumeCloudsUpscalePass).profilerMarker = new ProfilerMarker("VolumeCloudsUpscalePass");
 			((RustRenderPass)volumeCloudsUpscalePass).sort = 3;
 			_upscalePass = volumeCloudsUpscalePass;
 		}
@@ -48,6 +69,7 @@ public class VolumeCloudsRendererFeature : RustRendererFeature
 		{
 			VolumeCloudsAtmosphericScatteringPass volumeCloudsAtmosphericScatteringPass = new VolumeCloudsAtmosphericScatteringPass();
 			((RustRenderPass)volumeCloudsAtmosphericScatteringPass).renderPassEvent = (RenderPassEvent)8;
+			((RustRenderPass)volumeCloudsAtmosphericScatteringPass).profilerMarker = new ProfilerMarker("VolumeCloudsAtmosphericScatteringPass");
 			((RustRenderPass)volumeCloudsAtmosphericScatteringPass).sort = 4;
 			_scatteringPass = volumeCloudsAtmosphericScatteringPass;
 		}

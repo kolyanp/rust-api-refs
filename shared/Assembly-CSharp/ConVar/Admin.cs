@@ -57,8 +57,8 @@ public class Admin : ConsoleSystem
 		public ulong TeamID;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct PlayerIDInfo
 	{
 		public string SteamID;
@@ -72,8 +72,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;
@@ -128,8 +128,8 @@ public class Admin : ConsoleSystem
 		public string Help;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerUGCInfo(IUGCBrowserEntity fromEntity)
 	{
 		public ulong entityId = fromEntity.UgcEntity.net.ID.Value;
@@ -182,7 +182,7 @@ public class Admin : ConsoleSystem
 		if (!flag && text.Length == 0)
 		{
 			text2 = text2 + "hostname: " + Server.hostname + "\n";
-			text2 = text2 + "version : " + 2632 + " secure (secure mode enabled, connected to Steam3)\n";
+			text2 = text2 + "version : " + 2633 + " secure (secure mode enabled, connected to Steam3)\n";
 			text2 = text2 + "map     : " + Server.level + "\n";
 			text2 += string.Format("players : {0} ({1} max) ({2} queued) ({3} joining)\n\n", new object[4]
 			{
@@ -1759,7 +1759,7 @@ public class Admin : ConsoleSystem
 			int num3 = 0;
 			foreach (ModularCar item in allCarsList)
 			{
-				string text = ((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString();
+				string text = ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString();
 				string text2 = item.TotalSockets.ToString();
 				string text3 = item.NumAttachedModules.ToString();
 				string text4;
@@ -2025,11 +2025,14 @@ public class Admin : ConsoleSystem
 			if (state)
 			{
 				buildingPrivlidge.authorizedPlayers.Add(userId);
+				buildingPrivlidge.recentGroupMembers.Remove(userId);
 			}
 			else
 			{
 				buildingPrivlidge.authorizedPlayers.Remove(userId);
+				buildingPrivlidge.recentGroupMembers[userId] = (uint)Epoch.Current;
 			}
+			buildingPrivlidge.RecalculateGroupUpkeep();
 			if (entity.GetSlot(BaseEntity.Slot.Lock).IsValid())
 			{
 				SetUserAuthorized(entity.GetSlot(BaseEntity.Slot.Lock), userId, state);
@@ -2690,7 +2693,7 @@ public class Admin : ConsoleSystem
 			NetworkOut = (int)((Net.sv != null) ? Net.sv.GetStat(null, BaseNetwork.StatTypeLong.BytesSent_LastSecond) : 0),
 			Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 			SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(),
-			Version = 2632,
+			Version = 2633,
 			Protocol = Protocol.printable
 		};
 	}
@@ -3089,7 +3092,7 @@ public class Admin : ConsoleSystem
 				{
 					item.TargetEntity.ShortPrefabName,
 					((object)((Component)item.TargetEntity).transform.position/*cast due to constrained. prefix*/).ToString(),
-					((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.TargetEntity.net.ID)/*cast due to constrained. prefix*/).ToString(),
+					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.TargetEntity.net.ID)/*cast due to constrained. prefix*/).ToString(),
 					item.AssociationType.ToString()
 				});
 			}
@@ -3145,7 +3148,7 @@ public class Admin : ConsoleSystem
 				{
 					item.TargetEntity.ShortPrefabName,
 					((object)((Component)item.TargetEntity).transform.position/*cast due to constrained. prefix*/).ToString(),
-					((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.TargetEntity.net.ID)/*cast due to constrained. prefix*/).ToString()
+					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.TargetEntity.net.ID)/*cast due to constrained. prefix*/).ToString()
 				});
 			}
 			Pool.FreeUnmanaged<EntityAssociation>(ref list);

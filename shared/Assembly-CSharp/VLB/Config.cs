@@ -1,3 +1,4 @@
+using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -18,10 +19,10 @@ public class Config : ScriptableObject
 	[SerializeField]
 	private Shader beamShader1Pass;
 
+	[SerializeField]
+	[HighlightNull]
 	[FormerlySerializedAs("beamShader")]
 	[FormerlySerializedAs("BeamShader")]
-	[HighlightNull]
-	[SerializeField]
 	private Shader beamShader2Pass;
 
 	public int sharedMeshSides;
@@ -119,11 +120,12 @@ public class Config : ScriptableObject
 
 	public Config()
 	{
-		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		geometryLayerID = 1;
 		geometryTag = "Untagged";
 		geometryRenderQueue = 3000;
+		forceSinglePass = RustRenderPipeline.IsActive();
 		sharedMeshSides = 24;
 		sharedMeshSegments = 5;
 		globalNoiseScale = 0.5f;

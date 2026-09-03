@@ -111,7 +111,7 @@ public class CrocodileFSM : FSMComponent
 			{
 				Name = "Random post idle wait"
 			};
-			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + state_Nothing4.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing5.AddTickBranchingTrans(charge, new Trans_HasTarget(), flee, dstState2Trans).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddFailureTransition(dead).AddEndTransition(randomIdle, fSMTransitionBase).AddEndTransition(state_Nothing7) + randomIdle.AddEndTransition(state_Nothing7) + state_Nothing7.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
+			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(roam, new Trans_IsNavmeshReady()) + state_Nothing4.AddTickTransition(state_Nothing, ~new Trans_IsNavmeshReady()) + (state_Nothing5.AddTickBranchingTrans(charge, new Trans_HasTarget(), flee, dstState2Trans).AddTickTransition(approachFood, new Trans_SeesFood()) + roam.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(randomIdle, fSMTransitionBase).AddEndTransition(state_Nothing7) + randomIdle.AddEndTransition(state_Nothing7) + state_Nothing7.AddTickTransition(roam, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 7.0,
 				MaxDuration = 14.0
@@ -155,6 +155,7 @@ public class CrocodileFSM : FSMComponent
 					Range = 5.65f,
 					TimeToPredict = 0.85f
 				} & trans_CrocHasStraightPathToTarget)
+				.AddTickTransition(state_MoveToBreakFoundation, fSMTransitionBase & ~new Trans_CanReachTarget_Slow())
 				.AddFailureTransition(state_MoveToBreakFoundation) + intimidate.AddTickTransition(charge, HurtTrans).AddTickTransition(charge, new Trans_ElapsedTime
 			{
 				Duration = 0.25
@@ -196,14 +197,15 @@ public class CrocodileFSM : FSMComponent
 			} & new Trans_TargetInRange
 			{
 				Range = 8f
-			}).AddTickTransition(diveRoam, trans_IsSwimming).AddFailureTransition(dead)
-				.AddEndTransition(diveRoam) + diveRoam.AddTickTransition(charge, ~new Rust.Ai.Gen2.Trans_IsTargetProtectedByMount() & (new Trans_IsTargetInWater() | (new Trans_TargetInRange
+			}).AddTickTransition(diveRoam, trans_IsSwimming).AddFailureTransition(dead, new Trans_Dead())
+				.AddEndTransition(diveRoam, ~new Rust.Ai.Gen2.Trans_TooFarFromWater())
+				.AddEndTransition(roam) + diveRoam.AddTickTransition(charge, ~new Rust.Ai.Gen2.Trans_IsTargetProtectedByMount() & (new Trans_IsTargetInWater() | (new Trans_TargetInRange
 			{
 				Range = 8f
 			} & new Rust.Ai.Gen2.Trans_IsTargetOnNavmesh_Slow()))).AddTickTransition(roam, ~new Trans_TargetInRange
 			{
 				Range = 50f
-			}).AddFailureTransition(dead) + dead);
+			}).AddFailureTransition(dead, new Trans_Dead()) + dead);
 			SetState(state_Nothing);
 			SetFsmActive(newActive: true);
 		}

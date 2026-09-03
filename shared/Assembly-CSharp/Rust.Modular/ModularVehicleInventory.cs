@@ -258,7 +258,7 @@ public class ModularVehicleInventory : IDisposable
 		}
 	}
 
-	private bool ItemFilter(Item item, int targetSlot)
+	private bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		string failureReason;
 		return vehicle.ModuleCanBeAdded(item, targetSlot, out failureReason);

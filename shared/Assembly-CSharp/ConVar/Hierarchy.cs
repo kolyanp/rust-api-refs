@@ -72,7 +72,7 @@ public class Hierarchy : ConsoleSystem
 			}
 			return;
 		}
-		string argsStringLower = ((object)Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString().ToLower();
+		string argsStringLower = ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString().ToLower();
 		Transform val = GetCurrent().FirstOrDefault((Transform x) => ((Object)x).name.ToLower() == argsStringLower);
 		if ((Object)(object)val == (Object)null)
 		{
@@ -85,7 +85,7 @@ public class Hierarchy : ConsoleSystem
 		}
 		else
 		{
-			args.ReplyWith("Couldn't find \"" + ((object)Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString() + "\"");
+			args.ReplyWith("Couldn't find \"" + ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString() + "\"");
 		}
 	}
 
@@ -96,7 +96,7 @@ public class Hierarchy : ConsoleSystem
 		{
 			return;
 		}
-		string argsStringLower = ((object)Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString().ToLower();
+		string argsStringLower = ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString().ToLower();
 		IEnumerable<Transform> enumerable = from x in GetCurrent()
 			where ((Object)x).name.ToLower() == argsStringLower
 			select x;
@@ -108,7 +108,7 @@ public class Hierarchy : ConsoleSystem
 		}
 		if (enumerable.Count() == 0)
 		{
-			args.ReplyWith("Couldn't find  " + ((object)Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString());
+			args.ReplyWith("Couldn't find  " + ((object)System.Runtime.CompilerServices.Unsafe.As<StringView, StringView>(ref args.FullString)/*cast due to constrained. prefix*/).ToString());
 			return;
 		}
 		foreach (Transform item in enumerable)

@@ -74,6 +74,11 @@ public class PlayerHelicopterWithFlares : PlayerHelicopter, ICanFireHelicopterFl
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	protected override void OnChildAdded(BaseEntity child)
 	{
 		base.OnChildAdded(child);

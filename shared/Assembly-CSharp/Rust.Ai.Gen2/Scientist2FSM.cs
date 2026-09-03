@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-[SoftRequireComponent(typeof(NpcZoneComponent), typeof(NPCEncounterTimer), typeof(NpcShootingComponent))]
-[SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
 [SoftRequireComponent(typeof(BlackboardComponent), typeof(NpcBarkManager))]
+[SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
+[SoftRequireComponent(typeof(NpcZoneComponent), typeof(NPCEncounterTimer), typeof(NpcShootingComponent))]
 public class Scientist2FSM : FSMComponent
 {
 	public State_PatrolIdle idle = new State_PatrolIdle();
@@ -133,7 +133,7 @@ public class Scientist2FSM : FSMComponent
 			{
 				Range = 50f
 			} & new Trans_CanThrowGrenade();
-			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(patrol, new Trans_IsNavmeshReady()) + (state_Nothing3 + (state_Nothing4.AddTickTransition(surprised, new Trans_HasTarget() & trans_And2).AddTickTransition(dogFight, new Trans_HasTarget() & trans_CanSeeTarget & trans_And).AddTickTransition(goHide, new Trans_HasTarget()) + patrol.AddFailureTransition(dead).AddEndTransition(idle) + idle.AddTickTransition(patrol, new Trans_ElapsedTimeRandomized
+			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(patrol, new Trans_IsNavmeshReady()) + (state_Nothing3 + (state_Nothing4.AddTickTransition(surprised, new Trans_HasTarget() & trans_And2).AddTickTransition(dogFight, new Trans_HasTarget() & trans_CanSeeTarget & trans_And).AddTickTransition(goHide, new Trans_HasTarget()) + patrol.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(idle) + idle.AddTickTransition(patrol, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 1.0,
 				MaxDuration = 10.0

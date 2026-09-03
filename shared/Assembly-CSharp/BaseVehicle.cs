@@ -1003,33 +1003,6 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		return HasFlag(Flags.Reserved17);
 	}
 
-	public bool IsDriver(BasePlayer player)
-	{
-		if (HasMountPoints())
-		{
-			foreach (MountPointInfo allMountPoint in allMountPoints)
-			{
-				if (allMountPoint != null && (Object)(object)allMountPoint.mountable != (Object)null && allMountPoint.isDriver)
-				{
-					BasePlayer mounted = allMountPoint.mountable.GetMounted();
-					if ((Object)(object)mounted != (Object)null && (Object)(object)mounted == (Object)(object)player)
-					{
-						return true;
-					}
-				}
-			}
-		}
-		else
-		{
-			BasePlayer mounted2 = GetMounted();
-			if ((Object)(object)mounted2 != (Object)null)
-			{
-				return (Object)(object)mounted2 == (Object)(object)player;
-			}
-		}
-		return false;
-	}
-
 	public bool HasPassenger()
 	{
 		if (HasMountPoints())
@@ -1974,6 +1947,34 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		return false;
 	}
 
+	public bool IsDriver(BasePlayer player)
+	{
+		if ((Object)(object)player == (Object)null)
+		{
+			return false;
+		}
+		if (!HasMountPoints())
+		{
+			BasePlayer mounted = GetMounted();
+			if ((Object)(object)mounted != (Object)null)
+			{
+				return (Object)(object)mounted == (Object)(object)player;
+			}
+			return false;
+		}
+		if (base.isServer)
+		{
+			foreach (MountPointInfo allMountPoint in allMountPoints)
+			{
+				if (allMountPoint != null && !((Object)(object)allMountPoint.mountable == (Object)null) && allMountPoint.isDriver && (Object)(object)allMountPoint.mountable.GetMounted() == (Object)(object)player)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public override bool CanBeLooted(BasePlayer player)
 	{
 		if (IsAlive() && !base.IsDestroyed)
@@ -2015,6 +2016,11 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 	public virtual bool IsVehicleRoot()
 	{
 		return true;
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override bool DirectlyMountable()

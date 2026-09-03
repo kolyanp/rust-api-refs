@@ -26,6 +26,8 @@ public class ItemIcon : BaseMonoBehaviour, IPointerClickHandler, IEventSystemHan
 
 	public bool setSlotFromSiblingIndex;
 
+	public bool suppressCookingIcon;
+
 	public GameObject slots;
 
 	public CanvasGroup iconContents;

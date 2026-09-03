@@ -7,7 +7,7 @@ public class SupplyDrop : LootContainer
 {
 	public const Flags FlagNightLight = Flags.Reserved1;
 
-	private const Flags ShowParachute = Flags.Reserved2;
+	private const Flags ShowParachute = Flags.Reserved3;
 
 	public GameObject ParachuteRoot;
 
@@ -17,7 +17,7 @@ public class SupplyDrop : LootContainer
 		if (!Application.isLoadingSave)
 		{
 			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-			flagsUpdateScope.Set(Flags.Reserved2, b: true);
+			flagsUpdateScope.Set(Flags.Reserved3, b: true);
 		}
 		isLootable = false;
 		Invoke(MakeLootable, 300f);
@@ -27,7 +27,7 @@ public class SupplyDrop : LootContainer
 	public void RemoveParachute()
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved2, b: false);
+		flagsUpdateScope.Set(Flags.Reserved3, b: false);
 	}
 
 	public void MakeLootable()
@@ -67,7 +67,7 @@ public class SupplyDrop : LootContainer
 		base.OnFlagsChanged(old, next);
 		if ((Object)(object)ParachuteRoot != (Object)null)
 		{
-			ParachuteRoot.SetActive((next & Flags.Reserved2) == Flags.Reserved2);
+			ParachuteRoot.SetActive((next & Flags.Reserved3) == Flags.Reserved3);
 		}
 	}
 }

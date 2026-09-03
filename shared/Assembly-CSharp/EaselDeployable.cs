@@ -147,9 +147,9 @@ public class EaselDeployable : DecorDeployable
 		base.OnDied(info);
 	}
 
-	[RPC_Server.MaxDistance(6f)]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.MaxDistance(6f)]
 	public void Server_StartPainting(RPCMessage msg)
 	{
 	}

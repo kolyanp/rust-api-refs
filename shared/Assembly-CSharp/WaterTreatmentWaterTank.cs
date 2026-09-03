@@ -9,6 +9,8 @@ using UnityEngine;
 public class WaterTreatmentWaterTank : IOEntity
 {
 	[Header("Water Treatment Water Tank")]
+	public WaterTreatmentFlowRateBroadcast broadcaster;
+
 	public Transform BladesTransform;
 
 	public WaterBody Water;
@@ -37,21 +39,20 @@ public class WaterTreatmentWaterTank : IOEntity
 	public SoundDefinition spinnerFullyStoppedSound;
 
 	[ReplicatedVar(Saved = true)]
-	public static float maxPressure = 300f;
+	public static float maximumPressure = 360f;
 
 	[ServerVar(Saved = true)]
-	public static float pressureOnThreshold = 200f;
+	public static float maxFlowRatePerMinute = 1020f;
 
 	[ServerVar(Saved = true)]
-	public static float pressureOffThreshold = 50f;
+	public static float pressureDecayPerMinute = 1f;
 
-	[ServerVar(Saved = true)]
-	public static float secondsBeforeDecayingPressure = 600f;
-
-	[ServerVar(Saved = true)]
-	public static float pressureDecayPerTick = 2f;
+	[NonSerialized]
+	public float FlowRatePerMinute;
 
 	public TimeSince timeSinceLastPressureIncrease;
+
+	private int latestFlowRate;
 
 	private float __sync_Pressure;
 
@@ -75,23 +76,12 @@ public class WaterTreatmentWaterTank : IOEntity
 		}
 	}
 
-	private float pressureToBeat
-	{
-		get
-		{
-			if (!IsOn())
-			{
-				return pressureOnThreshold;
-			}
-			return pressureOffThreshold;
-		}
-	}
+	public float PressureAsPercentage => Mathf.Clamp01(Pressure / maximumPressure);
 
 	[ServerVar]
 	public static void debug_wtp_pressure(ConsoleSystem.Arg arg)
 	{
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
 		WaterTreatmentWaterTank[] array = Object.FindObjectsByType<WaterTreatmentWaterTank>((FindObjectsInactive)0, (FindObjectsSortMode)0);
 		string text = "WaterTreatmentPlant WaterTank Pressures:\n";
 		WaterTreatmentWaterTank[] array2 = array;
@@ -99,16 +89,16 @@ public class WaterTreatmentWaterTank : IOEntity
 		{
 			if ((Object)(object)waterTreatmentWaterTank != (Object)null)
 			{
-				text += string.Format("Water Tank id:{0} Current Pressure: {1}, Is On: {2}, TimeSinceLastPressureIncrease: {3}\n", new object[4]
+				text += string.Format("Water Tank id:{0} Current Pressure: {1}, Is On: {2}, Flow Rate per Minute: {3}\n", new object[4]
 				{
 					waterTreatmentWaterTank.GetEntity().net.ID,
 					waterTreatmentWaterTank.Pressure,
-					waterTreatmentWaterTank.Pressure >= pressureOnThreshold,
-					waterTreatmentWaterTank.timeSinceLastPressureIncrease
+					waterTreatmentWaterTank.IsOn(),
+					waterTreatmentWaterTank.FlowRatePerMinute
 				});
 			}
 		}
-		text += string.Format("Max Pressure: {0}, Pressure On Threshold: {1}, Pressure Off Threshold: {2}, Seconds Before Decaying Pressure: {3}, Pressure Decay Per Tick: {4}", new object[5] { maxPressure, pressureOnThreshold, pressureOffThreshold, secondsBeforeDecayingPressure, pressureDecayPerTick });
+		text += $"ConVar settings: maxPressure: {maximumPressure}, maxFlowRatePerMinute: {maxFlowRatePerMinute}, pressureDecayPerMinute: {pressureDecayPerMinute}\n";
 		arg.ReplyWith(text);
 	}
 
@@ -135,12 +125,28 @@ public class WaterTreatmentWaterTank : IOEntity
 	{
 		base.ServerInit();
 		Pressure = 0f;
+		FlowRatePerMinute = 0f;
+		if ((Object)(object)broadcaster != (Object)null)
+		{
+			broadcaster.SetWaterTank(this);
+		}
 		InvokeRepeating(TickWaterPressure, 5f, 5f);
+	}
+
+	internal override void DoServerDestroy()
+	{
+		base.DoServerDestroy();
+		CancelInvoke(TickWaterPressure);
+		if ((Object)(object)broadcaster != (Object)null)
+		{
+			broadcaster.CleanUp();
+		}
 	}
 
 	public override void ResetIOState()
 	{
 		Pressure = 0f;
+		FlowRatePerMinute = 0f;
 		SetFlagLocal(Flags.On, b: false);
 		SendNetworkUpdate_Flags();
 		base.ResetIOState();
@@ -148,15 +154,19 @@ public class WaterTreatmentWaterTank : IOEntity
 
 	public override float IOInput(IOEntity from, IOType inputType, float inputAmount, int slot = 0)
 	{
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
 		if (inputAmount > 0f)
 		{
-			if (Pressure >= maxPressure)
+			if (Pressure <= 0f)
+			{
+				Pressure = 0f;
+			}
+			if (Pressure >= maximumPressure)
 			{
 				return inputAmount;
 			}
-			Pressure += inputAmount;
+			Pressure = Mathf.Min(Pressure + inputAmount, maximumPressure);
 			timeSinceLastPressureIncrease = TimeSince.op_Implicit(0f);
 			return 0f;
 		}
@@ -166,24 +176,26 @@ public class WaterTreatmentWaterTank : IOEntity
 	private void TickWaterPressure()
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		if (TimeSince.op_Implicit(timeSinceLastPressureIncrease) >= secondsBeforeDecayingPressure)
+		if (TimeSince.op_Implicit(timeSinceLastPressureIncrease) >= 10f)
 		{
-			Pressure -= pressureDecayPerTick;
+			Pressure -= pressureDecayPerMinute / 12f;
 			Pressure = Mathf.Max(Pressure, 0f);
 		}
-		bool b = Pressure >= pressureToBeat;
-		SetFlagLocal(Flags.On, b);
+		FlowRatePerMinute = Mathf.Lerp(0f, maxFlowRatePerMinute, PressureAsPercentage);
+		int num = Mathf.CeilToInt(FlowRatePerMinute);
+		if (num != latestFlowRate)
+		{
+			WaterTreatmentFlowRateBroadcast.Refresh();
+		}
+		latestFlowRate = num;
+		SetFlagLocal(Flags.On, Pressure > 0f);
 		SendNetworkUpdate_Flags();
 		MarkDirty();
 	}
 
 	public override int GetPassthroughAmount(int outputSlot = 0)
 	{
-		if (!IsOn())
-		{
-			return 0;
-		}
-		return 100;
+		return 1;
 	}
 
 	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)

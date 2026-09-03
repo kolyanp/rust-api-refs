@@ -30,15 +30,15 @@ public class UI_FullscreenSkinViewer : UI_Window
 
 	public RustButton worldmodelButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_SkinInfoPanel skinInfoPanel;
 
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject navButtonsGroup;
 
 	[SerializeField]
@@ -55,15 +55,15 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float panSpeed;
 
-	[SerializeField]
 	[Header("Zoom")]
+	[SerializeField]
 	private float zoomSpeed;
 
 	[SerializeField]
 	private Vector2 minMaxFov;
 
-	[SerializeField]
 	[Header("Idle")]
+	[SerializeField]
 	private float idleSwaySpeed;
 
 	[SerializeField]

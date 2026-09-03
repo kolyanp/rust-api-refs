@@ -187,6 +187,43 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 				}
 				return true;
 			}
+			if (rpc == 4227594113u && (Object)(object)player != (Object)null)
+			{
+				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
+				if (Global.developer > 2)
+				{
+					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - SwapHotbar"));
+				}
+				using (TimeWarning.New("SwapHotbar"))
+				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!BaseEntity.RPC_Server.FromOwner.Test(4227594113u, "SwapHotbar", GetBaseEntity(), player))
+						{
+							return true;
+						}
+					}
+					try
+					{
+						using (TimeWarning.New("Call"))
+						{
+							BaseEntity.RPCMessage msg4 = new BaseEntity.RPCMessage
+							{
+								connection = msg.connection,
+								player = player,
+								read = msg.read
+							};
+							SwapHotbar(msg4);
+						}
+					}
+					catch (Exception ex3)
+					{
+						Debug.LogException(ex3);
+						player.Kick("RPC Error in SwapHotbar");
+					}
+				}
+				return true;
+			}
 			if (rpc == 2137592151 && (Object)(object)player != (Object)null)
 			{
 				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
@@ -211,18 +248,18 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 					{
 						using (TimeWarning.New("Call"))
 						{
-							BaseEntity.RPCMessage msg4 = new BaseEntity.RPCMessage
+							BaseEntity.RPCMessage msg5 = new BaseEntity.RPCMessage
 							{
 								connection = msg.connection,
 								player = player,
 								read = msg.read
 							};
-							UpdateAccessoryOnItem(msg4);
+							UpdateAccessoryOnItem(msg5);
 						}
 					}
-					catch (Exception ex3)
+					catch (Exception ex4)
 					{
-						Debug.LogException(ex3);
+						Debug.LogException(ex4);
 						player.Kick("RPC Error in UpdateAccessoryOnItem");
 					}
 				}
@@ -511,8 +548,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		return CanMoveFromResponse.Success();
 	}
 
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.FromOwner]
+	[BaseEntity.RPC_Server]
 	private void ItemCmd(BaseEntity.RPCMessage msg)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
@@ -602,9 +639,9 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 	}
 
+	[BaseEntity.RPC_Server.CallsPerSecond(2uL)]
 	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.FromOwner]
-	[BaseEntity.RPC_Server.CallsPerSecond(2uL)]
 	private void UpdateAccessoryOnItem(BaseEntity.RPCMessage msg)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
@@ -668,8 +705,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		return inheritedDropVelocity + val2 * 4f + Vector3Ex.Range(-0.5f, 0.5f);
 	}
 
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.FromOwner]
+	[BaseEntity.RPC_Server]
 	public unsafe void MoveItem(BaseEntity.RPCMessage msg)
 	{
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
@@ -860,6 +897,58 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 	}
 
+	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.FromOwner]
+	public void SwapHotbar(BaseEntity.RPCMessage msg)
+	{
+		if (msg.player.IsAdmin || msg.player.IsDeveloper)
+		{
+			SwapHotbarWithMainRow();
+		}
+	}
+
+	public void SwapHotbarWithMainRow()
+	{
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		if (containerBelt == null || containerMain == null || containerBelt.IsLocked() || containerMain.IsLocked())
+		{
+			return;
+		}
+		int num = containerMain.capacity - containerBelt.capacity;
+		if (num < 0)
+		{
+			return;
+		}
+		base.baseEntity.UpdateActiveItem(default(ItemId));
+		List<Item> list = Pool.Get<List<Item>>();
+		for (int i = 0; i < containerBelt.capacity; i++)
+		{
+			Item slot = containerBelt.GetSlot(i);
+			list.Add(slot);
+			slot?.RemoveFromContainer();
+		}
+		for (int j = 0; j < containerBelt.capacity; j++)
+		{
+			containerMain.GetSlot(num + j)?.MoveToContainer(containerBelt, j, allowStack: true, ignoreStackLimit: false, base.baseEntity);
+		}
+		for (int k = 0; k < list.Count; k++)
+		{
+			Item item = list[k];
+			if (item != null && !item.MoveToContainer(containerMain, num + k, allowStack: true, ignoreStackLimit: false, base.baseEntity) && !GiveItem(item))
+			{
+				item.Drop(containerMain.dropPosition, containerMain.dropVelocity);
+			}
+		}
+		Pool.Free<Item>(ref list, false);
+		ItemManager.DoRemoves();
+		ServerUpdate(0f);
+	}
+
 	private void OnClothingItemContentsChanged(Item item, bool bAdded)
 	{
 		OnClothingChanged(item, bAdded);
@@ -904,20 +993,20 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		base.baseEntity.InvalidateNetworkCache();
 	}
 
-	public bool CanStoreInInventory(Item item, int targetSlot)
+	private bool CanStoreInInventory(BasePlayer player, Item item, int targetSlot)
 	{
 		return true;
 	}
 
-	public bool CanEquipItem(Item item, int targetSlot)
+	private bool CanEquipItem(BasePlayer player, Item item, int targetSlot)
 	{
-		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		object obj = Interface.CallHook("CanEquipItem", this, item, targetSlot);
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
+		object obj = Interface.CallHook("CanEquipItem", this, item, targetSlot, player);
 		if (obj is bool)
 		{
 			return (bool)obj;
@@ -965,9 +1054,9 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		return true;
 	}
 
-	public bool CanWearItem(Item item, int targetSlot)
+	private bool CanWearItem(BasePlayer player, Item item, int targetSlot)
 	{
-		object obj = Interface.CallHook("CanWearItem", this, item, targetSlot);
+		object obj = Interface.CallHook("CanWearItem", this, item, targetSlot, player);
 		if (obj is bool)
 		{
 			return (bool)obj;
@@ -1044,7 +1133,19 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 
 	public void SendUpdatedInventory(Type type, ItemContainer container, bool bSendInventoryToEveryone = false)
 	{
-		if (type == Type.Wear)
+		if (type == Type.Belt && ConVar.AntiHack.hotbar_network_mode == 1)
+		{
+			if (bSendInventoryToEveryone)
+			{
+				SendUpdatedInventoryInternal(type, container, NetworkInventoryMode.LocalPlayer);
+				SendUpdatedInventoryInternal(type, container, NetworkInventoryMode.EveryoneButLocal);
+			}
+			else
+			{
+				SendUpdatedInventoryInternal(type, container, NetworkInventoryMode.LocalPlayer);
+			}
+		}
+		else if (type == Type.Wear)
 		{
 			if (bSendInventoryToEveryone)
 			{
@@ -1077,7 +1178,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 				container.dirty = false;
 				val.container = Pool.Get<List<ItemContainer>>();
 				bool bIncludeContainer = type != Type.Wear || mode == NetworkInventoryMode.LocalPlayer;
-				val.container.Add(container.Save(bIncludeContainer));
+				bool stripBelt = type == Type.Belt && mode == NetworkInventoryMode.EveryoneButLocal && ConVar.AntiHack.hotbar_network_mode == 1;
+				val.container.Add(container.Save(bIncludeContainer, stripBelt));
 			}
 			if (Interface.CallHook("OnInventoryNetworkUpdate", this, container, val, type, mode) != null)
 			{
@@ -1809,8 +1911,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		{
 			val.invMain = containerMain.Save();
 		}
-		val.invBelt = containerBelt.Save();
-		val.invWear = containerWear.Save(bForDisk, !bForDisk);
+		val.invBelt = containerBelt.Save(bIncludeContainer: true, !bForDisk && ConVar.AntiHack.hotbar_network_mode == 1);
+		val.invWear = containerWear.Save(bForDisk);
 		return val;
 	}
 

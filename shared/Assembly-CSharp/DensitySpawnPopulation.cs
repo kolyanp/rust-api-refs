@@ -10,10 +10,10 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(menuName = "Rust/Density Spawn Population")]
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
-	[SerializeField]
-	[FormerlySerializedAs("TargetDensity")]
 	[Header("Spawn Info")]
 	[Tooltip("Usually per square km")]
+	[SerializeField]
+	[FormerlySerializedAs("TargetDensity")]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;
@@ -44,6 +44,9 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 
 	public float NpcRadiusCheckDistance;
 
+	[Tooltip("Reject spawn positions further than this from actual water (0 = disabled). Topology like Swamp can be painted on terrain with no water body, so water-dependent NPCs need a real water check.")]
+	public float MaxDistanceFromWater;
+
 	private int sumToSpawn;
 
 	public virtual float TargetDensity => _targetDensity;
@@ -61,22 +64,23 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
 		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
 		//IL_017e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0261: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ba: Unknown result type (might be due to invalid IL or missing references)
 		float num = Mathf.Max((float)ClusterSizeMax, distribution.GetGridCellArea() * GetMaximumSpawnDensity());
 		UpdateWeights(distribution, GetTargetCount(distribution));
 		int num2 = (initialSpawn ? (numToFill * SpawnAttemptsInitial) : (numToFill * SpawnAttemptsRepeating));
@@ -108,6 +112,10 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 					{
 						((IDisposable)val)?.Dispose();
 					}
+				}
+				if (flag && MaxDistanceFromWater > 0f)
+				{
+					flag = (Object)(object)TerrainTexturing.Instance != (Object)null && TerrainTexturing.Instance.GetCoarseDistanceToShore(spawnPos) > 0f - MaxDistanceFromWater;
 				}
 				if (flag && FilterOutMonuments != null && FilterOutMonuments.Length != 0)
 				{

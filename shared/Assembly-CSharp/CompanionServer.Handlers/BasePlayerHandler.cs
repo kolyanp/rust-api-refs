@@ -8,6 +8,7 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 
 	public override void EnterPool()
 	{
+		base.EnterPool();
 		UserId = 0uL;
 		Player = null;
 	}
@@ -18,6 +19,10 @@ public abstract class BasePlayerHandler<T> : BaseHandler<T> where T : class
 		if (validationResult != ValidationResult.Success)
 		{
 			return validationResult;
+		}
+		if (base.Client.ChannelSteamId != 0L && base.Client.ChannelSteamId != base.Request.playerId)
+		{
+			return ValidationResult.NotFound;
 		}
 		int orGenerateAppToken = SingletonComponent<ServerMgr>.Instance.persistance.GetOrGenerateAppToken(base.Request.playerId, out var locked);
 		if (base.Request.playerId == 0L || base.Request.playerToken != orGenerateAppToken)

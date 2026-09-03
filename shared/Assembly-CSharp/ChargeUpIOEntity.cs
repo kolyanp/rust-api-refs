@@ -27,8 +27,8 @@ public class ChargeUpIOEntity : IOEntity
 
 	public bool RequireInputToTrigger;
 
-	[Tooltip("If this entity has no sound, disable this to save on resources")]
 	[Header("Charging Sounds")]
+	[Tooltip("If this entity has no sound, disable this to save on resources")]
 	public bool doSounds = true;
 
 	public SoundDefinition startChargingSound;

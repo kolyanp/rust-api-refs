@@ -36,9 +36,9 @@ public class ModelViewer_MainCameraParameters
 
 	public float followLag;
 
-	[Header("Lens")]
 	[Range(0.01f, 360f)]
 	[Header("                ")]
+	[Header("Lens")]
 	public float fieldOfView;
 
 	public float nearPlane;
@@ -67,21 +67,21 @@ public class ModelViewer_MainCameraParameters
 
 	public bool debugMode;
 
-	[Header("                ")]
 	[Range(0f, 360f)]
+	[Header("                ")]
 	[Header("Motion Blur")]
 	public float shutterAngle;
 
+	[Header("Distortion")]
 	[Header("                ")]
 	[Range(-100f, 100f)]
-	[Header("Distortion")]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
 	public float chromaticAbberation;
 
-	[Header("                ")]
 	[Header("Post Effects")]
+	[Header("                ")]
 	public TonemappingMode ToneMapping;
 
 	public float Exposure;
@@ -92,14 +92,14 @@ public class ModelViewer_MainCameraParameters
 	[Range(-100f, 100f)]
 	public float Saturation;
 
-	[Header("                ")]
 	[Header("Sharpen")]
+	[Header("                ")]
 	public float Strength;
 
 	public float limit;
 
-	[Header("                ")]
 	[Header("God Rays")]
+	[Header("                ")]
 	public bool GodRays;
 
 	[Header("Bloom")]

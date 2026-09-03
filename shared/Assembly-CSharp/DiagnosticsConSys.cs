@@ -99,8 +99,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Animators.Counts.Enabled.txt", stringBuilder3.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of entities into a diagnostics subfolder ")]
 	public static void dumpEntities(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -159,8 +159,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		WriteTextToFile(targetFolder + "UnityEngine.Entity.SV.Savelist.Counts.txt", stringBuilder3.ToString());
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of LOD Groups into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of LOD Groups into a diagnostics subfolder")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of LOD Groups into a diagnostics subfolder")]
 	public static void dumpLODGroups(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -742,8 +742,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		}
 	}
 
-	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
 	[ServerVar(Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
+	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of warmup info into a diagnostics subfolder")]
 	public static void dumpWarmup(Arg args)
 	{
 		string targetFolder = GetTargetFolder();
@@ -830,8 +830,8 @@ public class DiagnosticsConSys : ConsoleSystem
 		args.ReplyWith("Dumped diagnostics to: " + targetFolder);
 	}
 
-	[ServerVar(Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
 	[ClientVar(ClientAdmin = true, Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
+	[ServerVar(Help = "Dumps a diagnostic snapshot of system information into a diagnostics subfolder")]
 	public static void dumpSystemInformation(Arg args)
 	{
 		string targetFolder = GetTargetFolder();

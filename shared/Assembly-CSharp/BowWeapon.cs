@@ -4,7 +4,7 @@ using Network;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class BowWeapon : BaseProjectile
+public class BowWeapon : ArrowWeapon
 {
 	private Action _updateFireFlagAction;
 
@@ -118,10 +118,5 @@ public class BowWeapon : BaseProjectile
 		{
 			TryReloadMagazine(ownerPlayer.inventory);
 		}
-	}
-
-	public override bool ForceSendMagazine(SaveInfo saveInfo)
-	{
-		return true;
 	}
 }

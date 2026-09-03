@@ -144,6 +144,11 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		storageUnitInstance.uid = info.msg.simpleUID.uid;
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	public BaseEntity GetStorageUnitInstance()
 	{
 		return storageUnitInstance.Get(base.isServer);
@@ -236,8 +241,8 @@ public class VehicleModuleStorage : VehicleModuleSeating
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Open(RPCMessage msg)
 	{
 		TryOpen(msg.player);

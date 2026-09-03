@@ -174,6 +174,8 @@ public class Connection
 
 	public double lastPremiumCheckTime;
 
+	public bool skipQueue;
+
 	private string _ipaddress;
 
 	private string ipaddresswithoutport = "";
@@ -349,6 +351,7 @@ public class Connection
 		guid = 0uL;
 		ResetPacketsPerSecond();
 		hasRequestedWorld = false;
+		skipQueue = false;
 	}
 
 	public void ResetPacketsPerSecond()

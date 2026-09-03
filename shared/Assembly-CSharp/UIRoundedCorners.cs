@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[AddComponentMenu("UI/Effects/Rounded Corners")]
-[DisallowMultipleComponent]
 [RequireComponent(typeof(Graphic))]
+[DisallowMultipleComponent]
+[AddComponentMenu("UI/Effects/Rounded Corners")]
 public class UIRoundedCorners : BaseMeshEffect
 {
 	[SerializeField]

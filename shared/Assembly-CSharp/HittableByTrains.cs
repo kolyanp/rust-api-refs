@@ -175,6 +175,12 @@ public class HittableByTrains : EntityComponent<BaseCombatEntity>, ITrainCollida
 		}
 	}
 
+	public override void InitShared()
+	{
+		base.InitShared();
+		UpdateBaseEntity();
+	}
+
 	public override void SaveComponent(BaseNetworkable.SaveInfo info)
 	{
 		bool flag = base.baseEntity.lastAttacker is TrainCar;

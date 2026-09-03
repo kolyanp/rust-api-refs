@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AmbientOcclusion")]
 public class SSAORendererFeature : RustRendererFeature
 {
-	[Header("Ambient Occlusion")]
 	[Tooltip("How the occlusion result is composited into the frame.")]
+	[Header("Ambient Occlusion")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -22,27 +22,27 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
 	public Color Tint;
 
-	[Range(0f, 32f)]
 	[Tooltip("World-space radius of the occlusion kernel.")]
+	[Range(0f, 32f)]
 	public float Radius;
 
-	[Tooltip("Power exponent attenuation of the occlusion.")]
 	[Range(0f, 16f)]
+	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent;
 
 	[Range(0f, 0.99f)]
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
 	public float Bias;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls thickness-based occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample;
 
-	[Header("Distance Fade")]
 	[Tooltip("Fade the effect out at a distance.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]
@@ -68,24 +68,24 @@ public class SSAORendererFeature : RustRendererFeature
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled;
 
-	[Range(1f, 4f)]
 	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
+	[Range(1f, 4f)]
 	public int BlurRadius;
 
-	[Tooltip("Number of blur passes.")]
 	[Range(1f, 4f)]
+	[Tooltip("Number of blur passes.")]
 	public int BlurPasses;
 
-	[Tooltip("0 = blurred / 1 = sharpened.")]
 	[Range(0f, 20f)]
+	[Tooltip("0 = blurred / 1 = sharpened.")]
 	public float BlurSharpness;
 
 	[Header("Temporal Filter")]
 	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	public bool FilterEnabled;
 
-	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
 	[Range(0f, 1f)]
+	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
 	public float FilterBlending;
 
 	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]

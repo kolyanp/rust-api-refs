@@ -109,8 +109,9 @@ public class TerrainCollision : TerrainExtension
 		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("TerrainCollision.GetIgnore"))
 		{
 			FillJob<bool> fillJob = new FillJob<bool>
@@ -157,7 +158,7 @@ public class TerrainCollision : TerrainExtension
 				};
 				IJobExtensions.RunByRef<FillJob<int>>(ref fillJob2);
 				new QueryParameters(262144, false, (QueryTriggerInteraction)2, false);
-				GamePhysics.CheckSpheres<TerrainCollisionTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), NativeArray<bool>.op_Implicit(ref results), GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
+				GamePhysics.CheckSpheres<TerrainCollisionTrigger>(results2.AsReadOnly(), results3.AsReadOnly(), values.AsReadOnly(), results, GamePhysics.DefaultMaxResultsPerQuery, (QueryTriggerInteraction)2, GamePhysics.MasksToValidate.None);
 				Span<bool> values2 = NativeArray<bool>.op_Implicit(ref results);
 				ReadOnly<int> val3 = val.AsReadOnly();
 				CollectionUtil.ScatterOutInplace(values2, ReadOnly<int>.op_Implicit(ref val3), defValue: false);

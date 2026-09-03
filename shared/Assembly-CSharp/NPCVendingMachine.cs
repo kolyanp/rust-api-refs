@@ -648,7 +648,7 @@ public class NPCVendingMachine : VendingMachine
 				continue;
 			}
 			int num = 0;
-			num = ((!entry.sellItemAsBP) ? Mathf.FloorToInt((float)(base.inventory.GetAmount(entry.sellItem.itemid, onlyUsableAmounts: false) / entry.sellItemAmount)) : Mathf.FloorToInt((float)(base.inventory.GetAmount(base.blueprintBaseDef.itemid, entry.sellItem.itemid, onlyUsableAmounts: false) / entry.sellItemAmount)));
+			num = ((!entry.sellItemAsBP) ? Mathf.FloorToInt((float)(base.inventory.GetAmount(entry.sellItem.itemid) / entry.sellItemAmount)) : Mathf.FloorToInt((float)(base.inventory.GetAmount(base.blueprintBaseDef.itemid, entry.sellItem.itemid) / entry.sellItemAmount)));
 			int num2 = Mathf.Min(GetMaxStock(entry.maxStock) - num, entry.refillAmount) * entry.sellItemAmount;
 			if (num2 > 0)
 			{

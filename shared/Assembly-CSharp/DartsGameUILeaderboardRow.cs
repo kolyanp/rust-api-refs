@@ -13,8 +13,8 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public RustText TimeTaken;
 
-	[Header("Row Styles")]
 	[Tooltip("The image tinted with the colours below - light, dark, or current winner.")]
+	[Header("Row Styles")]
 	public Image rowImage;
 
 	public Color lightColour;
@@ -36,16 +36,17 @@ public class DartsGameUILeaderboardRow : FacepunchBehaviour
 
 	public void SetLeaderboardRowStats(DartsGameLeaderboardEntry leaderboardEntry, int position)
 	{
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		PlayerName.SetText(leaderboardEntry.playerName);
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		string text = NameHelper.Get(leaderboardEntry.userid, leaderboardEntry.playerName);
+		PlayerName.SetText(string.IsNullOrEmpty(text) ? leaderboardEntry.playerName : text);
 		DartsThrown.SetText(leaderboardEntry.dartsThrown.ToString());
 		TimeTaken.SetText(TimeSpan.FromSeconds(leaderboardEntry.timeTaken).ToString("m\\:ss"));
 		bool flag = position == 0;

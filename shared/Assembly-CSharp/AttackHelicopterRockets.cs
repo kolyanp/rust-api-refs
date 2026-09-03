@@ -51,6 +51,8 @@ public class AttackHelicopterRockets : StorageContainer
 
 	private int rocketsSinceReload;
 
+	private ItemDefinition currAmmoDef;
+
 	private bool leftSide;
 
 	public bool CanFireRocket
@@ -106,6 +108,12 @@ public class AttackHelicopterRockets : StorageContainer
 	{
 		base.InitShared();
 		ResetFiringTimes();
+	}
+
+	public override void ServerInit()
+	{
+		base.ServerInit();
+		TryGetAmmoDef(out currAmmoDef);
 	}
 
 	public int GetRocketAmount()
@@ -245,9 +253,9 @@ public class AttackHelicopterRockets : StorageContainer
 		info.msg.attackHeliRockets.hasFlares = HasFlareAmmo();
 		info.msg.attackHeliRockets.rocketsSinceReload = rocketsSinceReload;
 		info.msg.attackHeliRockets.preferredAmmoType = (int)preferredRocketType;
-		if (TryGetAmmoDef(out var ammoDef))
+		if ((Object)(object)currAmmoDef != (Object)null)
 		{
-			info.msg.attackHeliRockets.ammoItemID = ammoDef.itemid;
+			info.msg.attackHeliRockets.ammoItemID = currAmmoDef.itemid;
 		}
 	}
 
@@ -260,9 +268,9 @@ public class AttackHelicopterRockets : StorageContainer
 		return null;
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		if (!base.ItemFilter(item, targetSlot))
+		if (!base.ItemFilter(player, item, targetSlot))
 		{
 			return false;
 		}
@@ -327,6 +335,7 @@ public class AttackHelicopterRockets : StorageContainer
 				ClientRPC(RpcTarget.NetworkGroup("ResetFiringTimes"));
 			}
 		}
+		TryGetAmmoDef(out currAmmoDef);
 		SendNetworkUpdate();
 	}
 
@@ -354,8 +363,8 @@ public class AttackHelicopterRockets : StorageContainer
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
 		if (!CanFireRocket)
 		{
 			return false;
@@ -376,7 +385,7 @@ public class AttackHelicopterRockets : StorageContainer
 		{
 			Effect.server.Run(rocketFireTubeFX.resourcePath, this, StringPool.Get(((Object)rocketMuzzlePositions[num]).name), Vector3.zero, Vector3.zero, null, broadcast: true);
 			leftSide = !leftSide;
-			int arg = (TryGetAmmoDef(out var ammoDef) ? ammoDef.itemid : 0);
+			int arg = (TryGetAmmoDef(out currAmmoDef) ? currAmmoDef.itemid : 0);
 			timeSinceRocketFired = TimeSince.op_Implicit(0f);
 			if (rocketsSinceReload < rocketsPerReload)
 			{
@@ -426,7 +435,7 @@ public class AttackHelicopterRockets : StorageContainer
 		if (rocketsSinceReload != 0 && rocketsSinceReload != rocketsPerReload && GetRocketAmount() != 0 && !IsReloading)
 		{
 			rocketsSinceReload = rocketsPerReload;
-			int arg = (TryGetAmmoDef(out var ammoDef) ? ammoDef.itemid : 0);
+			int arg = (TryGetAmmoDef(out currAmmoDef) ? currAmmoDef.itemid : 0);
 			ClientRPC(RpcTarget.NetworkGroup("RPCRocketFired"), (short)GetRocketAmount(), arg, rocketsSinceReload);
 			SendNetworkUpdate();
 		}

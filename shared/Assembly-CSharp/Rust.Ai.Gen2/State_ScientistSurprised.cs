@@ -1,4 +1,5 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -78,20 +79,11 @@ public class State_ScientistSurprised : FSMStateBase
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: true, predict: false, ignoreCrouch: false))
 		{
 			return EFSMStateStatus.Failure;
@@ -102,9 +94,8 @@ public class State_ScientistSurprised : FSMStateBase
 		{
 			Vector3 val = lkp - base.Senses.EyePosition;
 			base.Agent.overrideDirectionWS = val;
-			Matrix4x4 worldToNavMeshSpace = Owner.WorldToNavMeshSpace;
-			Vector3 val2 = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyVector(val);
-			base.Agent.Move(-Vector3Ex.NormalizeXZ(val2) * deltaTime * 1.7f);
+			NavVector3 navVector = base.Agent.WorldToNavDirection(val);
+			base.Agent.Move(navVector.NormalizeXZ() * ((0f - deltaTime) * 1.7f));
 		}
 		if (elapsedTime >= minTimeBeforeShooting && Vector3.Angle(((Component)Owner).transform.forward, Vector3Ex.WithY(lkp - ((Component)Owner).transform.position, 0f)) <= 5f)
 		{

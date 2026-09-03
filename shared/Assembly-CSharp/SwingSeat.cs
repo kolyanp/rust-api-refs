@@ -146,7 +146,8 @@ public class SwingSeat : BaseVehicleSeat
 
 	private void UpdateSwingingFlag()
 	{
-		SetFlag(Flags.Reserved1, Mathf.Abs(velocity) > 5f || Mathf.Abs(SwingAngle) > 5f);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved1, Mathf.Abs(velocity) > 5f || Mathf.Abs(SwingAngle) > 5f);
 	}
 
 	public override void OnPlayerDismounted(BasePlayer player)

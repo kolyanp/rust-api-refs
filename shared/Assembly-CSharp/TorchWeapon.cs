@@ -1,103 +1,16 @@
 using System;
-using ConVar;
-using Network;
 using Rust;
 using UnityEngine;
-using UnityEngine.Assertions;
 
-public class TorchWeapon : BaseMelee
+public class TorchWeapon : ToggleableLightWeapon
 {
 	[NonSerialized]
 	public const float FuelTickAmount = 1f / 12f;
 
 	[Header("TorchWeapon")]
-	public bool ExtinguishUnderwater = true;
-
 	public GameObjectRef litStrikeFX;
 
 	public const Flags IsInHolder = Flags.Reserved1;
-
-	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
-	{
-		using (TimeWarning.New("TorchWeapon.OnRpcMessage"))
-		{
-			if (rpc == 2235491565u && (Object)(object)player != (Object)null)
-			{
-				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
-				if (Global.developer > 2)
-				{
-					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Extinguish"));
-				}
-				using (TimeWarning.New("Extinguish"))
-				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!RPC_Server.IsActiveItem.Test(2235491565u, "Extinguish", this, player))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg2 = new RPCMessage
-							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Extinguish(msg2);
-						}
-					}
-					catch (Exception ex)
-					{
-						Debug.LogException(ex);
-						player.Kick("RPC Error in Extinguish");
-					}
-				}
-				return true;
-			}
-			if (rpc == 3010584743u && (Object)(object)player != (Object)null)
-			{
-				Assert.IsTrue(player.isServer, "SV_RPC Message is using a clientside player!");
-				if (Global.developer > 2)
-				{
-					Debug.Log((object)("SV_RPCMessage: " + ((object)player)?.ToString() + " - Ignite"));
-				}
-				using (TimeWarning.New("Ignite"))
-				{
-					using (TimeWarning.New("Conditions"))
-					{
-						if (!RPC_Server.IsActiveItem.Test(3010584743u, "Ignite", this, player))
-						{
-							return true;
-						}
-					}
-					try
-					{
-						using (TimeWarning.New("Call"))
-						{
-							RPCMessage msg3 = new RPCMessage
-							{
-								connection = msg.connection,
-								player = player,
-								read = msg.read
-							};
-							Ignite(msg3);
-						}
-					}
-					catch (Exception ex2)
-					{
-						Debug.LogException(ex2);
-						player.Kick("RPC Error in Ignite");
-					}
-				}
-				return true;
-			}
-		}
-		return base.OnRpcMessage(player, rpc, msg);
-	}
 
 	public override void GetAttackStats(HitInfo info)
 	{
@@ -113,7 +26,7 @@ public class TorchWeapon : BaseMelee
 		return base.GetConditionLoss() + (HasFlag(Flags.On) ? 6f : 0f);
 	}
 
-	public void SetIsOn(bool isOn)
+	public override void SetIsOn(bool isOn)
 	{
 		if (isOn)
 		{
@@ -135,26 +48,6 @@ public class TorchWeapon : BaseMelee
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
-	private void Ignite(RPCMessage msg)
-	{
-		if (msg.player.CanInteract())
-		{
-			SetIsOn(isOn: true);
-		}
-	}
-
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
-	private void Extinguish(RPCMessage msg)
-	{
-		if (msg.player.CanInteract())
-		{
-			SetIsOn(isOn: false);
-		}
-	}
-
 	public void UseFuel()
 	{
 		Item ownerItem = GetOwnerItem();
@@ -162,14 +55,6 @@ public class TorchWeapon : BaseMelee
 		{
 			ownerItem.LoseCondition(1f / 12f);
 			SingletonComponent<NpcFireManager>.Instance.Move(this);
-		}
-	}
-
-	public override void OnHeldChanged()
-	{
-		if (IsDisabled())
-		{
-			SetIsOn(isOn: false);
 		}
 	}
 

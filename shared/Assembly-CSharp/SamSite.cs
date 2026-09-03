@@ -40,11 +40,14 @@ public class SamSite : ContainerIOEntity
 
 		public readonly float timeBetweenBursts;
 
-		public SamTargetType(float scanRadius, float speedMultiplier, float timeBetweenBursts)
+		public readonly bool applyAimError;
+
+		public SamTargetType(float scanRadius, float speedMultiplier, float timeBetweenBursts, bool applyAimError = true)
 		{
 			this.scanRadius = scanRadius;
 			this.speedMultiplier = speedMultiplier;
 			this.timeBetweenBursts = timeBetweenBursts;
+			this.applyAimError = applyAimError;
 		}
 	}
 
@@ -112,6 +115,8 @@ public class SamSite : ContainerIOEntity
 	public static SamTargetType targetTypeVehicle;
 
 	public static SamTargetType targetTypeMissile;
+
+	public static SamTargetType targetTypeDrone;
 
 	public ISamSiteTarget currentTarget;
 
@@ -242,12 +247,13 @@ public class SamSite : ContainerIOEntity
 
 	public override void ServerInit()
 	{
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		targetTypeUnknown = new SamTargetType(vehicleScanRadius, 1f, 5f);
 		targetTypeVehicle = new SamTargetType(vehicleScanRadius, 1f, 5f);
 		targetTypeMissile = new SamTargetType(missileScanRadius, 2.25f, 3.5f);
+		targetTypeDrone = new SamTargetType(vehicleScanRadius, 2.25f, 5f, applyAimError: false);
 		mostRecentTargetType = targetTypeUnknown;
 		ClearTarget();
 		InvokeRandomized(TargetScan, 1f, 3f, 0.2f);
@@ -326,31 +332,31 @@ public class SamSite : ContainerIOEntity
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0183: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0195: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0204: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0230: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
@@ -367,19 +373,19 @@ public class SamSite : ContainerIOEntity
 		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0144: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 val = currentAimDir;
 		if (!ObjectEx.IsUnityNull(currentTarget) && IsPowered())
 		{
@@ -391,7 +397,7 @@ public class SamSite : ContainerIOEntity
 			num3 = Vector3.Distance(val3, ((Component)eyePoint).transform.position) / num;
 			val3 = val2 + currentTarget.GetWorldVelocity() * num3;
 			Vector3 val4 = currentTarget.GetWorldVelocity();
-			if (((Vector3)(ref val4)).magnitude > 0.1f)
+			if (((Vector3)(ref val4)).magnitude > 0.1f && currentTarget.SAMTargetType.applyAimError)
 			{
 				float num4 = Mathf.Sin(Time.time * 3f) * (1f + num3 * 0.5f);
 				Vector3 val5 = val3;

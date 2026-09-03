@@ -22,7 +22,7 @@ public static class MapUploader
 
 	public static string ImageUrl { get; private set; }
 
-	private static string SeedlessMapFileName => World.Name.Replace(" ", "").ToLower() + "." + World.Size + "." + World.Timestamp + "." + 287 + ".map";
+	private static string SeedlessMapFileName => World.Name.Replace(" ", "").ToLower() + "." + World.Size + "." + World.Timestamp + "." + 288 + ".map";
 
 	public static async Task UploadMap()
 	{

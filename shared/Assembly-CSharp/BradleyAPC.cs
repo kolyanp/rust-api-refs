@@ -2719,31 +2719,31 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0146: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0204: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0143: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0202: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0207: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0319: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0323: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0302: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0308: Unknown result type (might be due to invalid IL or missing references)
 		if (base.isClient || Interface.CallHook("OnEntityDestroy", this) != null)
 		{
 			return;
@@ -2765,6 +2765,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			Vector3 onUnitSphere = Random.onUnitSphere;
 			((Component)baseEntity).transform.position = ((Component)this).transform.position + new Vector3(0f, 1.5f, 0f) + onUnitSphere * Random.Range(-4f, 4f);
 			Collider component = ((Component)baseEntity).GetComponent<Collider>();
+			baseEntity.enableSaving = true;
 			baseEntity.Spawn();
 			baseEntity.SetVelocity(zero + onUnitSphere * Random.Range(num, num2));
 			foreach (ServerGib item in list)
@@ -2780,11 +2781,7 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 			Vector3 pos = ((Component)this).transform.position + new Vector3(0f, 1.5f, 0f) + onUnitSphere2 * Random.Range(2f, 3f);
 			BaseEntity baseEntity2 = GameManager.server.CreateEntity(crateToDrop.resourcePath, pos, Quaternion.LookRotation(onUnitSphere2));
 			baseEntity2.Spawn();
-			LootContainer lootContainer = baseEntity2 as LootContainer;
-			if (Object.op_Implicit((Object)(object)lootContainer))
-			{
-				lootContainer.Invoke(lootContainer.RemoveMe, 1800f);
-			}
+			baseEntity2.enableSaving = true;
 			Collider component2 = ((Component)baseEntity2).GetComponent<Collider>();
 			Rigidbody val = ((Component)baseEntity2).gameObject.AddComponent<Rigidbody>();
 			val.useGravity = true;
@@ -2802,8 +2799,9 @@ public class BradleyAPC : BaseCombatEntity, TriggerHurtNotChild.IHurtTriggerUser
 				fireBall.Spawn();
 				((Component)fireBall).GetComponent<Rigidbody>().isKinematic = true;
 				((Component)fireBall).GetComponent<Collider>().enabled = false;
+				fireBall.enableSaving = true;
+				((Component)baseEntity2).SendMessage("SetLockingEnt", (object)fireBall, (SendMessageOptions)1);
 			}
-			((Component)baseEntity2).SendMessage("SetLockingEnt", (object)((Component)fireBall).gameObject, (SendMessageOptions)1);
 			foreach (ServerGib item2 in list)
 			{
 				Physics.IgnoreCollision(component2, (Collider)(object)item2.GetCollider(), true);

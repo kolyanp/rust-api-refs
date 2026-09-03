@@ -150,9 +150,9 @@ public class SmartSwitch : AppIOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ToggleSwitch(RPCMessage msg)
 	{
 		if (PlayerCanToggle(msg.player))

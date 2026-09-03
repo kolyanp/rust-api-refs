@@ -8,8 +8,6 @@ public class PowergridStageConfig : BaseScriptableObject
 	public class StageData
 	{
 		public int requiredFuses;
-
-		public int powerlineAvailablePower;
 	}
 
 	private static PowergridStageConfig _instance;

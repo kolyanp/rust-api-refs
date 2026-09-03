@@ -13,8 +13,8 @@ public class UICircle : UIPrimitiveBase
 	[Tooltip("The Arc property is a percentage of the entire circumference of the circle.")]
 	public float Arc;
 
-	[Range(0f, 1000f)]
 	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
+	[Range(0f, 1000f)]
 	public int ArcSteps;
 
 	[Range(0f, 360f)]

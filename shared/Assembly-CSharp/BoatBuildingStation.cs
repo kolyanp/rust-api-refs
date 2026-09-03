@@ -451,8 +451,8 @@ public class BoatBuildingStation : DecayEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void EditBoat(RPCMessage msg)
 	{
@@ -626,7 +626,7 @@ public class BoatBuildingStation : DecayEntity
 		try
 		{
 			Physics.autoSyncTransforms = false;
-			((Component)playerBoat).transform.position = Vector3Ex.WithY(((Component)playerBoat).transform.position, 0f);
+			((Component)playerBoat).transform.position = Vector3Ex.WithY(((Component)playerBoat).transform.position, Env.oceanlevel);
 			((Component)playerBoat).transform.localEulerAngles = new Vector3(0f, ((Component)playerBoat).transform.localEulerAngles.y, 0f);
 			playerBoat.SendNetworkUpdate();
 			playerBoat.DistributeHealthAcrossBlocks();
@@ -647,9 +647,9 @@ public class BoatBuildingStation : DecayEntity
 		Pool.FreeUnmanaged<PlayerBoat>(ref playerBoats);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void ClearArea(RPCMessage msg)
 	{
 		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
@@ -710,7 +710,7 @@ public class BoatBuildingStation : DecayEntity
 		}
 		Quaternion val = CalculateBoatForward(blocks, ents, stationGameObject);
 		GetBoatBlocksOBBExtents(blocks, val * Vector3.forward, out var center, out var halfExtents, out var _);
-		PlayerBoat obj = GameManager.server.CreateEntity(BoatPrefab.resourcePath, Vector3Ex.WithY(center, 0f), val) as PlayerBoat;
+		PlayerBoat obj = GameManager.server.CreateEntity(BoatPrefab.resourcePath, Vector3Ex.WithY(center, Env.oceanlevel), val) as PlayerBoat;
 		obj.Spawn();
 		obj.OnCreatedAtBBS(this);
 		obj.Init(blocks, ents, halfExtents, loading: false);
@@ -842,7 +842,7 @@ public class BoatBuildingStation : DecayEntity
 		arg.ReplyWith(stringBuilder.ToString());
 	}
 
-	public static BoatBuildingStation GetStationOverlappingPosition(Vector3 position, bool isServer)
+	public static BoatBuildingStation GetStationOverlappingPosition(Vector3 position, bool isServer, float padding = 0f)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
@@ -860,7 +860,7 @@ public class BoatBuildingStation : DecayEntity
 				grid.Query(position.x, position.z, 20f, (List<BoatBuildingStation>)(object)val);
 				foreach (BoatBuildingStation item in (List<BoatBuildingStation>)(object)val)
 				{
-					if (item.IsInsideBuildArea(position))
+					if (item.IsInsideBuildArea(position, padding))
 					{
 						return item;
 					}
@@ -994,7 +994,7 @@ public class BoatBuildingStation : DecayEntity
 
 	public void RefreshSteeringWheelCache()
 	{
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		cachedSteeringWheel = null;
 		List<SteeringWheel> list = Pool.Get<List<SteeringWheel>>();
 		Vis.Entities(GetBuildAreaOBB(BuildArea), list, 256, (QueryTriggerInteraction)2);
@@ -1022,24 +1022,24 @@ public class BoatBuildingStation : DecayEntity
 		}
 	}
 
-	public bool IsInsideBuildArea(Vector3 pos)
+	public bool IsInsideBuildArea(Vector3 pos, float padding = 0f)
 	{
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)BuildArea == (Object)null || (Object)(object)BuildArea.transform == (Object)null)
 		{
 			return false;
 		}
-		OBB buildAreaOBB = GetBuildAreaOBB(BuildArea);
+		OBB buildAreaOBB = GetBuildAreaOBB(BuildArea, padding);
 		return ((OBB)(ref buildAreaOBB)).Contains(pos);
 	}
 
 	public bool IntersectsBuildArea(OBB obb)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
 		OBB buildAreaOBB = GetBuildAreaOBB(BuildArea);
 		return ((OBB)(ref buildAreaOBB)).Intersects(obb);
 	}
@@ -1102,9 +1102,9 @@ public class BoatBuildingStation : DecayEntity
 
 	private bool IsBoatFullyContained(PlayerBoat boat)
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)boat == (Object)null)
 		{
 			return false;
@@ -1328,7 +1328,7 @@ public class BoatBuildingStation : DecayEntity
 
 	public static List<T> GetEntitiesInBuildArea<T>(GameObject buildArea, int layerMask, bool server) where T : BaseEntity
 	{
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		List<T> list = Pool.Get<List<T>>();
 		Vis.Entities(GetBuildAreaOBB(buildArea), list, layerMask, (QueryTriggerInteraction)2);
 		if (list.Count > 0)
@@ -1345,20 +1345,23 @@ public class BoatBuildingStation : DecayEntity
 		return list;
 	}
 
-	public static OBB GetBuildAreaOBB(GameObject buildArea)
+	public static OBB GetBuildAreaOBB(GameObject buildArea, float padding = 0f)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		Vector3 position = buildArea.transform.position;
-		Vector3 lossyScale = buildArea.transform.lossyScale;
+		Vector3 val = buildArea.transform.lossyScale + Vector3.one * (padding * 2f);
 		Quaternion rotation = buildArea.transform.rotation;
-		return new OBB(position, lossyScale, rotation);
+		return new OBB(position, val, rotation);
 	}
 
 	public static void GetBoatBlocksOBBExtents(List<BoatBuildingBlock> blocks, Vector3 forward, out Vector3 center, out Vector3 halfExtents, out Quaternion rot)

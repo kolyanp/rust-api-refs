@@ -1,3 +1,4 @@
+using Oxide.Core;
 using UnityEngine;
 
 public class MetalDetectorFlag : BaseDiggableEntity
@@ -30,24 +31,27 @@ public class MetalDetectorFlag : BaseDiggableEntity
 
 	public override void OnFullyDug(BasePlayer player)
 	{
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)Collision != (Object)null)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		if (Interface.CallHook("OnPlayerDigComplete", player, this) == null)
 		{
-			Collision.enabled = false;
+			if ((Object)(object)Collision != (Object)null)
+			{
+				Collision.enabled = false;
+			}
+			BaseEntity baseEntity = SpawnLootListItem(player);
+			BaseMission.MissionEventPayload payload = new BaseMission.MissionEventPayload
+			{
+				NetworkIdentifier = (NetworkableId)(((Object)(object)baseEntity == (Object)null) ? baseEntity.net.ID : default(NetworkableId)),
+				UintIdentifier = (((Object)(object)baseEntity == (Object)null) ? baseEntity.prefabID : 0u),
+				WorldPosition = ((Component)this).transform.position
+			};
+			player.ProcessMissionEvent(BaseMission.MissionEventType.METAL_DETECTOR_FIND, payload, 1f);
 		}
-		BaseEntity baseEntity = SpawnLootListItem(player);
-		BaseMission.MissionEventPayload payload = new BaseMission.MissionEventPayload
-		{
-			NetworkIdentifier = (NetworkableId)(((Object)(object)baseEntity == (Object)null) ? baseEntity.net.ID : default(NetworkableId)),
-			UintIdentifier = (((Object)(object)baseEntity == (Object)null) ? baseEntity.prefabID : 0u),
-			WorldPosition = ((Component)this).transform.position
-		};
-		player.ProcessMissionEvent(BaseMission.MissionEventType.METAL_DETECTOR_FIND, payload, 1f);
 	}
 
 	public override void OnSingleDig(BasePlayer player)

@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using ProtoBuf;
 
 namespace CompanionServer.Handlers;
 
 public class SetClanMotd : BaseClanHandler<AppSendMessage>
 {
-	public override async void Execute()
+	public override async ValueTask Execute()
 	{
 		ClanValidatorResult validatedMotd = ClanValidator.ValidateMotd(base.Proto.message);
 		if (!((ClanValidatorResult)(ref validatedMotd)).Success)

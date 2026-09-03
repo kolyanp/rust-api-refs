@@ -54,11 +54,11 @@ public class State_AttackUnreachable : FSMStateBase
 	public static bool SampleGroundPositionUnderTarget(RustNavMeshAgent agent, BasePlayer targetAsPlayer, out Vector3 projectedLocation)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		float radius = BasePlayer.GetRadius();
 		bool result = agent.SampleGroundPositionWithPhysics(((Component)targetAsPlayer).transform.position, out var hitInfoNS, 2f, radius);
-		projectedLocation = ((RaycastHit)(ref hitInfoNS)).point;
+		projectedLocation = agent.NavToWorldSpace(hitInfoNS.point);
 		return result;
 	}
 

@@ -1,22 +1,20 @@
+using System.Threading.Tasks;
 using ProtoBuf;
 
 namespace CompanionServer.Handlers;
 
 public class SetSubscription : BaseEntityHandler<AppFlag>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		if (base.Entity is ISubscribable subscribable)
 		{
 			if (base.Proto.value)
 			{
-				if (subscribable.AddSubscription(base.UserId))
-				{
-					SendSuccess();
-				}
-				else
+				if (!subscribable.AddSubscription(base.UserId))
 				{
 					SendError("too_many_subscribers");
+					return default(ValueTask);
 				}
 			}
 			else
@@ -29,5 +27,6 @@ public class SetSubscription : BaseEntityHandler<AppFlag>
 		{
 			SendError("wrong_type");
 		}
+		return default(ValueTask);
 	}
 }

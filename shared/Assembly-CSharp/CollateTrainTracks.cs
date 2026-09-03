@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CollateTrainTracks : ProceduralComponent
@@ -12,50 +13,45 @@ public class CollateTrainTracks : ProceduralComponent
 
 	public override void Process(uint seed)
 	{
-		//IL_0189: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0294: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0299: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
+		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
 		TrainTrackSpline[] array = Object.FindObjectsByType<TrainTrackSpline>((FindObjectsSortMode)0);
-		TrainTrackSpline[] array2;
+		List<(TrainTrackSpline, Vector3, Vector3)> list = new List<(TrainTrackSpline, Vector3, Vector3)>(array.Length * 2);
+		TrainTrackSpline[] array2 = array;
+		foreach (TrainTrackSpline trainTrackSpline in array2)
+		{
+			list.Add((trainTrackSpline, trainTrackSpline.GetStartPointWorld(), trainTrackSpline.GetStartTangentWorld()));
+			list.Add((trainTrackSpline, trainTrackSpline.GetEndPointWorld(), trainTrackSpline.GetEndTangentWorld()));
+		}
 		for (int num = array.Length - 1; num >= 0; num--)
 		{
 			TrainTrackSpline ourSpline = array[num];
@@ -66,61 +62,54 @@ public class CollateTrainTracks : ProceduralComponent
 				{
 					Vector3 ourPos = ourSpline.points[nodeIndex];
 					Vector3 ourTangent = ourSpline.tangents[nodeIndex];
-					array2 = array;
-					foreach (TrainTrackSpline trainTrackSpline in array2)
+					foreach (var item in list)
 					{
-						if (!((Object)(object)ourSpline == (Object)(object)trainTrackSpline))
+						(TrainTrackSpline spline, Vector3 position, Vector3 tangent) endpoint = item;
+						if (!((Object)(object)ourSpline == (Object)(object)endpoint.spline) && (TrySplitAtJunction(endpoint.tangent) || TrySplitAtJunction(-endpoint.tangent)))
 						{
-							Vector3 startPointWorld = trainTrackSpline.GetStartPointWorld();
-							Vector3 endPointWorld = trainTrackSpline.GetEndPointWorld();
-							Vector3 startTangentWorld = trainTrackSpline.GetStartTangentWorld();
-							Vector3 endTangentWorld = trainTrackSpline.GetEndTangentWorld();
-							if (!CompareNodes(startPointWorld, startTangentWorld) && !CompareNodes(endPointWorld, endTangentWorld) && !CompareNodes(startPointWorld, -startTangentWorld))
-							{
-								CompareNodes(endPointWorld, -endTangentWorld);
-							}
+							break;
 						}
-					}
-					bool CompareNodes(Vector3 theirPos, Vector3 theirTangent)
-					{
-						//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-						//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-						//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-						//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-						//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-						//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-						//IL_00d4: Unknown result type (might be due to invalid IL or missing references)
-						//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-						//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-						//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-						//IL_0113: Unknown result type (might be due to invalid IL or missing references)
-						//IL_0118: Unknown result type (might be due to invalid IL or missing references)
-						if (NodesConnect(ourPos, theirPos, ourTangent, theirTangent))
+						bool TrySplitAtJunction(Vector3 theirTangent)
 						{
-							TrainTrackSpline trainTrackSpline2 = ((Component)ourSpline).gameObject.AddComponent<TrainTrackSpline>();
-							Vector3[] array4 = (Vector3[])(object)new Vector3[ourSpline.points.Length - nodeIndex];
-							Vector3[] array5 = (Vector3[])(object)new Vector3[ourSpline.points.Length - nodeIndex];
-							Vector3[] array6 = (Vector3[])(object)new Vector3[nodeIndex + 1];
-							Vector3[] array7 = (Vector3[])(object)new Vector3[nodeIndex + 1];
-							for (int num2 = ourSpline.points.Length - 1; num2 >= 0; num2--)
+							//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+							//IL_000d: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+							//IL_00bc: Unknown result type (might be due to invalid IL or missing references)
+							//IL_00c1: Unknown result type (might be due to invalid IL or missing references)
+							//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
+							//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0101: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0106: Unknown result type (might be due to invalid IL or missing references)
+							//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+							//IL_0121: Unknown result type (might be due to invalid IL or missing references)
+							if (NodesConnect(ourPos, endpoint.position, ourTangent, theirTangent))
 							{
-								if (num2 >= nodeIndex)
+								TrainTrackSpline trainTrackSpline2 = ((Component)ourSpline).gameObject.AddComponent<TrainTrackSpline>();
+								Vector3[] array4 = (Vector3[])(object)new Vector3[ourSpline.points.Length - nodeIndex];
+								Vector3[] array5 = (Vector3[])(object)new Vector3[ourSpline.points.Length - nodeIndex];
+								Vector3[] array6 = (Vector3[])(object)new Vector3[nodeIndex + 1];
+								Vector3[] array7 = (Vector3[])(object)new Vector3[nodeIndex + 1];
+								for (int num2 = ourSpline.points.Length - 1; num2 >= 0; num2--)
 								{
-									array4[num2 - nodeIndex] = ourSpline.points[num2];
-									array5[num2 - nodeIndex] = ourSpline.tangents[num2];
+									if (num2 >= nodeIndex)
+									{
+										array4[num2 - nodeIndex] = ourSpline.points[num2];
+										array5[num2 - nodeIndex] = ourSpline.tangents[num2];
+									}
+									if (num2 <= nodeIndex)
+									{
+										array6[num2] = ourSpline.points[num2];
+										array7[num2] = ourSpline.tangents[num2];
+									}
 								}
-								if (num2 <= nodeIndex)
-								{
-									array6[num2] = ourSpline.points[num2];
-									array7[num2] = ourSpline.tangents[num2];
-								}
+								ourSpline.SetAll(array6, array7, ourSpline);
+								trainTrackSpline2.SetAll(array4, array5, ourSpline);
+								nodeIndex--;
+								return true;
 							}
-							ourSpline.SetAll(array6, array7, ourSpline);
-							trainTrackSpline2.SetAll(array4, array5, ourSpline);
-							nodeIndex--;
-							return true;
+							return false;
 						}
-						return false;
 					}
 				}
 			}
@@ -152,12 +141,12 @@ public class CollateTrainTracks : ProceduralComponent
 					theirEndPos = otherSpline.GetEndPointWorld();
 					theirStartTangent = otherSpline.GetStartTangentWorld();
 					theirEndTangent = otherSpline.GetEndTangentWorld();
-					if (!CompareNodes2(ourStart: false, theirStart: true) && !CompareNodes2(ourStart: false, theirStart: false) && !CompareNodes2(ourStart: true, theirStart: true))
+					if (!TryLinkUpTracks(ourStart: false, theirStart: true) && !TryLinkUpTracks(ourStart: false, theirStart: false) && !TryLinkUpTracks(ourStart: true, theirStart: true))
 					{
-						CompareNodes2(ourStart: true, theirStart: false);
+						TryLinkUpTracks(ourStart: true, theirStart: false);
 					}
 				}
-				bool CompareNodes2(bool ourStart, bool theirStart)
+				bool TryLinkUpTracks(bool ourStart, bool theirStart)
 				{
 					//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 					//IL_0004: Unknown result type (might be due to invalid IL or missing references)
@@ -208,18 +197,19 @@ public class CollateTrainTracks : ProceduralComponent
 				}
 			}
 		}
-		static bool NodesConnect(Vector3 val, Vector3 theirPos, Vector3 val2, Vector3 theirTangent)
+	}
+
+	private static bool NodesConnect(Vector3 ourPos, Vector3 theirPos, Vector3 ourTangent, Vector3 theirTangent)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		if (Vector3.SqrMagnitude(ourPos - theirPos) < 0.010000001f)
 		{
-			//IL_0000: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-			if (Vector3.SqrMagnitude(val - theirPos) < 0.010000001f)
-			{
-				return Vector3.Angle(val2, theirTangent) < 10f;
-			}
-			return false;
+			return Vector3.Angle(ourTangent, theirTangent) < 10f;
 		}
+		return false;
 	}
 }

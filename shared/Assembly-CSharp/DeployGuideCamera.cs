@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(CommandBufferManager))]
+[RequireComponent(typeof(Camera))]
 public class DeployGuideCamera : SingletonComponent<DeployGuideCamera>
 {
 	public DeployGuideRendererResources Resources;

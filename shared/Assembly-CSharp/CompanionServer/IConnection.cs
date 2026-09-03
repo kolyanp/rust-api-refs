@@ -6,6 +6,8 @@ public interface IConnection
 {
 	long ConnectionId { get; }
 
+	ulong ChannelSteamId { get; }
+
 	IRemoteControllable CurrentCamera { get; }
 
 	bool IsControllingCamera { get; }

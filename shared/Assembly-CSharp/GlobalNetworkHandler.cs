@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using ConVar;
 using Facepunch;
-using Facepunch.Math;
 using Network;
 using ProtoBuf;
 using Rust;
@@ -181,7 +180,6 @@ public class GlobalNetworkHandler : PointEntity
 	private void SendEntityDelete(NetworkableId networkableId, SendInfo info)
 	{
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.globalNetworkedBases)
 		{
 			NetWrite netWrite = ClientRPCStart("CLIENT_EntityDeletes");
@@ -192,29 +190,14 @@ public class GlobalNetworkHandler : PointEntity
 				netWrite.EntityID(networkableId);
 			}
 			ClientRPCSend(netWrite, info);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedOutbound(Message.Type.EntityDestroy, networkableId, null, (int)netWrite.Length, null, Epoch.Current, server: true, "GlobalNetwork Delete");
-			}
 		}
 	}
 
 	private void SendGlobalEntities(GlobalEntityCollection entities, SendInfo info)
 	{
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		if (!Net.globalNetworkedBases)
+		if (Net.globalNetworkedBases)
 		{
-			return;
-		}
-		ClientRPC(RpcTarget.SendInfo("CLIENT_EntityUpdates", info), entities);
-		if (!PacketProfiler.shouldCaptureDetailedProfiling)
-		{
-			return;
-		}
-		foreach (GlobalEntityData entity in entities.entities)
-		{
-			string entityName = StringPool.Get(entity.prefabId);
-			PacketProfiler.LogDetailedOutbound(Message.Type.Entities, entity.uid, entityName, -1, null, Epoch.Current, server: true, "GlobalNetwork Update");
+			ClientRPC(RpcTarget.SendInfo("CLIENT_EntityUpdates", info), entities);
 		}
 	}
 

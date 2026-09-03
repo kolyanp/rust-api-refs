@@ -26,6 +26,8 @@ public class AnimationEvents : BaseMonoBehaviour
 
 	public bool IsBusy;
 
+	public string[] ignoreInheritedEffectEvents;
+
 	protected void OnEnable()
 	{
 		if ((Object)(object)rootObject == (Object)null)

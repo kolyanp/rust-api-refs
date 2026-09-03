@@ -1,10 +1,40 @@
+using System;
+using Facepunch;
+using ProtoBuf;
 using UnityEngine;
 
 public class LockedByEntCrate : LootContainer
 {
-	public GameObject lockingEnt;
+	[NonSerialized]
+	public BaseEntity lockingEnt;
 
-	public void SetLockingEnt(GameObject ent)
+	public override void Save(SaveInfo info)
+	{
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		base.Save(info);
+		if (info.forDisk && lockingEnt.IsValid())
+		{
+			info.msg.lockedByEntCrate = Pool.Get<LockedByEntCrate>();
+			info.msg.lockedByEntCrate.lockingEntId = lockingEnt.net.ID;
+		}
+	}
+
+	public override void Load(LoadInfo info)
+	{
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		base.Load(info);
+		if (info.fromDisk && info.msg.lockedByEntCrate != null && info.msg.lockedByEntCrate.lockingEntId != default(NetworkableId))
+		{
+			lockingEnt = BaseNetworkable.serverEntities.Find(info.msg.lockedByEntCrate.lockingEntId) as BaseEntity;
+			SetLockingEnt(lockingEnt);
+		}
+	}
+
+	public void SetLockingEnt(BaseEntity ent)
 	{
 		CancelInvoke(Think);
 		SetLocked(isLocked: false);

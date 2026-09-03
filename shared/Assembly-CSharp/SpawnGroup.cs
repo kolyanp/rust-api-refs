@@ -359,14 +359,14 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
 		pos = Vector3.zero;
 		rot = Quaternion.identity;
 		bool flag = DoesRequireNavmeshToSpawn(prefabRef.Get());
-		BaseEntity entity = GameObjectEx.ToBaseEntity(((Component)this).transform);
+		GameObjectEx.ToBaseEntity(((Component)this).transform);
 		int num = Random.Range(0, spawnPoints.Length);
 		for (int i = 0; i < spawnPoints.Length; i++)
 		{
@@ -378,7 +378,7 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 				{
 					return baseSpawnPoint;
 				}
-				if (RustNavMeshHelpers.SamplePositionWS(entity, pos, out var hitWS, 2f, -1))
+				if (RustNavMeshHelpers.SamplePosition(pos, out var hitWS, 2f, -1))
 				{
 					pos = ((NavMeshHit)(ref hitWS)).position;
 					return baseSpawnPoint;

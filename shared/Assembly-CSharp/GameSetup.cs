@@ -36,10 +36,6 @@ public class GameSetup : MonoBehaviour
 
 	public string loadLevelScene = "";
 
-	public bool loadSave;
-
-	public string loadSaveFile = "";
-
 	public string initializationFile = "";
 
 	public string initializationCommands = "";
@@ -156,10 +152,8 @@ public class GameSetup : MonoBehaviour
 		ConVar.GC.unload();
 		yield return CoroutineEx.waitForEndOfFrame;
 		yield return CoroutineEx.waitForEndOfFrame;
-		if (loadSaveFile.StartsWith('"') && loadSaveFile.EndsWith('"'))
-		{
-			loadSaveFile = loadSaveFile.Substring(1, loadSaveFile.Length - 2);
-		}
-		yield return ((MonoBehaviour)this).StartCoroutine(Bootstrap.StartServer(loadSave, loadSaveFile, allowOutOfDateSaves: true));
+		bool doLoad = false;
+		string empty = string.Empty;
+		yield return ((MonoBehaviour)this).StartCoroutine(Bootstrap.StartServer(doLoad, empty, allowOutOfDateSaves: true));
 	}
 }

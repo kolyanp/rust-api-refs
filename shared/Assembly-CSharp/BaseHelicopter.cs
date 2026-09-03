@@ -36,8 +36,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		}
 	}
 
-	[Header("Helicopter")]
 	[SerializeField]
+	[Header("Helicopter")]
 	public float engineThrustMax;
 
 	[SerializeField]
@@ -69,8 +69,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[Range(0.1f, 0.95f)]
 	public float liftDotMax = 0.75f;
 
-	[SerializeField]
 	[Range(0.1f, 0.95f)]
+	[SerializeField]
 	public float altForceDotMin = 0.85f;
 
 	[SerializeField]

@@ -694,6 +694,21 @@ public class CorePlugin : CarbonPlugin
 		}
 	}
 
+	[CommandVar("enableproxy", "Enabling proxies will make certain plugins to compile on Carbon and not Oxide; adds proxies for features Rust no longer supports. (Enabled by default)")]
+	[AuthLevel(2)]
+	private bool EnableProxy
+	{
+		get
+		{
+			return Community.Runtime.Config.Compiler.EnableProxy;
+		}
+		set
+		{
+			Community.Runtime.Config.Compiler.EnableProxy = value;
+			Community.Runtime.SaveConfig();
+		}
+	}
+
 	[CommandVar("consoleinfo", "Show the Windows-only Carbon information at the bottom of the console.")]
 	[AuthLevel(2)]
 	private bool ConsoleInfo
@@ -4573,6 +4588,8 @@ public class CorePlugin : CarbonPlugin
 	{
 		ProcessableFiles.Clear();
 		Config config = Community.Runtime.Config;
+		IScriptProcessor scriptProcessor = Community.Runtime.ScriptProcessor;
+		IZipScriptProcessor zipScriptProcessor = Community.Runtime.ZipScriptProcessor;
 		string[] filesWithExtension = OsEx.Folder.GetFilesWithExtension(Defines.GetScriptsFolder(), "cs", config.Watchers.ScriptWatcherOption);
 		foreach (string path in filesWithExtension)
 		{
@@ -4580,7 +4597,7 @@ public class CorePlugin : CarbonPlugin
 			{
 				ProcessableFile item = new ProcessableFile
 				{
-					Id = Path.GetFileNameWithoutExtension(path),
+					Id = scriptProcessor.GetInstanceKey(path),
 					Path = path,
 					Type = ProcessableFile.Types.Script
 				};
@@ -4594,7 +4611,7 @@ public class CorePlugin : CarbonPlugin
 			{
 				ProcessableFile item2 = new ProcessableFile
 				{
-					Id = Path.GetFileNameWithoutExtension(path2),
+					Id = zipScriptProcessor.GetInstanceKey(path2),
 					Path = path2,
 					Type = ProcessableFile.Types.CSZIP
 				};

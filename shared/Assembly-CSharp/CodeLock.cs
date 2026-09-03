@@ -375,10 +375,11 @@ public class CodeLock : BaseLock, IReskinCallback
 		DoEffect(effectCodeChanged.resourcePath);
 		SendNetworkUpdate();
 		UpdateParentBox();
+		MarkGroupUpkeepDirty();
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void TryUnlock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && IsLocked() && Interface.CallHook("CanUnlock", rpc.player, this) == null && !IsCodeEntryBlocked() && whitelistPlayers.Contains(rpc.player.userID))
@@ -389,8 +390,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void TryLock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && !IsLocked() && code.Length == 4 && Interface.CallHook("CanLock", rpc.player, this) == null && whitelistPlayers.Contains(rpc.player.userID))
@@ -410,8 +411,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		wrongCodes = 0;
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void UnlockWithCode(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract() || !IsLocked() || IsCodeEntryBlocked())
@@ -459,6 +460,7 @@ public class CodeLock : BaseLock, IReskinCallback
 				whitelistPlayers.Add(rpc.player.userID);
 				wrongCodes = 0;
 				UpdateParentBox();
+				MarkGroupUpkeepDirty();
 			}
 			Facepunch.Rust.Analytics.Azure.OnCodeLockEntered(rpc.player, this, isGuest: false);
 		}
@@ -467,6 +469,7 @@ public class CodeLock : BaseLock, IReskinCallback
 			DoEffect(effectCodeChanged.resourcePath);
 			guestPlayers.Add(rpc.player.userID);
 			UpdateParentBox();
+			MarkGroupUpkeepDirty();
 			Facepunch.Rust.Analytics.Azure.OnCodeLockEntered(rpc.player, this, isGuest: true);
 		}
 	}
@@ -484,6 +487,14 @@ public class CodeLock : BaseLock, IReskinCallback
 		if ((Object)(object)baseEntity != (Object)null && baseEntity is DisplayingBoxStorage)
 		{
 			baseEntity.SendNetworkUpdate();
+		}
+	}
+
+	private void MarkGroupUpkeepDirty()
+	{
+		if (GetParentEntity() is DecayEntity decayEntity)
+		{
+			decayEntity.GetBuildingPrivilege()?.RecalculateGroupUpkeep();
 		}
 	}
 

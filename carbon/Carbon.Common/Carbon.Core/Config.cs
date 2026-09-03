@@ -21,6 +21,8 @@ public class Config
 
 	public class CompilerConfig
 	{
+		public bool EnableProxy = true;
+
 		public bool CompileTestMode;
 
 		public bool UnloadOnFailure;

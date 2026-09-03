@@ -147,12 +147,12 @@ public class MixingTable : StorageContainer
 	{
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 		RecipeDictionary.CacheRecipes(Recipes);
 	}
 
-	private bool CanAcceptItem(Item item, int targetSlot)
+	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		if (item == null)
 		{
@@ -182,10 +182,10 @@ public class MixingTable : StorageContainer
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	private void SV_FillInventoryForRecipe(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player == (Object)null)
@@ -301,8 +301,8 @@ public class MixingTable : StorageContainer
 		ItemManager.DoRemoves();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void SVSwitch(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnMixingTableToggle", this, msg.player) != null)

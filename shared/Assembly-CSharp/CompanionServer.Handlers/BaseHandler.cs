@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 
@@ -44,7 +45,7 @@ public abstract class BaseHandler<T> : IHandler, IPooled where T : class
 		return ValidationResult.Success;
 	}
 
-	public abstract void Execute();
+	public abstract ValueTask Execute();
 
 	protected void SendSuccess()
 	{

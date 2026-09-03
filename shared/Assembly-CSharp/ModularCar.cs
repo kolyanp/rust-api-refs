@@ -11,7 +11,7 @@ using Rust.Modular;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVelocity, CarPhysics<ModularCar>.ICar, IVehicleLockUser, VehicleChassisVisuals<ModularCar>.IClientWheelUser
+public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVelocity, CarPhysics<ModularCar>.ICar, IHandbrakeCar, IVehicleLockUser, VehicleChassisVisuals<ModularCar>.IClientWheelUser
 {
 	private class DriverSeatInputs
 	{
@@ -22,6 +22,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		public float brakeInput;
 
 		public float throttleInput;
+
+		public bool handbrakeInput;
 	}
 
 	[Serializable]
@@ -126,8 +128,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 	[SerializeField]
 	private BoxCollider mainChassisCollider;
 
-	[Header("Towing")]
 	[SerializeField]
+	[Header("Towing")]
 	private TriggerTowing towingTrigger;
 
 	[SerializeField]
@@ -390,6 +392,19 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		return 1f;
 	}
 
+	public bool GetHandbrakeInput()
+	{
+		BufferList<DriverSeatInputs> values = driverSeatInputs.Values;
+		for (int i = 0; i < values.Count; i++)
+		{
+			if (values[i].handbrakeInput)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public override void VehicleFixedUpdate()
 	{
 		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
@@ -516,6 +531,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 			}
 		}
 		driverSeatInputs.steerMod = inputState.IsDown(BUTTON.SPRINT);
+		driverSeatInputs.handbrakeInput = inputState.IsDown(BUTTON.DUCK);
 		float num = 0f;
 		if (inputState.IsDown(BUTTON.FORWARD))
 		{
@@ -846,7 +862,7 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 			byte b = (byte)(GetBrakeInput() * 15f);
 			byte arg = (byte)(num + (b << 4));
 			byte arg2 = (byte)(GetFuelFraction() * 255f);
-			ClientRPC(RpcTarget.NetworkGroup("ModularCarUpdate"), SteerAngle, arg, DriveWheelVelocity, arg2);
+			ClientRPC(RpcTarget.NetworkGroup("ModularCarUpdate"), SteerAngle, arg, DriveWheelVelocity, arg2, GetHandbrakeInput());
 		}
 	}
 
@@ -981,8 +997,8 @@ public class ModularCar : BaseModularVehicle, TakeCollisionDamage.ICanRestoreVel
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

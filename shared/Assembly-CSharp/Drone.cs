@@ -42,6 +42,9 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 	[ServerVar]
 	public static bool disableSamTargeting;
 
+	[ServerVar(Help = "Radius at which a SAM missile's proximity fuse detonates against drones, capped by the missile's 20m trigger sphere")]
+	public static float samProximityFuseRadius = 10f;
+
 	[ClientVar(ClientAdmin = true)]
 	public static float windTimeDivisor = 10f;
 
@@ -191,7 +194,7 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 
 	public override bool CanAcceptInput => true;
 
-	public SamSite.SamTargetType SAMTargetType => SamSite.targetTypeVehicle;
+	public SamSite.SamTargetType SAMTargetType => SamSite.targetTypeDrone;
 
 	public override bool PositionTickFixedTime
 	{
@@ -674,6 +677,21 @@ public class Drone : RemoteControlEntity, IRemoteControllableClientCallbacks, IR
 		if (base.isServer)
 		{
 			lastCollision = TimeEx.currentTimestamp;
+		}
+	}
+
+	public void OnTriggerStay(Collider other)
+	{
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
+		if (base.isServer && ((Component)other).CompareTag("MLRSRocketTrigger"))
+		{
+			TimedExplosive componentInParent = ((Component)other).GetComponentInParent<TimedExplosive>();
+			if (!((Object)(object)componentInParent == (Object)null) && !(Vector3.Distance(((Component)componentInParent).transform.position, CenterPoint()) > samProximityFuseRadius))
+			{
+				Hurt(base.health * 2f, DamageType.Explosion, componentInParent.creatorEntity, useProtection: false);
+				componentInParent.Explode();
+			}
 		}
 	}
 

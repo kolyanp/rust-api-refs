@@ -96,7 +96,7 @@ public static class Analytics
 
 			public override int GetHashCode()
 			{
-				return ((((17 * 23 + Item.GetHashCode()) * 31 + Consumed.GetHashCode()) * 37 + Entity.GetHashCode()) * 47 + Category.GetHashCode()) * 53 + ((object)Unsafe.As<NetworkableId, NetworkableId>(ref EntityId)/*cast due to constrained. prefix*/).GetHashCode();
+				return ((((17 * 23 + Item.GetHashCode()) * 31 + Consumed.GetHashCode()) * 37 + Entity.GetHashCode()) * 47 + Category.GetHashCode()) * 53 + ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref EntityId)/*cast due to constrained. prefix*/).GetHashCode();
 			}
 		}
 
@@ -355,6 +355,24 @@ public static class Analytics
 			public const string ClanMemberRemoved = "clan_member_removed";
 
 			public const string ClanScoreEvent = "clan_score_event";
+
+			public const string PowerGridStageChanged = "power_grid_stage_changed";
+
+			public const string PowerGridFuseInserted = "power_grid_fuse_inserted";
+
+			public const string CarOpenEditing = "car_open_editing";
+
+			public const string AirfieldChinookCall = "airfield_chinook_call";
+
+			public const string SatelliteLockTrajectory = "satellite_lock_trajectory";
+
+			public const string SatelliteCrashed = "satellite_crashed";
+
+			public const string IOEntityConnected = "io_entity_connected";
+
+			public const string WaterTreatmentPlantEnabled = "water_treatment_plant_enabled";
+
+			public const string OilRigFuelSwitchStarted = "oil_rig_fuel_switch_started";
 		}
 
 		private struct SimpleItemAmount(Item item)
@@ -405,6 +423,8 @@ public static class Analytics
 		}
 
 		private static Dictionary<int, string> geneCache = new Dictionary<int, string>();
+
+		private static readonly HashSet<string> RpcLoggingExclusions = new HashSet<string> { "performancereport", "broadcastsignalfromclient", "moveitem", "updatesteaminventory", "rpc_openloot", "receiveclientrotation", "rpc_opendoor", "rpc_closedoor" };
 
 		public static int MaxMSPerFrame = 5;
 
@@ -569,9 +589,18 @@ public static class Analytics
 			obj["changeset"] = ((current != null) ? current.Scm.ChangeId : null) ?? "editor";
 			BuildInfo current2 = BuildInfo.Current;
 			obj["branch"] = ((current2 != null) ? current2.Scm.Branch : null) ?? "editor";
-			obj["network_version"] = 2632.ToString();
+			obj["network_version"] = 2633.ToString();
 			obj["eos_sdk"] = ((object)VersionInterface.GetVersion())?.ToString() ?? "disabled";
 			return obj;
+		}
+
+		public static bool ShouldLogRPC(string rpc)
+		{
+			if (RpcLoggingExclusions.Contains(rpc))
+			{
+				return false;
+			}
+			return true;
 		}
 
 		private static IEnumerator AggregateLoop()
@@ -906,8 +935,8 @@ public static class Analytics
 					.AddField("ip_convar", Net.sv.ip)
 					.AddField("port_convar", Net.sv.port)
 					.AddField("net_protocol", Net.sv.ProtocolId)
-					.AddField("protocol_network", 2632)
-					.AddField("protocol_save", 287);
+					.AddField("protocol_network", 2633)
+					.AddField("protocol_save", 288);
 				BuildInfo current = BuildInfo.Current;
 				EventRecord eventRecord2 = eventRecord.AddField("changeset", ((current != null) ? current.Scm.ChangeId : null) ?? "0").AddField("unity_version", Application.unityVersion);
 				BuildInfo current2 = BuildInfo.Current;
@@ -963,7 +992,8 @@ public static class Analytics
 						{
 							shortname = y.itemDef.shortname,
 							amount = (int)y.amount
-						})
+						}),
+						wm_tris = x.GetWorldModelTriCount()
 					};
 				})).AddField("changeset", BuildInfo.Current.Scm.ChangeId));
 			}
@@ -1440,7 +1470,6 @@ public static class Analytics
 
 		public static void OnFirstLooted(BaseEntity entity, BasePlayer player)
 		{
-			//IL_005d: Unknown result type (might be due to invalid IL or missing references)
 			if (!GameplayAnalytics)
 			{
 				return;
@@ -1449,10 +1478,11 @@ public static class Analytics
 			{
 				if (entity is LootContainer lootContainer)
 				{
-					LogItemsLooted(player, entity, lootContainer.inventory);
-					SubmitPoint(EventRecord.New("loot_entity").AddField("entity", (BaseNetworkable)entity).AddField("player", (BaseNetworkable)player)
-						.AddField("monument", GetMonument(entity))
-						.AddField("biome", GetBiome(((Component)entity).transform.position)));
+					LogContainerLooted(lootContainer.inventory, entity, player);
+				}
+				else if (entity is RespawnableLootFridge respawnableLootFridge)
+				{
+					LogContainerLooted(respawnableLootFridge.inventory, entity, player);
 				}
 				else if (entity is LootableCorpse { containers: var containers })
 				{
@@ -1461,6 +1491,26 @@ public static class Analytics
 						LogItemsLooted(player, entity, container);
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		private static void LogContainerLooted(ItemContainer container, BaseEntity entity, BasePlayer player)
+		{
+			//IL_004e: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				LogItemsLooted(player, entity, container);
+				SubmitPoint(EventRecord.New("loot_entity").AddField("entity", (BaseNetworkable)entity).AddField("player", (BaseNetworkable)player)
+					.AddField("monument", GetMonument(entity))
+					.AddField("biome", GetBiome(((Component)entity).transform.position)));
 			}
 			catch (Exception ex)
 			{
@@ -1642,7 +1692,7 @@ public static class Analytics
 					.AddField("message", message);
 				if (BuildInfo.Current != null)
 				{
-					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2632);
+					eventRecord.AddField("changeset", BuildInfo.Current.Scm.ChangeId).AddField("network", 2633);
 				}
 				switch (type)
 				{
@@ -3335,6 +3385,154 @@ public static class Analytics
 					.AddField("event_type", ((object)(*(ClanScoreEventType*)(&entry.Type))/*cast due to constrained. prefix*/).ToString())
 					.AddField("event_score", entry.Score)
 					.AddField("event_multiplier", entry.Multiplier));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnPowerGridStageChanged(int prevStage, int newStage)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("power_grid_stage_changed").AddField("previous_stage", prevStage).AddField("new_stage", newStage));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnPowerGridFuseInserted(BasePlayer player, Item fuse, int fuses)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("power_grid_fuse_inserted").AddField("player_steamid", (BaseNetworkable)player).AddField("fuses_inserted", fuses));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnCarOpenEditing(BasePlayer player, ModularCarGarage garage)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("car_open_editing").AddField("player_steamid", player.UserIDString).AddField("garage", (BaseNetworkable)garage));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnAirfieldChinookCall()
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("airfield_chinook_call"));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnSatelliteLockTrajectory(BasePlayer player, Vector3 targetPos)
+		{
+			//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("satellite_lock_trajectory").AddField("player_steamid", player.UserIDString).AddField("target_position", targetPos));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnSatelliteCrashed(bool crashed, Vector3 crashPos)
+		{
+			//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("satellite_crashed").AddField("crashed", crashed).AddField("crash_position", crashPos));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnIOEntityConnected(BasePlayer player, IOEntity inputIOEntity, IOEntity outputIOEntity, WireTool.WireColour wireColour)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("io_entity_connected").AddField("player", (BaseNetworkable)player).AddField("input_io_entity", (BaseNetworkable)inputIOEntity)
+					.AddField("output_io_entity", (BaseNetworkable)outputIOEntity)
+					.AddField("wire_colour", (int)wireColour));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnWaterTreatmentPlantEnabled(BasePlayer player, Item item)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("water_treatment_plant_enabled").AddField("player", (BaseNetworkable)player).AddField("item", item));
+			}
+			catch (Exception ex)
+			{
+				Debug.LogException(ex);
+			}
+		}
+
+		public static void OnOilRigFuelSwitchStarted(BasePlayer player)
+		{
+			if (!GameplayAnalytics)
+			{
+				return;
+			}
+			try
+			{
+				SubmitPoint(EventRecord.New("oil_rig_fuel_switch_started").AddField("player", (BaseNetworkable)player));
 			}
 			catch (Exception ex)
 			{

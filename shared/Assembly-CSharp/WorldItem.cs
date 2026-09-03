@@ -202,8 +202,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void Pickup(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && this.item != null && allowPickup && Interface.CallHook("OnItemPickup", this.item, msg.player, this) == null && CanOpenInSafeZone(msg.player))
@@ -226,8 +226,8 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 	{
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void PickupTimer(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && item != null && allowPickup && CanOpenInSafeZone(msg.player))
@@ -301,7 +301,7 @@ public class WorldItem : BaseEntity, PlayerInventory.ICanMoveFrom
 		if (!((Object)(object)component == (Object)null) && component.canLootInWorld)
 		{
 			BasePlayer player = rpc.player;
-			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && CanOpenInSafeZone(player) && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(this))
+			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && !player.IsBlockedFromLootingByMountable() && CanOpenInSafeZone(player) && Interface.CallHook("CanLootEntity", player, this) == null && player.inventory.loot.StartLootingEntity(this))
 			{
 				SetFlagLocal(Flags.Open, b: true);
 				player.inventory.loot.AddContainer(item.contents);

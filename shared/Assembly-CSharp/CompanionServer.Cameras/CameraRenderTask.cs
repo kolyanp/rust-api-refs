@@ -342,7 +342,7 @@ public class CameraRenderTask : CustomYieldInstruction, IDisposable
 		JobHandle val6 = IJobExtensions.Schedule<RaycastColliderProcessingJob>(raycastColliderProcessingJob, val5);
 		JobHandle val7 = IJobExtensions.Schedule<RaycastOutputCompressJob>(obj, val5);
 		_pendingJob = JobHandle.CombineDependencies(val7, val6);
-		return sampleOffset + sampleCount;
+		return (sampleOffset + sampleCount) % samplePositions.Length;
 	}
 
 	public int ExtractRayData(byte[] buffer, List<int> hitColliderIds = null, List<int> foundColliderIds = null)

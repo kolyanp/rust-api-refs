@@ -67,6 +67,10 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		public bool isFrontWheel;
 
 		public bool isLeftWheel;
+
+		public float handbrakeGripCurrent = 1f;
+
+		public bool isHandbrakeLocked;
 	}
 
 	private readonly ServerWheelData[] wheelData;
@@ -208,13 +212,13 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0226: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0231: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0321: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0403: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0479: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0354: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0446: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0460: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0412: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0417: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04bc: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("CarPhysics.FixedUpdate"))
 		{
 			if (rBody.centerOfMass != prevLocalCOM)
@@ -257,11 +261,14 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 				goto IL_011c;
 			}
 			wasSleeping = true;
-			goto IL_0625;
-			IL_0615:
+			goto IL_066b;
+			IL_066b:
+			hadDriver = hasDriver;
+			return;
+			IL_065b:
 			wasSleeping = false;
-			goto IL_0625;
-			IL_044a:
+			goto IL_066b;
+			IL_048d:
 			int num2;
 			bool flag = (byte)num2 != 0;
 			float num3;
@@ -304,26 +311,24 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 			float maxForwardSpeed;
 			float brakeInput;
 			float num6;
+			bool flag3;
 			float maxDriveForce;
 			for (int j = 0; j < wheelData.Length; j++)
 			{
 				ServerWheelData wd = wheelData[j];
 				UpdateLocalFrame(wd, dt);
-				ComputeTyreForces(wd, speed, maxDriveForce, maxForwardSpeed, num3, brakeInput, num6);
+				ComputeTyreForces(wd, speed, maxDriveForce, maxForwardSpeed, num3, brakeInput, num6, flag3, dt);
 				ApplyTyreForces(wd);
 			}
 			ComputeOverallForces();
-			goto IL_0615;
-			IL_0625:
-			hadDriver = hasDriver;
-			return;
+			goto IL_065b;
 			IL_011c:
-			bool flag3 = vehicleSettings.canSleep && !hasDriver && Time.time > lastMovingTime + 10f;
-			if (flag3 && (car.GetParentEntity() as BaseVehicle).IsValid())
+			bool flag4 = vehicleSettings.canSleep && !hasDriver && Time.time > lastMovingTime + 10f;
+			if (flag4 && (car.GetParentEntity() as BaseVehicle).IsValid())
 			{
-				flag3 = false;
+				flag4 = false;
 			}
-			if (flag3)
+			if (flag4)
 			{
 				for (int k = 0; k < wheelData.Length; k++)
 				{
@@ -341,7 +346,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 				{
 					rBody.isKinematic = true;
 				}
-				goto IL_0615;
+				goto IL_065b;
 			}
 			speedAngle = Vector3.Angle(rBody.linearVelocity, transform.forward) * Mathf.Sign(Vector3.Dot(rBody.linearVelocity, transform.right));
 			maxDriveForce = car.GetMaxDriveForce();
@@ -349,15 +354,19 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 			num3 = (car.IsOn() ? car.GetThrottleInput() : 0f);
 			float steerInput = car.GetSteerInput();
 			brakeInput = (InSlowSpeedExitMode ? 1f : car.GetBrakeInput());
+			flag3 = !vehicleSettings.disableHandbrakes && car is IHandbrakeCar handbrakeCar && handbrakeCar.GetHandbrakeInput();
 			num6 = 1f;
-			if (num < 3f)
+			if (!flag3)
 			{
-				num6 = 2.75f;
-			}
-			else if (num < 9f)
-			{
-				float num7 = Mathf.InverseLerp(9f, 3f, num);
-				num6 = Mathf.Lerp(1f, 2.75f, num7);
+				if (num < 3f)
+				{
+					num6 = 2.75f;
+				}
+				else if (num < 9f)
+				{
+					float num7 = Mathf.InverseLerp(9f, 3f, num);
+					num6 = Mathf.Lerp(1f, 2.75f, num7);
+				}
 			}
 			maxDriveForce *= num6;
 			ComputeSteerAngle(num3, steerInput, dt, speed);
@@ -373,7 +382,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 				float num11 = Mathf.Max(num8, num9);
 				num11 = Mathf.Max(num11, car.GetModifiedDrag());
 				rBody.linearDamping = Mathf.Max(num10, num11);
-				rBody.angularDamping = num11 * 0.5f;
+				rBody.angularDamping = Mathf.Max(vehicleSettings.baseAngularDamping, num11 * 0.5f);
 				timeSinceWaterCheck = TimeSince.op_Implicit(0f);
 			}
 			num4 = 0;
@@ -386,7 +395,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 					if (((Vector3)(ref val)).magnitude < 2.5f && TimeSince.op_Implicit(car.timeSinceLastPush) > 2f)
 					{
 						num2 = ((car.OnSurface != VehicleTerrainHandler.Surface.Frictionless) ? 1 : 0);
-						goto IL_044a;
+						goto IL_048d;
 					}
 				}
 				num2 = 0;
@@ -395,7 +404,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 			{
 				num2 = 0;
 			}
-			goto IL_044a;
+			goto IL_048d;
 		}
 	}
 
@@ -479,7 +488,7 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 			return;
 		}
 		float num9 = Mathf.Abs(SteerAngle / num8);
-		float num10 = 1f - num2 * 0.7f;
+		float num10 = 1f - num2 * vehicleSettings.steerLimitLerpPenalty;
 		bool steerSpeedMod = car.GetSteerSpeedMod(speed);
 		if ((SteerAngle == 0f || Mathf.Sign(num8) == Mathf.Sign(SteerAngle)) && Mathf.Abs(num8) > Mathf.Abs(SteerAngle))
 		{
@@ -684,94 +693,132 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		wd.localRigForce = val4 + val3;
 	}
 
-	private void ComputeTyreForces(ServerWheelData wd, float speed, float maxDriveForce, float maxSpeed, float throttleInput, float brakeInput, float driveForceMultiplier)
+	private void ComputeTyreForces(ServerWheelData wd, float speed, float maxDriveForce, float maxSpeed, float throttleInput, float brakeInput, float driveForceMultiplier, bool handbrakeInput, float dt)
 	{
-		//IL_0388: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0393: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0398: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0311: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0319: Unknown result type (might be due to invalid IL or missing references)
-		//IL_036c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0374: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0332: Unknown result type (might be due to invalid IL or missing references)
-		float absSpeed = Mathf.Abs(speed);
+		//IL_0500: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0505: Unknown result type (might be due to invalid IL or missing references)
+		//IL_050b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0510: Unknown result type (might be due to invalid IL or missing references)
+		//IL_042f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0434: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0439: Unknown result type (might be due to invalid IL or missing references)
+		//IL_043d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0456: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0489: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0491: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04aa: Unknown result type (might be due to invalid IL or missing references)
+		float num = Mathf.Abs(speed);
+		bool flag = (wd.isHandbrakeLocked = handbrakeInput && !wd.isFrontWheel);
+		if (flag)
+		{
+			brakeInput = 1f;
+		}
+		float num2 = (flag ? vehicleSettings.handbrakeGripMultiplier : 1f);
+		float num3;
+		if (flag)
+		{
+			num3 = vehicleSettings.driftLerpSpeed;
+		}
+		else
+		{
+			float num4 = Mathf.InverseLerp(0f, 10f, num);
+			num3 = Mathf.Lerp(vehicleSettings.driftRecoverySpeed, vehicleSettings.driftRecoverySpeed * 0.15f, num4);
+		}
+		wd.handbrakeGripCurrent = Mathf.MoveTowards(wd.handbrakeGripCurrent, num2, dt * num3);
 		if (vehicleSettings.tankSteering && brakeInput == 0f)
 		{
 			throttleInput = ((!wd.isLeftWheel) ? TankThrottleRight : TankThrottleLeft);
 		}
-		float num = (wd.wheel.powerWheel ? throttleInput : 0f);
-		wd.hasThrottleInput = num != 0f;
-		float num2 = vehicleSettings.maxDriveSlip;
-		if (Mathf.Sign(num) != Mathf.Sign(wd.localVelocity.y))
+		float num5 = (wd.wheel.powerWheel ? throttleInput : 0f);
+		wd.hasThrottleInput = num5 != 0f;
+		float num6 = vehicleSettings.maxDriveSlip;
+		if (Mathf.Sign(num5) != Mathf.Sign(wd.localVelocity.y))
 		{
-			num2 -= wd.localVelocity.y * Mathf.Sign(num);
+			num6 -= wd.localVelocity.y * Mathf.Sign(num5);
 		}
-		float num3 = Mathf.Abs(num);
-		float num4 = 0f - vehicleSettings.rollingResistance + num3 * (1f + vehicleSettings.rollingResistance) - brakeInput * (1f - vehicleSettings.rollingResistance);
-		if (InSlowSpeedExitMode || num4 < 0f || maxDriveForce == 0f)
+		float num7 = Mathf.Abs(num5);
+		float num8 = 0f - vehicleSettings.rollingResistance + num7 * (1f + vehicleSettings.rollingResistance) - brakeInput * (1f - vehicleSettings.rollingResistance);
+		if (InSlowSpeedExitMode || num8 < 0f || maxDriveForce == 0f)
 		{
-			num4 *= -1f;
+			num8 *= -1f;
 			wd.isBraking = true;
 		}
 		else
 		{
-			num4 *= Mathf.Sign(num);
+			num8 *= Mathf.Sign(num5);
 			wd.isBraking = false;
 		}
-		float num6;
+		float num11;
 		if (wd.isBraking)
 		{
-			float num5 = Mathf.Clamp(car.GetMaxForwardSpeed() * vehicleSettings.brakeForceMultiplier, 10f * vehicleSettings.brakeForceMultiplier, 50f * vehicleSettings.brakeForceMultiplier);
-			num5 += rBody.mass * 1.5f;
-			num6 = num4 * num5;
+			float num9 = Mathf.Clamp(car.GetMaxForwardSpeed() * vehicleSettings.brakeForceMultiplier, 10f * vehicleSettings.brakeForceMultiplier, 50f * vehicleSettings.brakeForceMultiplier);
+			num9 += rBody.mass * 1.5f;
+			if (flag)
+			{
+				float num10 = Mathf.InverseLerp(20f, 60f, Mathf.Abs(speedAngle));
+				num9 *= Mathf.Lerp(1f, 0.4f, num10);
+			}
+			num11 = num8 * num9;
 		}
 		else
 		{
-			num6 = ComputeDriveForce(speed, absSpeed, num4 * maxDriveForce, maxDriveForce, maxSpeed, driveForceMultiplier);
+			num11 = ComputeDriveForce(speed, num, num8 * maxDriveForce, maxDriveForce, maxSpeed, driveForceMultiplier);
 		}
 		if (wd.isGrounded)
 		{
 			wd.tyreSlip.x = wd.localVelocity.x;
 			wd.tyreSlip.y = wd.localVelocity.y - wd.angularVelocity * wd.wheelCollider.radius;
-			float num7 = car.OnSurface switch
+			float num12 = car.OnSurface switch
 			{
 				VehicleTerrainHandler.Surface.Road => 1f, 
 				VehicleTerrainHandler.Surface.Ice => 0.25f, 
 				VehicleTerrainHandler.Surface.Frictionless => 0f, 
 				_ => 0.75f, 
 			};
-			float num8 = wd.wheel.tyreFriction * wd.downforce * num7;
-			float num9 = 0f;
+			float num13 = wd.wheel.tyreFriction * wd.downforce * num12;
+			if (num > 1.5f && car is IHandbrakeCar)
+			{
+				float num15;
+				if (wd.isFrontWheel)
+				{
+					float num14 = Mathf.InverseLerp(10f, 16f, num);
+					num15 = Mathf.Lerp(vehicleSettings.frontTraction, 0.35f, num14);
+				}
+				else
+				{
+					num15 = vehicleSettings.rearTraction;
+				}
+				float num16 = Mathf.InverseLerp(65f, 160f, Mathf.Abs(speedAngle));
+				num13 *= Mathf.Lerp(1f, num15, num16);
+			}
+			float num17 = 0f;
 			if (!wd.isBraking)
 			{
-				num9 = Mathf.Min(Mathf.Abs(num6 * wd.tyreSlip.x) / num8, num2);
-				if (num6 != 0f && num9 < 0.1f)
+				num17 = Mathf.Min(Mathf.Abs(num11 * wd.tyreSlip.x) / num13, num6);
+				if (num11 != 0f && num17 < 0.1f)
 				{
-					num9 = 0.1f;
+					num17 = 0.1f;
 				}
 			}
-			if (Mathf.Abs(wd.tyreSlip.y) < num9)
+			if (Mathf.Abs(wd.tyreSlip.y) < num17)
 			{
-				wd.tyreSlip.y = num9 * Mathf.Sign(wd.tyreSlip.y);
+				wd.tyreSlip.y = num17 * Mathf.Sign(wd.tyreSlip.y);
 			}
-			Vector2 val = (0f - num8) * ((Vector2)(ref wd.tyreSlip)).normalized;
+			Vector2 val = (0f - num13) * ((Vector2)(ref wd.tyreSlip)).normalized;
 			val.x = Mathf.Abs(val.x) * 1.5f;
 			val.y = Mathf.Abs(val.y);
+			val.x *= wd.handbrakeGripCurrent;
 			wd.tyreForce.x = Mathf.Clamp(wd.localRigForce.x, 0f - val.x, val.x);
 			if (wd.isBraking)
 			{
-				float num10 = Mathf.Min(val.y, num6);
-				wd.tyreForce.y = Mathf.Clamp(wd.localRigForce.y, 0f - num10, num10);
+				float num18 = Mathf.Min(val.y, num11);
+				wd.tyreForce.y = Mathf.Clamp(wd.localRigForce.y, 0f - num18, num18);
 			}
 			else
 			{
-				wd.tyreForce.y = Mathf.Clamp(num6, 0f - val.y, val.y);
+				wd.tyreForce.y = Mathf.Clamp(num11, 0f - val.y, val.y);
 			}
 		}
 		else
@@ -781,31 +828,37 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 		}
 		if (wd.isGrounded)
 		{
-			float num11;
-			if (wd.isBraking)
+			float num19;
+			if (flag)
 			{
-				num11 = 0f;
+				num19 = 0f - wd.localVelocity.y;
+			}
+			else if (wd.isBraking)
+			{
+				num19 = 0f;
 			}
 			else
 			{
 				float driveForceToMaxSlip = vehicleSettings.driveForceToMaxSlip;
-				num11 = Mathf.Clamp01((Mathf.Abs(num6) - Mathf.Abs(wd.tyreForce.y)) / driveForceToMaxSlip) * num2 * Mathf.Sign(num6);
+				num19 = Mathf.Clamp01((Mathf.Abs(num11) - Mathf.Abs(wd.tyreForce.y)) / driveForceToMaxSlip) * num6 * Mathf.Sign(num11);
 			}
-			wd.angularVelocity = (wd.localVelocity.y + num11) / wd.wheelCollider.radius;
-			return;
-		}
-		float num12 = 50f;
-		float num13 = 10f;
-		if (num > 0f)
-		{
-			wd.angularVelocity += num12 * num;
+			wd.angularVelocity = (wd.localVelocity.y + num19) / wd.wheelCollider.radius;
 		}
 		else
 		{
-			wd.angularVelocity -= num13;
+			float num20 = 50f;
+			float num21 = 10f;
+			if (num5 > 0f)
+			{
+				wd.angularVelocity += num20 * num5;
+			}
+			else
+			{
+				wd.angularVelocity -= num21;
+			}
+			wd.angularVelocity -= num20 * brakeInput;
+			wd.angularVelocity = Mathf.Clamp(wd.angularVelocity, 0f, maxSpeed / wd.wheelCollider.radius);
 		}
-		wd.angularVelocity -= num12 * brakeInput;
-		wd.angularVelocity = Mathf.Clamp(wd.angularVelocity, 0f, maxSpeed / wd.wheelCollider.radius);
 	}
 
 	private void ComputeTankSteeringThrottle(float throttleInput, float steerInput, float speed)
@@ -851,29 +904,37 @@ public class CarPhysics<TCar> where TCar : BaseVehicle, CarPhysics<TCar>.ICar
 
 	private void ComputeOverallForces()
 	{
-		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
 		DriveWheelVelocity = 0f;
 		DriveWheelSlip = 0f;
 		int num = 0;
+		int num2 = 0;
 		for (int i = 0; i < wheelData.Length; i++)
 		{
 			ServerWheelData serverWheelData = wheelData[i];
 			if (serverWheelData.wheel.powerWheel)
 			{
-				DriveWheelVelocity += serverWheelData.angularVelocity;
+				if (!serverWheelData.isHandbrakeLocked)
+				{
+					DriveWheelVelocity += serverWheelData.angularVelocity;
+					num++;
+				}
 				if (serverWheelData.isGrounded)
 				{
-					float num2 = ComputeCombinedSlip(serverWheelData.localVelocity, serverWheelData.tyreSlip);
-					DriveWheelSlip += num2;
+					float num3 = ComputeCombinedSlip(serverWheelData.localVelocity, serverWheelData.tyreSlip);
+					DriveWheelSlip += num3;
 				}
-				num++;
+				num2++;
 			}
 		}
 		if (num > 0)
 		{
 			DriveWheelVelocity /= num;
-			DriveWheelSlip /= num;
+		}
+		if (num2 > 0)
+		{
+			DriveWheelSlip /= num2;
 		}
 	}
 

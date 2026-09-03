@@ -10,7 +10,6 @@ using ConVar;
 using Development.Attributes;
 using Facepunch;
 using Facepunch.Extend;
-using Facepunch.Math;
 using Facepunch.Rust.Profiling;
 using Network;
 using Network.Relay;
@@ -285,8 +284,8 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	private const bool UsePlayerOnlyOnMediumLayerShortcut = true;
 
-	[Header("BaseNetworkable")]
 	[ReadOnly]
+	[Header("BaseNetworkable")]
 	public uint prefabID;
 
 	[Tooltip("If enabled the entity will send to everyone on the server - regardless of position")]
@@ -673,9 +672,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public void TerminateOnClient(DestroyMode mode)
 	{
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		if (net != null && net.group != null && Net.sv.IsConnected())
 		{
 			LogEntry(RustLog.EntryType.Network, 2, "Term {0}", mode);
@@ -683,11 +680,6 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			netWrite.PacketID(Message.Type.EntityDestroy);
 			netWrite.EntityID(net.ID);
 			netWrite.UInt8((byte)mode);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				BaseEntity baseEntity = serverEntities.Find(net.ID) as BaseEntity;
-				PacketProfiler.LogDetailedOutbound(Message.Type.EntityDestroy, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, (int)netWrite.Length, null, Epoch.Current, server: true);
-			}
 			netWrite.Send(new SendInfo(net.group.subscribers));
 			GlobalNetworkHandler.server?.OnEntityKilled(this);
 		}
@@ -726,28 +718,20 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public void SendNetworkGroupChange()
 	{
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		if (!isSpawned || !Net.sv.IsConnected())
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		if (isSpawned && Net.sv.IsConnected())
 		{
-			return;
+			if (net.group == null)
+			{
+				Debug.LogWarning((object)(((object)this).ToString() + " changed its network group to null"));
+				return;
+			}
+			NetWrite netWrite = Net.sv.StartWrite();
+			netWrite.PacketID(Message.Type.GroupChange);
+			netWrite.EntityID(net.ID);
+			netWrite.GroupID(net.group.ID);
+			netWrite.Send(new SendInfo(net.group.subscribers));
 		}
-		if (net.group == null)
-		{
-			Debug.LogWarning((object)(((object)this).ToString() + " changed its network group to null"));
-			return;
-		}
-		NetWrite netWrite = Net.sv.StartWrite();
-		netWrite.PacketID(Message.Type.GroupChange);
-		netWrite.EntityID(net.ID);
-		netWrite.GroupID(net.group.ID);
-		if (PacketProfiler.shouldCaptureDetailedProfiling)
-		{
-			BaseEntity baseEntity = serverEntities.Find(net.ID) as BaseEntity;
-			PacketProfiler.LogDetailedOutbound(Message.Type.GroupChange, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, (int)netWrite.Length, null, Epoch.Current, server: true, "Group: " + net.group.ID);
-		}
-		netWrite.Send(new SendInfo(net.group.subscribers));
 	}
 
 	public void SendAsSnapshot(Connection connection, bool ordered = true)
@@ -765,6 +749,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			netWrite.PacketID(Message.Type.Entities);
 			netWrite.UInt32(val);
 			ToStreamForNetwork(netWrite, saveInfo);
+			NetProfileCapture.Annotate(netWrite, net.ID.Value, prefabID);
 			netWrite.Send(new SendInfo(connection));
 		}
 	}
@@ -782,13 +767,12 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 		netWrite.PacketID(Message.Type.Entities);
 		netWrite.UInt32(val);
 		ToStreamForNetwork(netWrite, saveInfo);
+		NetProfileCapture.Annotate(netWrite, net.ID.Value, prefabID);
 		netWrite.Send(new SendInfo(connection));
 	}
 
 	public void SendAsSnapshot(Connection connection, NetWrite write, in ThreadSafeTime time, bool ordered = true)
 	{
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		uint val = (ordered ? (++connection.validate.entityUpdates) : uint.MaxValue);
 		if (Interface.CallHook("OnEntitySnapshot", this, connection) == null)
 		{
@@ -801,11 +785,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			write.PacketID(Message.Type.Entities);
 			write.UInt32(val);
 			ToStreamForNetwork(write, saveInfo);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				BaseEntity baseEntity = serverEntities.Find(net.ID) as BaseEntity;
-				PacketProfiler.LogDetailedOutbound(Message.Type.Entities, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, (int)write.Length, null, Epoch.Current, server: true);
-			}
+			NetProfileCapture.Annotate(write, net.ID.Value, prefabID);
 			write.Send(new SendInfo(connection));
 		}
 	}
@@ -1598,9 +1578,7 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 
 	public void OnNetworkSubscribersLeave(List<Connection> connections)
 	{
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.sv.IsConnected() && isServer && connections != null && !CollectionEx.IsEmpty(connections))
 		{
 			LogEntry(RustLog.EntryType.Network, 2, "LeaveVisibility");
@@ -1608,11 +1586,6 @@ public abstract class BaseNetworkable : BaseMonoBehaviour, IPrefabPostProcess, I
 			netWrite.PacketID(Message.Type.EntityDestroy);
 			netWrite.EntityID(net.ID);
 			netWrite.UInt8(0);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				BaseEntity baseEntity = serverEntities.Find(net.ID) as BaseEntity;
-				PacketProfiler.LogDetailedOutbound(Message.Type.EntityDestroy, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, (int)netWrite.Length, null, Epoch.Current, server: true);
-			}
 			netWrite.Send(new SendInfo(connections));
 		}
 	}

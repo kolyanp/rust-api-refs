@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 
@@ -6,7 +7,7 @@ namespace CompanionServer.Handlers;
 
 public class ClanChat : BaseClanHandler<AppEmpty>
 {
-	public override async void Execute()
+	public override async ValueTask Execute()
 	{
 		IClan val = await GetClan();
 		if (val == null)

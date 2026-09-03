@@ -13,14 +13,14 @@ public class Category_Phone
 	public class Phone_PhoneController
 	{
 		[Patch("OnPhoneAnswer", "OnPhoneAnswer", "PhoneController", "AnswerPhone", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("363e72f316fd4703b136c85c93ea192b")]
+		[Identifier("eb9dbbe3b9d4452f84741e96899a2115")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("self1", "PhoneController", false)]
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_363e72f316fd4703b136c85c93ea192b : Patch
+		public class Phone_PhoneController_eb9dbbe3b9d4452f84741e96899a2115 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -53,7 +53,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneCallStart", "OnPhoneCallStart", "PhoneController", "BeginCall", new string[] { })]
-		[Identifier("c87b8808cf3d42d1a97bfa35012eed51")]
+		[Identifier("21df16595a3245cd85c8ed35719fd00d")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("self1", "PhoneController", false)]
@@ -61,7 +61,7 @@ public class Category_Phone
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_c87b8808cf3d42d1a97bfa35012eed51 : Patch
+		public class Phone_PhoneController_21df16595a3245cd85c8ed35719fd00d : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -97,15 +97,16 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneCallStarted", "OnPhoneCallStarted", "PhoneController", "BeginCall", new string[] { })]
-		[Identifier("1fded35f9e7240cc9f8e0556e6e25354")]
+		[Identifier("e1b0af1c4d66475999d77733e6353552")]
 		[Dependencies(new string[] { "OnPhoneCallStart" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("self1", "PhoneController", false)]
 		[Parameter("self2", "PhoneController", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_1fded35f9e7240cc9f8e0556e6e25354 : Patch
+		public class Phone_PhoneController_e1b0af1c4d66475999d77733e6353552 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -137,13 +138,13 @@ public class Category_Phone
 		}
 
 		[Patch("CanReceiveCall", "CanReceiveCall", "PhoneController", "CanReceiveCall", new string[] { })]
-		[Identifier("1c675865fb9d4d0bb351d16682ba0946")]
+		[Identifier("9761d81a4d9148de9ced8688b80e7fc6")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Return(typeof(bool))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_1c675865fb9d4d0bb351d16682ba0946 : Patch
+		public class Phone_PhoneController_9761d81a4d9148de9ced8688b80e7fc6 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -179,7 +180,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDial", "OnPhoneDial", "PhoneController", "CallPhone", new string[] { "System.Int32" })]
-		[Identifier("addea241c8b9407a83d190b85d4b98b0")]
+		[Identifier("b8cccfd9b8a54e7fa6979158249d9550")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("local0", "PhoneController", false)]
@@ -187,7 +188,7 @@ public class Category_Phone
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_addea241c8b9407a83d190b85d4b98b0 : Patch
+		public class Phone_PhoneController_b8cccfd9b8a54e7fa6979158249d9550 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -222,7 +223,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialFail", "OnPhoneDialFail", "PhoneController", "OnDialFailed", new string[] { "Telephone/DialFailReason" })]
-		[Identifier("099bcd312a164d50ba0a33d0f4358f5e")]
+		[Identifier("0c73e6d9adde48619da23e90328649cd")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("reason", "Telephone+DialFailReason", false)]
@@ -230,7 +231,7 @@ public class Category_Phone
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_099bcd312a164d50ba0a33d0f4358f5e : Patch
+		public class Phone_PhoneController_0c73e6d9adde48619da23e90328649cd : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -266,7 +267,7 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialTimeout", "OnPhoneDialTimeout", "PhoneController", "TimeOutDialing", new string[] { })]
-		[Identifier("408072550118459287c97b6c7b64df28")]
+		[Identifier("9d5cc7350a7d4e28a3f92d9b646671bf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("self1", "PhoneController", false)]
@@ -274,7 +275,7 @@ public class Category_Phone
 		[Return(typeof(void))]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_408072550118459287c97b6c7b64df28 : Patch
+		public class Phone_PhoneController_9d5cc7350a7d4e28a3f92d9b646671bf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -311,15 +312,16 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialFailed", "OnPhoneDialFailed", "PhoneController", "OnDialFailed", new string[] { "Telephone/DialFailReason" })]
-		[Identifier("4888dd31c8564f328f145d1e45e1bee6")]
+		[Identifier("1a9558039c2f4f86b34b697b59dcd084")]
 		[Dependencies(new string[] { "OnPhoneDialFail" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("reason", "Telephone+DialFailReason", false)]
 		[Parameter("self1", "PhoneController", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_4888dd31c8564f328f145d1e45e1bee6 : Patch
+		public class Phone_PhoneController_1a9558039c2f4f86b34b697b59dcd084 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -351,15 +353,16 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneDialTimedOut", "OnPhoneDialTimedOut", "PhoneController", "TimeOutDialing", new string[] { })]
-		[Identifier("61e705da93444b77b33dba312e45186c")]
+		[Identifier("647fe42ad22247af84e0e678a4ba50f2")]
 		[Dependencies(new string[] { "OnPhoneDialTimeout" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("self1", "PhoneController", false)]
 		[Parameter("self2", "PhoneController", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_61e705da93444b77b33dba312e45186c : Patch
+		public class Phone_PhoneController_647fe42ad22247af84e0e678a4ba50f2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -392,14 +395,15 @@ public class Category_Phone
 		}
 
 		[Patch("OnPhoneAnswered", "OnPhoneAnswered", "PhoneController", "AnswerPhone", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d71daa42b697430a82dd1a7de05a17fa")]
+		[Identifier("ac2f0e10111a4e3ca412e010dd4003c7")]
 		[Dependencies(new string[] { "OnPhoneAnswer" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PhoneController", false)]
 		[Parameter("self1", "PhoneController", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Phone")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Phone_PhoneController_d71daa42b697430a82dd1a7de05a17fa : Patch
+		public class Phone_PhoneController_ac2f0e10111a4e3ca412e010dd4003c7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

@@ -429,9 +429,9 @@ public class Workbench : StorageContainer
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0193: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
 		if (cachedUpgradeVisualPoints == null)
 		{
 			return false;
@@ -477,11 +477,19 @@ public class Workbench : StorageContainer
 					PooledList<DeployVolume> val5 = Pool.Get<PooledList<DeployVolume>>();
 					try
 					{
-						((List<DeployVolume>)(object)val5).AddRange((IEnumerable<DeployVolume>)array);
-						if (DeployVolume.Check(((Component)baseEntity).transform.position, ((Component)baseEntity).transform.rotation, (List<DeployVolume>)(object)val5, val3, 536870912))
+						DeployVolume[] array2 = array;
+						foreach (DeployVolume deployVolume in array2)
 						{
-							return true;
+							if ((deployVolume.ignore & ColliderInfo.Flags.OnlyEvaluatePreventBuildingInMonuments) == 0 && DeployVolume.ShouldApplyVolumeForEntity(deployVolume, this))
+							{
+								((List<DeployVolume>)(object)val5).Add(deployVolume);
+							}
 						}
+						if (((List<DeployVolume>)(object)val5).Count == 0 || !DeployVolume.Check(((Component)baseEntity).transform.position, ((Component)baseEntity).transform.rotation, (List<DeployVolume>)(object)val5, val3, 536870912))
+						{
+							continue;
+						}
+						return true;
 					}
 					finally
 					{
@@ -532,8 +540,8 @@ public class Workbench : StorageContainer
 		return num;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_SendTechTreeMultiplier(RPCMessage msg)
 	{
 		ClientRPC(RpcTarget.Player("RPC_TechTreeMultiplier", msg.player), GetTechTreeCostMultiplier());
@@ -1058,8 +1066,8 @@ public class Workbench : StorageContainer
 		return blueprintBaseDef;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_BeginExperiment(RPCMessage msg)
 	{
 		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
@@ -1252,7 +1260,7 @@ public class Workbench : StorageContainer
 		}
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if ((targetSlot != 1 || !((Object)(object)item.info == (Object)(object)experimentResource)) && targetSlot == 0)
 		{
@@ -1293,8 +1301,8 @@ public class Workbench : StorageContainer
 		return result;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_OpenRecycleBin(RPCMessage msg)
 	{
 		if (!isLootable || Static)

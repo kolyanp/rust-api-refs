@@ -234,7 +234,7 @@ public class Wolf2FSM : FSMComponent
 				}).AddEndTransition(charge), charge.AddTickTransition(fastApproach, AllyGotHurtNearby).AddTickTransition(attack, new Trans_TargetInRange
 				{
 					Range = 2f
-				}).AddTickTransition(approach, new Trans_ElapsedTime
+				} & new Trans_HasStraightPathToTarget()).AddTickTransition(approach, new Trans_ElapsedTime
 				{
 					Duration = 5.0
 				})
@@ -290,7 +290,7 @@ public class Wolf2FSM : FSMComponent
 				}).AddEndTransition(fSMStateBase3), fSMStateBase3.AddTickTransition(fSMStateBase4, new Trans_TargetInRange
 				{
 					Range = 2f
-				}), fSMStateBase4.AddEndTransition(state_Flee), intimidated.AddEndTransition(fleeFire), fleeFire.AddEndTransition(state_MoveToTarget), state_Flee.AddEndTransition(state_MoveToTarget))), state_Nothing11.AddChildren(state_MoveToLastReachablePointNearTarget.AddFailureTransition(flee).AddTickTransition(flee, FireMeleeTrans).AddTickTransition(charge, new Trans_CanReachTarget_Slow())
+				} & new Trans_HasStraightPathToTarget()), fSMStateBase4.AddEndTransition(state_Flee), intimidated.AddEndTransition(fleeFire), fleeFire.AddEndTransition(state_MoveToTarget), state_Flee.AddEndTransition(state_MoveToTarget))), state_Nothing11.AddChildren(state_MoveToLastReachablePointNearTarget.AddFailureTransition(flee).AddTickTransition(flee, FireMeleeTrans).AddTickTransition(charge, new Trans_CanReachTarget_Slow())
 					.AddEndTransition(charge, new Trans_CanReachTarget_Slow())
 					.AddEndTransition(attackUnreachable)
 					.AddEndTransition(flee), fSMStateBase.AddEndTransition(state_MoveToLastReachablePointNearTarget)), flee.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(fastApproach, new Trans_TargetInRange

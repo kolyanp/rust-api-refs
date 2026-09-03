@@ -4,12 +4,14 @@ using UnityEngine;
 [Serializable]
 public class CarSettings
 {
-	[Header("Vehicle Setup")]
 	[Range(0f, 1f)]
+	[Header("Vehicle Setup")]
 	public float rollingResistance = 0.05f;
 
 	[Range(0f, 1f)]
 	public float antiRoll;
+
+	public float baseAngularDamping;
 
 	public bool canSleep = true;
 
@@ -35,6 +37,9 @@ public class CarSettings
 	public float minSteerLimitSpeed = 30f;
 
 	[Range(0f, 1f)]
+	public float steerLimitLerpPenalty = 0.7f;
+
+	[Range(0f, 1f)]
 	public float rearWheelSteer = 1f;
 
 	public float steerMinLerpSpeed = 75f;
@@ -57,7 +62,21 @@ public class CarSettings
 
 	public bool disableHandbrakes;
 
-	[Range(0f, 1f)]
+	[Range(0.01f, 1f)]
+	public float handbrakeGripMultiplier = 0.55f;
+
+	[Range(0.01f, 1f)]
+	[Header("Drift")]
+	public float rearTraction = 0.7f;
+
+	[Range(0.01f, 1f)]
+	public float frontTraction = 0.7f;
+
+	public float driftLerpSpeed = 40f;
+
+	public float driftRecoverySpeed = 20f;
+
 	[Header("Front/Rear Vehicle Balance")]
+	[Range(0f, 1f)]
 	public float handlingBias = 0.5f;
 }

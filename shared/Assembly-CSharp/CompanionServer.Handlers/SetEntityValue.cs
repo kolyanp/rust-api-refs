@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using ProtoBuf;
 
 namespace CompanionServer.Handlers;
 
 public class SetEntityValue : BaseEntityHandler<AppSetEntityValue>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		if (base.Entity is SmartSwitch smartSwitch)
 		{
@@ -15,5 +16,6 @@ public class SetEntityValue : BaseEntityHandler<AppSetEntityValue>
 		{
 			SendError("wrong_type");
 		}
+		return default(ValueTask);
 	}
 }

@@ -51,8 +51,8 @@ public class FogMachine : ContainerIOEntity, IAlwaysOn
 		return HasFlag(Flags.Reserved5);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetFogOn(RPCMessage msg)
 	{
 		if (!IsEmitting() && !IsOn() && HasFuel() && msg.player.CanBuild())

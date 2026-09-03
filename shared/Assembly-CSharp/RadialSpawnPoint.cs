@@ -3,8 +3,8 @@ using UnityEngine;
 public class RadialSpawnPoint : BaseSpawnPoint
 {
 	[SerializeField]
-	[Header("Position Settings")]
 	[Tooltip("Circle to spawn within")]
+	[Header("Position Settings")]
 	public float radius = 10f;
 
 	[SerializeField]
@@ -20,8 +20,8 @@ public class RadialSpawnPoint : BaseSpawnPoint
 	[SerializeField]
 	private bool xRotationEnabled;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float xRotationMin = -180f;
 
 	[Range(-180f, 180f)]
@@ -31,12 +31,12 @@ public class RadialSpawnPoint : BaseSpawnPoint
 	[SerializeField]
 	private bool yRotationEnabled = true;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float yRotationMin = -180f;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float yRotationMax = 180f;
 
 	[SerializeField]
@@ -46,8 +46,8 @@ public class RadialSpawnPoint : BaseSpawnPoint
 	[Range(-180f, 180f)]
 	private float zRotationMin = -180f;
 
-	[Range(-180f, 180f)]
 	[SerializeField]
+	[Range(-180f, 180f)]
 	private float zRotationMax = 180f;
 
 	public Quaternion GetRandomRotation()

@@ -68,6 +68,40 @@ public class SocketMod_AreaCheck : SocketMod
 		return result;
 	}
 
+	private bool SocketCanTargetBoats()
+	{
+		if (baseSocket == null || baseSocket.socketMods == null)
+		{
+			if (wantsInside)
+			{
+				return AcceptsLargeVehicles(this);
+			}
+			return false;
+		}
+		SocketMod[] socketMods = baseSocket.socketMods;
+		foreach (SocketMod socketMod in socketMods)
+		{
+			if (socketMod is SocketMod_BoatBuildingBlock { wantsCollide: not false })
+			{
+				return true;
+			}
+			if (socketMod is SocketMod_AreaCheck { wantsInside: not false } socketMod_AreaCheck && AcceptsLargeVehicles(socketMod_AreaCheck))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static bool AcceptsLargeVehicles(SocketMod_AreaCheck check)
+	{
+		if (!check.ignoreAntiLargeVehicleCheck)
+		{
+			return (((LayerMask)(ref check.layerMask)).value & 0x8000000) != 0;
+		}
+		return true;
+	}
+
 	public bool DoCheck(Vector3 position, Quaternion rotation, BaseEntity entity = null)
 	{
 		//IL_0000: Unknown result type (might be due to invalid IL or missing references)

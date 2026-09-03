@@ -890,16 +890,16 @@ public static class ServerOcclusion
 		NativeList<int> cellsToCheck = default(NativeList<int>);
 		cellsToCheck._002Ector(1024, AllocatorHandle.op_Implicit((Allocator)3));
 		GenerateOcclusionBroadPhase(cellsToCheck, num);
-		int num2 = (cellsToCheck.Length + 32000 - 1) / 32000;
+		int num2 = (cellsToCheck.Length + 128 - 1) / 128;
 		NativeList<SubGrid> subGridCells = default(NativeList<SubGrid>);
-		subGridCells._002Ector(16384000, AllocatorHandle.op_Implicit((Allocator)3));
+		subGridCells._002Ector(65536, AllocatorHandle.op_Implicit((Allocator)3));
 		Debug.Log((object)$"Processing {num2} batches({cellsToCheck.Length} broadphase cells total)...");
 		for (int i = 0; i < num2; i++)
 		{
 			_ = stopwatch.Elapsed.TotalSeconds;
 			subGridCells.Clear();
-			int num3 = i * 32000;
-			int num4 = Math.Min(num3 + 32000, cellsToCheck.Length);
+			int num3 = i * 128;
+			int num4 = Math.Min(num3 + 128, cellsToCheck.Length);
 			for (int j = num3; j < num4; j++)
 			{
 				Grid grid = Grid.FromIndex(cellsToCheck[j]);
@@ -1028,7 +1028,7 @@ public static class ServerOcclusion
 				GridOffsets = val.AsReadOnly(),
 				CellOffset = new Vector3((float)SubGrid.GetOffset(TerrainMeta.Size.x), (float)SubGrid.GetOffset(MaxY), (float)SubGrid.GetOffset(TerrainMeta.Size.z))
 			};
-			int batchSize = GamePhysics.GetBatchSize(subGridCells.Length);
+			int batchSize = ThreadUtils.GetBatchSize(subGridCells.Length);
 			int length = subGridCells.Length;
 			JobHandle val2 = default(JobHandle);
 			val2 = IJobForExtensions.ScheduleParallel<CalculateSubGridSamplePointsJob>(obj, length, batchSize, val2);

@@ -459,29 +459,29 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0221: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0217: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0303: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0309: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0324: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0328: Unknown result type (might be due to invalid IL or missing references)
-		//IL_032e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
@@ -490,10 +490,10 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
 		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0158: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0159: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0164: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 		if (base.isClient)
 		{
 			return;
@@ -517,6 +517,7 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 				Vector3 onUnitSphere = Random.onUnitSphere;
 				((Component)baseEntity).transform.position = ((Component)this).transform.position + new Vector3(0f, 1.5f, 0f) + onUnitSphere * Random.Range(-4f, 4f);
 				Collider component = ((Component)baseEntity).GetComponent<Collider>();
+				baseEntity.enableSaving = true;
 				baseEntity.Spawn();
 				baseEntity.SetVelocity(val + onUnitSphere * Random.Range(num, num2));
 				foreach (ServerGib item in list)
@@ -530,12 +531,8 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 			Vector3 onUnitSphere2 = Random.onUnitSphere;
 			Vector3 pos = ((Component)this).transform.position + new Vector3(0f, 1.5f, 0f) + onUnitSphere2 * Random.Range(2f, 3f);
 			BaseEntity baseEntity2 = GameManager.server.CreateEntity(crateToDrop.resourcePath, pos, Quaternion.LookRotation(onUnitSphere2));
+			baseEntity2.enableSaving = true;
 			baseEntity2.Spawn();
-			LootContainer lootContainer = baseEntity2 as LootContainer;
-			if (Object.op_Implicit((Object)(object)lootContainer))
-			{
-				lootContainer.Invoke(lootContainer.RemoveMe, 1800f);
-			}
 			Collider component2 = ((Component)baseEntity2).GetComponent<Collider>();
 			Rigidbody val2 = ((Component)baseEntity2).gameObject.AddComponent<Rigidbody>();
 			val2.useGravity = true;
@@ -549,12 +546,13 @@ public class PatrolHelicopter : BaseCombatEntity, SeekerTarget.ISeekerTargetOwne
 			FireBall fireBall = GameManager.server.CreateEntity(this.fireBall.resourcePath) as FireBall;
 			if (Object.op_Implicit((Object)(object)fireBall))
 			{
+				fireBall.enableSaving = true;
 				fireBall.SetParent(baseEntity2);
 				fireBall.Spawn();
 				((Component)fireBall).GetComponent<Rigidbody>().isKinematic = true;
 				((Component)fireBall).GetComponent<Collider>().enabled = false;
+				((Component)baseEntity2).SendMessage("SetLockingEnt", (object)fireBall, (SendMessageOptions)1);
 			}
-			((Component)baseEntity2).SendMessage("SetLockingEnt", (object)((Component)fireBall).gameObject, (SendMessageOptions)1);
 			foreach (ServerGib item2 in list)
 			{
 				Physics.IgnoreCollision(component2, (Collider)(object)item2.GetCollider(), true);

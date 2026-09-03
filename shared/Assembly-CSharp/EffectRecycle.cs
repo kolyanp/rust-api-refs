@@ -16,11 +16,9 @@ public class EffectRecycle : BaseMonoBehaviour, IClientComponent, global::IRagdo
 		DetachWaitDestroy
 	}
 
-	[ReadOnly]
 	[FormerlySerializedAs("lifeTime")]
 	public float detachTime;
 
-	[ReadOnly]
 	[FormerlySerializedAs("lifeTime")]
 	public float recycleTime;
 

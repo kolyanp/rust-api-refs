@@ -50,9 +50,12 @@ public class TriggerComfort : TriggerBase
 		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		float num = Vector3.Distance(((Component)this).gameObject.transform.position, position);
-		float num2 = 1f - Mathf.Clamp(num - minComfortRange, 0f, num / (triggerSize - minComfortRange));
+		float num2 = Mathf.Clamp(minComfortRange, 0f, triggerSize);
+		float num3 = triggerSize - num2;
+		float num4 = ((num3 > 0f) ? (num / num3) : 0f);
+		float num5 = 1f - Mathf.Clamp(num - num2, 0f, num4);
 		bool flag = false;
-		float num3 = 0f;
+		float num6 = 0f;
 		foreach (BaseEntity entity in _entities)
 		{
 			if ((Object)(object)entity == (Object)(object)forPlayer)
@@ -61,25 +64,25 @@ public class TriggerComfort : TriggerBase
 			}
 			if (entity is BasePlayer { IsNpc: false } basePlayer)
 			{
-				float num4 = 1f;
+				float num7 = 1f;
 				if (basePlayer.IsSleeping())
 				{
-					num4 = 0.5f;
+					num7 = 0.5f;
 				}
 				else if (!basePlayer.IsAlive())
 				{
-					num4 = 0f;
+					num7 = 0f;
 				}
-				num3 += 0.25f * num4;
+				num6 += 0.25f * num7;
 			}
 			if (applyToHorses && (entity is RidableHorse || entity is RidableHorse) && !flag)
 			{
-				num3 += 0.5f;
+				num6 += 0.5f;
 				flag = true;
 			}
 		}
-		float num5 = 0f + num3;
-		return (baseComfort + num5) * num2;
+		float num8 = 0f + num6;
+		return (baseComfort + num8) * num5;
 	}
 
 	public override void OnEntityEnter(BaseEntity ent)

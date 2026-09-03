@@ -122,8 +122,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[NonSerialized]
 	public HorseModifiers modifiers;
 
-	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
 	[ServerVar]
+	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
 	public static float dungTimeScale;
 
 	private float nextEatTime;
@@ -216,12 +216,12 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private bool isSubmerged;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private float baseDrag;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private float baseAngularDrag;
 
 	private HorseAvoidanceState currentAvoidanceState;
@@ -303,21 +303,21 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public AnimationCurve slopeAngleSpeedFactor;
 
-	[SerializeField]
 	[Header("Collision Damage")]
+	[SerializeField]
 	[Space]
 	private GameObjectRef collisionEffect;
 
-	[SerializeField]
 	[Tooltip("Ignore low magnitude so e.g. Players running into stationary vehicles doesn't trigger damage or FX")]
+	[SerializeField]
 	private float minCollisionDamageForce;
 
 	[SerializeField]
 	[Tooltip("Cap max magnitude so unusual events can't cause mega damage")]
 	private float maxCollisionDamageForce;
 
-	[SerializeField]
 	[Tooltip("Adjust this away from 1.0 if collision damage to this vehicle seems too high or low")]
+	[SerializeField]
 	private float collisionDamageMultiplier;
 
 	[SerializeField]
@@ -384,8 +384,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public Sprite SwapToDoubleIcon;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	protected bool[] hasItemTokenCache;
 
 	[Space]
@@ -438,7 +438,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public const Flags Flag_HideHair = Flags.Reserved4;
 
-	public const Flags Flag_WoodArmor = Flags.Reserved5;
+	public const Flags Flag_WoodArmor = Flags.Reserved8;
 
 	public const Flags Flag_RoadsignArmor = Flags.Reserved6;
 
@@ -918,12 +918,12 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		return itemContainer;
 	}
 
-	public bool StorageItemFilter(Item item, int targetSlot)
+	public bool StorageItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		return true;
 	}
 
-	public bool EquipmentItemFilter(Item item, int targetSlot)
+	public bool EquipmentItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (IsForSale && ItemIsSaddle(item))
 		{
@@ -986,7 +986,7 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
 			flagsUpdateScope.Set(Flags.Reserved4, b: false);
-			flagsUpdateScope.Set(Flags.Reserved5, b: false);
+			flagsUpdateScope.Set(Flags.Reserved8, b: false);
 			flagsUpdateScope.Set(Flags.Reserved6, b: false);
 			flagsUpdateScope.Set(Flags.Unused23, b: false);
 			riderProtection.Clear();
@@ -1037,8 +1037,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SERVER_OpenLoot(RPCMessage rpc)
 	{
 		if (storageInventory == null)
@@ -1063,8 +1063,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_RequestSaddleSwap(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -3076,9 +3076,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	public void SERVER_Lead(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -3542,10 +3542,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}, 1f);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void SERVER_RequestTow(RPCMessage msg)
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
@@ -3557,10 +3557,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void SERVER_RequestDetach(RPCMessage msg)
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)

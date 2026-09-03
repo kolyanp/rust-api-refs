@@ -44,12 +44,12 @@ public class Underwear : ScriptableObject
 		{
 			return true;
 		}
-		bool flag = IsFemale(player);
-		if (flag && HasFemaleParts())
+		bool isFemale = player.IsFemale;
+		if (isFemale && HasFemaleParts())
 		{
 			return true;
 		}
-		if (!flag && HasMaleParts())
+		if (!isFemale && HasMaleParts())
 		{
 			return true;
 		}

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -26,7 +26,7 @@ public class State_Search : FSMStateBase
 
 	private NpcBarkComponent _barkComponent;
 
-	private Vector3 searchOriginNS;
+	private NavVector3 searchOriginNS;
 
 	private int numIterations;
 
@@ -37,14 +37,6 @@ public class State_Search : FSMStateBase
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Failure;
@@ -53,13 +45,12 @@ public class State_Search : FSMStateBase
 		{
 			return EFSMStateStatus.Failure;
 		}
-		Matrix4x4 worldToNavMeshSpace = Owner.WorldToNavMeshSpace;
-		Vector3 positionNS = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(lkp);
+		NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp);
 		if (!base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f) && !base.Agent.SamplePosition(positionNS, out hitNS, 20f))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		searchOriginNS = ((NavMeshHit)(ref hitNS)).position;
+		searchOriginNS = hitNS.position;
 		if (!TrySetSearchDestination())
 		{
 			return EFSMStateStatus.Failure;
@@ -94,56 +85,23 @@ public class State_Search : FSMStateBase
 
 	private bool TrySetSearchDestination()
 	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0123: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0151: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0153: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0264: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0269: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0222: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0280: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0220: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020b: Unknown result type (might be due to invalid IL or missing references)
+		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			if (numIterations < numCloseSearchesBeforeExpanding)
-			{
-				Eqs.SamplePositionsInMultiDonutShape(searchOriginNS, (List<Vector3>)(object)val, searchRadius, searchRadius * 0.5f, 2);
-			}
-			else
-			{
-				Eqs.SamplePositionsInDonutShape(Owner.ServerNavMeshPos, (List<Vector3>)(object)val, searchRadius);
-			}
+			bool flag = ((numIterations >= numCloseSearchesBeforeExpanding) ? Eqs.SampleNavigablePositions(base.Agent, base.Agent.nextPosition, (List<NavVector3>)(object)val, searchRadius, searchRadius, 8) : Eqs.SampleNavigablePositions(base.Agent, searchOriginNS, (List<NavVector3>)(object)val, searchRadius, searchRadius * 0.5f, 16));
 			if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 			{
 				return false;
@@ -152,69 +110,75 @@ public class State_Search : FSMStateBase
 			{
 				return false;
 			}
-			Matrix4x4 worldToNavMeshSpace = Owner.WorldToNavMeshSpace;
-			Vector3 val2 = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(lkp);
-			((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(lkp2);
-			Vector3 val3 = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyVector(((Component)Owner).transform.forward);
+			NavVector3 navVector = base.Agent.WorldToNavSpace(lkp);
+			base.Agent.WorldToNavSpace(lkp2);
+			NavVector3 aNS = base.Agent.WorldToNavDirection(((Component)Owner).transform.forward);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				PooledList<ScientistNPC2> val4 = Pool.Get<PooledList<ScientistNPC2>>();
+				PooledList<ScientistNPC2> val2 = Pool.Get<PooledList<ScientistNPC2>>();
 				try
 				{
-					BaseEntity.Query.Server.GetBrainsInSphere(((Component)Owner).transform.position, searchRadius * 3f, (List<ScientistNPC2>)(object)val4);
+					BaseEntity.Query.Server.GetBrainsInSphere(((Component)Owner).transform.position, searchRadius * 3f, (List<ScientistNPC2>)(object)val2);
 					RustNavMeshAgent rustNavMeshAgent = default(RustNavMeshAgent);
-					foreach (Vector3 item2 in (List<Vector3>)(object)val)
+					foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 					{
 						float num = 0f;
 						if (predict)
 						{
-							num += Mathx.RemapValClamped(Vector3.Dot(val3, Vector3Ex.NormalizeXZ(item2 - val2)), -1f, 1f, 0f, 1f) * 3f;
-							num += Mathx.RemapValClamped(Vector3.Distance(item2, val2), 0f, searchRadius, 0f, 1f);
+							num += Mathx.RemapValClamped(NavVector3.Dot(aNS, (item2 - navVector).NormalizeXZ()), -1f, 1f, 0f, 1f) * 3f;
+							num += Mathx.RemapValClamped(NavVector3.Distance(item2, navVector), 0f, searchRadius, 0f, 1f);
 						}
 						else
 						{
-							foreach (ScientistNPC2 item3 in (List<ScientistNPC2>)(object)val4)
+							foreach (ScientistNPC2 item3 in (List<ScientistNPC2>)(object)val2)
 							{
 								if (!((Object)(object)item3 == (Object)(object)Owner))
 								{
+									Vector3 val3 = base.Agent.NavToWorldSpace(item2);
 									if (((Component)item3).TryGetComponent<RustNavMeshAgent>(ref rustNavMeshAgent) && rustNavMeshAgent.hasPath && rustNavMeshAgent.lastValidPath.Count > 0)
 									{
 										float num2 = num;
-										List<Vector3> lastValidPath = rustNavMeshAgent.lastValidPath;
-										num = num2 + Vector3.Distance(lastValidPath[lastValidPath.Count - 1], item2);
+										RustNavMeshAgent rustNavMeshAgent2 = rustNavMeshAgent;
+										List<NavVector3> lastValidPath = rustNavMeshAgent.lastValidPath;
+										num = num2 + Vector3.Distance(rustNavMeshAgent2.NavToWorldSpace(lastValidPath[lastValidPath.Count - 1]), val3);
 									}
 									else
 									{
-										num += Vector3.Distance(item3.ServerNavMeshPos, item2);
+										num += Vector3.Distance(((Component)item3).transform.position, val3);
 									}
 								}
 							}
 							num += Random.value * 0.01f;
 						}
-						((List<(Vector3, float)>)(object)pooledScoreList).Add((item2, num));
+						((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, num));
 					}
 					pooledScoreList.SortByScoreDesc(Owner);
-					Matrix4x4 navMeshToWorldSpace = Owner.NavMeshToWorldSpace;
-					foreach (var item4 in (List<(Vector3, float)>)(object)pooledScoreList)
+					foreach (var item4 in (List<(NavVector3, float)>)(object)pooledScoreList)
 					{
-						Vector3 item = item4.Item1;
-						if (base.Agent.SamplePosition(item, out var hitNS, 3.5f))
+						NavVector3 item = item4.Item1;
+						NavVector3 navVector2 = item;
+						if (!flag)
 						{
-							Vector3 position = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(((NavMeshHit)(ref hitNS)).position);
-							if (!base.Agent.IsInWater(position) && !(Vector3.Distance(((NavMeshHit)(ref hitNS)).position, Owner.ServerNavMeshPos) < 2f) && base.Agent.SetDestinationWithParams(((NavMeshHit)(ref hitNS)).position, autoBraking: true, speed))
+							if (!base.Agent.SamplePosition(item, out var hitNS, 3.5f))
 							{
-								numIterations++;
-								ClientAnim.IsCrouching = speed == RustNavMeshAgent.Speeds.Sneak;
-								return true;
+								continue;
 							}
+							navVector2 = hitNS.position;
+						}
+						Vector3 positionWS = base.Agent.NavToWorldSpace(navVector2);
+						if (!base.Agent.IsInWater(positionWS) && !(NavVector3.Distance(navVector2, base.Agent.nextPosition) < 2f) && base.Agent.SetDestinationWithParams(navVector2, autoBraking: true, speed))
+						{
+							numIterations++;
+							ClientAnim.IsCrouching = speed == RustNavMeshAgent.Speeds.Sneak;
+							return true;
 						}
 					}
 					return false;
 				}
 				finally
 				{
-					((IDisposable)val4)?.Dispose();
+					((IDisposable)val2)?.Dispose();
 				}
 			}
 			finally
@@ -230,23 +194,12 @@ public class State_Search : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		if (base.Agent.lastValidPath.Count > 0)
 		{
-			List<Vector3> lastValidPath = base.Agent.lastValidPath;
-			Vector3 val = lastValidPath[lastValidPath.Count - 1] - Owner.ServerNavMeshPos;
-			Vector3 normalized = ((Vector3)(ref val)).normalized;
-			Matrix4x4 navMeshToWorldSpace = Owner.NavMeshToWorldSpace;
-			base.Agent.overrideDirectionWS = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyVector(normalized);
+			List<NavVector3> lastValidPath = base.Agent.lastValidPath;
+			NavVector3 normalized = (lastValidPath[lastValidPath.Count - 1] - base.Agent.nextPosition).normalized;
+			base.Agent.overrideDirectionWS = base.Agent.NavToWorldDirection(normalized);
 		}
 		if (!base.Agent.hasPath)
 		{

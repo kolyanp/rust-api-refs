@@ -19,11 +19,11 @@ public class ItemModBackpack : ItemMod
 		if (item.contents != null)
 		{
 			ItemContainer contents = item.contents;
-			contents.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(contents.canAcceptItem, (Func<Item, int, bool>)((Item subItem, int slot) => CanAcceptItem(item, subItem, slot)));
+			contents.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(contents.canAcceptItem, (Func<BasePlayer, Item, int, bool>)((BasePlayer player, Item subItem, int slot) => CanAcceptItem(player, item, subItem, slot)));
 		}
 	}
 
-	public bool CanAcceptItem(Item backpack, Item item, int slot)
+	private bool CanAcceptItem(BasePlayer player, Item backpack, Item item, int slot)
 	{
 		if (backpack.parent == null)
 		{

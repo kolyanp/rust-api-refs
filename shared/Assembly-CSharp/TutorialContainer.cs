@@ -19,10 +19,10 @@ public class TutorialContainer : StorageContainer
 	{
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 	}
 
-	private bool CanAcceptItem(Item item, int targetSlot)
+	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		return acceptingItems;
 	}

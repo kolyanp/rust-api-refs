@@ -23,8 +23,8 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
 	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
@@ -38,16 +38,19 @@ public class Global : ConsoleSystem
 
 	public static readonly string UndergroundFlag = "--underground";
 
-	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	[ServerVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
+	[ClientVar(Saved = true, Help = "(Generated) Controls the on-screen performance overlay detail level; 0 = off, higher values add more metrics such as FPS, ping, entity count, and memory usage")]
 	public static int perf = 0;
+
+	[ClientVar(Saved = true, ClientAdmin = true, Help = "Media: This can be used to disable the performance text info when GC gets triggered")]
+	public static bool perf_disable_gc_notif = false;
 
 	private static bool _god = false;
 
 	private static bool _forceOffAdminStatusOverlay = false;
 
-	[ClientVar]
 	[ServerVar(ClientAdmin = true, ServerAdmin = true, Help = "When enabled a player wearing a gingerbread suit will gib like the gingerbread NPC's")]
+	[ClientVar]
 	public static bool cinematicGingerbreadCorpses = false;
 
 	private static uint _gingerbreadMaterialID = 0u;
@@ -174,8 +177,8 @@ public class Global : ConsoleSystem
 		ServerPerformance.DoReport();
 	}
 
-	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	[ClientVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
+	[ServerVar(Help = "(Generated) Prints all live Unity Object instances sorted by total memory usage, showing type, instance count, and estimated total size in bytes")]
 	public static void objects(Arg args)
 	{
 		Object[] array = Object.FindObjectsByType<Object>((FindObjectsSortMode)0);
@@ -214,8 +217,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(text);
 	}
 
-	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	[ServerVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
+	[ClientVar(Help = "(Generated) Prints a list of all live Texture objects with their name and estimated runtime memory size")]
 	public static void textures(Arg args)
 	{
 		Texture[] array = Object.FindObjectsByType<Texture>((FindObjectsSortMode)0);
@@ -243,8 +246,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(strValue);
 	}
 
-	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
+	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	public static void queue(Arg args)
 	{
 		string text = "";
@@ -530,7 +533,7 @@ public class Global : ConsoleSystem
 				{
 					((IDisposable)val3)?.Dispose();
 				}
-				await NexusServer.ZoneClient.Assign(player.UserIDString, toZone.Key);
+				await NexusServer.ZoneClient.Assign((ulong)player.userID, toZone.Key);
 				if (player.IsConnected)
 				{
 					ConsoleNetwork.SendClientCommandImmediate(player.net.connection, "nexus.redirect", toZone.IpAddress, toZone.GamePort, NexusUtil.ConnectionProtocol(toZone));
@@ -788,8 +791,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("Teleport to the current closest entity matching the first argument name. Add second int argument to teleport to the nth closest entity (teleport2nearest horse 2 will teleport to the 3rd closest horse)")]
+	[ServerVar]
 	public static void teleport2nearest(Arg args)
 	{
 		BasePlayer basePlayer = ArgEx.Player(args);
@@ -1313,8 +1316,8 @@ public class Global : ConsoleSystem
 		GC.unload();
 	}
 
-	[ServerVar(ServerUser = true, Help = "(Generated) Prints the current game version string to the console, including build number and branch")]
 	[ClientVar(Help = "(Generated) Prints the current game version string to the console, including build number and branch")]
+	[ServerVar(ServerUser = true, Help = "(Generated) Prints the current game version string to the console, including build number and branch")]
 	public static void version(Arg arg)
 	{
 		arg.ReplyWith(string.Format("Protocol: {0}\nBuild Date: {1}\nUnity Version: {2}\nChangeset: {3}\nBranch: {4}", new object[5]
@@ -1327,8 +1330,8 @@ public class Global : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
+	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);
@@ -1366,8 +1369,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
+	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -1569,8 +1572,8 @@ public class Global : ConsoleSystem
 		Pool.FreeUnmanaged<DroppedItem>(ref list);
 	}
 
-	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
+	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	public static string printAllScenesInBuild(Arg args)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

@@ -14,6 +14,9 @@ namespace ConVar;
 [Factory("app")]
 public class App : ConsoleSystem
 {
+	[ServerVar(Clientside = true, Help = "Base address for the Rust+ companion server API")]
+	public static string endpoint = "https://companion-rust.facepunch.com/api";
+
 	[ServerVar(Help = "(Generated) IP address the server listens on for incoming connections; leave empty to bind to all available network interfaces")]
 	public static string listenip = "";
 
@@ -42,7 +45,7 @@ public class App : ConsoleSystem
 	public static int maxconnections = 500;
 
 	[ServerVar(Help = "(Generated) Maximum simultaneous connections from the same IP address; prevents a single host from consuming all connection slots")]
-	public static int maxconnectionsperip = 5;
+	public static int maxconnectionsperip = 10;
 
 	[ServerVar(Help = "(Generated) Maximum allowed size in bytes of a single network message; oversized messages are dropped to prevent memory exhaustion attacks")]
 	public static int maxmessagesize = 1048576;

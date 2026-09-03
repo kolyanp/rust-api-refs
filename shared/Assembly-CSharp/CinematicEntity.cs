@@ -72,6 +72,24 @@ public class CinematicEntity : BaseEntity
 		}
 	}
 
+	private static void ParseHiddenGroups(ConsoleSystem.Arg args, List<int> into)
+	{
+		if (args.GetInt(0) == 0)
+		{
+			return;
+		}
+		for (int i = 0; i < 4 && !(args.GetString(i) == ""); i++)
+		{
+			int num = args.GetInt(i);
+			if (num != 0)
+			{
+				into.Add(num - 1);
+				continue;
+			}
+			break;
+		}
+	}
+
 	public static void HideObjectShared(ConsoleSystem.Arg args, List<CinematicEntity> entList)
 	{
 		if (args.GetString(0) == "")
@@ -79,25 +97,14 @@ public class CinematicEntity : BaseEntity
 			return;
 		}
 		List<int> list = new List<int>();
-		if (args.GetInt(0) != 0)
-		{
-			for (int i = 0; i < 4 && !(args.GetString(i) == ""); i++)
-			{
-				int num = args.GetInt(i);
-				if (num == 0)
-				{
-					break;
-				}
-				list.Add(num - 1);
-			}
-		}
+		ParseHiddenGroups(args, list);
 		foreach (CinematicEntity ent in entList)
 		{
-			for (int j = 0; j < 4; j++)
+			for (int i = 0; i < 4; i++)
 			{
-				int f = 1 << 7 + j;
+				int f = 1 << 7 + i;
 				using FlagsUpdateScope flagsUpdateScope = ent.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-				flagsUpdateScope.Set((Flags)f, list.Contains(j));
+				flagsUpdateScope.Set((Flags)f, list.Contains(i));
 			}
 		}
 	}

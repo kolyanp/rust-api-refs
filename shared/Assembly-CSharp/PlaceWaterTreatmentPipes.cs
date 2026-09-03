@@ -1,41 +1,50 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlaceWaterTreatmentPipes : PlaceDecorUniform
+public class PlaceWaterTreatmentPipes : PlaceDecorRoadside
 {
-	private static bool doesWaterTreatmentExist = false;
-
-	private static bool haveMonumentsBeenCached = false;
-
-	private static List<OBB> monumentOBBs = new List<OBB>();
-
-	public override void Process(uint seed)
+	private struct BlockedVolume
 	{
-		if (!haveMonumentsBeenCached)
-		{
-			CheckMonuments();
-		}
-		if (doesWaterTreatmentExist)
-		{
-			base.Process(seed);
-		}
+		public OBB Obb;
+
+		public float Radius;
+	}
+
+	[Tooltip("Clearance from a prevent building volume. Only the pivot is tested.")]
+	public float PreventBuildingPadding = 2f;
+
+	private bool doesWaterTreatmentExist;
+
+	private List<BlockedVolume> preventBuildingVolumes = new List<BlockedVolume>();
+
+	protected override bool ShouldPlace()
+	{
+		CheckMonuments();
+		return doesWaterTreatmentExist;
 	}
 
 	protected override bool IsValidLocation(Vector3 pos, Quaternion rot, Vector3 scale)
 	{
-		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		if (!haveMonumentsBeenCached)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
+		foreach (BlockedVolume preventBuildingVolume in preventBuildingVolumes)
 		{
-			CheckMonuments();
-		}
-		foreach (OBB monumentOBB in monumentOBBs)
-		{
-			OBB current = monumentOBB;
-			if (((OBB)(ref current)).Contains(pos))
+			float num = PreventBuildingPadding + preventBuildingVolume.Radius;
+			Vector3 val = pos - preventBuildingVolume.Obb.position;
+			if (!(((Vector3)(ref val)).sqrMagnitude > num * num))
 			{
-				return false;
+				OBB obb = preventBuildingVolume.Obb;
+				if (((OBB)(ref obb)).Distance(pos) < PreventBuildingPadding)
+				{
+					return false;
+				}
 			}
 		}
 		return true;
@@ -43,16 +52,12 @@ public class PlaceWaterTreatmentPipes : PlaceDecorUniform
 
 	private void CheckMonuments()
 	{
-		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		haveMonumentsBeenCached = true;
+		doesWaterTreatmentExist = false;
+		preventBuildingVolumes.Clear();
 		if ((Object)(object)TerrainMeta.Path == (Object)null || TerrainMeta.Path.Monuments == null)
 		{
 			Debug.LogError((object)"[PlaceWaterTreatmentPipes] PROCESSING: TerrainMeta.Path.Monuments is null, cannot check for water-treatment monument, skipping placement.");
@@ -64,10 +69,25 @@ public class PlaceWaterTreatmentPipes : PlaceDecorUniform
 			{
 				doesWaterTreatmentExist = true;
 			}
-			if (((Bounds)(ref monument.Bounds)).size != Vector3.zero)
+		}
+		Enumerator<PreventBuildingMonumentTag> enumerator2 = PreventBuildingMonumentTag.All.GetEnumerator();
+		try
+		{
+			while (enumerator2.MoveNext())
 			{
-				monumentOBBs.Add(new OBB(((Component)monument).transform.position, ((Component)monument).transform.rotation, new Bounds(((Bounds)(ref monument.Bounds)).center, ((Bounds)(ref monument.Bounds)).size * 2f)));
+				if (enumerator2.Current.TryGetVolume(out var result))
+				{
+					preventBuildingVolumes.Add(new BlockedVolume
+					{
+						Obb = result,
+						Radius = ((Vector3)(ref result.extents)).magnitude
+					});
+				}
 			}
+		}
+		finally
+		{
+			((IDisposable)enumerator2/*cast due to constrained. prefix*/).Dispose();
 		}
 	}
 }

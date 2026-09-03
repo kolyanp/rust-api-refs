@@ -1,10 +1,11 @@
+using System.Threading.Tasks;
 using ProtoBuf;
 
 namespace CompanionServer.Handlers;
 
 public class CheckSubscription : BaseEntityHandler<AppEmpty>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		if (base.Entity is ISubscribable subscribable)
 		{
@@ -15,5 +16,6 @@ public class CheckSubscription : BaseEntityHandler<AppEmpty>
 		{
 			SendError("wrong_type");
 		}
+		return default(ValueTask);
 	}
 }

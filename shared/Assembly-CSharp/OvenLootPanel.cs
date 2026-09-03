@@ -36,10 +36,6 @@ public class OvenLootPanel : MonoBehaviour
 
 	public GameObject ItemRowPrefab;
 
-	public Sprite IconBackground_Wood;
-
-	public Sprite IconBackGround_Input;
-
 	public LootGrid LootGrid_Wood;
 
 	public LootGrid LootGrid_Input;

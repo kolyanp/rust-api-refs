@@ -617,8 +617,8 @@ public class MobilePhone : HeldEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void ClearCurrentUser(RPCMessage msg)
 	{
 		Controller.ClearCurrentUser(msg);
@@ -645,8 +645,8 @@ public class MobilePhone : HeldEntity
 		Controller.AnswerPhone(msg);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void ServerHangUp(RPCMessage msg)
 	{
 		Controller.ServerHangUp(msg);
@@ -658,9 +658,9 @@ public class MobilePhone : HeldEntity
 		Controller.DestroyShared();
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void UpdatePhoneName(RPCMessage msg)
 	{
 		Controller.RPC_UpdatePhoneName(msg);
@@ -675,54 +675,54 @@ public class MobilePhone : HeldEntity
 	}
 
 	[RPC_Server.FromOwner]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void Server_AddSavedNumber(RPCMessage msg)
 	{
 		Controller.Server_AddSavedNumber(msg);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	public void Server_RemoveSavedNumber(RPCMessage msg)
 	{
 		Controller.Server_RemoveSavedNumber(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void Server_RequestCurrentState(RPCMessage msg)
 	{
 		Controller.SetPhoneStateWithPlayer(Controller.serverState);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void ServerSendVoicemail(RPCMessage msg)
 	{
 		Controller.ServerSendVoicemail(msg);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void ServerPlayVoicemail(RPCMessage msg)
 	{
 		Controller.ServerPlayVoicemail(msg);
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	public void ServerStopVoicemail(RPCMessage msg)
 	{
 		Controller.ServerStopVoicemail(msg);
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void ServerDeleteVoicemail(RPCMessage msg)
 	{
 		Controller.ServerDeleteVoicemail(msg);

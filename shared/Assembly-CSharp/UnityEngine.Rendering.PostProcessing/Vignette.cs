@@ -15,16 +15,16 @@ public sealed class Vignette : PostProcessEffectSettings
 	[Tooltip("Sets the vignette center point (screen center is [0.5, 0.5]).")]
 	public Vector2Parameter center;
 
-	[Range(0f, 1f)]
 	[Tooltip("Amount of vignetting on screen.")]
+	[Range(0f, 1f)]
 	public FloatParameter intensity;
 
-	[Range(0.01f, 1f)]
 	[Tooltip("Smoothness of the vignette borders.")]
+	[Range(0.01f, 1f)]
 	public FloatParameter smoothness;
 
-	[Range(0f, 1f)]
 	[Tooltip("Lower values will make a square-ish vignette.")]
+	[Range(0f, 1f)]
 	public FloatParameter roundness;
 
 	[Tooltip("Set to true to mark the vignette to be perfectly round. False will make its shape dependent on the current aspect ratio.")]
@@ -33,8 +33,8 @@ public sealed class Vignette : PostProcessEffectSettings
 	[Tooltip("A black and white mask to use as a vignette.")]
 	public TextureParameter mask;
 
-	[Range(0f, 1f)]
 	[Tooltip("Mask opacity.")]
+	[Range(0f, 1f)]
 	public FloatParameter opacity;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

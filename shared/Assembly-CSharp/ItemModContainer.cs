@@ -89,7 +89,7 @@ public class ItemModContainer : ItemMod
 		container.SetOnlyAllowedItem(onlyAllowedItemType);
 	}
 
-	protected virtual bool CanAcceptItem(Item item, int count)
+	protected virtual bool CanAcceptItem(BasePlayer player, Item item, int count)
 	{
 		ItemDefinition[] array = validItemWhitelist;
 		for (int i = 0; i < array.Length; i++)

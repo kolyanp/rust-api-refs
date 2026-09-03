@@ -9,6 +9,8 @@ public class CommandBufferDesc
 	[CompilerGenerated]
 	private CameraEvent _003CCameraEvent_003Ek__BackingField;
 
+	public string Name;
+
 	public CameraEvent CameraEvent
 	{
 		[CompilerGenerated]
@@ -30,12 +32,13 @@ public class CommandBufferDesc
 
 	public Action<CommandBuffer> FillDelegate { get; private set; }
 
-	public CommandBufferDesc(CameraEvent cameraEvent, int orderId, FillCommandBuffer fill)
+	public CommandBufferDesc(CameraEvent cameraEvent, int orderId, FillCommandBuffer fill, string name = "")
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		base._002Ector();
 		CameraEvent = cameraEvent;
 		OrderId = orderId;
 		FillDelegate = fill.Invoke;
+		Name = name;
 	}
 }

@@ -36,11 +36,10 @@ public class Category_Entity
 			typeof(BasePlayer),
 			typeof(int)
 		})]
-		[Info("Returning a non-null value disallows all weapons to be picked up from the rack.")]
+		[Info("Return false to prevent all weapons from being picked up from the rack.")]
 		[Parameter("rack", typeof(WeaponRack), false)]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("mountSlotIndex", typeof(int), false)]
-		[Return(typeof(bool))]
 		public class CanPickupAllFromRack : Patch
 		{
 			public static bool Prefix(BasePlayer player, int mountSlotIndex, WeaponRack __instance)
@@ -66,14 +65,13 @@ public class Category_Entity
 			typeof(bool),
 			typeof(bool)
 		})]
-		[Info("Returning a non-null value disallows the weapon to be picked up.")]
+		[Info("Return false to prevent the weapon from being picked up.")]
 		[Parameter("rack", typeof(WeaponRack), false)]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("item", typeof(Item), false)]
 		[Parameter("mountSlotIndex", typeof(int), false)]
 		[Parameter("playerBeltIndex", typeof(int), false)]
 		[Parameter("tryHold", typeof(bool), false)]
-		[Return(typeof(bool))]
 		public class CanPickupFromRack : Patch
 		{
 			internal static bool _hasPickedUp;
@@ -123,7 +121,7 @@ public class Category_Entity
 			typeof(int),
 			typeof(bool)
 		})]
-		[Info("Returning a non-null value disallows the weapon to be placed.")]
+		[Info("Return a bool to prevent the weapon from being placed.")]
 		[Parameter("rack", typeof(WeaponRack), false)]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Parameter("item", typeof(Item), false)]
@@ -159,6 +157,7 @@ public class Category_Entity
 		[Parameter("mountSlotIndex", typeof(int), false)]
 		[Parameter("playerBeltIndex", typeof(int), false)]
 		[Parameter("tryHold", typeof(bool), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnPickupFromRack
 		{
 		}
@@ -189,6 +188,7 @@ public class Category_Entity
 		[Patch("OnEntitySpawn", "OnEntitySpawn", typeof(BaseNetworkable), "Spawn", new Type[] { })]
 		[Info("Called before any networked entity has spawned (including trees).")]
 		[Parameter("networkable", typeof(BaseNetworkable), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnEntitySpawn : Patch
 		{
 			public static void Prefix(ref BaseNetworkable __instance)
@@ -206,7 +206,7 @@ public class Category_Entity
 		[Info("Called when a player gets attacked.")]
 		[Parameter("entity", typeof(BaseCombatEntity), false)]
 		[Parameter("info", typeof(HitInfo), false)]
-		[Return(typeof(bool))]
+		[Return(typeof(void))]
 		[Assembly("Carbon.Common.dll")]
 		[OxideCompatible]
 		public class OnEntityTakeDamage : Patch

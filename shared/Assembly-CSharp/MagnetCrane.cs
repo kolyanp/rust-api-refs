@@ -148,7 +148,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 
 	public static readonly Phrase ReturnMessage;
 
-	private const Flags Flag_ArmMovement = Flags.Reserved7;
+	private const Flags Flag_ArmMovement = Flags.Reserved8;
 
 	private const Flags Flag_BaseMovementInput = Flags.Reserved10;
 
@@ -480,7 +480,7 @@ public class MagnetCrane : GroundVehicle, CarPhysics<MagnetCrane>.ICar
 			yawMove = UpdateMoveInput(yawInput, yawMove, 3f, Time.fixedDeltaTime);
 			raiseArmMove = UpdateMoveInput(raiseArmInput, raiseArmMove, 3f, Time.fixedDeltaTime);
 			bool flag2 = extensionInput != 0f || raiseArmInput != 0f || yawInput != 0f;
-			flagsUpdateScope.Set(Flags.Reserved7, flag2);
+			flagsUpdateScope.Set(Flags.Reserved8, flag2);
 			magnetDamage.damageEnabled = IsOn() & flag2;
 			extensionArmState += extensionInput * arm1Speed * num;
 			raiseArmState += raiseArmInput * arm2Speed * num;

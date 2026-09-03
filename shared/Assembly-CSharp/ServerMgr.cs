@@ -10,6 +10,8 @@ using Facepunch;
 using Facepunch.Math;
 using Facepunch.Models;
 using Facepunch.Network;
+using Facepunch.Nexus;
+using Facepunch.Nexus.Models;
 using Facepunch.Ping;
 using Facepunch.Rust;
 using Facepunch.Rust.Profiling;
@@ -536,7 +538,6 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		timer.Restart();
 		NetworkableId uid = packet.read.EntityID();
 		uint num = packet.read.UInt32();
@@ -547,10 +548,6 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(uid) as BaseEntity;
 		if (!((Object)(object)baseEntity == (Object)null))
 		{
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedInbound(Message.Type.RPCMessage, baseEntity.net.ID, baseEntity.PrefabName, (int)packet.read.Length, null, Epoch.Current, server: true, StringPool.Get(num));
-			}
 			baseEntity.SV_RPCMessage(num, packet);
 			if (timer.Elapsed > RuntimeProfiler.RpcWarningThreshold)
 			{
@@ -626,14 +623,14 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their branch is '" + text + "' not '" + branch + "'", (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Steam Beta: Requires '" + branch + "' branch!");
 		}
-		else if (packet.connection.protocol > 2632)
+		else if (packet.connection.protocol > 2633)
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2632, (StackTraceLogType)0);
+			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2633, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Server update required!");
 		}
-		else if (packet.connection.protocol < 2632)
+		else if (packet.connection.protocol < 2633)
 		{
-			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2632, (StackTraceLogType)0);
+			DebugEx.Log("Kicking " + packet.connection?.ToString() + " - their protocol is " + packet.connection.protocol + " not " + 2633, (StackTraceLogType)0);
 			Net.sv.Kick(packet.connection, "Wrong Connection Protocol: Client update required!");
 		}
 		else
@@ -1890,19 +1887,20 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			string text7 = (string)obj;
 			string text8 = (ConVar.Server.premium ? ",premium" : "");
 			string text9 = _systemConfigTag.Get((ConVar.Server.useServerWideRequiredSystemConfig, ConVar.Server.usePerPlayerRequiredSystemConfig));
-			string text10 = PingEstimater.GetCachedClosestRegion().Code;
+			string text10 = (NexusServer.Started ? ",nexuszone" : "");
+			string text11 = PingEstimater.GetCachedClosestRegion().Code;
 			if (!string.IsNullOrEmpty(ConVar.Server.ping_region_code_override))
 			{
-				text10 = ConVar.Server.ping_region_code_override;
+				text11 = ConVar.Server.ping_region_code_override;
 			}
-			SteamServer.GameTags = ServerTagCompressor.CompressTags(string.Format("mp{0},cp{1},pt{2},qp{3},$r{4},v{5}{6}{7},{8},{9},cs{10}{11}{12},ts{13}", new object[14]
+			SteamServer.GameTags = ServerTagCompressor.CompressTags(string.Format("mp{0},cp{1},pt{2},qp{3},$r{4},v{5}{6}{7},{8},{9},cs{10}{11}{12}{13},ts{14}", new object[15]
 			{
 				ConVar.Server.maxplayers,
 				BasePlayer.activePlayerList.Count,
 				Net.sv.ProtocolId,
 				SingletonComponent<ServerMgr>.Instance.connectionQueue.Queued,
-				text10,
-				2632,
+				text11,
+				2633,
 				text4,
 				text6,
 				text2,
@@ -1910,6 +1908,7 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 				text7,
 				text8,
 				text9,
+				text10,
 				RelationshipManager.maxTeamSize
 			}));
 			if (ConVar.Server.description != null && ConVar.Server.description.Length > 100)
@@ -1937,22 +1936,39 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 			}
 			SteamServer.SetKey("hash", AssemblyHash);
 			SteamServer.SetKey("status", text);
-			string text11 = World.Seed.ToString();
-			if (!ConVar.Server.mapenabled || ConVar.Server.fogofwar)
-			{
-				text11 = "0";
-			}
-			SteamServer.SetKey("world.seed", text11);
+			bool flag = !ConVar.Server.mapenabled || ConVar.Server.fogofwar;
+			SteamServer.SetKey("world.seed", flag ? "0" : World.Seed.ToString());
 			SteamServer.SetKey("world.size", World.Size.ToString());
 			SteamServer.SetKey("pve", ConVar.Server.pve.ToString());
 			SteamServer.SetKey("headerimage", ConVar.Server.headerimage);
 			SteamServer.SetKey("logoimage", ConVar.Server.logoimage);
 			SteamServer.SetKey("url", ConVar.Server.url);
-			SteamServer.SetKey("map_image_url", MapUploader.ImageUrl);
-			SteamServer.SetKey("level_url", ConVar.Server.levelurl);
+			SteamServer.SetKey("map_image_url", flag ? "" : MapUploader.ImageUrl);
+			SteamServer.SetKey("level_url", flag ? "" : ConVar.Server.levelurl);
 			if (!string.IsNullOrWhiteSpace(ConVar.Server.favoritesEndpoint))
 			{
 				SteamServer.SetKey("favendpoint", ConVar.Server.favoritesEndpoint);
+			}
+			if (NexusServer.Started)
+			{
+				SteamServer.SetKey("nexus.uri", Nexus.endpoint);
+				SteamServer.SetKey("nexus.id", NexusServer.NexusId?.ToString("G") ?? "");
+				NexusZoneClient zoneClient = NexusServer.ZoneClient;
+				object obj2;
+				if (zoneClient == null)
+				{
+					obj2 = null;
+				}
+				else
+				{
+					ZoneDetails zone = zoneClient.Zone;
+					obj2 = ((zone != null) ? zone.ZoneId.ToString("G") : null);
+				}
+				if (obj2 == null)
+				{
+					obj2 = "";
+				}
+				SteamServer.SetKey("nexus.zone", (string)obj2);
 			}
 			SteamServer.SetKey("gmn", GamemodeName());
 			SteamServer.SetKey("gmt", GamemodeTitle());
@@ -1995,16 +2011,11 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public static void OnEnterVisibility(Network.Connection connection, Group group)
 	{
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.sv.IsConnected())
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.GroupEnter);
 			netWrite.GroupID(group.ID);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedOutbound(Message.Type.GroupEnter, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true, "Group: " + group.ID);
-			}
 			netWrite.Send(new SendInfo(connection));
 		}
 	}
@@ -2263,7 +2274,6 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 
 	public static void SendReplicatedVars(string filter)
 	{
-		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
 		NetWrite netWrite = Net.sv.StartWrite();
 		List<Network.Connection> list = Pool.Get<List<Network.Connection>>();
 		foreach (Network.Connection connection in Net.sv.connections)
@@ -2287,10 +2297,6 @@ public class ServerMgr : SingletonComponent<ServerMgr>, IServerCallback
 		{
 			netWrite.String(item2.FullName);
 			netWrite.String(item2.String);
-		}
-		if (PacketProfiler.shouldCaptureDetailedProfiling)
-		{
-			PacketProfiler.LogDetailedOutbound(Message.Type.ConsoleReplicatedVars, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true);
 		}
 		netWrite.Send(new SendInfo(list));
 		Pool.FreeUnmanaged<ConsoleSystem.Command>(ref list2);

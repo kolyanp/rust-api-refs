@@ -47,8 +47,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private GameObject opponentTurnHighlight;
 
-	[Header("Ball Display")]
 	[SerializeField]
+	[Header("Ball Display")]
 	private Color localBallColour;
 
 	[SerializeField]

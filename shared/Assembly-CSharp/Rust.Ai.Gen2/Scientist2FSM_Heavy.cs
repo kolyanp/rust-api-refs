@@ -91,7 +91,7 @@ public class Scientist2FSM_Heavy : FSMComponent
 			{
 				cooldown = 5f
 			} & new Trans_TargetSurprised();
-			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(patrol, new Trans_IsNavmeshReady()) + (state_Nothing3 + (state_Nothing4.AddTickBranchingTrans(chase, new Trans_HasTarget(), surprised, dstState2Trans) + patrol.AddFailureTransition(dead).AddEndTransition(idle) + idle.AddTickTransition(patrol, new Trans_ElapsedTimeRandomized
+			_ = obj + (state_Nothing2.AddTickTransition(dead, DeathTrans) + state_Nothing.AddTickTransition(patrol, new Trans_IsNavmeshReady()) + (state_Nothing3 + (state_Nothing4.AddTickBranchingTrans(chase, new Trans_HasTarget(), surprised, dstState2Trans) + patrol.AddFailureTransition(dead, new Trans_Dead()).AddEndTransition(idle) + idle.AddTickTransition(patrol, new Trans_ElapsedTimeRandomized
 			{
 				MinDuration = 1.0,
 				MaxDuration = 10.0

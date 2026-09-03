@@ -143,6 +143,8 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	private float lifetime;
 
+	private List<int> availableCrateSpawnIndices;
+
 	private CargoShipContainerDestination[] containerDestinations;
 
 	private HashSet<ulong> boardedPlayerIds;
@@ -312,13 +314,20 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		dockCount = info.msg.cargoShip.dockCount;
 		shouldLookAhead = info.msg.cargoShip.shouldLookAhead;
 		lifetime = info.msg.cargoShip.lifetime;
+		lootRoundsPassed = info.msg.cargoShip.lootRoundsPassed;
 		if (info.msg.cargoShip.isEgressing)
 		{
 			StartEgress();
 		}
 		if (HasFinishedDocking)
 		{
-			Invoke(StartEgress, Mathf.Max(EventTimeRemaining, GetTimeRemainingFromCrates()));
+			Invoke(StartEgress, Mathf.Max(EventTimeRemaining, 120f));
+		}
+		if (lootRoundsPassed < loot_rounds)
+		{
+			float num = loot_round_spacing_minutes * 60f;
+			float time = num - Mathf.Repeat(lifetime, num);
+			InvokeRepeating(RespawnLoot, time, 60f * loot_round_spacing_minutes);
 		}
 		if (HasFlag(Flags.Reserved1) && !IsInvoking(LeaveHarbor))
 		{
@@ -328,6 +337,11 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		foreach (ulong playerId in info.msg.cargoShip.playerIds)
 		{
 			boardedPlayerIds.Add(playerId);
+		}
+		if (info.msg.cargoShip.availableCrateSpawnIndices != null)
+		{
+			availableCrateSpawnIndices.Clear();
+			availableCrateSpawnIndices.AddRange(info.msg.cargoShip.availableCrateSpawnIndices);
 		}
 	}
 
@@ -557,24 +571,25 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public void SpawnCrate(string resourcePath)
 	{
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		if (crateSpawns.Count == 0)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		if (availableCrateSpawnIndices.Count == 0)
 		{
 			return;
 		}
-		int index = Random.Range(0, crateSpawns.Count);
-		Vector3 position = crateSpawns[index].position;
-		Quaternion rotation = crateSpawns[index].rotation;
-		crateSpawns.Remove(crateSpawns[index]);
+		int index = Random.Range(0, availableCrateSpawnIndices.Count);
+		int index2 = availableCrateSpawnIndices[index];
+		Vector3 position = crateSpawns[index2].position;
+		Quaternion rotation = crateSpawns[index2].rotation;
+		availableCrateSpawnIndices.RemoveAt(index);
 		BaseEntity baseEntity = GameManager.server.CreateEntity(resourcePath, position, rotation);
 		if (Object.op_Implicit((Object)(object)baseEntity))
 		{
-			baseEntity.enableSaving = false;
+			baseEntity.enableSaving = true;
 			((Component)baseEntity).SendMessage("SetWasDropped", (SendMessageOptions)1);
 			baseEntity.Spawn();
 			baseEntity.SetParent(this, worldPositionStays: true);
@@ -729,16 +744,15 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 		info.msg.cargoShip.shouldLookAhead = shouldLookAhead;
 		info.msg.cargoShip.isEgressing = egressing;
 		info.msg.cargoShip.harborIndex = harborIndex;
-		if (!info.forDisk)
+		if (info.forDisk)
 		{
-			return;
+			info.msg.cargoShip.playerIds = Pool.Get<List<ulong>>();
+			info.msg.cargoShip.playerIds.AddRange(boardedPlayerIds);
+			info.msg.cargoShip.lifetime = lifetime;
+			info.msg.cargoShip.lootRoundsPassed = lootRoundsPassed;
+			info.msg.cargoShip.availableCrateSpawnIndices = Pool.Get<List<int>>();
+			info.msg.cargoShip.availableCrateSpawnIndices.AddRange(availableCrateSpawnIndices);
 		}
-		info.msg.cargoShip.playerIds = Pool.Get<List<ulong>>();
-		foreach (ulong boardedPlayerId in boardedPlayerIds)
-		{
-			info.msg.cargoShip.playerIds.Add(boardedPlayerId);
-		}
-		info.msg.cargoShip.lifetime = lifetime;
 	}
 
 	public override void PostServerLoad()
@@ -771,32 +785,40 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public override void ServerInit()
 	{
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		CalculateHarborApproachNodes();
 		Invoke(FindInitialNode, 2f);
 		InvokeRepeating(BuildingCheck, 1f, 5f);
-		InvokeRepeating(RespawnLoot, 10f, 60f * loot_round_spacing_minutes);
 		Invoke(DisableCollisionTest, 10f);
 		float waterSurface = WaterLevel.GetWaterSurface(((Component)this).transform.position, waves: false, volumes: false);
 		Vector3 val = ((Component)this).transform.InverseTransformPoint(((Component)waterLine).transform.position);
 		((Component)this).transform.position = new Vector3(((Component)this).transform.position.x, waterSurface - val.y, ((Component)this).transform.position.z);
-		if (0 == 0)
+		bool flag = false;
+		if (!flag)
 		{
 			SpawnSubEntities();
 		}
-		if (HasFinishedDocking)
+		for (int i = 0; i < crateSpawns.Count; i++)
 		{
-			Invoke(StartEgress, Mathf.Max(EventTimeRemaining, 120f));
+			availableCrateSpawnIndices.Add(i);
 		}
-		if (0 == 0)
+		if (!Application.isLoadingSave)
+		{
+			if (HasFinishedDocking)
+			{
+				Invoke(StartEgress, Mathf.Max(EventTimeRemaining, 120f));
+			}
+			InvokeRepeating(RespawnLoot, 10f, 60f * loot_round_spacing_minutes);
+		}
+		if (!flag)
 		{
 			CreateMapMarker();
 		}
@@ -1503,9 +1525,10 @@ public class CargoShip : BaseEntity, ILargeVehicleForProjectiles
 
 	public CargoShip()
 	{
-		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 		targetNodeIndex = -1;
+		availableCrateSpawnIndices = new List<int>();
 		boardedPlayerIds = new HashSet<ulong>();
 		currentVelocity = Vector3.zero;
 		lastSpeed = 0.3f;

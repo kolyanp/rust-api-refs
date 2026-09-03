@@ -89,8 +89,8 @@ public class RHIB : MotorRowboat
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(6f)]
+	[RPC_Server]
 	public void Server_Release(RPCMessage msg)
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)

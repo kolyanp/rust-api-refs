@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using CompanionServer.Cameras;
 using ConVar;
 using Facepunch;
@@ -8,7 +9,7 @@ namespace CompanionServer.Handlers;
 
 public class Info : BasePlayerHandler<AppEmpty>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		AppInfo val = Pool.Get<AppInfo>();
 		val.name = ConVar.Server.hostname;
@@ -37,5 +38,6 @@ public class Info : BasePlayerHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.info = val;
 		Send(val2);
+		return default(ValueTask);
 	}
 }

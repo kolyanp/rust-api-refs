@@ -248,13 +248,13 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		}
 	}
 
+	[RPC_Server.MaxRepeatedElements(60)]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(int),
 		typeof(SprayList)
 	})]
 	[RPC_Server]
-	[RPC_Server.MaxRepeatedElements(60)]
 	private void Server_FinishEditing(RPCMessage msg)
 	{
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)

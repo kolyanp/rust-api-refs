@@ -257,13 +257,13 @@ public static class ProfileExporter
 				firstMarkTimestamp = 0L;
 				return true;
 			}
-			firstMarkTimestamp = Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + num).Timestamp;
+			firstMarkTimestamp = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + num).Timestamp;
 			long num2 = 0L;
 			int num3 = Mathf.Max(info.Frames, 1);
 			for (int j = 0; j < num3; j++)
 			{
 				uint num4 = ((info.Frames > 0) ? info.FrameStarts[j] : num);
-				ServerProfiler.Mark mark = Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + num4);
+				ServerProfiler.Mark mark = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + num4);
 				uint num5 = mainProfile.WriteEnd;
 				if (j < info.Frames - 1)
 				{
@@ -293,7 +293,7 @@ public static class ProfileExporter
 				uint readInd = num4;
 				while (readInd < num5)
 				{
-					ServerProfiler.Mark mark3 = Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + readInd);
+					ServerProfiler.Mark mark3 = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + readInd);
 					num2 = mark3.Timestamp;
 					i += AdjustCallstackDepth(in mark3);
 					if (i < 0)
@@ -307,7 +307,7 @@ public static class ProfileExporter
 						return false;
 					}
 				}
-				long timestamp = ((j < info.Frames - 1) ? Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + num5).Timestamp : num2);
+				long timestamp = ((j < info.Frames - 1) ? System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(data + num5).Timestamp : num2);
 				AddMark(new ServerProfiler.Mark
 				{
 					Event = ServerProfiler.Mark.Type.Exit,
@@ -332,7 +332,7 @@ public static class ProfileExporter
 			int num = 0;
 			while (readInd < workerProfile.WriteEnd)
 			{
-				ServerProfiler.Mark mark = Unsafe.ReadUnaligned<ServerProfiler.Mark>(workerProfile.Data + readInd);
+				ServerProfiler.Mark mark = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(workerProfile.Data + readInd);
 				if (mark.Timestamp >= firstMarkTimestamp)
 				{
 					break;
@@ -356,7 +356,7 @@ public static class ProfileExporter
 			uint readInd2 = readInd;
 			while (readInd2 < workerProfile.WriteEnd)
 			{
-				ServerProfiler.Mark mark2 = Unsafe.ReadUnaligned<ServerProfiler.Mark>(workerProfile.Data + readInd2);
+				ServerProfiler.Mark mark2 = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(workerProfile.Data + readInd2);
 				if (mark2.Event == ServerProfiler.Mark.Type.Sync)
 				{
 					Debug.LogError((object)"Unexpected mark in worker stream, aborting!");
@@ -394,7 +394,7 @@ public static class ProfileExporter
 			uint readInd3 = readInd;
 			while (readInd3 < workerProfile.WriteEnd)
 			{
-				ServerProfiler.Mark mark3 = Unsafe.ReadUnaligned<ServerProfiler.Mark>(workerProfile.Data + readInd3);
+				ServerProfiler.Mark mark3 = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(workerProfile.Data + readInd3);
 				timestamp = mark3.Timestamp;
 				minDepth += AdjustCallstackDepth(in mark3);
 				if (minDepth < 0)
@@ -455,7 +455,7 @@ public static class ProfileExporter
 		private unsafe static void AddMark(in ServerProfiler.Profile threadProfile, in ThreadMetadata metadata, uint markInd, ref uint totalMem, long startTimestamp, StringStream builder)
 		{
 			byte* ptr = threadProfile.Data + markInd;
-			ServerProfiler.Mark mark = Unsafe.ReadUnaligned<ServerProfiler.Mark>(ptr);
+			ServerProfiler.Mark mark = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(ptr);
 			ptr += sizeof(ServerProfiler.Mark);
 			switch (mark.Event)
 			{
@@ -479,7 +479,7 @@ public static class ProfileExporter
 				break;
 			case ServerProfiler.Mark.Type.Alloc:
 			{
-				ServerProfiler.Alloc alloc2 = Unsafe.ReadUnaligned<ServerProfiler.Alloc>(ptr);
+				ServerProfiler.Alloc alloc2 = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Alloc>(ptr);
 				long num2 = ServerProfiler.TimestampToMicros(mark.Timestamp - startTimestamp);
 				builder.Append(",{\"name\":\"");
 				builder.Append("Alloc ");
@@ -536,7 +536,7 @@ public static class ProfileExporter
 			}
 			case ServerProfiler.Mark.Type.AllocWithStack:
 			{
-				ServerProfiler.Alloc alloc = Unsafe.ReadUnaligned<ServerProfiler.Alloc>(ptr);
+				ServerProfiler.Alloc alloc = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Alloc>(ptr);
 				ptr += sizeof(ServerProfiler.Alloc);
 				long num = ServerProfiler.TimestampToMicros(mark.Timestamp - startTimestamp);
 				builder.Append(",{\"name\":\"");
@@ -684,7 +684,7 @@ public static class ProfileExporter
 			uint readInd = start;
 			while (readInd < end)
 			{
-				ServerProfiler.Mark mark = Unsafe.ReadUnaligned<ServerProfiler.Mark>(threadProfile.Data + readInd);
+				ServerProfiler.Mark mark = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(threadProfile.Data + readInd);
 				num += AdjustCallstackDepth(in mark);
 				if (mark.Event == ServerProfiler.Mark.Type.Exit || mark.Event == ServerProfiler.Mark.Type.Exception)
 				{
@@ -815,7 +815,7 @@ public static class ProfileExporter
 				while (readInd < profile.WriteEnd)
 				{
 					byte* ptr = profile.Data + readInd;
-					ServerProfiler.Mark mark = Unsafe.ReadUnaligned<ServerProfiler.Mark>(ptr);
+					ServerProfiler.Mark mark = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(ptr);
 					sectionBlock3.Write((byte)mark.Event);
 					sectionBlock3.Write((ulong)mark.Timestamp);
 					switch (mark.Event)
@@ -825,7 +825,7 @@ public static class ProfileExporter
 						break;
 					case ServerProfiler.Mark.Type.Alloc:
 					{
-						ServerProfiler.Alloc alloc = Unsafe.ReadUnaligned<ServerProfiler.Alloc>(ptr + sizeof(ServerProfiler.Mark));
+						ServerProfiler.Alloc alloc = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Alloc>(ptr + sizeof(ServerProfiler.Mark));
 						ServerProfiler.SerializeNameTo(alloc, memoryStream);
 						sectionBlock3.Write(alloc.AlignedSize);
 						break;
@@ -867,7 +867,7 @@ public static class ProfileExporter
 				uint readInd = 0u;
 				while (readInd < profile.WriteEnd)
 				{
-					ServerProfiler.Mark mark = Unsafe.ReadUnaligned<ServerProfiler.Mark>(profile.Data + readInd);
+					ServerProfiler.Mark mark = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(profile.Data + readInd);
 					switch (mark.Event)
 					{
 					case ServerProfiler.Mark.Type.Enter:
@@ -916,7 +916,7 @@ public static class ProfileExporter
 				for (int i = 0; i < mainInfo.Frames; i++)
 				{
 					uint num6 = mainInfo.SyncIndices[i];
-					long timestamp = Unsafe.ReadUnaligned<ServerProfiler.Mark>(profile.Data + num6).Timestamp;
+					long timestamp = System.Runtime.CompilerServices.Unsafe.ReadUnaligned<ServerProfiler.Mark>(profile.Data + num6).Timestamp;
 					_ = ServerProfiler.TimestampToTimespan(timestamp - num5).TotalMilliseconds;
 					uint num7 = num6 - num4;
 					num += num7;

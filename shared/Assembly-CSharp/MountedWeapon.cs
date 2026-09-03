@@ -55,8 +55,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[SerializeField]
 	[ItemSelector]
+	[SerializeField]
 	private ItemDefinition _ammoItem;
 
 	[SerializeField]
@@ -88,8 +88,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private Transform _attachPoint2;
 
-	[Header("Mounted Weapon - Player General Animation")]
 	[SerializeField]
+	[Header("Mounted Weapon - Player General Animation")]
 	private int _turretAnimationType;
 
 	[SerializeField]
@@ -132,15 +132,15 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Viewmodel")]
+	[SerializeField]
 	private bool _useViewmodel;
 
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[Header("Mounted Weapon - Aim Movement Sounds")]
 	[SerializeField]
+	[Header("Mounted Weapon - Aim Movement Sounds")]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]
@@ -934,7 +934,7 @@ public class MountedWeapon : StorageContainer
 	{
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 		Invoke(delegate
 		{
 			UpdateAttachedWeapon(_weapon, _attachPoint);
@@ -1244,7 +1244,7 @@ public class MountedWeapon : StorageContainer
 		};
 	}
 
-	private bool CanAcceptItem(Item item, int targetSlot)
+	private bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		if (Check.IsValidWeapon(item, checkCanUseTurret: true) && targetSlot == 0)
 		{
@@ -1425,10 +1425,10 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(100uL)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
+	[RPC_Server]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

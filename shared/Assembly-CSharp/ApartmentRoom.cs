@@ -86,8 +86,8 @@ public class ApartmentRoom : BaseEntity
 	[NonSerialized]
 	public List<BaseEntity> Furniture = new List<BaseEntity>();
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<FurnitureSpawn> furnitureSpawns = new List<FurnitureSpawn>();
 
 	private TriggerSafeZoneOverride safeZoneOverrideTrigger;
@@ -345,7 +345,7 @@ public class ApartmentRoom : BaseEntity
 			Debug.LogError((object)$"Apartment {this} is missing it's upkeep terminal");
 			return 0;
 		}
-		return apartmentUpkeepTerminal.inventory.GetAmount(scrapItemDef.itemid, onlyUsableAmounts: false);
+		return apartmentUpkeepTerminal.inventory.GetAmount(scrapItemDef.itemid);
 	}
 
 	public float GetDailyUpkeepCost()

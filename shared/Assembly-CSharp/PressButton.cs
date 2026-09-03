@@ -121,8 +121,8 @@ public class PressButton : IOEntity
 		flagsUpdateScope.Set(Flags.On, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Press(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnButtonPress", this, msg.player) == null)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,6 +8,8 @@ namespace Rust.Ai.Gen2;
 public class State_MoveToLastReachablePointNearTarget : State_MoveToTarget
 {
 	private const float maxHorizontalDist = 7f;
+
+	private const float projectSampleRadius = 2f;
 
 	private const float maxVerticalDist = 2.7f;
 
@@ -63,20 +66,41 @@ public class State_MoveToLastReachablePointNearTarget : State_MoveToTarget
 		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0289: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0118: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0316: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0247: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0258: Unknown result type (might be due to invalid IL or missing references)
 		location = default(Vector3);
 		if (!base.Senses.FindTarget(out var target) || !(target is BasePlayer basePlayer))
 		{
@@ -94,16 +118,56 @@ public class State_MoveToLastReachablePointNearTarget : State_MoveToTarget
 		Vector3? val = null;
 		if (base.Agent.lastValidPath.Count > 0)
 		{
-			List<Vector3> lastValidPath = base.Agent.lastValidPath;
-			Vector3 val2 = lastValidPath[lastValidPath.Count - 1];
-			if (Vector3.Distance(val2, position) <= 7f && base.Agent.SamplePosition(val2, out var hitNS, 7f) && CanJumpFromPosToPos(Owner, ((NavMeshHit)(ref hitNS)).position, position))
+			RustNavMeshAgent agent = base.Agent;
+			List<NavVector3> lastValidPath = base.Agent.lastValidPath;
+			Vector3 val2 = agent.NavToWorldSpace(lastValidPath[lastValidPath.Count - 1]);
+			if (Vector3.Distance(val2, position) <= 7f && base.Agent.SamplePosition(val2, out var hitWS, 2f) && CanJumpFromPosToPos(Owner, ((NavMeshHit)(ref hitWS)).position, position))
 			{
-				val = ((NavMeshHit)(ref hitNS)).position;
+				val = ((NavMeshHit)(ref hitWS)).position;
 			}
 		}
-		if (!val.HasValue && base.Agent.SamplePosition(position, out var hitNS2, 7f) && CanJumpFromPosToPos(Owner, ((NavMeshHit)(ref hitNS2)).position, position))
+		if (!val.HasValue && base.Agent.SamplePosition(position, out var hitWS2, 2f) && CanJumpFromPosToPos(Owner, ((NavMeshHit)(ref hitWS2)).position, position))
 		{
-			val = ((NavMeshHit)(ref hitNS2)).position;
+			val = ((NavMeshHit)(ref hitWS2)).position;
+		}
+		if (!val.HasValue && base.Agent.lastValidPath.Count > 0)
+		{
+			List<NavVector3> lastValidPath2 = base.Agent.lastValidPath;
+			NavVector3 positionNS = lastValidPath2[lastValidPath2.Count - 1];
+			float num = 3f;
+			int num2 = base.Agent.lastValidPath.Count - 1;
+			while (num2 > 0 && num > 0f)
+			{
+				float num3 = NavVector3.Distance(base.Agent.lastValidPath[num2], base.Agent.lastValidPath[num2 - 1]);
+				if (num3 >= num)
+				{
+					positionNS = NavVector3.MoveTowards(base.Agent.lastValidPath[num2], base.Agent.lastValidPath[num2 - 1], num);
+					num = 0f;
+				}
+				else
+				{
+					positionNS = base.Agent.lastValidPath[num2 - 1];
+					num -= num3;
+				}
+				num2--;
+			}
+			if (base.Agent.SamplePosition(base.Agent.NavToWorldSpace(positionNS), out var hitWS3, 2f) && CanJumpFromPosToPos(Owner, ((NavMeshHit)(ref hitWS3)).position, position))
+			{
+				val = ((NavMeshHit)(ref hitWS3)).position;
+			}
+		}
+		if (!val.HasValue)
+		{
+			Vector3 val3 = Vector3Ex.WithY(((Component)Owner).transform.position - position, 0f);
+			Vector3 val4 = ((Vector3)(ref val3)).normalized;
+			if (((Vector3)(ref val4)).sqrMagnitude < 0.01f)
+			{
+				val4 = -((Component)Owner).transform.forward;
+			}
+			if (base.Agent.SamplePosition(position + val4 * 4.5f, out var hitWS4, 2f) && CanJumpFromPosToPos(Owner, ((NavMeshHit)(ref hitWS4)).position, position))
+			{
+				val = ((NavMeshHit)(ref hitWS4)).position;
+			}
 		}
 		if (!val.HasValue)
 		{
@@ -113,11 +177,10 @@ public class State_MoveToLastReachablePointNearTarget : State_MoveToTarget
 		return true;
 	}
 
-	protected override bool GetMoveDestination(out Vector3 destination)
+	protected override bool GetMoveDestination(out NavVector3 destination)
 	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
-		destination = reachableDestination;
+		//IL_0008: Unknown result type (might be due to invalid IL or missing references)
+		destination = base.Agent.WorldToNavSpace(reachableDestination);
 		return true;
 	}
 

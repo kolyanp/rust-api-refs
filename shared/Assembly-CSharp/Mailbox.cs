@@ -192,11 +192,11 @@ public class Mailbox : StorageContainer
 		flagsUpdateScope.Set(Flags.Reserved1, shouldMarkAsFull & full);
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (allowedItems == null || allowedItems.Length == 0)
 		{
-			return base.ItemFilter(item, targetSlot);
+			return base.ItemFilter(player, item, targetSlot);
 		}
 		ItemDefinition[] array = allowedItems;
 		foreach (ItemDefinition itemDefinition in array)
@@ -241,7 +241,7 @@ public class Mailbox : StorageContainer
 			InputContainer.onDirty += OnInventoryDirty;
 			InputContainer.onItemAddedRemoved = OnItemAddedOrRemoved;
 			ItemContainer inputContainer = InputContainer;
-			inputContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(inputContainer.canAcceptItem, new Func<Item, int, bool>(ItemFilter));
+			inputContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(inputContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(ItemFilter));
 			OnInventoryFirstCreated(InputContainer);
 		}
 	}

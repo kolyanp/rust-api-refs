@@ -34,7 +34,8 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		Warming,
 		Cooking,
 		Smelting,
-		Fractioning
+		Fractioning,
+		Compost
 	}
 
 	public enum IndustrialSlotMode
@@ -152,6 +153,8 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 
 	public virtual bool ShowFuelInLootPanel => true;
 
+	protected virtual bool AutomaticallyStartCooking => false;
+
 	public virtual bool CanRunWithNoFuel
 	{
 		get
@@ -174,6 +177,7 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		TemperatureType.Cooking => 200f, 
 		TemperatureType.Smelting => 1000f, 
 		TemperatureType.Warming => 50f, 
+		TemperatureType.Compost => 30f, 
 		_ => 15f, 
 	};
 
@@ -426,6 +430,10 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
+		if (AutomaticallyStartCooking)
+		{
+			UpdateAutoState();
+		}
 		if (IsOn())
 		{
 			StartCooking();
@@ -470,10 +478,10 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		base.OnItemAddedOrRemoved(item, bAdded);
 		if (item != null)
 		{
-			ItemModCookable itemModCookable = item.info.ItemModCookable;
-			if ((Object)(object)itemModCookable != (Object)null)
+			CookableItemInfo cookableItemInfo = ((this is Composter) ? item.info.ItemModCompostable : item.info.ItemModCookable);
+			if (cookableItemInfo != null)
 			{
-				item.cookTimeLeft = itemModCookable.cookTime;
+				item.cookTimeLeft = cookableItemInfo.cookTime;
 			}
 			if (item.HasFlag(Item.Flag.OnFire))
 			{
@@ -486,6 +494,10 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 				item.MarkDirty();
 			}
 		}
+		if (AutomaticallyStartCooking)
+		{
+			UpdateAutoState();
+		}
 		if (visualFood)
 		{
 			OnItemAddedOrRemovedVisualFood(item, bAdded);
@@ -493,9 +505,9 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		UpdateIsCooking();
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		if (!base.ItemFilter(item, targetSlot))
+		if (!base.ItemFilter(player, item, targetSlot))
 		{
 			return false;
 		}
@@ -503,13 +515,9 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 		{
 			return false;
 		}
-		if (IsOutputItem(item) && (Object)(object)item.GetEntityOwner() != (Object)(object)this)
+		if (IsOutputItem(item) && (Object)(object)player != (Object)null)
 		{
-			BaseEntity entityOwner = item.GetEntityOwner();
-			if ((Object)(object)entityOwner != (Object)(object)this && (Object)(object)entityOwner != (Object)null)
-			{
-				return false;
-			}
+			return false;
 		}
 		MinMax? allowedSlots = GetAllowedSlots(item);
 		if (!allowedSlots.HasValue)
@@ -946,6 +954,20 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 	{
 	}
 
+	private void UpdateAutoState()
+	{
+		bool flag = HasInputItems();
+		if (flag && !IsOn())
+		{
+			StartCooking();
+		}
+		else if (!flag && IsOn())
+		{
+			StopCooking();
+			SendNetworkUpdate();
+		}
+	}
+
 	public float GetSmeltingSpeed()
 	{
 		if (base.isServer)
@@ -976,8 +998,12 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 
 	public bool IsMaterialInput(Item item)
 	{
-		ItemModCookable itemModCookable = item.info.ItemModCookable;
-		if ((Object)(object)itemModCookable == (Object)null || (float)itemModCookable.lowTemp > cookingTemperature || (float)itemModCookable.highTemp < cookingTemperature)
+		CookableItemInfo cookableItemInfo = item.info.ItemModCookable;
+		if (this is Composter)
+		{
+			cookableItemInfo = item.info.ItemModCompostable;
+		}
+		if (cookableItemInfo == null || (float)cookableItemInfo.lowTemp > cookingTemperature || (float)cookableItemInfo.highTemp < cookingTemperature)
 		{
 			return false;
 		}
@@ -1014,16 +1040,20 @@ public class BaseOven : StorageContainer, ISplashable, IIndustrialStorage, IAlwa
 			select x.GetComponent<BaseOven>() into x
 			where (Object)(object)x != (Object)null
 			select x.cookingTemperature).Distinct().ToArray();
-		foreach (float key in array)
+		foreach (float temperature in array)
 		{
-			HashSet<ItemDefinition> hashSet = new HashSet<ItemDefinition>();
-			_materialOutputCache[key] = hashSet;
+			HashSet<ItemDefinition> validOutputs = new HashSet<ItemDefinition>();
+			_materialOutputCache[temperature] = validOutputs;
 			foreach (ItemDefinition item in ItemManager.itemList)
 			{
-				ItemModCookable itemModCookable = item.ItemModCookable;
-				if (!((Object)(object)itemModCookable == (Object)null) && itemModCookable.CanBeCookedByAtTemperature(key))
+				TryAddCookable(item.ItemModCookable);
+				TryAddCookable(item.ItemModCompostable);
+			}
+			void TryAddCookable(CookableItemInfo cookable)
+			{
+				if (cookable != null && cookable.CanBeCookedByAtTemperature(temperature))
 				{
-					hashSet.Add(itemModCookable.becomeOnCooked);
+					validOutputs.Add(cookable.becomeOnCooked);
 				}
 			}
 		}

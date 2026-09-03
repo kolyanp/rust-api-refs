@@ -22,8 +22,8 @@ public class BaseProjectile : AttackEntity
 			[Tooltip("Set to 0 to not use inbuilt mag")]
 			public int builtInSize;
 
-			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
 			[InspectorFlags]
+			[Tooltip("If using inbuilt mag, will accept these types of ammo")]
 			public AmmoTypes ammoTypes;
 		}
 
@@ -102,9 +102,17 @@ public class BaseProjectile : AttackEntity
 	public float NoiseRadius;
 
 	[Header("Projectile")]
+	[Tooltip("Scales the damage of the projectile across all ranges.")]
 	public float damageScale;
 
+	[Tooltip("Scales the damage falloff window of the projectile.")]
 	public float distanceScale;
+
+	[Tooltip("Overrides the projectile's far damage multiplier. Negative values use the projectile default.")]
+	public float farDamageScale;
+
+	[Tooltip("Scales only the projectile's far falloff distance. Negative values use the projectile default.")]
+	public float farDistanceScale;
 
 	public float projectileVelocityScale;
 
@@ -119,8 +127,8 @@ public class BaseProjectile : AttackEntity
 
 	public float turretReloadDurationOverride;
 
-	[Header("Effects")]
 	[Tooltip("How far away this attack effect can be heard")]
+	[Header("Effects")]
 	public float maxAttackEffectDistance;
 
 	public GameObjectRef attackFX;
@@ -633,6 +641,16 @@ public class BaseProjectile : AttackEntity
 	public virtual float GetDistanceScale(bool getMax = false)
 	{
 		return distanceScale;
+	}
+
+	public virtual float GetFarDamageScale(bool getMax = false)
+	{
+		return farDamageScale;
+	}
+
+	public virtual float GetFarDistanceScale(bool getMax = false)
+	{
+		return farDistanceScale;
 	}
 
 	public virtual float GetProjectileVelocityScale(bool getMax = false)
@@ -1320,7 +1338,9 @@ public class BaseProjectile : AttackEntity
 			damageOffset = ProjectileWeaponMod.Sum(this, ProjectileWeaponMod.SelectDamage, ProjectileWeaponMod.SelectOffset),
 			damageScale = ProjectileWeaponMod.Mult(this, ProjectileWeaponMod.SelectDamage, ProjectileWeaponMod.SelectScalar) * GetDamageScale(),
 			distanceOffset = ProjectileWeaponMod.Sum(this, ProjectileWeaponMod.SelectDistance, ProjectileWeaponMod.SelectOffset),
-			distanceScale = ProjectileWeaponMod.Mult(this, ProjectileWeaponMod.SelectDistance, ProjectileWeaponMod.SelectScalar) * GetDistanceScale()
+			distanceScale = ProjectileWeaponMod.Mult(this, ProjectileWeaponMod.SelectDistance, ProjectileWeaponMod.SelectScalar) * GetDistanceScale(),
+			farDamageScale = GetFarDamageScale(),
+			farDistanceScale = GetFarDistanceScale()
 		};
 	}
 
@@ -1451,9 +1471,9 @@ public class BaseProjectile : AttackEntity
 		return HasFlag(Flags.Reserved6) == defaultOn;
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void ToggleFireMode(RPCMessage msg)
 	{
 		if (canChangeFireModes && IsBurstEligable())
@@ -1542,8 +1562,8 @@ public class BaseProjectile : AttackEntity
 		UpdateAttachmentsState();
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void StartReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1630,8 +1650,8 @@ public class BaseProjectile : AttackEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Reload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1684,8 +1704,8 @@ public class BaseProjectile : AttackEntity
 
 	[RPC_Server]
 	[RPC_Server.FromOwner]
-	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.MaxRepeatedElements(64)]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_0265: Unknown result type (might be due to invalid IL or missing references)
@@ -2064,15 +2084,17 @@ public class BaseProjectile : AttackEntity
 
 	public BaseProjectile()
 	{
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Expected O, but got Unknown
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Expected O, but got Unknown
 		NoiseRadius = 100f;
 		damageScale = 1f;
 		distanceScale = 1f;
+		farDamageScale = -1f;
+		farDistanceScale = -1f;
 		projectileVelocityScale = 1f;
 		usableByTurret = true;
 		turretDamageScale = 0.35f;

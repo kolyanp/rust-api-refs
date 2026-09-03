@@ -15,14 +15,15 @@ public class Category_Weapon
 	public class Weapon_ThrownWeapon
 	{
 		[Patch("OnExplosiveThrown", "OnExplosiveThrown", "ThrownWeapon", "DoThrow", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("10ece424346c4528a2f1a3316ccc6f05")]
+		[Identifier("155505eb34aa47528ef1d68ec21d471c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("local4", "BaseEntity", false)]
 		[Parameter("self", "ThrownWeapon", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_ThrownWeapon_10ece424346c4528a2f1a3316ccc6f05 : Patch
+		public class Weapon_ThrownWeapon_155505eb34aa47528ef1d68ec21d471c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -53,14 +54,15 @@ public class Category_Weapon
 		}
 
 		[Patch("OnExplosiveDropped", "OnExplosiveDropped", "ThrownWeapon", "DoDrop", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("6498b157f330406eabbeb94ac22be1c4")]
+		[Identifier("b6f0fd3b79c64413951dd0fe178f18e8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("local2", "BaseEntity", false)]
 		[Parameter("self", "ThrownWeapon", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_ThrownWeapon_6498b157f330406eabbeb94ac22be1c4 : Patch
+		public class Weapon_ThrownWeapon_b6f0fd3b79c64413951dd0fe178f18e8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -94,13 +96,14 @@ public class Category_Weapon
 	public class Weapon_BaseMelee
 	{
 		[Patch("OnMeleeThrown", "OnMeleeThrown", "BaseMelee", "CLProject", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("972f0b3ff8bb43e89d833b5518070655")]
+		[Identifier("8d112430abc3449a859688341133ed35")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Parameter("local1", "Item", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseMelee_972f0b3ff8bb43e89d833b5518070655 : Patch
+		public class Weapon_BaseMelee_8d112430abc3449a859688341133ed35 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -131,13 +134,14 @@ public class Category_Weapon
 	public class Weapon_BaseLauncher
 	{
 		[Patch("OnRocketLaunched", "OnRocketLaunched", "BaseLauncher", "SV_Launch", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("84e10b67483a4158b5e598651023fa28")]
+		[Identifier("5aeb73edc7804500b57fbd8640f13eb7")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Parameter("local8", "BaseEntity", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseLauncher_84e10b67483a4158b5e598651023fa28 : Patch
+		public class Weapon_BaseLauncher_5aeb73edc7804500b57fbd8640f13eb7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -168,15 +172,16 @@ public class Category_Weapon
 	public class Weapon_BaseProjectile
 	{
 		[Patch("OnWeaponFired", "OnWeaponFired", "BaseProjectile", "CLProject", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d0ae7e1d1b1743e18c7b9126e3da20b0")]
+		[Identifier("a67f7c078190440f9fc882f279fda504")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseProjectile", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("local3", "ItemModProjectile", false)]
 		[Parameter("local2", "ProtoBuf.ProjectileShoot", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseProjectile_d0ae7e1d1b1743e18c7b9126e3da20b0 : Patch
+		public class Weapon_BaseProjectile_a67f7c078190440f9fc882f279fda504 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -209,14 +214,14 @@ public class Category_Weapon
 		}
 
 		[Patch("OnWeaponReload", "OnWeaponReload", "BaseProjectile", "StartReload", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5fcbd13fb0fe4b728fa4910b4823356d")]
+		[Identifier("f378feb1f481448a8de15b15e50d1a57")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseProjectile", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseProjectile_5fcbd13fb0fe4b728fa4910b4823356d : Patch
+		public class Weapon_BaseProjectile_f378feb1f481448a8de15b15e50d1a57 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -248,7 +253,7 @@ public class Category_Weapon
 		}
 
 		[Patch("OnAmmoSwitch", "OnAmmoSwitch", "BaseProjectile", "SwitchAmmoTo", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("1c073596f03746fcb77056415db93267")]
+		[Identifier("ace77b33c9ba415284095150c9e9ca53")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseProjectile", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -256,7 +261,7 @@ public class Category_Weapon
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseProjectile_1c073596f03746fcb77056415db93267 : Patch
+		public class Weapon_BaseProjectile_ace77b33c9ba415284095150c9e9ca53 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -290,7 +295,7 @@ public class Category_Weapon
 		}
 
 		[Patch("OnAmmoUnload", "OnAmmoUnload", "BaseProjectile", "UnloadAmmo", new string[] { "Item", "BasePlayer" })]
-		[Identifier("8cf254904e7440f7a22213a5ed3d507b")]
+		[Identifier("80ff3f0b3c1642e3aa6984f4f2d91f1c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BaseProjectile", false)]
 		[Parameter("item", "Item", false)]
@@ -298,7 +303,7 @@ public class Category_Weapon
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseProjectile_8cf254904e7440f7a22213a5ed3d507b : Patch
+		public class Weapon_BaseProjectile_80ff3f0b3c1642e3aa6984f4f2d91f1c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -332,14 +337,14 @@ public class Category_Weapon
 		}
 
 		[Patch("OnWeaponModChange", "OnWeaponModChange", "BaseProjectile", "DelayedModsChanged", new string[] { })]
-		[Identifier("0407889f4e494a6d87702e24456b32b9")]
+		[Identifier("9d63f9035b12449e96b792fefa07f15c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseProjectile", false)]
 		[Parameter("self1", "BaseProjectile", false)]
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseProjectile_0407889f4e494a6d87702e24456b32b9 : Patch
+		public class Weapon_BaseProjectile_9d63f9035b12449e96b792fefa07f15c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -372,7 +377,7 @@ public class Category_Weapon
 		}
 
 		[Patch("OnMagazineReload", "OnMagazineReload", "BaseProjectile", "TryReloadMagazine", new string[] { "IAmmoContainer", "System.Int32", "System.Boolean" })]
-		[Identifier("7215e5c8e6754d25964783f74c68039e")]
+		[Identifier("0bb0c1a2a7994bbb8c23e78e37c6ac79")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseProjectile", false)]
 		[Parameter("ammoSource", "IAmmoContainer", false)]
@@ -380,7 +385,7 @@ public class Category_Weapon
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseProjectile_7215e5c8e6754d25964783f74c68039e : Patch
+		public class Weapon_BaseProjectile_0bb0c1a2a7994bbb8c23e78e37c6ac79 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -424,14 +429,14 @@ public class Category_Weapon
 	public class Weapon_BasePlayer
 	{
 		[Patch("CanCreateWorldProjectile", "CanCreateWorldProjectile", "BasePlayer", "CreateWorldProjectile", new string[] { "HitInfo", "ItemDefinition", "ItemModProjectile", "Projectile", "Item" })]
-		[Identifier("93535986095845769addf2452b42999e")]
+		[Identifier("b42c0dd244de4cdea54ae2b2b000a542")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("info", "HitInfo", false)]
 		[Parameter("itemDef", "ItemDefinition", false)]
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BasePlayer_93535986095845769addf2452b42999e : Patch
+		public class Weapon_BasePlayer_b42c0dd244de4cdea54ae2b2b000a542 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -463,7 +468,7 @@ public class Category_Weapon
 		}
 
 		[Patch("OnWorldProjectileCreate", "OnWorldProjectileCreate", "BasePlayer", "CreateWorldProjectile", new string[] { "HitInfo", "ItemDefinition", "ItemModProjectile", "Projectile", "Item" })]
-		[Identifier("bfe7fc5feda947d6a1b327cf5ce224e3")]
+		[Identifier("324365fa6d0c4a2db3aa4b983b308685")]
 		[Dependencies(new string[] { "CanCreateWorldProjectile" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("info", "HitInfo", false)]
@@ -471,7 +476,7 @@ public class Category_Weapon
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BasePlayer_bfe7fc5feda947d6a1b327cf5ce224e3 : Patch
+		public class Weapon_BasePlayer_324365fa6d0c4a2db3aa4b983b308685 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -503,14 +508,14 @@ public class Category_Weapon
 		}
 
 		[Patch("OnProjectileRicochet", "OnProjectileRicochet", "BasePlayer", "OnProjectileRicochet", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("5de67df7eb284661bacdd7ef288c36c8")]
+		[Identifier("d985b4a32dab45a58f73e4b1b9b206f3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BasePlayer", false)]
 		[Parameter("local0", "ProtoBuf.PlayerProjectileRicochet", false)]
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BasePlayer_5de67df7eb284661bacdd7ef288c36c8 : Patch
+		public class Weapon_BasePlayer_d985b4a32dab45a58f73e4b1b9b206f3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -547,13 +552,14 @@ public class Category_Weapon
 	public class Weapon_FlameThrower
 	{
 		[Patch("OnFlameThrowerBurn", "OnFlameThrowerBurn", "FlameThrower", "FlameTick", new string[] { })]
-		[Identifier("2044001429d5423887b16c98c8d472a7")]
+		[Identifier("be5e8b6adfe14b0b9b0092027cd9057b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "FlameThrower", false)]
 		[Parameter("local13", "BaseEntity", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_FlameThrower_2044001429d5423887b16c98c8d472a7 : Patch
+		public class Weapon_FlameThrower_be5e8b6adfe14b0b9b0092027cd9057b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -584,14 +590,15 @@ public class Category_Weapon
 	public class Weapon_FireBall
 	{
 		[Patch("OnFireBallDamage", "OnFireBallDamage", "FireBall", "DoRadialDamage", new string[] { })]
-		[Identifier("6586f762c8bd40ffb059afee0c335e48")]
+		[Identifier("2b8178610bee457f9ccbca4df178c2af")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "FireBall", false)]
 		[Parameter("local4", "BaseCombatEntity", false)]
 		[Parameter("local2", "HitInfo", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_FireBall_6586f762c8bd40ffb059afee0c335e48 : Patch
+		public class Weapon_FireBall_2b8178610bee457f9ccbca4df178c2af : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -621,13 +628,14 @@ public class Category_Weapon
 		}
 
 		[Patch("OnFireBallSpread", "OnFireBallSpread", "FireBall", "TryToSpread", new string[] { })]
-		[Identifier("cfa5891ef34d40b19f3a9c997541c7f5")]
+		[Identifier("0a1ccf3cb8224edcab6140008a50af67")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "FireBall", false)]
 		[Parameter("local1", "BaseEntity", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_FireBall_cfa5891ef34d40b19f3a9c997541c7f5 : Patch
+		public class Weapon_FireBall_0a1ccf3cb8224edcab6140008a50af67 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -658,13 +666,14 @@ public class Category_Weapon
 	public class Weapon_TimedExplosive
 	{
 		[Patch("OnExplosiveFuseSet", "OnExplosiveFuseSet", "TimedExplosive", "SetFuse", new string[] { "System.Single" })]
-		[Identifier("b6870b36baaf40009f323111f904c7a2")]
+		[Identifier("23a5cc28906145cfa408d261e52d18a1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "TimedExplosive", false)]
 		[Parameter("fuseLength", "System.Single", false)]
+		[Return(typeof(float), Continues = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_TimedExplosive_b6870b36baaf40009f323111f904c7a2 : Patch
+		public class Weapon_TimedExplosive_23a5cc28906145cfa408d261e52d18a1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -702,13 +711,13 @@ public class Category_Weapon
 		}
 
 		[Patch("OnTimedExplosiveExplode", "OnTimedExplosiveExplode", "TimedExplosive", "Explode", new string[] { "UnityEngine.Vector3" })]
-		[Identifier("865cdaf9639f4f52af0d62faab64b1bd")]
+		[Identifier("b1d93ba177634f5e984692a671f3f0e2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "TimedExplosive", false)]
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_TimedExplosive_865cdaf9639f4f52af0d62faab64b1bd : Patch
+		public class Weapon_TimedExplosive_b1d93ba177634f5e984692a671f3f0e2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -746,13 +755,14 @@ public class Category_Weapon
 	public class Weapon_FlameExplosive
 	{
 		[Patch("OnFlameExplosion", "OnFlameExplosion", "FlameExplosive", "FlameExplode", new string[] { "UnityEngine.Vector3" })]
-		[Identifier("99cc76e5ba474d7d9fb936eb6171a99c")]
+		[Identifier("230237ec573c49d189e1f4e28f5524d9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "FlameExplosive", false)]
 		[Parameter("local1", "UnityEngine.Collider", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_FlameExplosive_99cc76e5ba474d7d9fb936eb6171a99c : Patch
+		public class Weapon_FlameExplosive_230237ec573c49d189e1f4e28f5524d9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -783,14 +793,14 @@ public class Category_Weapon
 	public class Weapon_Effectserver
 	{
 		[Patch("OnImpactEffectCreate", "OnImpactEffectCreate", "Effect/server", "ImpactEffect", new string[] { "HitInfo", "System.String" })]
-		[Identifier("9b578e59f7654db8acc6922600fb6bc4")]
+		[Identifier("a82904c96db145ff872688b685f6136c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("info", "HitInfo", false)]
 		[Parameter("customEffect", "System.String", false)]
 		[Return(typeof(void))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_Effectserver_9b578e59f7654db8acc6922600fb6bc4 : Patch
+		public class Weapon_Effectserver_a82904c96db145ff872688b685f6136c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -825,14 +835,14 @@ public class Category_Weapon
 	public class Weapon_LiquidWeapon
 	{
 		[Patch("CanFireLiquidWeapon", "CanFireLiquidWeapon", "LiquidWeapon", "CanFire", new string[] { "BasePlayer" })]
-		[Identifier("ff53378ad0834d92acd7b2c0fe202b57")]
+		[Identifier("87669f91de614b26b8d4fc6f5113c1f9")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("self", "LiquidWeapon", false)]
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_LiquidWeapon_ff53378ad0834d92acd7b2c0fe202b57 : Patch
+		public class Weapon_LiquidWeapon_87669f91de614b26b8d4fc6f5113c1f9 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -870,13 +880,14 @@ public class Category_Weapon
 		}
 
 		[Patch("OnLiquidWeaponFired", "OnLiquidWeaponFired", "LiquidWeapon", "StartFiring", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("0fc29e236dcc4ea09592e1862ad95524")]
+		[Identifier("04059789fae24e1ab51cf7d421b5f2b8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "LiquidWeapon", false)]
 		[Parameter("local0", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_LiquidWeapon_0fc29e236dcc4ea09592e1862ad95524 : Patch
+		public class Weapon_LiquidWeapon_04059789fae24e1ab51cf7d421b5f2b8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -904,12 +915,13 @@ public class Category_Weapon
 		}
 
 		[Patch("OnLiquidWeaponFiringStopped", "OnLiquidWeaponFiringStopped", "LiquidWeapon", "StopFiring", new string[] { })]
-		[Identifier("80ec1ac1779644f194225f1e73fa3740")]
+		[Identifier("6337a6c80bd844c38b13396b5fdb8080")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "LiquidWeapon", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_LiquidWeapon_80ec1ac1779644f194225f1e73fa3740 : Patch
+		public class Weapon_LiquidWeapon_6337a6c80bd844c38b13396b5fdb8080 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -938,13 +950,13 @@ public class Category_Weapon
 	public class Weapon_BaseHelicopter
 	{
 		[Patch("CanBeHomingTargeted", "CanBeHomingTargeted [BaseHelicopter]", "BaseHelicopter", "IsValidHomingTarget", new string[] { })]
-		[Identifier("94451bd7d36f4ba49c4f435174ec2b33")]
+		[Identifier("321bde577a994c4b92aae936f1ae4ca1")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BaseHelicopter", false)]
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_BaseHelicopter_94451bd7d36f4ba49c4f435174ec2b33 : Patch
+		public class Weapon_BaseHelicopter_321bde577a994c4b92aae936f1ae4ca1 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -983,13 +995,13 @@ public class Category_Weapon
 	public class Weapon_CH47Helicopter
 	{
 		[Patch("CanBeHomingTargeted", "CanBeHomingTargeted [CH47Helicopter]", "CH47Helicopter", "IsValidHomingTarget", new string[] { })]
-		[Identifier("a05db94421da4ab39efffa13816b552a")]
+		[Identifier("eaec3a0f27cb469da83acdafc8427841")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CH47Helicopter", false)]
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_CH47Helicopter_a05db94421da4ab39efffa13816b552a : Patch
+		public class Weapon_CH47Helicopter_eaec3a0f27cb469da83acdafc8427841 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1028,13 +1040,13 @@ public class Category_Weapon
 	public class Weapon_PlayerHelicopter
 	{
 		[Patch("CanBeHomingTargeted", "CanBeHomingTargeted [PlayerHelicopter]", "PlayerHelicopter", "IsValidHomingTarget", new string[] { })]
-		[Identifier("a37d5879c0184ebbb39ea13645c418c2")]
+		[Identifier("f6b3d3dbe7244fbea0fef65f6dee438b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PlayerHelicopter", false)]
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_PlayerHelicopter_a37d5879c0184ebbb39ea13645c418c2 : Patch
+		public class Weapon_PlayerHelicopter_f6b3d3dbe7244fbea0fef65f6dee438b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1073,13 +1085,13 @@ public class Category_Weapon
 	public class Weapon_PatrolHelicopter
 	{
 		[Patch("CanBeHomingTargeted", "CanBeHomingTargeted [PatrolHelicopter]", "PatrolHelicopter", "IsValidHomingTarget", new string[] { })]
-		[Identifier("1df3269ecaae43bf9c9d42bc9cfb1cad")]
+		[Identifier("75be9619c07d4317aaf671f7cdfcfd6a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "PatrolHelicopter", false)]
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_PatrolHelicopter_1df3269ecaae43bf9c9d42bc9cfb1cad : Patch
+		public class Weapon_PatrolHelicopter_75be9619c07d4317aaf671f7cdfcfd6a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1118,13 +1130,13 @@ public class Category_Weapon
 	public class Weapon_HeliPilotFlare
 	{
 		[Patch("CanBeHomingTargeted", "CanBeHomingTargeted [HeliPilotFlare]", "HeliPilotFlare", "IsValidHomingTarget", new string[] { })]
-		[Identifier("82f678e4bc904f08a58d0944205df41a")]
+		[Identifier("bb884c1dc2bc4c699a00cf2b206e87ed")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "HeliPilotFlare", false)]
 		[Return(typeof(bool))]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_HeliPilotFlare_82f678e4bc904f08a58d0944205df41a : Patch
+		public class Weapon_HeliPilotFlare_bb884c1dc2bc4c699a00cf2b206e87ed : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1163,11 +1175,11 @@ public class Category_Weapon
 	public class Weapon_DudTimedExplosive
 	{
 		[Patch("OnExplosiveDud", "OnExplosiveDud", "DudTimedExplosive", "Explode", new string[] { })]
-		[Identifier("008a565a97e14003a0dbb11c49634eac")]
+		[Identifier("642339f427f8489bbc5b738b51cfdf18")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Weapon")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Weapon_DudTimedExplosive_008a565a97e14003a0dbb11c49634eac : Patch
+		public class Weapon_DudTimedExplosive_642339f427f8489bbc5b738b51cfdf18 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

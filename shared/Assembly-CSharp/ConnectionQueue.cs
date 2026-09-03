@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
-using Facepunch.Math;
 using Network;
 using Oxide.Core;
 using UnityEngine;
@@ -106,17 +105,12 @@ public class ConnectionQueue
 
 	public void SendQueueUpdate(Connection c, int position)
 	{
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
 		if (Interface.CallHook("OnQueueUpdate", c, position) == null)
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.QueueUpdate);
 			netWrite.UInt16((ushort)Queued);
 			netWrite.UInt16((ushort)position);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedOutbound(Message.Type.QueueUpdate, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true);
-			}
 			netWrite.Send(new SendInfo(c));
 		}
 	}
@@ -219,6 +213,10 @@ public class ConnectionQueue
 		if (obj is bool)
 		{
 			return (bool)obj;
+		}
+		if (connection.skipQueue)
+		{
+			return true;
 		}
 		if (DeveloperList.Contains(connection.userid))
 		{

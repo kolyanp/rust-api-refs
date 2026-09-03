@@ -97,6 +97,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		ConsoleSystem.Index.Initialize(ConsoleGen.All);
 		ConsoleSystem.Index.Reset();
 		UnityButtons.Register();
+		ExceptionReporter.InstallHook();
 		Output.Install();
 		Pool.ResizeBuffer<NetRead>(16384);
 		Pool.ResizeBuffer<NetWrite>(16384);
@@ -238,17 +239,11 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		if (!Application.isEditor)
 		{
 			BuildInfo current = BuildInfo.Current;
-			if ((current.Scm.Branch == null || !(current.Scm.Branch == "experimental/release")) && !(current.Scm.Branch == "release"))
-			{
-				ExceptionReporter.InitializeFromUrl("https://0654eb77d1e04d6babad83201b6b6b95:d2098f1d15834cae90501548bd5dbd0d@sentry.io/1836389");
-			}
-			else
-			{
-				ExceptionReporter.InitializeFromUrl("https://83df169465e84da091c1a3cd2fbffeee:3671b903f9a840ecb68411cf946ab9b6@sentry.io/51080");
-			}
+			bool flag = (current.Scm.Branch != null && current.Scm.Branch == "experimental/release") || current.Scm.Branch == "release";
+			ExceptionReporter.Initialize("https://gw.facepunch.com/facetry/errors", flag ? "server-release" : "server-staging");
 			bool num = CommandLine.Full.Contains("-official") || CommandLine.Full.Contains("-server.official") || CommandLine.Full.Contains("+official") || CommandLine.Full.Contains("+server.official");
-			bool flag = CommandLine.Full.Contains("-stats") || CommandLine.Full.Contains("-server.stats") || CommandLine.Full.Contains("+stats") || CommandLine.Full.Contains("+server.stats");
-			ExceptionReporter.Disabled = !(num & flag);
+			bool flag2 = CommandLine.Full.Contains("-stats") || CommandLine.Full.Contains("-server.stats") || CommandLine.Full.Contains("+stats") || CommandLine.Full.Contains("+server.stats");
+			ExceptionReporter.Disabled = !(num & flag2);
 		}
 		Scope val;
 		Scope val2;
@@ -638,6 +633,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 			((IDisposable)(*(Scope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
 		}
 		RustEmojiLibrary.FindAllServerEmoji();
+		_ = PaintballColorLookup.instance;
 		UnderwearManifest.Get();
 		if (ConVar.Time.pausewhileloading)
 		{

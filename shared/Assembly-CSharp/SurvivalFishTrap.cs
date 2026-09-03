@@ -86,7 +86,7 @@ public class SurvivalFishTrap : WildlifeTrap
 		}
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (FishLookup.Instance == null || item == null)
 		{
@@ -107,10 +107,10 @@ public class SurvivalFishTrap : WildlifeTrap
 				break;
 			}
 		}
-		return base.ItemFilter(item, targetSlot) & flag;
+		return base.ItemFilter(player, item, targetSlot) & flag;
 	}
 
-	protected override bool CanAcceptItem(Item item, int slot)
+	protected override bool CanAcceptItem(BasePlayer player, Item item, int slot)
 	{
 		if (FishLookup.Instance == null || item == null)
 		{

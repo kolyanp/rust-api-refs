@@ -22,6 +22,11 @@ public class HorseSaddle : BaseVehicleSeat
 		}
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	public override void VehicleFixedUpdate()
 	{
 	}

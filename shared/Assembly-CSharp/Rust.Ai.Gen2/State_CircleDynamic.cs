@@ -1,4 +1,5 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -95,7 +96,7 @@ public class State_CircleDynamic : FSMStateBase
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Failure;
@@ -105,8 +106,9 @@ public class State_CircleDynamic : FSMStateBase
 		float normalizedDist = Mathf.InverseLerp(distanceSpeedRange.x, distanceSpeedRange.y, num);
 		SetSpeed(target, num, normalizedDist);
 		float value = Mathx.RemapValClamped(num, distanceSpeedRange.x, distanceSpeedRange.y, randomAngle, 0f);
-		Vector3 targetPositionNS = position;
+		Vector3 positionWS = position;
 		RustNavMeshAgent agent = base.Agent;
+		NavVector3 targetPositionNS = base.Agent.WorldToNavSpace(positionWS);
 		float? deviation = value;
 		if (!agent.SetDestinationWithParams(targetPositionNS, autoBraking: true, null, null, null, deviation))
 		{

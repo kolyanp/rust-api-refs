@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using ConVar;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.CompilerServices;
 using Development.Attributes;
 using Facepunch;
 using GamePhysicsJobs;
 using Unity.Collections;
 using Unity.Jobs;
-using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine;
 using UtilityJobs;
 
@@ -25,6 +29,105 @@ public static class GamePhysics
 		Terrain = 1,
 		Water = 2,
 		All = Terrain | Water
+	}
+
+	[StructLayout(LayoutKind.Auto)]
+	[CompilerGenerated]
+	private struct _003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T> : IAsyncStateMachine
+	{
+		public int _003C_003E1__state;
+
+		public AsyncUniTaskMethodBuilder _003C_003Et__builder;
+
+		public ReadOnly<ColliderHit> hits;
+
+		public int start;
+
+		public int end;
+
+		public int maxResPerCast;
+
+		public NativeArray<bool> results;
+
+		private UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter _003C_003Eu__1;
+
+		private void MoveNext()
+		{
+			//IL_007b: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+			int num = _003C_003E1__state;
+			try
+			{
+				UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter awaiter;
+				if (num != 0)
+				{
+					awaiter = UnsafeScriptingAccess.SwitchToMultithreading().GetAwaiter();
+					if (!awaiter.IsCompleted)
+					{
+						num = (_003C_003E1__state = 0);
+						_003C_003Eu__1 = awaiter;
+						((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter, _003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>>(ref awaiter, ref this);
+						return;
+					}
+				}
+				else
+				{
+					awaiter = _003C_003Eu__1;
+					_003C_003Eu__1 = default(UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter);
+					num = (_003C_003E1__state = -1);
+				}
+				awaiter.GetResult();
+				TimeWarning timeWarning = TimeWarning.New("FindComponentAsync<T>");
+				try
+				{
+					UnsafeScriptingAccess unsafeScriptingAccess = UnsafeScriptingAccess.Start();
+					try
+					{
+						_003CFindComponent_003Eg__FindComp_007C36_1<T>(hits, start, end, maxResPerCast, results);
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)unsafeScriptingAccess/*cast due to constrained. prefix*/).Dispose();
+						}
+					}
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)timeWarning)?.Dispose();
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				_003C_003E1__state = -2;
+				((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				return;
+			}
+			_003C_003E1__state = -2;
+			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+		}
+
+		void IAsyncStateMachine.MoveNext()
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+			this.MoveNext();
+		}
+
+		[DebuggerHidden]
+		private void SetStateMachine(IAsyncStateMachine stateMachine)
+		{
+			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+		}
+
+		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine
+			this.SetStateMachine(stateMachine);
+		}
 	}
 
 	public const int BufferLength = 32768;
@@ -390,7 +493,7 @@ public static class GamePhysics
 			}
 			invalidIndices.Dispose();
 		}
-		int batchSize = GetBatchSize(commands.Length);
+		int batchSize = ThreadUtils.GetBatchSize(commands.Length);
 		return OverlapBoxCommand.ScheduleBatch(commands, hits, batchSize, maxResPerCast, default(JobHandle));
 	}
 
@@ -586,7 +689,7 @@ public static class GamePhysics
 			}
 			invalidIndices.Dispose();
 		}
-		int batchSize = GetBatchSize(commands.Length);
+		int batchSize = ThreadUtils.GetBatchSize(commands.Length);
 		return OverlapSphereCommand.ScheduleBatch(commands, hits, batchSize, maxResPerCast, dependsOn);
 	}
 
@@ -904,7 +1007,7 @@ public static class GamePhysics
 			}
 			invalidIndices.Dispose();
 		}
-		int batchSize = GetBatchSize(commands.Length);
+		int batchSize = ThreadUtils.GetBatchSize(commands.Length);
 		return OverlapCapsuleCommand.ScheduleBatch(commands, hits, batchSize, maxResPerCast, dependsOn);
 	}
 
@@ -1029,7 +1132,7 @@ public static class GamePhysics
 		return result;
 	}
 
-	public static void CheckSpheres<T>(ReadOnly<Vector3> positions, ReadOnly<float> radii, ReadOnly<int> layerMasks, Span<bool> results, int maxResPerCast, QueryTriggerInteraction triggerInteraction = (QueryTriggerInteraction)1, MasksToValidate validate = MasksToValidate.All) where T : Component
+	public static void CheckSpheres<T>(ReadOnly<Vector3> positions, ReadOnly<float> radii, ReadOnly<int> layerMasks, NativeArray<bool> results, int maxResPerCast, QueryTriggerInteraction triggerInteraction = (QueryTriggerInteraction)1, MasksToValidate validate = MasksToValidate.All) where T : Component
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
@@ -1040,37 +1143,97 @@ public static class GamePhysics
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("GamePhysics.CheckSpheres<T>"))
 		{
 			NativeArray<ColliderHit> hits = new NativeArray<ColliderHit>(positions.Length * maxResPerCast, (Allocator)3, (NativeArrayOptions)0);
-			JobHandle val = OverlapSpheres(positions, radii, layerMasks, hits, maxResPerCast, triggerInteraction, validate);
-			((JobHandle)(ref val)).Complete();
-			using (TimeWarning.New("FindComponent"))
+			try
 			{
-				T val3 = default(T);
-				for (int i = 0; i < positions.Length; i++)
-				{
-					bool flag = false;
-					int num = i * maxResPerCast;
-					for (int j = 0; j < maxResPerCast; j++)
-					{
-						ColliderHit val2 = hits[num + j];
-						if (((ColliderHit)(ref val2)).instanceID == 0)
-						{
-							break;
-						}
-						if (((Component)((ColliderHit)(ref val2)).collider).TryGetComponent<T>(ref val3))
-						{
-							flag = true;
-							break;
-						}
-					}
-					results[i] = flag;
-				}
-				hits.Dispose();
+				JobHandle val = OverlapSpheres(positions, radii, layerMasks, hits, maxResPerCast, triggerInteraction, validate);
+				((JobHandle)(ref val)).Complete();
+				FindComponent<T>(hits.AsReadOnly(), maxResPerCast, results);
 			}
+			finally
+			{
+				((IDisposable)hits/*cast due to constrained. prefix*/).Dispose();
+			}
+		}
+	}
+
+	private static void FindComponent<T>(ReadOnly<ColliderHit> hits, int maxResPerCast, NativeArray<bool> results)
+	{
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("FindComponent<T>"))
+		{
+			int num = hits.Length / maxResPerCast;
+			int batchSize = ThreadUtils.GetBatchSize(num);
+			int num2 = (num + batchSize - 1) / batchSize;
+			if (num2 >= 4)
+			{
+				List<UniTask> list = new List<UniTask>();
+				for (int i = 0; i < num2; i++)
+				{
+					int num3 = i * batchSize;
+					int end = Math.Min(num3 + batchSize, num);
+					list.Add(FindCompAsync(hits, num3, end, maxResPerCast, results));
+				}
+				ThreadUtils.WaitForTasks(list);
+			}
+			else
+			{
+				FindComp(hits, 0, num, maxResPerCast, results);
+			}
+		}
+		static void FindComp(ReadOnly<ColliderHit> val2, int start, int num4, int num6, NativeArray<bool> val4)
+		{
+			//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+			T val3 = default(T);
+			for (int j = start; j < num4; j++)
+			{
+				bool flag = false;
+				int num5 = j * num6;
+				for (int k = 0; k < num6; k++)
+				{
+					ColliderHit val = val2[num5 + k];
+					if (((ColliderHit)(ref val)).instanceID == 0)
+					{
+						break;
+					}
+					if (((Component)((ColliderHit)(ref val)).collider).TryGetComponent<T>(ref val3))
+					{
+						flag = true;
+						break;
+					}
+				}
+				val4[j] = flag;
+			}
+		}
+		[AsyncStateMachine(typeof(_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<>))]
+		static UniTask FindCompAsync(ReadOnly<ColliderHit> hits2, int start, int end2, int maxResPerCast2, NativeArray<bool> results2)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+			_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T> obj = default(_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>);
+			obj._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
+			obj.hits = hits2;
+			obj.start = start;
+			obj.end = end2;
+			obj.maxResPerCast = maxResPerCast2;
+			obj.results = results2;
+			obj._003C_003E1__state = -1;
+			((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003C_003CFindComponent_003Eg__FindCompAsync_007C36_0_003Ed<T>>(ref obj);
+			return ((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 		}
 	}
 
@@ -1420,7 +1583,7 @@ public static class GamePhysics
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("GamePhysics.TraceRaysUnordered"))
 		{
-			int batchSize = GetBatchSize(rays.Length);
+			int batchSize = ThreadUtils.GetBatchSize(rays.Length);
 			JobHandle val = RaycastCommand.ScheduleBatch(rays, hits, batchSize, maxHitsPerTrace, default(JobHandle));
 			if (traceWater)
 			{
@@ -1938,7 +2101,7 @@ public static class GamePhysics
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("GamePhysics.TraceSpheresUnordered"))
 		{
-			int batchSize = GetBatchSize(spheres.Length);
+			int batchSize = ThreadUtils.GetBatchSize(spheres.Length);
 			JobHandle inputDeps = SpherecastCommand.ScheduleBatch(spheres, hits, batchSize, maxHitsPerTrace, default(JobHandle));
 			if (traceWater)
 			{
@@ -2635,14 +2798,9 @@ public static class GamePhysics
 				MaxHitsPerRay = maxHitsPerQuery,
 				Comp = default(RaycastHitComparer)
 			};
-			int batchSize = GetBatchSize(queryCount);
+			int batchSize = ThreadUtils.GetBatchSize(queryCount);
 			return IJobForExtensions.ScheduleParallelByRef<SortHitsJob<RaycastHitComparer>>(ref sortHitsJob, queryCount, batchSize, dependsOn);
 		}
-	}
-
-	public static int GetBatchSize(int count, int subdivideFactor = 4, int minBatchSize = 64)
-	{
-		return Math.Max(count / JobsUtility.JobWorkerCount / subdivideFactor, minBatchSize);
 	}
 
 	public static JobHandle SelectNearest(int nearestCount, NativeArray<RaycastHit> from, NativeArray<RaycastHit> to, int queryCount, int maxHitsPerQuery, JobHandle dependsOn = default(JobHandle))

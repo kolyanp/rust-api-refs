@@ -11,7 +11,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 {
 	public const Flags HasPassthrough = Flags.Reserved1;
 
-	public const Flags Sparks = Flags.Reserved2;
+	public const Flags Sparks = Flags.Reserved3;
 
 	[Header("Item Based Flow Restrictor")]
 	public ItemDefinition[] validPassthroughItems;
@@ -127,7 +127,7 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.On, IsPowered());
 		flagsUpdateScope.Set(Flags.Reserved1, HasPassthroughItem());
-		flagsUpdateScope.Set(Flags.Reserved2, IsOn() && !HasFlag(Flags.Reserved1));
+		flagsUpdateScope.Set(Flags.Reserved3, IsOn() && !HasFlag(Flags.Reserved1));
 	}
 
 	public virtual bool HasPassthroughItem()

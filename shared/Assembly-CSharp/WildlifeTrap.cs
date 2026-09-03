@@ -258,10 +258,10 @@ public class WildlifeTrap : StorageContainer
 	{
 		base.ServerInit();
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 	}
 
-	protected virtual bool CanAcceptItem(Item item, int slot)
+	protected virtual bool CanAcceptItem(BasePlayer player, Item item, int slot)
 	{
 		if (CalculateBaitCalories(item) > 0)
 		{

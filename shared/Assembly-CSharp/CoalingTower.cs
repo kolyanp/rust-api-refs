@@ -57,8 +57,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private float vacuumStartDelay = 2f;
 
-	[FormerlySerializedAs("unloadingFXContainer")]
 	[SerializeField]
+	[FormerlySerializedAs("unloadingFXContainer")]
 	private ParticleSystemContainer unloadingFXContainerOre;
 
 	[SerializeField]
@@ -171,7 +171,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private EntityRef<TrainCarUnloadable> activeUnloadableRef;
 
-	private const Flags LinedUpFlag = Flags.Reserved2;
+	private const Flags LinedUpFlag = Flags.Reserved5;
 
 	private const Flags HasUnloadableFlag = Flags.Reserved1;
 
@@ -206,7 +206,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 
 	private bool HasUnloadable => activeUnloadableRef.IsValid(base.isServer);
 
-	private bool HasUnloadableLinedUp => HasFlag(Flags.Reserved2);
+	private bool HasUnloadableLinedUp => HasFlag(Flags.Reserved5);
 
 	public Vector3 UnloadingPos
 	{
@@ -246,7 +246,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		base.PostServerLoad();
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
 		{
-			flagsUpdateScope.Set(Flags.Reserved2, b: false);
+			flagsUpdateScope.Set(Flags.Reserved5, b: false);
 			flagsUpdateScope.Set(Flags.Reserved1, b: false);
 			flagsUpdateScope.Set(Flags.Busy, b: false);
 			flagsUpdateScope.Set(Flags.Reserved3, b: false);
@@ -351,7 +351,7 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 			b = activeUnloadable.IsLinedUpToUnload(unloadingBounds);
 		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(networkUpdate ? FlagsUpdateMode.SendNetworkUpdate : FlagsUpdateMode.Local);
-		flagsUpdateScope.Set(Flags.Reserved2, b);
+		flagsUpdateScope.Set(Flags.Reserved5, b);
 	}
 
 	private bool TryUnloadActiveWagon(out ActionAttemptStatus attemptStatus)
@@ -570,8 +570,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Unload(RPCMessage msg)
 	{
 		if (Interface.CallHook("OnCoalingTowerStart", this, msg.player) == null && !TryUnloadActiveWagon(out var attemptStatus) && (Object)(object)msg.player != (Object)null)

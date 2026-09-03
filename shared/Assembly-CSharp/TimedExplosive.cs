@@ -107,6 +107,9 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	[NonSerialized]
 	public ItemOwnershipShare ItemOwnership;
 
+	[NonSerialized]
+	public bool wasDroneDropped;
+
 	protected BasePlayer creatorPlayer;
 
 	private const int parentOnlySplashDamage = 166144;
@@ -160,6 +163,14 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	public void SetCreator(BasePlayer ply)
 	{
 		creatorPlayer = ply;
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		if (base.isServer && wasDroneDropped && ((Component)other).CompareTag("MLRSRocketTrigger"))
+		{
+			Kill();
+		}
 	}
 
 	public override float GetNetworkTime()

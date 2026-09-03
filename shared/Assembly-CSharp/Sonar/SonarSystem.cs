@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Sonar;
 
-public class SonarSystem : FacepunchBehaviour
+public class SonarSystem : FacepunchBehaviour, IClientComponent
 {
 	[SerializeField]
 	private float range = 100f;

@@ -13,9 +13,9 @@ public class State_CrocBreakFoundation : State_AttackWithTracking
 	private static bool FindBuildingBlockNearby(RustNavMeshAgent agent, Vector3 position, out BuildingBlock buildingBlock)
 	{
 		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		if (agent.SampleGroundPositionWithPhysics(position, out var hitInfoNS, 2f, BasePlayer.GetRadius(), 2097152) && RaycastHitEx.GetEntity(hitInfoNS) is BuildingBlock buildingBlock2)
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		if (agent.SampleGroundPositionWithPhysics(position, out var hitInfoNS, 2f, BasePlayer.GetRadius(), 2097152) && RaycastHitEx.GetEntity(hitInfoNS.rawHitWS) is BuildingBlock buildingBlock2)
 		{
 			buildingBlock = buildingBlock2;
 			return true;

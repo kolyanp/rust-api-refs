@@ -14,7 +14,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 
 	public EntityRef<NPCShopKeeper> cachedShopKeeper;
 
-	public const Flags HasAttachedShopkeeper = Flags.Reserved7;
+	public const Flags HasAttachedShopkeeper = Flags.Reserved11;
 
 	private bool hasCurrentPlayerPurchasedSomething;
 
@@ -168,7 +168,7 @@ public class InvisibleVendingMachine : NPCVendingMachine
 		cachedShopKeeper.Set(shopkeeper);
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.Reserved7, (Object)(object)shopkeeper != (Object)null);
+			flagsUpdateScope.Set(Flags.Reserved11, (Object)(object)shopkeeper != (Object)null);
 		}
 		SendNetworkUpdate();
 	}

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -71,49 +71,39 @@ public class State_Flee : FSMStateBase
 
 	protected virtual EFSMStateStatus MoveAwayFromTarget()
 	{
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0040: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Success;
 		}
-		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		NavVector3 nextPosition = base.Agent.nextPosition;
+		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			Eqs.SamplePositionsInDonutShape(base.Agent.nextPosition, (List<Vector3>)(object)val, distance);
+			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, distance, distance, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				Vector3 val2 = Vector3Ex.NormalizeXZ(((Component)Owner).transform.position - targetPosition);
-				foreach (Vector3 item3 in (List<Vector3>)(object)val)
+				NavVector3 aNS = (nextPosition - base.Agent.WorldToNavSpace(targetPosition)).NormalizeXZ();
+				foreach (NavVector3 item3 in (List<NavVector3>)(object)val)
 				{
-					Vector3 val3 = item3 - ((Component)Owner).transform.position;
-					float item = Vector3.Dot(val2, ((Vector3)(ref val3)).normalized);
-					((List<(Vector3, float)>)(object)pooledScoreList).Add((item3, item));
+					float item = NavVector3.Dot(aNS, (item3 - nextPosition).NormalizeXZ());
+					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item3, item));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);
-				foreach (var item4 in (List<(Vector3, float)>)(object)pooledScoreList)
+				foreach (var item4 in (List<(NavVector3, float)>)(object)pooledScoreList)
 				{
-					Vector3 item2 = item4.Item1;
-					if (base.Agent.SamplePosition(item2, out var hitNS, 10f) && (base.Agent.canSwim || !base.Agent.IsInWater(((NavMeshHit)(ref hitNS)).position)) && base.Agent.SetDestinationWithParams(((NavMeshHit)(ref hitNS)).position, autoBraking: false, speed))
+					NavVector3 item2 = item4.Item1;
+					NavVector3 navVector = item2;
+					if (!flag)
+					{
+						if (!base.Agent.SamplePosition(item2, out var hitNS, 10f))
+						{
+							continue;
+						}
+						navVector = hitNS.position;
+					}
+					if ((base.Agent.canSwim || !base.Agent.IsInWater(navVector)) && base.Agent.SetDestinationWithParams(navVector, autoBraking: false, speed))
 					{
 						return EFSMStateStatus.None;
 					}

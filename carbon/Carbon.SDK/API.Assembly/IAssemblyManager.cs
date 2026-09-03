@@ -18,6 +18,8 @@ public interface IAssemblyManager
 
 	IReadOnlyList<string> RefWhitelist { get; }
 
+	IReadOnlyList<string> RefProxy { get; }
+
 	byte[] Read(string file, string[] directories = null);
 
 	bool IsType<T>(System.Reflection.Assembly assembly, out IEnumerable<Type> output);

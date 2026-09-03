@@ -63,6 +63,11 @@ public class ConditionalObject
 		}
 	}
 
+	public void ResetState()
+	{
+		IsActive = null;
+	}
+
 	public void RefreshActive()
 	{
 		if (IsActive.HasValue)

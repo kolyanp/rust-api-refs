@@ -223,6 +223,12 @@ public class NexusFerry : BaseEntity
 		Transferring
 	}
 
+	private enum RoutePreference
+	{
+		OnlineWithRoom,
+		Online
+	}
+
 	private TimeSince _sincePathCalculation;
 
 	private Vector3? _pathTargetPosition;
@@ -230,6 +236,8 @@ public class NexusFerry : BaseEntity
 	private Quaternion? _pathTargetRotation;
 
 	private Vector3 _velocity;
+
+	public const string PrefabPath = "assets/content/nexus/ferry/nexusferry.entity.prefab";
 
 	public static readonly Phrase RetiringPhrase;
 
@@ -247,6 +255,10 @@ public class NexusFerry : BaseEntity
 	public float VelocityPreservationOnTurn;
 
 	public float TargetDistanceThreshold;
+
+	public float NoRouteRetireCooldown;
+
+	public LayerMask SpawnObstructionLayers;
 
 	public GameObjectRef hornEffect;
 
@@ -303,7 +315,9 @@ public class NexusFerry : BaseEntity
 
 	private TimeSince _sinceLastTransferAttempt;
 
-	private RealTimeSince _sinceLastNextIndexUpdate;
+	private RealTimeSince _sinceSpawned;
+
+	private int _transferAttempts;
 
 	public string OwnerZone => _ownerZone;
 
@@ -313,12 +327,28 @@ public class NexusFerry : BaseEntity
 	{
 		get
 		{
-			int? num = TryGetNextScheduleIndex();
-			if (!num.HasValue)
+			if (!TryGetNextZoneFromIndex(_nextScheduleIndex, out var zoneKey))
 			{
 				return null;
 			}
-			return _schedule[num.Value];
+			return zoneKey;
+		}
+	}
+
+	public string ExpectedNextZone
+	{
+		get
+		{
+			string nextZone = NextZone;
+			if (nextZone != null)
+			{
+				return nextZone;
+			}
+			if (!TryGetNextZoneFromIndex(FindNextScheduleIndex(), out var zoneKey))
+			{
+				return null;
+			}
+			return zoneKey;
 		}
 	}
 
@@ -712,15 +742,13 @@ public class NexusFerry : BaseEntity
 
 	private Vector3 GetIslandTransferPosition()
 	{
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
 		EnsureInitialized();
-		int? num = TryGetNextScheduleIndex();
-		if (num.HasValue)
+		if (TryGetNextZoneFromIndex(_nextScheduleIndex, out var zoneKey))
 		{
-			string zoneKey = _schedule[num.Value];
 			if (NexusServer.TryGetIsland(zoneKey, out var island))
 			{
 				return island.FerryWaypoint.position;
@@ -867,8 +895,10 @@ public class NexusFerry : BaseEntity
 
 	public void Initialize(string ownerZone, List<string> schedule)
 	{
-		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
 			if (string.IsNullOrWhiteSpace(ownerZone))
@@ -889,13 +919,20 @@ public class NexusFerry : BaseEntity
 			_scheduleIndex = List.FindIndex<string>((IReadOnlyList<string>)schedule, ownerZone, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase);
 			_state = State.Stopping;
 			_departureHornPlayed = false;
+			_nextScheduleIndex = -1;
+			_sinceSpawned = RealTimeSince.op_Implicit(0f);
 			if (_scheduleIndex < 0)
 			{
 				throw new InvalidOperationException("Ferry couldn't find the owner zone in its schedule");
 			}
 			EnsureInitialized();
+			UpdateNextScheduleIndex(canRetire: false);
 			Transform targetTransform = GetTargetTransform(_state);
 			((Component)this).transform.SetPositionAndRotation(targetTransform.position, targetTransform.rotation);
+			if ((Object)(object)_targetDock != (Object)null)
+			{
+				_targetDock.CurrentFerry = this;
+			}
 		}
 		catch
 		{
@@ -915,6 +952,8 @@ public class NexusFerry : BaseEntity
 
 	public override void ServerInit()
 	{
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
 		if (!Application.isLoadingSave)
 		{
@@ -933,6 +972,15 @@ public class NexusFerry : BaseEntity
 			}
 		}
 		EnsureInitialized();
+		_sinceSpawned = RealTimeSince.op_Implicit(0f);
+		if (_nextScheduleIndex < 0)
+		{
+			UpdateNextScheduleIndex(canRetire: false);
+		}
+		if ((Object)(object)_targetDock != (Object)null && _state >= State.Arrival && _state <= State.Departure)
+		{
+			_targetDock.CurrentFerry = this;
+		}
 		All.Add(this);
 	}
 
@@ -951,24 +999,11 @@ public class NexusFerry : BaseEntity
 
 	public void FixedUpdate()
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.isServer)
 		{
 			return;
-		}
-		if (RealTimeSince.op_Implicit(_sinceLastNextIndexUpdate) > 10f)
-		{
-			_sinceLastNextIndexUpdate = RealTimeSince.op_Implicit(0f);
-			int num = TryGetNextScheduleIndex() ?? (-1);
-			if (num != _nextScheduleIndex)
-			{
-				_nextScheduleIndex = num;
-				SendNetworkUpdate();
-			}
 		}
 		if (_state == State.Waiting)
 		{
@@ -989,6 +1024,7 @@ public class NexusFerry : BaseEntity
 		}
 	}
 
+	[PoolAnalyzerGetWrapper]
 	public FerryStatus GetStatus()
 	{
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
@@ -1006,16 +1042,41 @@ public class NexusFerry : BaseEntity
 
 	public void Retire()
 	{
-		_isRetiring = true;
+		if (!_isRetiring)
+		{
+			_isRetiring = true;
+			SendNetworkUpdate();
+		}
 	}
 
 	public void UpdateSchedule(List<string> schedule)
 	{
+		if (schedule == null || schedule.Count == 0)
+		{
+			Debug.LogWarning((object)"Ignoring an empty ferry schedule update", (Object)(object)this);
+			return;
+		}
+		bool flag = TryGetNextZoneFromIndex(_nextScheduleIndex, out var zoneKey);
 		if (_schedule != null)
 		{
 			Pool.FreeUnmanaged<string>(ref _schedule);
 		}
 		_schedule = List.ShallowClonePooled<string>(schedule);
+		int num = List.FindIndex<string>((IReadOnlyList<string>)_schedule, NexusServer.ZoneKey, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase);
+		if (num >= 0)
+		{
+			_scheduleIndex = num;
+		}
+		else if (_scheduleIndex >= _schedule.Count)
+		{
+			_scheduleIndex = 0;
+		}
+		_nextScheduleIndex = (flag ? List.FindIndex<string>((IReadOnlyList<string>)_schedule, zoneKey, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase) : (-1));
+		if (_nextScheduleIndex < 0)
+		{
+			UpdateNextScheduleIndex(canRetire: false);
+		}
+		SendNetworkUpdate();
 	}
 
 	public override float GetNetworkTime()
@@ -1026,16 +1087,30 @@ public class NexusFerry : BaseEntity
 	private void SwitchToNextState()
 	{
 		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
 		if (_state == State.SailingOut)
 		{
 			if (!_isTransferring && TimeSince.op_Implicit(_sinceLastTransferAttempt) >= 5f)
 			{
 				_sinceLastTransferAttempt = TimeSince.op_Implicit(0f);
-				TransferToNextZone();
+				_transferAttempts++;
+				if (!IsNextZoneReachable() || _transferAttempts > 3)
+				{
+					UpdateNextScheduleIndex(canRetire: false);
+					_transferAttempts = 0;
+				}
+				if (_nextScheduleIndex < 0)
+				{
+					_state = State.SailingIn;
+					SendNetworkUpdate();
+				}
+				else
+				{
+					TransferToNextZone();
+				}
 			}
 			return;
 		}
@@ -1046,6 +1121,11 @@ public class NexusFerry : BaseEntity
 		State nextState = GetNextState(_state);
 		_state = nextState;
 		SendNetworkUpdate();
+		if (_state == State.Stopping)
+		{
+			UpdateNextScheduleIndex(canRetire: true);
+			_transferAttempts = 0;
+		}
 		if (_state == State.Waiting)
 		{
 			_sinceStartedWaiting = TimeSince.op_Implicit(0f);
@@ -1082,12 +1162,7 @@ public class NexusFerry : BaseEntity
 
 	private async void TransferToNextZone()
 	{
-		if (_isTransferring)
-		{
-			return;
-		}
-		int? num = TryGetNextScheduleIndex();
-		if (!num.HasValue)
+		if (_isTransferring || !TryGetNextZoneFromIndex(_nextScheduleIndex, out var zoneKey))
 		{
 			return;
 		}
@@ -1096,11 +1171,10 @@ public class NexusFerry : BaseEntity
 		State oldState = _state;
 		try
 		{
-			_scheduleIndex = num.Value;
-			string text = _schedule[_scheduleIndex];
+			_scheduleIndex = _nextScheduleIndex;
 			_state = State.Transferring;
-			Debug.Log((object)("Sending ferry to " + text));
-			await NexusServer.TransferEntity(this, text, "ferry");
+			Debug.Log((object)("Sending ferry to " + zoneKey));
+			await NexusServer.TransferEntity(this, zoneKey, "ferry");
 		}
 		finally
 		{
@@ -1110,24 +1184,145 @@ public class NexusFerry : BaseEntity
 		}
 	}
 
-	private int? TryGetNextScheduleIndex()
+	public static bool TryPredictNextZone(IReadOnlyList<string> schedule, string fromZoneKey, string ownerZone, out string nextZoneKey)
 	{
-		string zoneKey = NexusServer.ZoneKey;
-		int num = (_scheduleIndex + 1) % _schedule.Count;
-		for (int i = 0; i < _schedule.Count; i++)
+		int num = FindNextScheduleIndex(schedule, IndexOfZone(schedule, fromZoneKey), ownerZone);
+		if (num >= 0)
 		{
-			string text = _schedule[num];
-			if (!string.Equals(text, zoneKey, StringComparison.InvariantCultureIgnoreCase) && NexusServer.TryGetZoneStatus(text, out var status) && status.IsOnline)
+			nextZoneKey = schedule[num];
+			return true;
+		}
+		nextZoneKey = null;
+		return false;
+	}
+
+	public static bool TryGetNextScheduledZone(IReadOnlyList<string> schedule, string fromZoneKey, out string nextZoneKey)
+	{
+		int num = IndexOfZone(schedule, fromZoneKey);
+		if (num >= 0 && schedule.Count > 1)
+		{
+			int index = (num + 1) % schedule.Count;
+			if (IsValidNextIndex(schedule, num, index))
+			{
+				nextZoneKey = schedule[index];
+				return true;
+			}
+		}
+		nextZoneKey = null;
+		return false;
+	}
+
+	private static int FindNextScheduleIndex(IReadOnlyList<string> schedule, int fromIndex, string ownerZone)
+	{
+		if (schedule == null || schedule.Count <= 1 || fromIndex < 0)
+		{
+			return -1;
+		}
+		int? num = TryGetNextScheduleIndex(schedule, fromIndex, RoutePreference.OnlineWithRoom) ?? TryGetNextScheduleIndex(schedule, fromIndex, RoutePreference.Online);
+		if (num.HasValue)
+		{
+			return num.Value;
+		}
+		int num2 = IndexOfZone(schedule, ownerZone);
+		if (!IsValidNextIndex(schedule, fromIndex, num2))
+		{
+			return -1;
+		}
+		return num2;
+	}
+
+	private static int? TryGetNextScheduleIndex(IReadOnlyList<string> schedule, int fromIndex, RoutePreference preference)
+	{
+		int num = (fromIndex + 1) % schedule.Count;
+		int num2 = 0;
+		while (num2 < schedule.Count)
+		{
+			if (IsValidNextIndex(schedule, fromIndex, num) && NexusServer.TryGetZoneStatus(schedule[num], out var status) && status.IsOnline && (preference != RoutePreference.OnlineWithRoom || !status.IsFull))
 			{
 				return num;
 			}
-			num++;
-			if (num >= _schedule.Count)
-			{
-				num = 0;
-			}
+			num2++;
+			num = (num + 1) % schedule.Count;
 		}
 		return null;
+	}
+
+	private static bool IsValidNextIndex(IReadOnlyList<string> schedule, int fromIndex, int index)
+	{
+		if (schedule == null || index < 0 || index >= schedule.Count || index == fromIndex)
+		{
+			return false;
+		}
+		string text = schedule[index];
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (fromIndex >= 0 && fromIndex < schedule.Count)
+		{
+			return !string.Equals(text, schedule[fromIndex], StringComparison.InvariantCultureIgnoreCase);
+		}
+		return true;
+	}
+
+	private static int IndexOfZone(IReadOnlyList<string> schedule, string zoneKey)
+	{
+		if (schedule == null || string.IsNullOrWhiteSpace(zoneKey))
+		{
+			return -1;
+		}
+		for (int i = 0; i < schedule.Count; i++)
+		{
+			if (string.Equals(schedule[i], zoneKey, StringComparison.InvariantCultureIgnoreCase))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private int FindNextScheduleIndex()
+	{
+		return FindNextScheduleIndex(_schedule, _scheduleIndex, _ownerZone);
+	}
+
+	private bool TryGetNextZoneFromIndex(int index, out string zoneKey)
+	{
+		if (IsValidNextIndex(_schedule, _scheduleIndex, index))
+		{
+			string text = _schedule[index];
+			if (!string.Equals(text, NexusServer.ZoneKey, StringComparison.InvariantCultureIgnoreCase))
+			{
+				zoneKey = text;
+				return true;
+			}
+		}
+		zoneKey = null;
+		return false;
+	}
+
+	private bool IsNextZoneReachable()
+	{
+		if (TryGetNextZoneFromIndex(_nextScheduleIndex, out var zoneKey) && NexusServer.TryGetZoneStatus(zoneKey, out var status))
+		{
+			return status.IsOnline;
+		}
+		return false;
+	}
+
+	private void UpdateNextScheduleIndex(bool canRetire)
+	{
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		int num = FindNextScheduleIndex();
+		if (num != _nextScheduleIndex)
+		{
+			_nextScheduleIndex = num;
+			SendNetworkUpdate();
+		}
+		if (((num < 0) & canRetire) && !_isRetiring && RealTimeSince.op_Implicit(_sinceSpawned) >= NoRouteRetireCooldown)
+		{
+			Retire();
+		}
 	}
 
 	private void EjectInactiveEntities(bool forceAll = false)
@@ -1164,10 +1359,10 @@ public class NexusFerry : BaseEntity
 
 	private void EjectEntity(BaseEntity entity)
 	{
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		if (!((Object)(object)entity == (Object)null))
 		{
-			if ((Object)(object)_targetDock != (Object)null && _targetDock.TryFindEjectionPosition(out var position))
+			if ((Object)(object)_targetDock != (Object)null && _targetDock.TryFindEjectionPosition(entity, out var position))
 			{
 				entity.SetParent(null);
 				entity.ServerPosition = position;
@@ -1301,8 +1496,10 @@ public class NexusFerry : BaseEntity
 
 	public NexusFerry()
 	{
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		TravelVelocity = 20f;
 		ApproachVelocity = 5f;
 		StoppingVelocity = 1f;
@@ -1310,6 +1507,8 @@ public class NexusFerry : BaseEntity
 		TurnSpeed = 1f;
 		VelocityPreservationOnTurn = 0.1f;
 		TargetDistanceThreshold = 10f;
+		NoRouteRetireCooldown = 120f;
+		SpawnObstructionLayers = LayerMask.op_Implicit(134359040);
 		departureHornLeadTime = 5f;
 		CastSweepDegrees = 16;
 		CastSweepNoise = 0.25f;
@@ -1318,6 +1517,7 @@ public class NexusFerry : BaseEntity
 		CastHitProtection = 5f;
 		PathLookahead = 4;
 		PathLookaheadThreshold = 5;
+		_nextScheduleIndex = -1;
 		base._002Ector();
 	}
 

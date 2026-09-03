@@ -20,8 +20,8 @@ public class UI_NotificationEntry : MonoBehaviour
 	[SerializeField]
 	private RustIcon popupIcon;
 
-	[Header("UI Elements")]
 	[SerializeField]
+	[Header("UI Elements")]
 	private GameObject linkIcon;
 
 	public RustButton linkButton;

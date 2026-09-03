@@ -13,7 +13,7 @@ public class Category_Server
 		[Category("Server")]
 		[Info("Gets called when executing a native command.")]
 		[Parameter("arg", typeof(Arg), false)]
-		[Return(typeof(bool))]
+		[Return(typeof(void))]
 		[Assembly("Carbon.Common.dll")]
 		[OxideCompatible]
 		public class OnServerCommand : Patch
@@ -26,6 +26,7 @@ public class Category_Server
 		[Info("Called after the server startup has been completed and is awaiting connections.")]
 		[Info("Also called for plugins that are hotloaded while the server is already started running.")]
 		[Parameter("initialized", typeof(bool), true)]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnServerInitialized : Patch
 		{
@@ -35,6 +36,7 @@ public class Category_Server
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Server")]
 		[Info("Called on server shutdown.")]
+		[Return(typeof(void), Discarded = true)]
 		[OxideCompatible]
 		public class OnServerShutdown : Patch
 		{

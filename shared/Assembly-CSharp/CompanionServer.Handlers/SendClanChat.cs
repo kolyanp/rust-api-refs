@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ConVar;
 using Facepunch.Extend;
 using ProtoBuf;
@@ -8,7 +9,7 @@ public class SendClanChat : BaseClanHandler<AppSendMessage>
 {
 	protected override double TokenCost => 2.0;
 
-	public override async void Execute()
+	public override async ValueTask Execute()
 	{
 		if (await GetClan() == null)
 		{

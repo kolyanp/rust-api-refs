@@ -4,9 +4,9 @@ using UnityEngine.Rendering;
 
 namespace VLB;
 
-[ExecuteInEditMode]
-[HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
 [AddComponentMenu("")]
+[HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
+[ExecuteInEditMode]
 public class BeamGeometry : MonoBehaviour
 {
 	private VolumetricLightBeam m_Master;
@@ -27,10 +27,15 @@ public class BeamGeometry : MonoBehaviour
 	{
 		get
 		{
-			return ((Renderer)meshRenderer).enabled;
+			if (((Renderer)meshRenderer).enabled)
+			{
+				return ((Behaviour)this).enabled;
+			}
+			return false;
 		}
 		set
 		{
+			((Behaviour)this).enabled = value;
 			((Renderer)meshRenderer).enabled = value;
 		}
 	}
@@ -69,31 +74,6 @@ public class BeamGeometry : MonoBehaviour
 		{
 			Object.DestroyImmediate((Object)(object)material);
 			material = null;
-		}
-	}
-
-	private static bool IsUsingCustomRenderPipeline()
-	{
-		if (RenderPipelineManager.currentPipeline == null)
-		{
-			return (Object)(object)GraphicsSettings.defaultRenderPipeline != (Object)null;
-		}
-		return true;
-	}
-
-	private void OnEnable()
-	{
-		if (IsUsingCustomRenderPipeline())
-		{
-			RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
-		}
-	}
-
-	private void OnDisable()
-	{
-		if (IsUsingCustomRenderPipeline())
-		{
-			RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
 		}
 	}
 
@@ -174,12 +154,13 @@ public class BeamGeometry : MonoBehaviour
 		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_042c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0431: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0442: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0447: Unknown result type (might be due to invalid IL or missing references)
 		Debug.Assert(Object.op_Implicit((Object)(object)m_Master));
 		material.renderQueue = Config.Instance.geometryRenderQueue;
 		float num = m_Master.coneAngle * (MathF.PI / 180f) / 2f;
@@ -194,6 +175,7 @@ public class BeamGeometry : MonoBehaviour
 			Utils.FloatPackingPrecision floatPackingPrecision = Utils.GetFloatPackingPrecision();
 			material.EnableKeyword((floatPackingPrecision == Utils.FloatPackingPrecision.High) ? "VLB_COLOR_GRADIENT_MATRIX_HIGH" : "VLB_COLOR_GRADIENT_MATRIX_LOW");
 			m_ColorGradientMatrix = Utils.SampleInMatrix(m_Master.colorGradient, (int)floatPackingPrecision);
+			material.SetMatrix("_ColorGradientMatrix", m_ColorGradientMatrix);
 		}
 		else
 		{
@@ -260,65 +242,5 @@ public class BeamGeometry : MonoBehaviour
 	public void SetClippingPlaneOff()
 	{
 		material.DisableKeyword("VLB_CLIPPING_PLANE");
-	}
-
-	private void OnBeginCameraRendering(ScriptableRenderContext context, Camera cam)
-	{
-		UpdateCameraRelatedProperties(cam);
-	}
-
-	private void OnWillRenderObject()
-	{
-		if (!IsUsingCustomRenderPipeline())
-		{
-			Camera current = Camera.current;
-			if ((Object)(object)current != (Object)null)
-			{
-				UpdateCameraRelatedProperties(current);
-			}
-		}
-	}
-
-	private void UpdateCameraRelatedProperties(Camera cam)
-	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
-		if (!Object.op_Implicit((Object)(object)cam) || !Object.op_Implicit((Object)(object)m_Master))
-		{
-			return;
-		}
-		if (Object.op_Implicit((Object)(object)material))
-		{
-			Vector3 val = ((Component)m_Master).transform.InverseTransformPoint(((Component)cam).transform.position);
-			material.SetVector("_CameraPosObjectSpace", Vector4.op_Implicit(val));
-			Vector3 val2 = ((Component)this).transform.InverseTransformDirection(((Component)cam).transform.forward);
-			Vector3 normalized = ((Vector3)(ref val2)).normalized;
-			float num = (cam.orthographic ? (-1f) : m_Master.GetInsideBeamFactorFromObjectSpacePos(val));
-			material.SetVector("_CameraParams", new Vector4(normalized.x, normalized.y, normalized.z, num));
-			if (m_Master.colorMode == ColorMode.Gradient)
-			{
-				material.SetMatrix("_ColorGradientMatrix", m_ColorGradientMatrix);
-			}
-		}
-		if (m_Master.depthBlendDistance > 0f)
-		{
-			cam.depthTextureMode = (DepthTextureMode)(cam.depthTextureMode | 1);
-		}
 	}
 }

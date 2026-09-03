@@ -82,7 +82,10 @@ public class BaseDiggableEntity : BaseCombatEntity
 
 	public virtual void OnFullyDug(BasePlayer player)
 	{
-		SpawnLootListItem(player);
+		if (Interface.CallHook("OnPlayerDigComplete", player, this) == null)
+		{
+			SpawnLootListItem(player);
+		}
 	}
 
 	public BaseEntity SpawnLootListItem(BasePlayer player)

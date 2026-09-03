@@ -46,9 +46,15 @@ public class PlaceDecorUniform : ProceduralComponent
 		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0200: Unknown result type (might be due to invalid IL or missing references)
+		//IL_020e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
 		if (World.Networked)
 		{
 			World.Spawn("Decor", "assets/bundled/prefabs/autospawn/" + ResourceFolder + "/");
@@ -90,8 +96,9 @@ public class PlaceDecorUniform : ProceduralComponent
 				Quaternion rot = random.Object.transform.localRotation;
 				Vector3 scale = random.Object.transform.localScale;
 				random.ApplyDecorComponents(ref pos, ref rot, ref scale);
-				if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorMode, ((FilterMode & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterMode & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale) && IsValidLocation(pos, rot, scale))
+				if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorMode, ((FilterMode & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterMode & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale) && IsValidLocation(pos, rot, scale) && random.CheckTerrainFootprint(pos, rot, scale))
 				{
+					random.FillTerrainFootprint(pos, rot, scale);
 					World.AddPrefab("Decor", random, pos, rot, scale);
 				}
 			}

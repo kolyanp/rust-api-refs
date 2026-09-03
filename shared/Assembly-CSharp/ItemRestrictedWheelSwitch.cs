@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ConVar;
+using Facepunch.Rust;
 using Network;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -278,8 +279,8 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void CancelRotate(RPCMessage msg)
 	{
 		CancelPlayerRotation();
@@ -291,6 +292,7 @@ public class ItemRestrictedWheelSwitch : ItemBasedFlowRestrictor
 		if (!added && (Object)(object)rotatorPlayer != (Object)null)
 		{
 			rotatorPlayer.AddClanScore((ClanScoreEventType)15);
+			Analytics.Azure.OnWaterTreatmentPlantEnabled(rotatorPlayer, item);
 		}
 	}
 

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using ConVar;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -20,17 +22,17 @@ public class Map : BasePlayerHandler<AppEmpty>
 
 	protected override double TokenCost => 5.0;
 
-	public override void Execute()
+	public override ValueTask Execute()
 	{
-		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		if (_imageData == null)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		if (_imageData == null || !ConVar.Server.mapenabled || ConVar.Server.fogofwar)
 		{
 			SendError("no_map");
-			return;
+			return default(ValueTask);
 		}
 		AppMap val = Pool.Get<AppMap>();
 		val.width = (uint)_width;
@@ -57,6 +59,7 @@ public class Map : BasePlayerHandler<AppEmpty>
 		AppResponse val4 = Pool.Get<AppResponse>();
 		val4.map = val;
 		Send(val4);
+		return default(ValueTask);
 	}
 
 	public static void PopulateCache()

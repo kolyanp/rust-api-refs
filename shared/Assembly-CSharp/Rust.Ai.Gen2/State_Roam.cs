@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -43,50 +43,26 @@ public class State_Roam : FSMStateBase
 
 	private bool TrySetRoamDestination()
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0182: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0187: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
-		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		NavVector3 nextPosition = base.Agent.nextPosition;
+		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
 			float num = Random.Range(distanceRange.x, distanceRange.y);
-			Eqs.SamplePositionsInDonutShape(base.Agent.nextPosition, (List<Vector3>)(object)val, num);
-			bool flag = Vector3.Distance(spawnPosition.Value, ((Component)Owner).transform.position) > homeRadius;
+			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
+			bool flag2 = Vector3.Distance(spawnPosition.Value, ((Component)Owner).transform.position) > homeRadius;
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				Vector3 val2 = spawnPosition.Value - ((Component)Owner).transform.position;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
-				foreach (Vector3 item2 in (List<Vector3>)(object)val)
+				NavVector3 normalized = (base.Agent.WorldToNavSpace(spawnPosition.Value) - nextPosition).normalized;
+				foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 				{
 					float num2 = 0f;
-					if (flag)
+					if (flag2)
 					{
-						float num3 = num2;
-						val2 = item2 - ((Component)Owner).transform.position;
-						num2 = num3 + Mathx.RemapValClamped(Vector3.Dot(normalized, ((Vector3)(ref val2)).normalized), -1f, 1f, 0f, 1f);
+						num2 += Mathx.RemapValClamped(NavVector3.Dot(normalized, (item2 - nextPosition).NormalizeXZ()), -1f, 1f, 0f, 1f);
 						if (base.Agent.IsPositionOnFavoredTerrain(item2))
 						{
 							num2 += 0.25f;
@@ -100,13 +76,22 @@ public class State_Roam : FSMStateBase
 							num2 += 10f;
 						}
 					}
-					((List<(Vector3, float)>)(object)pooledScoreList).Add((item2, num2));
+					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, num2));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);
-				foreach (var item3 in (List<(Vector3, float)>)(object)pooledScoreList)
+				foreach (var item3 in (List<(NavVector3, float)>)(object)pooledScoreList)
 				{
-					Vector3 item = item3.Item1;
-					if (base.Agent.SamplePosition(item, out var hitNS, 10f) && (base.Agent.canSwim || !base.Agent.IsInWater(((NavMeshHit)(ref hitNS)).position)) && base.Agent.SetDestinationWithParams(((NavMeshHit)(ref hitNS)).position))
+					NavVector3 item = item3.Item1;
+					NavVector3 navVector = item;
+					if (!flag)
+					{
+						if (!base.Agent.SamplePosition(item, out var hitNS, 10f))
+						{
+							continue;
+						}
+						navVector = hitNS.position;
+					}
+					if ((base.Agent.canSwim || !base.Agent.IsInWater(navVector)) && base.Agent.SetDestinationWithParams(navVector))
 					{
 						float ratio = Mathf.InverseLerp(0f, distanceRange.y, num);
 						base.Agent.SetSpeedRatio(ratio, minSpeed, maxSpeed);

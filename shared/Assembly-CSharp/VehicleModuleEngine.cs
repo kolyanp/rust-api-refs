@@ -90,6 +90,11 @@ public class VehicleModuleEngine : VehicleModuleStorage
 		RefreshPerformanceStats(GetContainer() as EngineStorage);
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	public override void OnEngineStateChanged(VehicleEngineController<GroundVehicle>.EngineState oldState, VehicleEngineController<GroundVehicle>.EngineState newState)
 	{
 		base.OnEngineStateChanged(oldState, newState);

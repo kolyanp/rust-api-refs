@@ -9,12 +9,12 @@ public class PooltableMountable : BaseMountable
 	[HideInInspector]
 	public float SplineDistance;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private ViewModel poolCueViewmodel;
 
-	[Header("3p Cue")]
 	[SerializeField]
+	[Header("3p Cue")]
 	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	private Transform cueHeldProp;
 
@@ -26,20 +26,20 @@ public class PooltableMountable : BaseMountable
 	[Tooltip("Cue tilt relative to the prop bone.")]
 	private Vector3 cueHeldPropEulerOffset;
 
+	[Header("Cue Material")]
 	[SerializeField]
 	[Tooltip("Cue material for the player in seat 0 (whoever started the game). Applies to the 3p prop and the viewmodel. Leave empty to keep whatever the prefabs ship with.")]
-	[Header("Cue Material")]
 	private Material player1CueMaterial;
 
-	[Tooltip("Cue material for the player in seat 1 (the joiner).")]
 	[SerializeField]
+	[Tooltip("Cue material for the player in seat 1 (the joiner).")]
 	private Material player2CueMaterial;
 
 	[SerializeField]
 	private float movementSpeed;
 
-	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
 	[SerializeField]
+	[Tooltip("Max spline travel per second from mouse aim. Well above movementSpeed - the mouse is the fine aim and has to feel 1:1 - but bounded so a violent flick can't spin you round the table.")]
 	private float mouseAimMaxSpeed = 8f;
 
 	private static readonly int RightHash = Animator.StringToHash("right");
@@ -50,19 +50,19 @@ public class PooltableMountable : BaseMountable
 
 	private float currentRight;
 
-	[Tooltip("Metres of spline travel per unit of mouse movement. Deliberately tiny - the mouse is the fine aim, A/D is for walking round the table.")]
 	[SerializeField]
+	[Tooltip("Metres of spline travel per unit of mouse movement. Deliberately tiny - the mouse is the fine aim, A/D is for walking round the table.")]
 	private float mouseAimSensitivity = 0.002f;
 
 	[SerializeField]
 	private float pullbackSensitivity = 0.01f;
 
-	[Tooltip("Normalized cue travel per second required to turn forward movement into a shot.")]
 	[SerializeField]
+	[Tooltip("Normalized cue travel per second required to turn forward movement into a shot.")]
 	private float strikeSpeedThreshold = 1f;
 
-	[Tooltip("Minimum pullback required before a fast forward movement can strike.")]
 	[SerializeField]
+	[Tooltip("Minimum pullback required before a fast forward movement can strike.")]
 	private float minimumStrikePower = 0.05f;
 
 	private float cuePullback = 0.5f;
@@ -216,8 +216,8 @@ public class PooltableMountable : BaseMountable
 	}
 
 	[RPC_Server.FromMounted]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(30uL)]
+	[RPC_Server]
 	public void RPC_UpdateSplineDistance(RPCMessage msg)
 	{
 		if (!((Object)(object)poolTable == (Object)null) && !((Object)(object)msg.player == (Object)null) && poolTable.CanPlayerMove(msg.player.userID))

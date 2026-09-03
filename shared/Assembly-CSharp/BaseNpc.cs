@@ -479,7 +479,7 @@ public class BaseNpc : BaseCombatEntity
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 			if (IsNavRunning())
 			{
-				return GetNavAgent.destination;
+				return GetNavAgent.destinationWS;
 			}
 			return Entity.ServerPosition;
 		}
@@ -488,7 +488,7 @@ public class BaseNpc : BaseCombatEntity
 			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 			if (IsNavRunning())
 			{
-				GetNavAgent.destination = value;
+				GetNavAgent.SetDestination(value);
 				lastSetDestinationTime = Time.time;
 			}
 		}
@@ -511,7 +511,7 @@ public class BaseNpc : BaseCombatEntity
 			{
 				if (value)
 				{
-					GetNavAgent.destination = ServerPosition;
+					GetNavAgent.SetDestination(ServerPosition);
 				}
 				GetNavAgent.isStopped = value;
 			}
@@ -728,8 +728,8 @@ public class BaseNpc : BaseCombatEntity
 		{
 			velocity = ((Component)baseEntity).transform.InverseTransformDirection(velocity);
 		}
-		Vector3 targetPositionNS = ent.ServerPosition + velocity * Time.fixedDeltaTime;
-		RustNavMeshHelpers.Raycast(ent.ServerPosition, targetPositionNS, out var hitWS, -1);
+		Vector3 targetPositionWS = ent.ServerPosition + velocity * Time.fixedDeltaTime;
+		RustNavMeshHelpers.Raycast(ent.ServerPosition, targetPositionWS, out var hitWS, -1);
 		if (!Vector3Ex.IsNaNOrInfinity(((NavMeshHit)(ref hitWS)).position))
 		{
 			return ((NavMeshHit)(ref hitWS)).position;
@@ -818,7 +818,7 @@ public class BaseNpc : BaseCombatEntity
 		float num = Mathf.Min(NavAgent.speed / Stats.Speed, 1f);
 		num = speedFractionResponse.Evaluate(num);
 		Vector3 forward = ((Component)this).transform.forward;
-		Vector3 val = NavAgent.nextPosition - ServerPosition;
+		Vector3 val = NavAgent.nextPositionWS - ServerPosition;
 		float num2 = 1f - 0.9f * Vector3.Angle(forward, ((Vector3)(ref val)).normalized) / 180f * num * num;
 		speed *= num2;
 		NavAgent.speed = Mathf.Lerp(NavAgent.speed, speed, 0.5f);
@@ -835,8 +835,8 @@ public class BaseNpc : BaseCombatEntity
 		{
 			num *= 0.01f;
 		}
-		Vector3 desiredVelocity = NavAgent.desiredVelocity;
-		if (((Vector3)(ref desiredVelocity)).sqrMagnitude > 0.1f)
+		Vector3 desiredVelocityWS = NavAgent.desiredVelocityWS;
+		if (((Vector3)(ref desiredVelocityWS)).sqrMagnitude > 0.1f)
 		{
 			num *= 2f;
 		}
@@ -1019,7 +1019,7 @@ public class BaseNpc : BaseCombatEntity
 		{
 			val += ((Vector3)(ref val2)).normalized * AttackOffset.z;
 		}
-		Vector3 val3 = NavAgent.destination - val;
+		Vector3 val3 = NavAgent.destinationWS - val;
 		if (((Vector3)(ref val3)).sqrMagnitude > 0.010000001f)
 		{
 			NavAgent.SetDestination(val);
@@ -1108,9 +1108,9 @@ public class BaseNpc : BaseCombatEntity
 		Vector3 val = ((OffMeshLinkData)(ref currentOffMeshLinkData)).endPos - ((OffMeshLinkData)(ref currentOffMeshLinkData)).startPos;
 		Vector3 normalized = ((Vector3)(ref val)).normalized;
 		normalized.y = 0f;
-		Vector3 desiredVelocity = NavAgent.desiredVelocity;
-		desiredVelocity.y = 0f;
-		if (Vector3.Dot(desiredVelocity, normalized) < 0.1f)
+		Vector3 desiredVelocityWS = NavAgent.desiredVelocityWS;
+		desiredVelocityWS.y = 0f;
+		if (Vector3.Dot(desiredVelocityWS, normalized) < 0.1f)
 		{
 			CompleteNavMeshLink();
 			return false;
@@ -1225,9 +1225,9 @@ public class BaseNpc : BaseCombatEntity
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		moveToPosition = NavAgent.nextPosition;
-		Vector3 desiredVelocity = NavAgent.desiredVelocity;
-		stepDirection = ((Vector3)(ref desiredVelocity)).normalized;
+		moveToPosition = NavAgent.nextPositionWS;
+		Vector3 desiredVelocityWS = NavAgent.desiredVelocityWS;
+		stepDirection = ((Vector3)(ref desiredVelocityWS)).normalized;
 	}
 
 	private bool ValidateNextPosition(ref Vector3 moveToPosition)
@@ -1235,7 +1235,7 @@ public class BaseNpc : BaseCombatEntity
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		if (!ValidBounds.Test(this, moveToPosition) && (Object)(object)((Component)this).transform != (Object)null && !base.IsDestroyed)
 		{
-			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
+			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
 			Kill();
 			return false;
 		}
@@ -1347,7 +1347,7 @@ public class BaseNpc : BaseCombatEntity
 		}
 		if (_traversingNavMeshLink)
 		{
-			Vector3 val = (((Object)(object)ChaseTransform != (Object)null) ? (ChaseTransform.localPosition - ServerPosition) : ((!((Object)(object)AttackTarget != (Object)null)) ? (NavAgent.destination - ServerPosition) : (AttackTarget.ServerPosition - ServerPosition)));
+			Vector3 val = (((Object)(object)ChaseTransform != (Object)null) ? (ChaseTransform.localPosition - ServerPosition) : ((!((Object)(object)AttackTarget != (Object)null)) ? (NavAgent.destinationWS - ServerPosition) : (AttackTarget.ServerPosition - ServerPosition)));
 			if (((Vector3)(ref val)).sqrMagnitude > 1f)
 			{
 				val = _currentNavMeshLinkEndPos - ServerPosition;
@@ -1360,7 +1360,7 @@ public class BaseNpc : BaseCombatEntity
 		}
 		else
 		{
-			Vector3 val2 = NavAgent.destination - ServerPosition;
+			Vector3 val2 = NavAgent.destinationWS - ServerPosition;
 			if (((Vector3)(ref val2)).sqrMagnitude > 1f)
 			{
 				Vector3 val3 = stepDirection;
@@ -2154,9 +2154,9 @@ public class BaseNpc : BaseCombatEntity
 		{
 			if (!GetNavAgent.isOnNavMesh)
 			{
-				if (GetNavAgent.SamplePosition(ServerPosition, out var hitNS, GetNavAgent.height * maxDistanceMultiplier))
+				if (GetNavAgent.SamplePosition(ServerPosition, out var hitWS, GetNavAgent.height * maxDistanceMultiplier))
 				{
-					ServerPosition = ((NavMeshHit)(ref hitNS)).position;
+					ServerPosition = ((NavMeshHit)(ref hitWS)).position;
 					GetNavAgent.Warp(ServerPosition);
 					((Behaviour)GetNavAgent).enabled = true;
 					yield break;

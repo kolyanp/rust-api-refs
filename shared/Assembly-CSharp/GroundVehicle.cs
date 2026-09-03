@@ -6,8 +6,8 @@ using UnityEngine;
 
 public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntity, TriggerHurtNotChild.IHurtTriggerUser
 {
-	[SerializeField]
 	[Header("GroundVehicle")]
+	[SerializeField]
 	public GroundVehicleAudio gvAudio;
 
 	[SerializeField]
@@ -76,6 +76,11 @@ public abstract class GroundVehicle : BaseVehicle, IEngineControllerUser, IEntit
 	{
 		base.InitShared();
 		CreateEngineController();
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	protected virtual void CreateEngineController()

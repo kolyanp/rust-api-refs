@@ -756,7 +756,7 @@ public class RentableShop : BaseEntity
 			nextRentDue += 3600f;
 			VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
 			int amount = Mathf.RoundToInt((float)ScrapPerHourRent * CurrentRentMultiplier);
-			if ((Object)(object)vendingMachine != (Object)null && vendingMachine.inventory.GetAmount(ScrapDef.itemid, onlyUsableAmounts: false) >= amount)
+			if ((Object)(object)vendingMachine != (Object)null && vendingMachine.inventory.GetAmount(ScrapDef.itemid) >= amount)
 			{
 				vendingMachine.inventory.UseAmount(ScrapDef, ref amount);
 				return;
@@ -780,9 +780,9 @@ public class RentableShop : BaseEntity
 		info.msg.rentableShop.shopNumber = ShopNumber;
 		if (info.forDisk)
 		{
-			info.msg.rentableShop.storedItemIds = (List<ulong>)(object)Pool.Get<PooledList<ulong>>();
-			info.msg.rentableShop.storedItems = (List<ItemContainer>)(object)Pool.Get<PooledList<ItemContainer>>();
-			info.msg.rentableShop.storedItemTimestamp = (List<long>)(object)Pool.Get<PooledList<long>>();
+			info.msg.rentableShop.storedItemIds = Pool.Get<List<ulong>>();
+			info.msg.rentableShop.storedItems = Pool.Get<List<ItemContainer>>();
+			info.msg.rentableShop.storedItemTimestamp = Pool.Get<List<long>>();
 			{
 				foreach (KeyValuePair<ulong, PlayerStoreContents> item in savedContent)
 				{
@@ -810,8 +810,8 @@ public class RentableShop : BaseEntity
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void Server_OpenStore(RPCMessage msg)
 	{
 		if (CanPlayerOpenShop(msg.player) && Interface.CallHook("OnRentableShopOpen", this, msg.player) == null)
@@ -821,7 +821,10 @@ public class RentableShop : BaseEntity
 				CurrentRentMultiplier++;
 				CloseStore();
 			}
-			SetFlag(Flags.On, b: true);
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			{
+				flagsUpdateScope.Set(Flags.On, b: true);
+			}
 			OnShopOpened(msg.player);
 		}
 	}
@@ -837,7 +840,10 @@ public class RentableShop : BaseEntity
 	{
 		if (Interface.CallHook("OnRentableShopClose", this, notify) == null)
 		{
-			SetFlag(Flags.On, b: false);
+			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+			{
+				flagsUpdateScope.Set(Flags.On, b: false);
+			}
 			intruders.Clear();
 			OnShopClosed(notify);
 		}
@@ -852,8 +858,8 @@ public class RentableShop : BaseEntity
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
 		TimeSinceShopOpened = TimeSince.op_Implicit(0f);
 		ShopOwnerId = byPlayer.userID;
 		InvisibleVendingMachine invisibleVendingMachine = base.gameManager.CreateEntity(VendingMachinePrefab.resourcePath, ShopkeeperSpawnPoint.position, ShopkeeperSpawnPoint.rotation) as InvisibleVendingMachine;
@@ -869,7 +875,8 @@ public class RentableShop : BaseEntity
 		if ((Object)(object)ShopSign != (Object)null)
 		{
 			ShopSign.LockSign(byPlayer);
-			ShopSign.SetFlag(Flags.Reserved3, b: true);
+			using FlagsUpdateScope flagsUpdateScope = ShopSign.StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			flagsUpdateScope.Set(Flags.Reserved3, b: true);
 		}
 		lastRentCheck = TimeSince.op_Implicit(0f);
 		nextRentDue = 3600f;
@@ -945,9 +952,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OpenStoreInventory(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && ((ulong)msg.player.userID == ShopOwnerId || IsIntruder(msg.player.userID)))
@@ -961,8 +968,8 @@ public class RentableShop : BaseEntity
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	private void Server_RetrieveAllStoredItems(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -995,8 +1002,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void BreakIn(RPCMessage rpc)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -1114,8 +1121,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void Server_CloseStore(RPCMessage rpc)
 	{
 		if (!((Object)(object)rpc.player == (Object)null) && (ulong)rpc.player.userID == ShopOwnerId)

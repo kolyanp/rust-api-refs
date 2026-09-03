@@ -79,19 +79,19 @@ public static class PlayerNetworkingProfiler
 					.AddField("", val.packetlossTotal);
 				for (int i = 0; i < 4; i++)
 				{
-					eventRecord.AddField("", (ulong)Unsafe.Add(ref val.bytesInSendBuffer.FixedElementField, i));
+					eventRecord.AddField("", (ulong)System.Runtime.CompilerServices.Unsafe.Add(ref val.bytesInSendBuffer.FixedElementField, i));
 				}
 				for (int j = 0; j < 4; j++)
 				{
-					eventRecord.AddField("", (ulong)Unsafe.Add(ref val.messageInSendBuffer.FixedElementField, j));
+					eventRecord.AddField("", (ulong)System.Runtime.CompilerServices.Unsafe.Add(ref val.messageInSendBuffer.FixedElementField, j));
 				}
 				eventRecord.AddField("", val.runningTotal.FixedElementField);
-				eventRecord.AddField("", Unsafe.Add(ref val.runningTotal.FixedElementField, 1));
-				eventRecord.AddField("", Unsafe.Add(ref val.runningTotal.FixedElementField, 2));
-				eventRecord.AddField("", Unsafe.Add(ref val.runningTotal.FixedElementField, 3));
-				eventRecord.AddField("", Unsafe.Add(ref val.runningTotal.FixedElementField, 4));
-				eventRecord.AddField("", Unsafe.Add(ref val.runningTotal.FixedElementField, 5));
-				eventRecord.AddField("", Unsafe.Add(ref val.runningTotal.FixedElementField, 6));
+				eventRecord.AddField("", System.Runtime.CompilerServices.Unsafe.Add(ref val.runningTotal.FixedElementField, 1));
+				eventRecord.AddField("", System.Runtime.CompilerServices.Unsafe.Add(ref val.runningTotal.FixedElementField, 2));
+				eventRecord.AddField("", System.Runtime.CompilerServices.Unsafe.Add(ref val.runningTotal.FixedElementField, 3));
+				eventRecord.AddField("", System.Runtime.CompilerServices.Unsafe.Add(ref val.runningTotal.FixedElementField, 4));
+				eventRecord.AddField("", System.Runtime.CompilerServices.Unsafe.Add(ref val.runningTotal.FixedElementField, 5));
+				eventRecord.AddField("", System.Runtime.CompilerServices.Unsafe.Add(ref val.runningTotal.FixedElementField, 6));
 				table.Append(eventRecord);
 			}
 			currentIndex++;

@@ -230,9 +230,9 @@ public class Mannequin : StorageContainer
 		return (slot - 7) % 14 == 0;
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		if (!base.ItemFilter(item, targetSlot))
+		if (!base.ItemFilter(player, item, targetSlot))
 		{
 			return false;
 		}
@@ -246,10 +246,10 @@ public class Mannequin : StorageContainer
 		{
 			return false;
 		}
-		return CanAcceptItem(item, targetSlot);
+		return CanAcceptItem(player, item, targetSlot);
 	}
 
-	private bool CanAcceptItem(Item newItem, int slot)
+	private bool CanAcceptItem(BasePlayer player, Item newItem, int slot)
 	{
 		ItemModWearable itemModWearable = default(ItemModWearable);
 		if (!((Component)newItem.info).TryGetComponent<ItemModWearable>(ref itemModWearable))
@@ -280,9 +280,9 @@ public class Mannequin : StorageContainer
 		container.flags = ItemContainer.Flag.Clothing;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_ChangePose(RPCMessage msg)
 	{
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
@@ -303,9 +303,9 @@ public class Mannequin : StorageContainer
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_RequestSwap(RPCMessage msg)
 	{
 		//IL_006b: Unknown result type (might be due to invalid IL or missing references)

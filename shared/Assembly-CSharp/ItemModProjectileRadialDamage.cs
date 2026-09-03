@@ -46,15 +46,15 @@ public class ItemModProjectileRadialDamage : ItemModProjectileMod
 		{
 			Effect.server.Run(effect.resourcePath, info.HitPositionWorld, info.HitNormalWorld);
 		}
-		List<BaseCombatEntity> list = Pool.Get<List<BaseCombatEntity>>();
+		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
 		List<BaseEntity> list2 = Pool.Get<List<BaseEntity>>();
-		List<BaseCombatEntity> list3 = Pool.Get<List<BaseCombatEntity>>();
+		List<BaseEntity> list3 = Pool.Get<List<BaseEntity>>();
 		Vis.Entities(info.HitPositionWorld, radius, list3, 1237003025, (QueryTriggerInteraction)2);
 		if (damage.type == DamageType.Explosion)
 		{
 			SeismicSensor.Notify(info.HitPositionWorld, vibrationLevel);
 		}
-		foreach (BaseCombatEntity item in list3)
+		foreach (BaseEntity item in list3)
 		{
 			if (!item.isServer || list.Contains(item) || (onlyDoors && !(item is Door)))
 			{
@@ -102,8 +102,8 @@ public class ItemModProjectileRadialDamage : ItemModProjectileMod
 				}
 			}
 		}
-		Pool.FreeUnmanaged<BaseCombatEntity>(ref list3);
-		Pool.FreeUnmanaged<BaseCombatEntity>(ref list);
+		Pool.FreeUnmanaged<BaseEntity>(ref list3);
+		Pool.FreeUnmanaged<BaseEntity>(ref list);
 		Pool.FreeUnmanaged<BaseEntity>(ref list2);
 	}
 }

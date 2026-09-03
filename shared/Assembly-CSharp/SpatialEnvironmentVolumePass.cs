@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 [RequireComponent(typeof(DeferredIndirectLightingPass))]
-[RequireComponent(typeof(CommandBufferManager))]
 [ExecuteInEditMode]
+[RequireComponent(typeof(CommandBufferManager))]
 public class SpatialEnvironmentVolumePass : MonoBehaviour
 {
 	private const CameraEvent VOLUME_RENDERING_CAMERA_EVENT = (CameraEvent)6;

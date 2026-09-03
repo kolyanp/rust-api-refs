@@ -392,13 +392,13 @@ public class TinCanAlarm : StorageContainer, IDetector
 		return null;
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if ((Object)(object)TryGetHeldEntity(item) == (Object)null)
 		{
 			return false;
 		}
-		return base.ItemFilter(item, targetSlot);
+		return base.ItemFilter(player, item, targetSlot);
 	}
 
 	public override void OnItemAddedOrRemoved(Item item, bool added)
@@ -417,8 +417,8 @@ public class TinCanAlarm : StorageContainer, IDetector
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SERVER_StartArming(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

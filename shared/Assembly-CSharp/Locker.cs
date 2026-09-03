@@ -110,14 +110,14 @@ public class Locker : StorageContainer
 		flagsUpdateScope.Set(Flags.Reserved1, b: false);
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		object obj = Interface.CallHook("CanLockerAcceptItem", this, item, targetSlot);
+		object obj = Interface.CallHook("CanLockerAcceptItem", this, item, targetSlot, player);
 		if (obj is bool)
 		{
 			return (bool)obj;
 		}
-		if (!base.ItemFilter(item, targetSlot))
+		if (!base.ItemFilter(player, item, targetSlot))
 		{
 			return false;
 		}
@@ -143,8 +143,8 @@ public class Locker : StorageContainer
 		return (slot - 7) % 14 == 0;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Equip(RPCMessage msg)
 	{
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)

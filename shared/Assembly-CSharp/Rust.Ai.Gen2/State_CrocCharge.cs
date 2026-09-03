@@ -1,4 +1,5 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -26,7 +27,6 @@ public class State_CrocCharge : FSMStateBase
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		ResetStamina();
 		ResetSurprise();
 		if ((Object)(object)payload.entity != (Object)null)
@@ -69,7 +69,6 @@ public class State_CrocCharge : FSMStateBase
 		//IL_0117: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_012b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0234: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTarget(out var target))
 		{
 			return EFSMStateStatus.Success;
@@ -133,24 +132,25 @@ public class State_CrocCharge : FSMStateBase
 		return base.OnStateUpdate(deltaTime);
 	}
 
-	private bool GetMoveDestination(out Vector3 destination)
+	private bool GetMoveDestination(out NavVector3 destination)
 	{
-		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
-		destination = default(Vector3);
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		destination = default(NavVector3);
 		if (!base.Senses.FindTarget(out var target))
 		{
 			return false;
 		}
-		destination = ((Component)target).transform.position;
+		Vector3 positionWS = ((Component)target).transform.position;
 		if (target.IsNonNpcPlayer() && base.Agent.canSwim && base.Senses.GetVisibilityStatus(target, out var status) && status.isInWaterCached)
 		{
-			destination = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
+			positionWS = Vector3Ex.WithY(((Component)target).transform.position, status.lastWaterInfo.Value.terrainHeight);
 		}
+		destination = base.Agent.WorldToNavSpace(positionWS);
 		return true;
 	}
 }

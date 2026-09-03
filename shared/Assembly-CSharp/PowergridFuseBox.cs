@@ -292,13 +292,11 @@ public class PowergridFuseBox : BaseEntity, IContainerSounds, ILootableEntity, P
 		if (Application.isServerStarted)
 		{
 			SendNetworkUpdate();
-			if ((Object)(object)LastLootedByPlayer != (Object)null && LastLootedByPlayer.serverClan != null)
+			if (added && (Object)(object)LastLootedByPlayer != (Object)null && LastLootedByPlayer.serverClan != null)
 			{
 				LastLootedByPlayer.AddClanScore((ClanScoreEventType)13);
 			}
 		}
-		LastLootedByPlayer = null;
-		LastLootedBy = 0uL;
 	}
 
 	public void OnItemPositionChanged(Item item, int oldPosition, int newPosition)

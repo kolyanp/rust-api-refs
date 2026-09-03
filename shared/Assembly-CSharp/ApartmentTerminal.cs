@@ -116,9 +116,9 @@ public class ApartmentTerminal : ComputerStation
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.FromMounted]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	public void SERVER_RequestProperties(RPCMessage msg)
 	{
 		//IL_0087: Unknown result type (might be due to invalid IL or missing references)

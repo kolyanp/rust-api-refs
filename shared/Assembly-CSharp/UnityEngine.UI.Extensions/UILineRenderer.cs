@@ -59,32 +59,32 @@ public class UILineRenderer : UIPrimitiveBase
 
 	private static Vector2[] fullUvs;
 
-	[SerializeField]
 	[Tooltip("Points to draw lines between\n Can be improved using the Resolution Option")]
+	[SerializeField]
 	internal Vector2[] m_points;
 
 	[SerializeField]
 	[Tooltip("Segments to be drawn\n This is a list of arrays of points")]
 	internal List<Vector2[]> m_segments;
 
-	[SerializeField]
 	[Tooltip("Thickness of the line")]
+	[SerializeField]
 	internal float lineThickness = 2f;
 
-	[Tooltip("Use the relative bounds of the Rect Transform (0,0 -> 0,1) or screen space coordinates")]
 	[SerializeField]
+	[Tooltip("Use the relative bounds of the Rect Transform (0,0 -> 0,1) or screen space coordinates")]
 	internal bool relativeSize;
 
 	[Tooltip("Do the points identify a single line or split pairs of lines")]
 	[SerializeField]
 	internal bool lineList;
 
-	[Tooltip("Add end caps to each line\nMultiple caps when used with Line List")]
 	[SerializeField]
+	[Tooltip("Add end caps to each line\nMultiple caps when used with Line List")]
 	internal bool lineCaps;
 
-	[SerializeField]
 	[Tooltip("Resolution of the Bezier curve, different to line Resolution")]
+	[SerializeField]
 	internal int bezierSegmentsPerCurve = 10;
 
 	[Tooltip("The type of Join used between lines, Square/Mitre or Curved/Bevel")]

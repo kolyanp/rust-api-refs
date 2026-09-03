@@ -76,6 +76,14 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 
 	private readonly ConcurrentQueue<WatchFileEvent> _events = new ConcurrentQueue<WatchFileEvent>();
 
+	private readonly List<string> _sourceChanges = new List<string>(32);
+
+	private readonly HashSet<string> _sourceChangeSet = new HashSet<string>();
+
+	private readonly List<string> _pendingSources = new List<string>(16);
+
+	private readonly List<string> _drainedSources = new List<string>(16);
+
 	public virtual string Name { get; }
 
 	public Dictionary<string, IBaseProcessor.IProcess> InstanceBuffer { get; set; }
@@ -130,6 +138,10 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 		{
 			InstanceBuffer = new Dictionary<string, IBaseProcessor.IProcess>();
 			IgnoreList = new List<string>();
+			_sourceChanges.Clear();
+			_sourceChangeSet.Clear();
+			_pendingSources.Clear();
+			_drainedSources.Clear();
 			Object.DontDestroyOnLoad((Object)(object)((Component)this).gameObject);
 			IsInitialized = true;
 			RefreshRate();
@@ -241,9 +253,19 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 		return Activator.CreateInstance(IndexedType) as Process;
 	}
 
-	protected virtual string GetInstanceKey(string sourcePath)
+	public virtual string GetInstanceKey(string sourcePath)
 	{
 		return Path.GetFileNameWithoutExtension(sourcePath);
+	}
+
+	protected virtual string GetSourcePath(string eventPath)
+	{
+		return eventPath;
+	}
+
+	protected virtual bool SourceExists(string sourcePath)
+	{
+		return OsEx.File.Exists(sourcePath);
 	}
 
 	private void DrainEventQueue()
@@ -274,6 +296,7 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 				Logger.Error($"Watcher dispatch error for '{result.Path}' ({result.Type})", ex);
 			}
 		}
+		ReconcileSourceChanges();
 	}
 
 	public virtual IEnumerator Run()
@@ -289,11 +312,6 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 				{
 					_runtimeCache.Add(item.Key, value);
 				}
-			}
-			if (_runtimeCache.Count == 0)
-			{
-				yield return null;
-				continue;
 			}
 			foreach (KeyValuePair<string, IBaseProcessor.IProcess> item2 in _runtimeCache)
 			{
@@ -312,6 +330,7 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 				}
 			}
 			_runtimeCache.Clear();
+			ProcessPendingSources();
 			yield return null;
 		}
 	}
@@ -320,15 +339,7 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 	{
 		if (value == null)
 		{
-			Process process = CreateProcess();
-			if (process != null)
-			{
-				process.File = key;
-				process.Execute(this);
-				string instanceKey = GetInstanceKey(key);
-				InstanceBuffer.Remove(key);
-				InstanceBuffer[instanceKey] = process;
-			}
+			InstanceBuffer.Remove(key);
 			return false;
 		}
 		if (value.IsRemoved)
@@ -368,7 +379,7 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 		}
 		else
 		{
-			Prepare(Path.GetFileNameWithoutExtension(file), file);
+			Prepare(GetInstanceKey(file), file);
 		}
 	}
 
@@ -376,19 +387,25 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 	{
 		if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(file) && !IgnoreList.Contains(file) && (string.IsNullOrEmpty(Extension) || !OsEx.File.Exists(file) || PathEx.HasExtension(file, Extension)))
 		{
-			Remove(id);
-			Process process = CreateProcess();
-			if (process != null)
-			{
-				InstanceBuffer.Add(id, process);
-				process.File = file;
-				process.Execute(this);
-			}
+			InstallProcess(id, file);
+		}
+	}
+
+	private void InstallProcess(string id, string file)
+	{
+		Remove(id);
+		Process process = CreateProcess();
+		if (process != null)
+		{
+			InstanceBuffer.Add(id, process);
+			process.File = file;
+			process.Execute(this);
 		}
 	}
 
 	public virtual void Remove(string id)
 	{
+		CancelPendingSource(id);
 		if (InstanceBuffer.TryGetValue(id, out var value))
 		{
 			value?.Clear();
@@ -411,6 +428,20 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 			{
 				Pool.FreeUnmanaged<string>(ref list);
 				list = null;
+			}
+		}
+		if (list == null)
+		{
+			_pendingSources.Clear();
+		}
+		else
+		{
+			for (int num = _pendingSources.Count - 1; num >= 0; num--)
+			{
+				if (!FileMatchesAny(_pendingSources[num], list))
+				{
+					_pendingSources.RemoveAt(num);
+				}
 			}
 		}
 		List<string> list2 = Pool.Get<List<string>>();
@@ -477,72 +508,157 @@ public abstract class BaseProcessor : FacepunchBehaviour, IDisposable, IBaseProc
 
 	public virtual void OnCreated(WatchFileEvent e)
 	{
-		if (EnableWatcher && !IsBlacklisted(e.Path))
+		if (EnableWatcher)
 		{
-			IBaseProcessor.IProcess value2;
-			if (InstanceBuffer.TryGetValue(e.Path, out var value))
-			{
-				value?.MarkDirty();
-			}
-			else if (InstanceBuffer.TryGetValue(Path.GetFileNameWithoutExtension(e.Path), out value2))
-			{
-				value2?.MarkDirty();
-			}
-			else
-			{
-				InstanceBuffer.Add(e.Path, null);
-			}
+			QueueSourceChange(e.Path);
 		}
 	}
 
 	public virtual void OnChanged(WatchFileEvent e)
 	{
-		if (EnableWatcher && !IsBlacklisted(e.Path))
+		if (EnableWatcher)
 		{
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(e.Path);
-			if (InstanceBuffer.TryGetValue(fileNameWithoutExtension, out var value))
-			{
-				value.MarkDirty();
-			}
+			QueueSourceChange(e.Path);
 		}
 	}
 
 	public virtual void OnRenamed(WatchFileEvent e)
 	{
-		if (!EnableWatcher)
+		if (EnableWatcher)
 		{
-			return;
-		}
-		if (!string.IsNullOrEmpty(e.OldPath))
-		{
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(e.OldPath);
-			if (InstanceBuffer.TryGetValue(fileNameWithoutExtension, out var value))
-			{
-				value?.MarkDeleted();
-			}
-		}
-		if (!IsBlacklisted(e.Path))
-		{
-			string fileNameWithoutExtension2 = Path.GetFileNameWithoutExtension(e.Path);
-			if (InstanceBuffer.TryGetValue(fileNameWithoutExtension2, out var value2) && value2 != null)
-			{
-				value2.MarkDirty();
-			}
-			else
-			{
-				InstanceBuffer[fileNameWithoutExtension2] = null;
-			}
+			QueueSourceChange(e.OldPath);
+			QueueSourceChange(e.Path);
 		}
 	}
 
 	public virtual void OnRemoved(WatchFileEvent e)
 	{
-		if (EnableWatcher && !IsBlacklisted(e.Path))
+		if (EnableWatcher)
 		{
-			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(e.Path);
-			if (InstanceBuffer.TryGetValue(fileNameWithoutExtension, out var value))
+			QueueSourceChange(e.Path);
+		}
+	}
+
+	private void QueueSourceChange(string path)
+	{
+		if (!string.IsNullOrEmpty(path) && !IsBlacklisted(path) && (string.IsNullOrEmpty(Extension) || PathEx.HasExtension(path, Extension)))
+		{
+			string sourcePath = GetSourcePath(path);
+			if (!string.IsNullOrEmpty(sourcePath) && _sourceChangeSet.Add(sourcePath))
 			{
-				value.MarkDeleted();
+				_sourceChanges.Add(sourcePath);
+			}
+		}
+	}
+
+	private void ReconcileSourceChanges()
+	{
+		for (int i = 0; i < _sourceChanges.Count; i++)
+		{
+			string text = _sourceChanges[i];
+			try
+			{
+				ReconcileSource(text);
+			}
+			catch (Exception ex)
+			{
+				Logger.Error("Watcher source error for '" + text + "'", ex);
+			}
+		}
+		_sourceChanges.Clear();
+		_sourceChangeSet.Clear();
+	}
+
+	private void ReconcileSource(string sourcePath)
+	{
+		string instanceKey = GetInstanceKey(sourcePath);
+		if (string.IsNullOrEmpty(instanceKey))
+		{
+			return;
+		}
+		bool flag = SourceExists(sourcePath);
+		if (InstanceBuffer.TryGetValue(instanceKey, out var value) && value != null)
+		{
+			if (PathEx.Equals(value.File, sourcePath))
+			{
+				if (flag)
+				{
+					value.MarkDirty();
+				}
+				else
+				{
+					value.MarkDeleted();
+				}
+			}
+			else if (flag)
+			{
+				if (!SourceExists(value.File))
+				{
+					value.File = sourcePath;
+					value.MarkDirty();
+				}
+				else
+				{
+					WarnDuplicateSource(sourcePath, value.File);
+				}
+			}
+		}
+		else if (flag)
+		{
+			_pendingSources.Add(sourcePath);
+		}
+	}
+
+	private void ProcessPendingSources()
+	{
+		if (_pendingSources.Count == 0)
+		{
+			return;
+		}
+		_drainedSources.AddRange(_pendingSources);
+		_pendingSources.Clear();
+		for (int i = 0; i < _drainedSources.Count; i++)
+		{
+			string text = _drainedSources[i];
+			if (!SourceExists(text))
+			{
+				continue;
+			}
+			try
+			{
+				string instanceKey = GetInstanceKey(text);
+				if (InstanceBuffer.TryGetValue(instanceKey, out var value) && value != null)
+				{
+					if (!PathEx.Equals(value.File, text))
+					{
+						WarnDuplicateSource(text, value.File);
+					}
+				}
+				else
+				{
+					InstallProcess(instanceKey, text);
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Error("Processor run error for '" + text + "'", ex);
+			}
+		}
+		_drainedSources.Clear();
+	}
+
+	private static void WarnDuplicateSource(string sourcePath, string existingFile)
+	{
+		Logger.Warn("Skipping '" + sourcePath + "': '" + existingFile + "' is already loaded under the same name.");
+	}
+
+	private void CancelPendingSource(string key)
+	{
+		for (int num = _pendingSources.Count - 1; num >= 0; num--)
+		{
+			if (GetInstanceKey(_pendingSources[num]) == key)
+			{
+				_pendingSources.RemoveAt(num);
 			}
 		}
 	}

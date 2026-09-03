@@ -58,8 +58,8 @@ public class NPCPlayerNavigator : BaseNavigator
 			if (base.CurrentNavigationType == NavigationType.NavMesh)
 			{
 				NPCPlayer nPCPlayerEntity = NPCPlayerEntity;
-				Vector3 desiredVelocity = base.Agent.desiredVelocity;
-				nPCPlayerEntity.SetAimDirection(((Vector3)(ref desiredVelocity)).normalized);
+				Vector3 desiredVelocityWS = base.Agent.desiredVelocityWS;
+				nPCPlayerEntity.SetAimDirection(((Vector3)(ref desiredVelocityWS)).normalized);
 			}
 			else if (base.CurrentNavigationType == NavigationType.AStar || base.CurrentNavigationType == NavigationType.Base)
 			{

@@ -32,7 +32,7 @@ public class PowerCounter : IOEntity
 
 	private int resetTargetNumber;
 
-	public const Flags Flag_ShowPassthrough = Flags.Reserved2;
+	public const Flags Flag_ShowPassthrough = Flags.Reserved3;
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -128,7 +128,7 @@ public class PowerCounter : IOEntity
 
 	public bool DisplayPassthrough()
 	{
-		return HasFlag(Flags.Reserved2);
+		return HasFlag(Flags.Reserved3);
 	}
 
 	public bool DisplayCounter()
@@ -166,14 +166,14 @@ public class PowerCounter : IOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ToggleDisplayMode(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
 		if (Interface.CallHook("OnCounterModeToggle", this, msg.player, flag) == null && msg.player.CanBuild())
 		{
-			SetFlagLocal(Flags.Reserved2, flag);
+			SetFlagLocal(Flags.Reserved3, flag);
 			MarkDirty();
 			SendNetworkUpdate();
 		}

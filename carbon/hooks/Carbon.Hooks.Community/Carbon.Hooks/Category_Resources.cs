@@ -10,6 +10,7 @@ public class Category_Resources
 		[Patch("OnGrowableUpdate", "OnGrowableUpdate", typeof(GrowableEntity), "RunUpdate", new Type[] { })]
 		[Parameter("growable", typeof(GrowableEntity), false)]
 		[Info("Called right before the growable entity is updated.")]
+		[Return(typeof(void), Discarded = true)]
 		public class OnGrowableUpdate : Patch
 		{
 			public static void Prefix(ref GrowableEntity __instance)

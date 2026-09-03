@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -453,17 +454,17 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.InputValidation(new Type[] { typeof(WireConnectionMessage) })]
 	[RPC_Server.MaxRepeatedElements(54)]
 	[RPC_Server.IgnoreConditional("HasUnlimitedIo", new Type[]
 	{
 		typeof(RPC_Server.MaxRepeatedElements),
 		typeof(RPC_Server.IgnoreProtoFieldOperationLimit)
 	})]
+	[RPC_Server.FromOwner]
+	[RPC_Server.InputValidation(new Type[] { typeof(WireConnectionMessage) })]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -540,6 +541,7 @@ public class WireTool : HeldEntity
 					iOEntity.NotifyIndustrialNetworkChanged();
 					iOEntity2.NotifyIndustrialNetworkChanged();
 				}
+				Facepunch.Rust.Analytics.Azure.OnIOEntityConnected(player, iOEntity, iOEntity2, wireColour);
 			}
 		}
 		finally
@@ -609,9 +611,9 @@ public class WireTool : HeldEntity
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -795,10 +797,10 @@ public class WireTool : HeldEntity
 		val2.Dispose();
 	}
 
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_CancelPendingWire(RPCMessage msg)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
@@ -807,10 +809,10 @@ public class WireTool : HeldEntity
 		validatedWireSlot = -1;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	public void RPC_RequestChangeColor(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -1182,7 +1184,7 @@ public class WireTool : HeldEntity
 	private static bool SharesRootParent(BaseEntity a, BaseEntity b)
 	{
 		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006f: Unknown result type (might be due to invalid IL or missing references)
 		bool flag = a.IsOnMovingObject();
 		bool flag2 = b.IsOnMovingObject();
 		if (flag & flag2)
@@ -1197,8 +1199,8 @@ public class WireTool : HeldEntity
 		{
 			return false;
 		}
-		BoatBuildingStation stationOverlappingPosition = BoatBuildingStation.GetStationOverlappingPosition(((Component)a).transform.position, a.isServer);
-		BoatBuildingStation stationOverlappingPosition2 = BoatBuildingStation.GetStationOverlappingPosition(((Component)b).transform.position, b.isServer);
+		BoatBuildingStation stationOverlappingPosition = BoatBuildingStation.GetStationOverlappingPosition(((Component)a).transform.position, a.isServer, 1.5f);
+		BoatBuildingStation stationOverlappingPosition2 = BoatBuildingStation.GetStationOverlappingPosition(((Component)b).transform.position, b.isServer, 1.5f);
 		return (Object)(object)stationOverlappingPosition == (Object)(object)stationOverlappingPosition2;
 	}
 

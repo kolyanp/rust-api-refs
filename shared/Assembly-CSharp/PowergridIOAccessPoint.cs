@@ -107,15 +107,14 @@ public class PowergridIOAccessPoint : IOEntity, IPowergridEntity
 		{
 			return 0;
 		}
-		if (currentPowergridStage < 1)
+		int num = PointEntity<PowergridManager>.ServerInstance.Server_GetPowerPlantInsertedFuses();
+		if (num <= 0)
 		{
 			return 0;
 		}
-		if (!PowergridStageConfig.instance.TryGetStageDataForStage(currentPowergridStage, out var stageData))
-		{
-			return 0;
-		}
-		return stageData.powerlineAvailablePower;
+		int num2 = PointEntity<PowergridManager>.ServerInstance.Server_GetFuseSocketsCount();
+		float num3 = ((num2 > 1) ? Mathf.Clamp01((float)(num - 1) / (float)(num2 - 1)) : 0f);
+		return (int)Mathf.Lerp((float)Powergrid.powerlineBasePowerOutput, (float)Powergrid.powerlineMaxPowerOutput, num3);
 	}
 
 	public override bool GetHasPower(int inputAmount, int inputSlot)

@@ -16,16 +16,19 @@ public class FishMount : StorageContainer
 
 	public const Flags HasFish = Flags.Reserved1;
 
+	private int currentFishItemIndex = -1;
+
 	private int GetCurrentFishItemIndex
 	{
 		get
 		{
+			Item slot = base.inventory.GetSlot(0);
 			ItemModFishable itemModFishable = default(ItemModFishable);
-			if (base.inventory.GetSlot(0) == null || !((Component)base.inventory.GetSlot(0).info).TryGetComponent<ItemModFishable>(ref itemModFishable))
+			if (slot != null && ((Component)slot.info).TryGetComponent<ItemModFishable>(ref itemModFishable))
 			{
-				return -1;
+				return itemModFishable.FishMountIndex;
 			}
-			return itemModFishable.FishMountIndex;
+			return -1;
 		}
 	}
 
@@ -81,10 +84,10 @@ public class FishMount : StorageContainer
 		{
 			info.msg.simpleInt = Pool.Get<SimpleInt>();
 		}
-		info.msg.simpleInt.value = GetCurrentFishItemIndex;
+		info.msg.simpleInt.value = currentFishItemIndex;
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		ItemModFishable itemModFishable = default(ItemModFishable);
 		if (((Component)item.info).TryGetComponent<ItemModFishable>(ref itemModFishable) && itemModFishable.CanBeMounted)
@@ -97,6 +100,7 @@ public class FishMount : StorageContainer
 	public override void PostServerLoad()
 	{
 		base.PostServerLoad();
+		currentFishItemIndex = GetCurrentFishItemIndex;
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
@@ -104,12 +108,13 @@ public class FishMount : StorageContainer
 	public override void OnItemAddedOrRemoved(Item item, bool added)
 	{
 		base.OnItemAddedOrRemoved(item, added);
-		SetFlagLocal(Flags.Reserved1, GetCurrentFishItemIndex >= 0);
+		currentFishItemIndex = GetCurrentFishItemIndex;
+		SetFlagLocal(Flags.Reserved1, currentFishItemIndex >= 0);
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void UseFish(RPCMessage msg)
 	{
 		//IL_0027: Unknown result type (might be due to invalid IL or missing references)

@@ -6,10 +6,13 @@ public class PrefabPoolCollection
 {
 	public Dictionary<uint, PrefabPool> storage = new Dictionary<uint, PrefabPool>();
 
+	private GameManager gameManager;
+
 	private bool isClient;
 
-	public PrefabPoolCollection(bool client)
+	public PrefabPoolCollection(GameManager manager, bool client)
 	{
+		gameManager = manager;
 		isClient = client;
 	}
 
@@ -19,7 +22,7 @@ public class PrefabPoolCollection
 		if (!storage.TryGetValue(component.prefabID, out var value))
 		{
 			int targetCapacity = (isClient ? component.ClientCount : component.ServerCount);
-			value = new PrefabPool(component.prefabID, targetCapacity);
+			value = new PrefabPool(component.prefabID, targetCapacity, gameManager.FindPrefab(component.prefabID));
 			storage.Add(component.prefabID, value);
 		}
 		value.Push(component);

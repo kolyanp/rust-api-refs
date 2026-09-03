@@ -139,15 +139,15 @@ public class ScriptLoader : IScriptLoader, IDisposable
 		string[] filesWithExtension2 = OsEx.Folder.GetFilesWithExtension(Defines.GetScriptsFolder(), "cs", config.Watchers.ScriptWatcherOption);
 		string[] filesWithExtension3 = OsEx.Folder.GetFilesWithExtension(Defines.GetScriptsFolder(), "cszip", config.Watchers.ScriptWatcherOption);
 		int count = 0;
-		ExecuteProcess(Community.Runtime.ScriptProcessor, folderMode: false, except, ref count, new string[2][] { filesWithExtension, filesWithExtension2 });
-		ExecuteProcess(Community.Runtime.ZipScriptProcessor, folderMode: false, except, ref count, new string[1][] { filesWithExtension3 });
+		ExecuteProcess(Community.Runtime.ScriptProcessor, except, ref count, new string[2][] { filesWithExtension, filesWithExtension2 });
+		ExecuteProcess(Community.Runtime.ZipScriptProcessor, except, ref count, new string[1][] { filesWithExtension3 });
 		if (count == 0)
 		{
 			ModLoader.IsBatchComplete = true;
 			Community.Runtime.Events.Trigger(CarbonEvent.AllPluginsLoaded, EventArgs.Empty);
 			Community.Runtime.Events.Trigger(CarbonEvent.AllPluginsInitialized, EventArgs.Empty);
 		}
-		static void ExecuteProcess(IScriptProcessor processor, bool folderMode, IEnumerable<string> enumerable, ref int reference, params string[][] folders)
+		static void ExecuteProcess(IScriptProcessor processor, IEnumerable<string> enumerable, ref int reference, params string[][] folders)
 		{
 			processor.Clear();
 			string[][] array = folders;
@@ -158,15 +158,14 @@ public class ScriptLoader : IScriptLoader, IDisposable
 				{
 					if (!processor.IsBlacklisted(file) && (enumerable == null || !enumerable.Any((string x) => file.Contains(x))))
 					{
-						string text = (folderMode ? file : Path.GetDirectoryName(file));
-						string key = (folderMode ? text : Path.GetFileNameWithoutExtension(file));
-						if (!processor.InstanceBuffer.ContainsKey(key))
+						string instanceKey = processor.GetInstanceKey(file);
+						if (!processor.InstanceBuffer.ContainsKey(instanceKey))
 						{
 							ScriptProcessor.Script value = new ScriptProcessor.Script
 							{
 								File = file
 							};
-							processor.InstanceBuffer.Add(key, value);
+							processor.InstanceBuffer.Add(instanceKey, value);
 							reference++;
 						}
 					}

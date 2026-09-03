@@ -26,7 +26,7 @@ public class SatelliteFuelStorage : StorageContainer
 		}
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if ((Object)(object)item?.info == (Object)null)
 		{

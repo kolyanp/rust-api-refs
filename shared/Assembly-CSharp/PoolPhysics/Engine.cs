@@ -499,11 +499,11 @@ public class Engine : IPooled
 	{
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("PoolPhysics.Engine.Tick.ApplyDrag"))
 		{
 			if (!hasInitialised)
@@ -517,7 +517,7 @@ public class Engine : IPooled
 				while (enumerator.MoveNext())
 				{
 					Data.Ball current = enumerator.Current;
-					if (!current.IsKinematic && ((Vector2)(ref current.Velocity)).sqrMagnitude > 0.005f)
+					if (!current.IsKinematic)
 					{
 						Vector2 val = current.Velocity * num;
 						SetBallVelocity(current.Id, (((Vector2)(ref val)).sqrMagnitude > 0.005f) ? val : Vector2.zero);

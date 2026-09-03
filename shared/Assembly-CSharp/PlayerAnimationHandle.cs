@@ -165,6 +165,18 @@ public struct PlayerAnimationHandle : IEquatable<PlayerAnimationHandle>
 		}
 	}
 
+	public readonly void SetApplyFootIK(bool apply)
+	{
+		//IL_0001: Unknown result type (might be due to invalid IL or missing references)
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
+		if (PlayableExtensions.IsValid<AnimationClipPlayable>(Playable))
+		{
+			AnimationClipPlayable playable = Playable;
+			((AnimationClipPlayable)(ref playable)).SetApplyFootIK(apply);
+		}
+	}
+
 	public readonly void SetTime(float time)
 	{
 		//IL_0009: Unknown result type (might be due to invalid IL or missing references)

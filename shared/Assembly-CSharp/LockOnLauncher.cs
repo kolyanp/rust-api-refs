@@ -11,7 +11,7 @@ public class LockOnLauncher : BaseLauncher
 	public float lockConeDot = 0.8f;
 
 	[SerializeField]
-	public float timeToLock = 2f;
+	public float timeToLock = 1.4f;
 
 	[SerializeField]
 	private float currentLockTime;

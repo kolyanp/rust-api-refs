@@ -34,8 +34,8 @@ public class State_Dead : FSMStateBase
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_0199: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01aa: Unknown result type (might be due to invalid IL or missing references)
 		if (payload.hitInfo == null && AI.logIssues && AI.logIssues)
 		{
 			Debug.LogError((object)$"Entering {base.Name} without HitInfo payload, this should not happen and may cause issues with stats tracking. Owner: {Owner}", (Object)(object)Owner);

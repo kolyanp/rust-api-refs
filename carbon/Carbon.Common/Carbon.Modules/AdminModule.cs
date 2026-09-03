@@ -101,6 +101,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 
 	[HookAttribute.Patch("IModBackpack", "IModBackpack", typeof(ItemModBackpack), "CanAcceptItem", new Type[]
 	{
+		typeof(BasePlayer),
 		typeof(Item),
 		typeof(Item),
 		typeof(int)
@@ -108,7 +109,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 	[HookAttribute.Options(HookFlags.Hidden)]
 	public class Item_ModBackpack : Patch
 	{
-		public static bool Prefix(Item backpack, Item item, int slot, ref bool __result)
+		public static bool Prefix(BasePlayer player, Item backpack, Item item, int slot, ref bool __result)
 		{
 			if (AcceptOnBackpack(backpack))
 			{
@@ -3376,7 +3377,7 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 		}
 
-		internal static void DrawEntityFlags(Tab tab, PlayerSession session, int column = 1)
+		internal unsafe static void DrawEntityFlags(Tab tab, PlayerSession session, int column = 1)
 		{
 			//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
 			//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
@@ -3408,7 +3409,17 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 					DoAll<BaseEntity>(delegate(BaseEntity e)
 					{
 						//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-						e.SetFlag(flagValue, !hasFlag, false, true);
+						//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+						//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+						FlagsUpdateScope val2 = e.StartSetFlags((FlagsUpdateMode)2);
+						try
+						{
+							((FlagsUpdateScope)(ref val2)).Set(flagValue, !hasFlag, false);
+						}
+						finally
+						{
+							((IDisposable)(*(FlagsUpdateScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+						}
 					});
 					DrawEntitySettings(tab, 0, ap);
 					DrawEntityFlags(tab, ap, column);
@@ -3434,17 +3445,26 @@ public class AdminModule : CarbonModule<AdminConfig, AdminData>
 			}
 		}
 
-		internal static void ViewCamera(BasePlayer player, ComputerStation station, CCTV_RC camera)
+		internal unsafe static void ViewCamera(BasePlayer player, ComputerStation station, CCTV_RC camera)
 		{
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_002f: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0054: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 			((BaseNetworkable)player).net.SwitchSecondaryGroup(((BaseNetworkable)camera).net.group);
 			((EntityRef)(ref station.currentlyControllingEnt)).uid = ((BaseNetworkable)camera).net.ID;
 			station.currentPlayerID = EncryptedValue<ulong>.op_Implicit(player.userID);
 			bool flag = ((PoweredRemoteControlEntity)camera).InitializeControl(new CameraViewerId(station.currentPlayerID, 0L));
-			((BaseEntity)station).SetFlag((Flags)256, flag, false, false);
-			((BaseNetworkable)station).SendNetworkUpdateImmediate();
+			FlagsUpdateScope val = ((BaseEntity)station).StartSetFlags((FlagsUpdateMode)3);
+			try
+			{
+				((FlagsUpdateScope)(ref val)).Set((Flags)256, flag, false);
+			}
+			finally
+			{
+				((IDisposable)(*(FlagsUpdateScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			}
 			station.SendControlBookmarks(player);
 		}
 

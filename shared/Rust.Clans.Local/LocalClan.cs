@@ -186,14 +186,17 @@ public class LocalClan : IClan
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0010: Invalid comparison between Unknown and I4
 		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00af: Invalid comparison between Unknown and I4
-		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Invalid comparison between Unknown and I4
-		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014b: Invalid comparison between Unknown and I4
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b1: Invalid comparison between Unknown and I4
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d3: Invalid comparison between Unknown and I4
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0121: Invalid comparison between Unknown and I4
+		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016f: Invalid comparison between Unknown and I4
 		if ((sources & 1) == 1 || (sources & 2) == 2 || (sources & 4) == 4)
 		{
 			ClanData? clanData = _backend.Database.ReadClan(ClanId);
@@ -211,6 +214,10 @@ public class LocalClan : IClan
 			Logo = value.Logo;
 			Color = value.Color;
 			Score = value.Score;
+		}
+		if ((sources & 0x40) == 64)
+		{
+			Score = _backend.Database.ReadClanScore(ClanId);
 		}
 		if ((sources & 8) == 8)
 		{
@@ -756,6 +763,11 @@ public class LocalClan : IClan
 			ClanId = ClanId,
 			ScoreEvents = scoreEvents
 		});
+	}
+
+	public long GetLatestScore()
+	{
+		return _backend.Database.ReadClanScore(ClanId);
 	}
 
 	public async ValueTask<ClanResult> AddScoreEvent(ClanScoreEvent scoreEvent)

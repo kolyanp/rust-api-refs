@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 public class OverrideAnimationSubSystem : AnimationSubSystem
 {
-	[FormerlySerializedAs("TelephoneIdleClip")]
 	[SerializeField]
+	[FormerlySerializedAs("TelephoneIdleClip")]
 	private AnimationClip ClipToPlay;
 }

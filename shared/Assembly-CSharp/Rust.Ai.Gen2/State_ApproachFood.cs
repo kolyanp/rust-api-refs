@@ -1,4 +1,5 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -25,18 +26,15 @@ public class State_ApproachFood : State_MoveToTarget
 		return base.OnStateEnter(payload);
 	}
 
-	protected override bool GetMoveDestination(out Vector3 destination)
+	protected override bool GetMoveDestination(out NavVector3 destination)
 	{
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindFood(out var food))
 		{
-			destination = Vector3.zero;
+			destination = NavVector3.zero;
 			return false;
 		}
-		destination = ((Component)food).transform.position;
+		destination = base.Agent.WorldToNavSpace(((Component)food).transform.position);
 		return true;
 	}
 }

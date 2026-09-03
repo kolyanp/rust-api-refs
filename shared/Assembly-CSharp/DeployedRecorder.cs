@@ -70,8 +70,8 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		bool play = msg.read.ReadByte() == 1;
@@ -97,7 +97,7 @@ public class DeployedRecorder : StorageContainer, ICassettePlayer
 		ServerTogglePlay(play: false);
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		ItemDefinition[] validCassettes = ValidCassettes;
 		for (int i = 0; i < validCassettes.Length; i++)

@@ -16,7 +16,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2161]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2229]
 	{
 		new ConsoleSystem.Command
 		{
@@ -7098,6 +7098,21 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "endpoint",
+			Parent = "app",
+			FullName = "app.endpoint",
+			ServerAdmin = true,
+			Client = true,
+			Description = "Base address for the Rust+ companion server API",
+			Variable = true,
+			GetOveride = () => App.endpoint ?? "",
+			SetOveride = delegate(string str)
+			{
+				App.endpoint = str;
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "info",
 			Parent = "app",
 			FullName = "app.info",
@@ -8773,6 +8788,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "addmonumentblockergrace",
+			Parent = "debug",
+			FullName = "debug.addmonumentblockergrace",
+			ServerAdmin = true,
+			Description = "<minutes> (optional: <range>) - Adds the given number of minutes to the decay grace period timer of the monument blocker closest to you, making it start decaying that much sooner. Negative values rewind the timer",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Debugging.addmonumentblockergrace(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "applybuildingblockrandomisation",
 			Parent = "debug",
 			FullName = "debug.applybuildingblockrandomisation",
@@ -9379,6 +9407,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "printmonumentblocker",
+			Parent = "debug",
+			FullName = "debug.printmonumentblocker",
+			ServerAdmin = true,
+			Description = "Prints the health and decay state of the monument blocker closest to you. Optional argument: search range in metres (default 100)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Debugging.printmonumentblocker(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "printqueues",
 			Parent = "debug",
 			FullName = "debug.printqueues",
@@ -9802,6 +9843,19 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "addfakeauthhistory",
+			Parent = "decay",
+			FullName = "decay.addfakeauthhistory",
+			ServerAdmin = true,
+			Description = "addfakeauthhistory <count>, adds fake deauthed players to the auth history of the tool cupboard you are standing in, for testing group upkeep tiers",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				ConVar.Decay.addfakeauthhistory(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "bracket_0_blockcount",
 			Parent = "decay",
 			FullName = "decay.bracket_0_blockcount",
@@ -10038,6 +10092,19 @@ public class ConsoleGen
 				ConVar.Decay.build_twig_cost_multiplier = StringExtensions.ToFloat(str, 0f);
 			},
 			Default = "1"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "clearauthhistory",
+			Parent = "decay",
+			FullName = "decay.clearauthhistory",
+			ServerAdmin = true,
+			Description = "Clears the deauthed player history on the tool cupboard you are standing in, dropping its group upkeep back to the number of authed players",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				ConVar.Decay.clearauthhistory(arg);
+			}
 		},
 		new ConsoleSystem.Command
 		{
@@ -10490,6 +10557,158 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "upkeep_group_count_locks",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_count_locks",
+			ServerAdmin = true,
+			Description = "Should players holding a code on one of the building's doors count towards the group size, whether it is the master code or the guest code",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_count_locks.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_count_locks = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_history_max",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_history_max",
+			ServerAdmin = true,
+			Description = "Maximum number of players a tool cupboard remembers in the group window, oldest are dropped first",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int upkeep_group_history_max = ConVar.Decay.upkeep_group_history_max;
+				return (upkeep_group_history_max < -1 || upkeep_group_history_max > 127) ? upkeep_group_history_max.ToString() : Memoized.IntToString.Get(upkeep_group_history_max);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_history_max = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_max_multiplier",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_max_multiplier",
+			ServerAdmin = true,
+			Description = "Upper limit on the group size upkeep multiplier",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_max_multiplier.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_max_multiplier = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_scaling",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_scaling",
+			ServerAdmin = true,
+			Description = "Should upkeep cost scale with the number of players authed on the tool cupboard",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_scaling.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_scaling = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_tier_0_increase",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_tier_0_increase",
+			ServerAdmin = true,
+			Description = "Each player in the 1st upkeep group tier increases upkeep cost by this fraction",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_tier_0_increase.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_tier_0_increase = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_tier_0_playercount",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_tier_0_playercount",
+			ServerAdmin = true,
+			Description = "Number of players in the 1st (free) upkeep group tier",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int upkeep_group_tier_0_playercount = ConVar.Decay.upkeep_group_tier_0_playercount;
+				return (upkeep_group_tier_0_playercount < -1 || upkeep_group_tier_0_playercount > 127) ? upkeep_group_tier_0_playercount.ToString() : Memoized.IntToString.Get(upkeep_group_tier_0_playercount);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_tier_0_playercount = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_tier_1_increase",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_tier_1_increase",
+			ServerAdmin = true,
+			Description = "Each player in the 2nd upkeep group tier increases upkeep cost by this fraction",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_tier_1_increase.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_tier_1_increase = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_tier_1_playercount",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_tier_1_playercount",
+			ServerAdmin = true,
+			Description = "Number of players in the 2nd (small group) upkeep group tier",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int upkeep_group_tier_1_playercount = ConVar.Decay.upkeep_group_tier_1_playercount;
+				return (upkeep_group_tier_1_playercount < -1 || upkeep_group_tier_1_playercount > 127) ? upkeep_group_tier_1_playercount.ToString() : Memoized.IntToString.Get(upkeep_group_tier_1_playercount);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_tier_1_playercount = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_tier_2_increase",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_tier_2_increase",
+			ServerAdmin = true,
+			Description = "Each player in the 3rd (large group) upkeep group tier increases upkeep cost by this fraction, this tier is unlimited",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_tier_2_increase.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_tier_2_increase = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_group_window_hours",
+			Parent = "decay",
+			FullName = "decay.upkeep_group_window_hours",
+			ServerAdmin = true,
+			Description = "Players who authed within this many hours still count towards the group size, even if they have since deauthed",
+			Variable = true,
+			GetOveride = () => ConVar.Decay.upkeep_group_window_hours.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_group_window_hours = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "upkeep_heal_scale",
 			Parent = "decay",
 			FullName = "decay.upkeep_heal_scale",
@@ -10514,6 +10733,24 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				ConVar.Decay.upkeep_inside_decay_scale = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "upkeep_lock_min_users",
+			Parent = "decay",
+			FullName = "decay.upkeep_lock_min_users",
+			ServerAdmin = true,
+			Description = "If a code lock has <= this number of users it won't count its users towards group upkeep tax",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int upkeep_lock_min_users = ConVar.Decay.upkeep_lock_min_users;
+				return (upkeep_lock_min_users < -1 || upkeep_lock_min_users > 127) ? upkeep_lock_min_users.ToString() : Memoized.IntToString.Get(upkeep_lock_min_users);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Decay.upkeep_lock_min_users = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -11218,6 +11455,25 @@ public class ConsoleGen
 			{
 				DeepSea.status(arg);
 			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "terrain_everywhere",
+			Parent = "deepsea",
+			FullName = "deepsea.terrain_everywhere",
+			ServerAdmin = true,
+			ClientAdmin = true,
+			Client = true,
+			Saved = true,
+			Description = "Applies the deep sea terrain config and foliage to the whole map, not just inside the deep sea",
+			Replicated = true,
+			Variable = true,
+			GetOveride = () => DeepSea.terrain_everywhere.ToString(),
+			SetOveride = delegate(string str)
+			{
+				DeepSea.terrain_everywhere = StringExtensions.ToBool(str);
+			},
+			Default = "False"
 		},
 		new ConsoleSystem.Command
 		{
@@ -13619,7 +13875,7 @@ public class ConsoleGen
 			Parent = "memsnap",
 			FullName = "memsnap.full",
 			ServerAdmin = true,
-			Description = "(Generated) Takes a full Unity Memory Profiler snapshot capturing all managed, native, and graphics memory and saves it as a timestamped .snap file in profile/",
+			Description = "(Generated) Takes a full Unity Memory Profiler snapshot capturing all managed, native, and graphics memory and saves it as a timestamped .snap file in profile/memory/",
 			Variable = false,
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
@@ -13632,7 +13888,7 @@ public class ConsoleGen
 			Parent = "memsnap",
 			FullName = "memsnap.managed",
 			ServerAdmin = true,
-			Description = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/ folder",
+			Description = "(Generated) Takes a Unity Memory Profiler snapshot capturing managed (C#) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder",
 			Variable = false,
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
@@ -13645,11 +13901,219 @@ public class ConsoleGen
 			Parent = "memsnap",
 			FullName = "memsnap.native",
 			ServerAdmin = true,
-			Description = "(Generated) Takes a Unity Memory Profiler snapshot capturing native (C++) heap allocations and saves it as a timestamped .snap file in the profile/ folder",
+			Description = "(Generated) Takes a Unity Memory Profiler snapshot capturing native (C++) heap allocations and saves it as a timestamped .snap file in the profile/memory/ folder",
 			Variable = false,
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				MemSnap.native(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "bench",
+			Parent = "navstress",
+			FullName = "navstress.bench",
+			ServerAdmin = true,
+			Description = "Run the full benchmark suite: args agentCount (default 200)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.bench(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "benchresults",
+			Parent = "navstress",
+			FullName = "navstress.benchresults",
+			ServerAdmin = true,
+			Description = "Print the last benchmark results",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.benchresults(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "build_env",
+			Parent = "navstress",
+			FullName = "navstress.build_env",
+			ServerAdmin = true,
+			Description = "Build the synthetic stress field: args centerX centerZ halfExtent (defaults -140 140 50)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.build_env(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "chase",
+			Parent = "navstress",
+			FullName = "navstress.chase",
+			ServerAdmin = true,
+			Description = "Chase a sliding virtual target: args targetSpeed setDestinationHz",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.chase(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "clear",
+			Parent = "navstress",
+			FullName = "navstress.clear",
+			ServerAdmin = true,
+			Description = "Despawn dummies and remove the field",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.clear(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "envreport",
+			Parent = "navstress",
+			FullName = "navstress.envreport",
+			ServerAdmin = true,
+			Description = "Print the last environment build report",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.envreport(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "idle",
+			Parent = "navstress",
+			FullName = "navstress.idle",
+			ServerAdmin = true,
+			Description = "Stop giving destinations and reset paths",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.idle(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "killforeign",
+			Parent = "navstress",
+			FullName = "navstress.killforeign",
+			ServerAdmin = true,
+			Description = "Kill every NPC with a RustNavMeshAgent that is not a navstress dummy",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.killforeign(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "rebuildstorm",
+			Parent = "navstress",
+			FullName = "navstress.rebuildstorm",
+			ServerAdmin = true,
+			Description = "Async tile rebuilds under the field: args rebuildsPerSecond (0 stops)",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.rebuildstorm(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "refcompare",
+			Parent = "navstress",
+			FullName = "navstress.refcompare",
+			ServerAdmin = true,
+			Description = "Replay the scenario and compare against a recording: args name",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.refcompare(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "refrecord",
+			Parent = "navstress",
+			FullName = "navstress.refrecord",
+			ServerAdmin = true,
+			Description = "Record the reference trajectory scenario: args name",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.refrecord(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "refresults",
+			Parent = "navstress",
+			FullName = "navstress.refresults",
+			ServerAdmin = true,
+			Description = "Print the last refpath result",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.refresults(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "setmode",
+			Parent = "navstress",
+			FullName = "navstress.setmode",
+			ServerAdmin = true,
+			Description = "Flip all dummies between steering and normal mode without respawning",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.setmode(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "spawn",
+			Parent = "navstress",
+			FullName = "navstress.spawn",
+			ServerAdmin = true,
+			Description = "Spawn stripped wolves: args count mode(steering|normal) canSwim canOpenDoors",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.spawn(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "stats",
+			Parent = "navstress",
+			FullName = "navstress.stats",
+			ServerAdmin = true,
+			Description = "Print and reset tick statistics",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.stats(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "wander",
+			Parent = "navstress",
+			FullName = "navstress.wander",
+			ServerAdmin = true,
+			Description = "Random destinations forever: args intervalSeconds unreachableFraction",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				NavStress.wander(arg);
 			}
 		},
 		new ConsoleSystem.Command
@@ -13835,6 +14299,20 @@ public class ConsoleGen
 				Nexus.endpoint = str;
 			},
 			Default = "https://gw.facepunch.com/nexus/"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "hidefullislands",
+			Parent = "nexus",
+			FullName = "nexus.hidefullislands",
+			ServerAdmin = true,
+			Description = "Hide islands that we know are full, preventing players from being transferred to them",
+			Variable = true,
+			GetOveride = () => Nexus.hideFullIslands.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Nexus.hideFullIslands = StringExtensions.ToBool(str);
+			}
 		},
 		new ConsoleSystem.Command
 		{
@@ -16262,6 +16740,47 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "bakestats",
+			Parent = "rustnav",
+			FullName = "rustnav.bakestats",
+			ServerAdmin = true,
+			Description = "Print accumulated navmesh bake statistics. Pass true to reset them instead",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				RustNav.BakeStats(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "bakestatsenabled",
+			Parent = "rustnav",
+			FullName = "rustnav.bakestatsenabled",
+			ServerAdmin = true,
+			Description = "Collect navmesh bake statistics (rustnav.bakestats to read them). Defaults on in the editor, off on servers; flip on live to diagnose bake issues, then reset with rustnav.bakestats true",
+			Variable = true,
+			GetOveride = () => RustNav.bakeStatsEnabled.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.bakeStatsEnabled = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "collectbudgetms",
+			Parent = "rustnav",
+			FullName = "rustnav.collectbudgetms",
+			ServerAdmin = true,
+			Description = "Main-thread time budget per frame (ms) for navmesh tile geometry collection. The full-map bake wall clock is roughly tiles / (budget-worth of tiles per frame) / fps, so raise this while baking to trade frame time for bake speed",
+			Variable = true,
+			GetOveride = () => RustNav.collectBudgetMs.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.collectBudgetMs = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "debugload",
 			Parent = "rustnav",
 			FullName = "rustnav.debugload",
@@ -16334,6 +16853,34 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "detailsampledistmult",
+			Parent = "rustnav",
+			FullName = "rustnav.detailsampledistmult",
+			ServerAdmin = true,
+			Description = "Detail mesh sample distance as a multiple of cellSize (Recast default 6). Larger = cheaper detail mesh, coarser surface height. Applies to tiles built after the change",
+			Variable = true,
+			GetOveride = () => RustNav.detailSampleDistMult.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.detailSampleDistMult = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "detailsamplemaxerrormult",
+			Parent = "rustnav",
+			FullName = "rustnav.detailsamplemaxerrormult",
+			ServerAdmin = true,
+			Description = "Detail mesh max sample error as a multiple of cellHeight (Recast default 1). Larger = cheaper detail mesh, more height error. Applies to tiles built after the change",
+			Variable = true,
+			GetOveride = () => RustNav.detailSampleMaxErrorMult.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.detailSampleMaxErrorMult = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "draw",
 			Parent = "rustnav",
 			FullName = "rustnav.draw",
@@ -16342,6 +16889,20 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				RustNav.Draw(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "drawkbps",
+			Parent = "rustnav",
+			FullName = "rustnav.drawkbps",
+			ServerAdmin = true,
+			Description = "Max KB per second of navmesh tiles streamed to each rustnav.draw viewer",
+			Variable = true,
+			GetOveride = () => RustNav.drawKBps.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.drawKBps = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -16389,19 +16950,15 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "drawtilebudget",
+			Name = "dumptilegeo",
 			Parent = "rustnav",
-			FullName = "rustnav.drawtilebudget",
+			FullName = "rustnav.dumptilegeo",
 			ServerAdmin = true,
-			Variable = true,
-			GetOveride = delegate
+			Description = "Rebuild one default-navmesh tile synchronously and dump its assembled geometry + heightfield bounds to a file for the offline native-build harness: rustnav.dumptilegeo <tx> <ty> <path>",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
 			{
-				int drawTileBudget = RustNav.drawTileBudget;
-				return (drawTileBudget < -1 || drawTileBudget > 127) ? drawTileBudget.ToString() : Memoized.IntToString.Get(drawTileBudget);
-			},
-			SetOveride = delegate(string str)
-			{
-				RustNav.drawTileBudget = StringExtensions.ToInt(str, 0);
+				RustNav.DumpTileGeo(arg);
 			}
 		},
 		new ConsoleSystem.Command
@@ -16419,6 +16976,65 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "legacybuild",
+			Parent = "rustnav",
+			FullName = "rustnav.legacybuild",
+			ServerAdmin = true,
+			Description = "A/B kill switch: build navmesh tiles with the stock pre optimization algorithms (clip rasterizer, full ledge and region rescans, unfused filters). Combine with detailsampledistmult 6 to approximate the old build end to end. Applies to tiles built after the change",
+			Variable = true,
+			GetOveride = () => RustNav.legacyBuild.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.legacyBuild = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maxshoredistance",
+			Parent = "rustnav",
+			FullName = "rustnav.maxshoredistance",
+			ServerAdmin = true,
+			Description = "Metres of open water past which default navmesh tiles are dropped instead of baked. A tile only drops when every point in it is that far from land, so shores keep their navmesh and so do rivers and lakes, which are never that wide. Independent navmeshes (oilrigs, tropical islands, ghost ships) are never touched. 0 or less bakes the open sea like before. Applies to tiles queued after the change",
+			Variable = true,
+			GetOveride = () => RustNav.maxShoreDistance.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.maxShoreDistance = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "navmeshstats",
+			Parent = "rustnav",
+			FullName = "rustnav.navmeshstats",
+			ServerAdmin = true,
+			Description = "List every navmesh (default + independent monuments/islands/ghostships) ranked by accumulated worker build time",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				RustNav.NavmeshStats(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "numthreads",
+			Parent = "rustnav",
+			FullName = "rustnav.numthreads",
+			ServerAdmin = true,
+			Description = "Navmesh tile builder worker thread count. Applied when the builder is (re)created - at boot, or via rustnav.setnumthreads at runtime. ~half the cores is the sweet spot for full-map bakes",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int numThreads = RustNav.numThreads;
+				return (numThreads < -1 || numThreads > 127) ? numThreads.ToString() : Memoized.IntToString.Get(numThreads);
+			},
+			SetOveride = delegate(string str)
+			{
+				RustNav.numThreads = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "rebuild",
 			Parent = "rustnav",
 			FullName = "rustnav.rebuild",
@@ -16427,6 +17043,38 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				RustNav.Rebuild(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "savecompression",
+			Parent = "rustnav",
+			FullName = "rustnav.savecompression",
+			ServerAdmin = true,
+			Description = "LZ4-compress navmesh saves (smaller .navmesh files, no extra save time)",
+			Variable = true,
+			GetOveride = () => RustNav.saveCompression.ToString(),
+			SetOveride = delegate(string str)
+			{
+				RustNav.saveCompression = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "savethreads",
+			Parent = "rustnav",
+			FullName = "rustnav.savethreads",
+			ServerAdmin = true,
+			Description = "Worker threads for navmesh save/load compression. 0 = auto",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int saveThreads = RustNav.saveThreads;
+				return (saveThreads < -1 || saveThreads > 127) ? saveThreads.ToString() : Memoized.IntToString.Get(saveThreads);
+			},
+			SetOveride = delegate(string str)
+			{
+				RustNav.saveThreads = StringExtensions.ToInt(str, 0);
 			}
 		},
 		new ConsoleSystem.Command
@@ -21765,21 +22413,6 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "uselegacysprinklerloadprocess",
-			Parent = "server",
-			FullName = "server.uselegacysprinklerloadprocess",
-			ServerAdmin = true,
-			Saved = true,
-			Description = "(Generated) When true, uses the old sprinkler initialisation process when loading a save; enable if upgrading from an older server version to avoid sprinkler layout issues",
-			Variable = true,
-			GetOveride = () => ConVar.Server.useLegacySprinklerLoadProcess.ToString(),
-			SetOveride = delegate(string str)
-			{
-				ConVar.Server.useLegacySprinklerLoadProcess = StringExtensions.ToBool(str);
-			}
-		},
-		new ConsoleSystem.Command
-		{
 			Name = "uselegacyworkbenchinteraction",
 			Parent = "server",
 			FullName = "server.uselegacyworkbenchinteraction",
@@ -22935,6 +23568,165 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "clear",
+			Parent = "territory",
+			FullName = "territory.clear",
+			ServerAdmin = true,
+			Description = "Clear all territory ownership",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.clear(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "createfaction",
+			Parent = "territory",
+			FullName = "territory.createfaction",
+			ServerAdmin = true,
+			Description = "Create a faction, or recolour an existing one: territory.createfaction <name> <html colour, e.g. #FF0000 or #FF0000B0>",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.createfaction(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "destroy",
+			Parent = "territory",
+			FullName = "territory.destroy",
+			ServerAdmin = true,
+			Description = "Remove the territory grid entirely",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.destroy(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "factions",
+			Parent = "territory",
+			FullName = "territory.factions",
+			ServerAdmin = true,
+			Description = "List created factions and their colours",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.factions(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "fill",
+			Parent = "territory",
+			FullName = "territory.fill",
+			ServerAdmin = true,
+			Description = "Fill every hex cell: territory.fill <faction name|none>",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.fill(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "hexsize",
+			Parent = "territory",
+			FullName = "territory.hexsize",
+			ServerAdmin = true,
+			Description = "Hex cell size in metres (centre to corner). Changing it rebuilds the grid and wipes ownership",
+			Variable = true,
+			GetOveride = () => Territory.hexsize.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Territory.hexsize = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "offsetx",
+			Parent = "territory",
+			FullName = "territory.offsetx",
+			ServerAdmin = true,
+			Description = "Shifts the whole territory grid east/west in metres. Painted cells move with it",
+			Variable = true,
+			GetOveride = () => Territory.offsetx.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Territory.offsetx = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "offsetz",
+			Parent = "territory",
+			FullName = "territory.offsetz",
+			ServerAdmin = true,
+			Description = "Shifts the whole territory grid north/south in metres. Painted cells move with it",
+			Variable = true,
+			GetOveride = () => Territory.offsetz.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Territory.offsetz = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "setat",
+			Parent = "territory",
+			FullName = "territory.setat",
+			ServerAdmin = true,
+			Description = "Set the hex cell containing a world position: territory.setat <x> <z> <faction name|none>",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.setat(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "setcell",
+			Parent = "territory",
+			FullName = "territory.setcell",
+			ServerAdmin = true,
+			Description = "Set a hex cell by index: territory.setcell <cell> <faction name|none>",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.setcell(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "sethere",
+			Parent = "territory",
+			FullName = "territory.sethere",
+			ServerAdmin = true,
+			Description = "Set the hex cell at your position: territory.sethere <faction name|none>",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.sethere(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "state",
+			Parent = "territory",
+			FullName = "territory.state",
+			ServerAdmin = true,
+			Description = "Returns a JSON report of the territory grid: dimensions, offsets and a per-faction breakdown (cells held, share of claimed land, region counts) sorted by holdings",
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				Territory.state(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "cl_maxstepsperframe",
 			Parent = "time",
 			FullName = "time.cl_maxstepsperframe",
@@ -23086,6 +23878,54 @@ public class ConsoleGen
 			{
 				Tree.simplified_collider = StringExtensions.ToBool(str);
 			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "debugmtlockmaxframes",
+			Parent = "unsafe",
+			FullName = "unsafe.debugmtlockmaxframes",
+			ServerAdmin = true,
+			Description = "How many frames of a stack to emit",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int debugMTLockMaxFrames = ConVar.Unsafe.DebugMTLockMaxFrames;
+				return (debugMTLockMaxFrames < -1 || debugMTLockMaxFrames > 127) ? debugMTLockMaxFrames.ToString() : Memoized.IntToString.Get(debugMTLockMaxFrames);
+			},
+			SetOveride = delegate(string str)
+			{
+				ConVar.Unsafe.DebugMTLockMaxFrames = StringExtensions.ToInt(str, 0);
+			},
+			Default = "5"
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "enabledebugmtlock",
+			Parent = "unsafe",
+			FullName = "unsafe.enabledebugmtlock",
+			ServerAdmin = true,
+			Description = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled",
+			Variable = true,
+			GetOveride = () => ConVar.Unsafe.EnableDebugMTLock.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Unsafe.EnableDebugMTLock = StringExtensions.ToBool(str);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "usemultithreadedscripting",
+			Parent = "unsafe",
+			FullName = "unsafe.usemultithreadedscripting",
+			ServerAdmin = true,
+			Description = "Controls multithreading access to scripting API - can be fast, but unsafe. Disabling can help with instability",
+			Variable = true,
+			GetOveride = () => ConVar.Unsafe.UseMultithreadedScripting.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Unsafe.UseMultithreadedScripting = StringExtensions.ToBool(str);
+			},
+			Default = "1"
 		},
 		new ConsoleSystem.Command
 		{
@@ -25431,6 +26271,20 @@ public class ConsoleGen
 			SetOveride = delegate(string str)
 			{
 				Drone.movementSpeedOverride = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "samproximityfuseradius",
+			Parent = "drone",
+			FullName = "drone.samproximityfuseradius",
+			ServerAdmin = true,
+			Description = "Radius at which a SAM missile's proximity fuse detonates against drones, capped by the missile's 20m trigger sphere",
+			Variable = true,
+			GetOveride = () => Drone.samProximityFuseRadius.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Drone.samProximityFuseRadius = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -29160,6 +30014,123 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
+			Name = "marketplacechargecapacity",
+			Parent = "powergrid",
+			FullName = "powergrid.marketplacechargecapacity",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Charge capacity of a drone marketplace's power buffer. A marketplace charges this up from the power plant and bleeds it back out whenever the plant stops carrying it.",
+			Variable = true,
+			GetOveride = () => Powergrid.marketplaceChargeCapacity.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.marketplaceChargeCapacity = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "marketplacechargeperfuse",
+			Parent = "powergrid",
+			FullName = "powergrid.marketplacechargeperfuse",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Charge a drone marketplace gains every second for each heavy fuse inserted at the power plant, once there are at least marketplaceMinimumFusesToCharge of them.",
+			Variable = true,
+			GetOveride = () => Powergrid.marketplaceChargePerFuse.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.marketplaceChargePerFuse = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "marketplacedrainrate",
+			Parent = "powergrid",
+			FullName = "powergrid.marketplacedrainrate",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Charge a drone marketplace loses every second while there are no heavy fuses inserted at the power plant. A single fuse is enough to stop the bleed.",
+			Variable = true,
+			GetOveride = () => Powergrid.marketplaceDrainRate.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.marketplaceDrainRate = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "marketplaceminimumfusestocharge",
+			Parent = "powergrid",
+			FullName = "powergrid.marketplaceminimumfusestocharge",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Heavy fuses that have to be inserted at the power plant before a drone marketplace starts charging. Below this it holds whatever charge it has without building any more.",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int marketplaceMinimumFusesToCharge = Powergrid.marketplaceMinimumFusesToCharge;
+				return (marketplaceMinimumFusesToCharge < -1 || marketplaceMinimumFusesToCharge > 127) ? marketplaceMinimumFusesToCharge.ToString() : Memoized.IntToString.Get(marketplaceMinimumFusesToCharge);
+			},
+			SetOveride = delegate(string str)
+			{
+				Powergrid.marketplaceMinimumFusesToCharge = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "marketplacerequiredchargefraction",
+			Parent = "powergrid",
+			FullName = "powergrid.marketplacerequiredchargefraction",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Fraction (0-1) of its capacity a drone marketplace needs charged to accept orders. Sets both how long a cold marketplace takes to come online and how long a full one keeps running after the power plant drops out.",
+			Variable = true,
+			GetOveride = () => Powergrid.marketplaceRequiredChargeFraction.ToString(),
+			SetOveride = delegate(string str)
+			{
+				Powergrid.marketplaceRequiredChargeFraction = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "powerlinebasepoweroutput",
+			Parent = "powergrid",
+			FullName = "powergrid.powerlinebasepoweroutput",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Starting power output of powerline poles when 1 heavy fuse is inserted at the power plant.",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int powerlineBasePowerOutput = Powergrid.powerlineBasePowerOutput;
+				return (powerlineBasePowerOutput < -1 || powerlineBasePowerOutput > 127) ? powerlineBasePowerOutput.ToString() : Memoized.IntToString.Get(powerlineBasePowerOutput);
+			},
+			SetOveride = delegate(string str)
+			{
+				Powergrid.powerlineBasePowerOutput = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "powerlinemaxpoweroutput",
+			Parent = "powergrid",
+			FullName = "powergrid.powerlinemaxpoweroutput",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Power output of powerline poles when all possible heavy fuses are inserted at the power plant.",
+			Variable = true,
+			GetOveride = delegate
+			{
+				int powerlineMaxPowerOutput = Powergrid.powerlineMaxPowerOutput;
+				return (powerlineMaxPowerOutput < -1 || powerlineMaxPowerOutput > 127) ? powerlineMaxPowerOutput.ToString() : Memoized.IntToString.Get(powerlineMaxPowerOutput);
+			},
+			SetOveride = delegate(string str)
+			{
+				Powergrid.powerlineMaxPowerOutput = StringExtensions.ToInt(str, 0);
+			}
+		},
+		new ConsoleSystem.Command
+		{
 			Name = "simulatepowerplantfuses",
 			Parent = "powergrid",
 			FullName = "powergrid.simulatepowerplantfuses",
@@ -31193,7 +32164,7 @@ public class ConsoleGen
 			ServerAdmin = true,
 			Description = "Will place the tutorial as close as possible to this pos, only for debugging",
 			Variable = true,
-			GetOveride = () => ((object)Unsafe.As<Vector3, Vector3>(ref TutorialIsland.OverrideTutorialLocation)/*cast due to constrained. prefix*/).ToString(),
+			GetOveride = () => ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref TutorialIsland.OverrideTutorialLocation)/*cast due to constrained. prefix*/).ToString(),
 			SetOveride = delegate(string str)
 			{
 				//IL_0001: Unknown result type (might be due to invalid IL or missing references)
@@ -31348,27 +32319,53 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "get_num_listeners",
-			Parent = "watertreatmentswitchbroadcast",
-			FullName = "watertreatmentswitchbroadcast.get_num_listeners",
+			Name = "force_flow_rate",
+			Parent = "watertreatmentflowratebroadcast",
+			FullName = "watertreatmentflowratebroadcast.force_flow_rate",
 			ServerAdmin = true,
+			Description = "Force the water treatment flow rate per minute. Pass no argument to release the override and return to pressure-derived state.",
 			Variable = false,
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
-				WaterTreatmentSwitchBroadcast.get_num_listeners(arg);
+				WaterTreatmentFlowRateBroadcast.force_flow_rate(arg);
 			}
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "senddebugbroadcast",
-			Parent = "watertreatmentswitchbroadcast",
-			FullName = "watertreatmentswitchbroadcast.senddebugbroadcast",
+			Name = "get_num_broadcasters",
+			Parent = "watertreatmentflowratebroadcast",
+			FullName = "watertreatmentflowratebroadcast.get_num_broadcasters",
 			ServerAdmin = true,
-			Description = "Force the water treatment switch broadcast on/off for testing. Pass no argument (or 'clear') to release the override and return to power-derived state.",
 			Variable = false,
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
-				WaterTreatmentSwitchBroadcast.SendDebugBroadcast(arg);
+				WaterTreatmentFlowRateBroadcast.get_num_broadcasters(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "get_num_listeners",
+			Parent = "watertreatmentflowratebroadcast",
+			FullName = "watertreatmentflowratebroadcast.get_num_listeners",
+			ServerAdmin = true,
+			Variable = false,
+			Call = delegate(ConsoleSystem.Arg arg)
+			{
+				WaterTreatmentFlowRateBroadcast.get_num_listeners(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "evaporationperminute",
+			Parent = "watertreatmentwatercatcher",
+			FullName = "watertreatmentwatercatcher.evaporationperminute",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterCatcher.evaporationPerMinute.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterCatcher.evaporationPerMinute = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command
@@ -31397,76 +32394,48 @@ public class ConsoleGen
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "maxpressure",
+			Name = "maxflowrateperminute",
 			Parent = "watertreatmentwatertank",
-			FullName = "watertreatmentwatertank.maxpressure",
+			FullName = "watertreatmentwatertank.maxflowrateperminute",
+			ServerAdmin = true,
+			Saved = true,
+			Variable = true,
+			GetOveride = () => WaterTreatmentWaterTank.maxFlowRatePerMinute.ToString(),
+			SetOveride = delegate(string str)
+			{
+				WaterTreatmentWaterTank.maxFlowRatePerMinute = StringExtensions.ToFloat(str, 0f);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "maximumpressure",
+			Parent = "watertreatmentwatertank",
+			FullName = "watertreatmentwatertank.maximumpressure",
 			ServerAdmin = true,
 			ClientAdmin = true,
 			Client = true,
 			Saved = true,
 			Replicated = true,
 			Variable = true,
-			GetOveride = () => WaterTreatmentWaterTank.maxPressure.ToString(),
+			GetOveride = () => WaterTreatmentWaterTank.maximumPressure.ToString(),
 			SetOveride = delegate(string str)
 			{
-				WaterTreatmentWaterTank.maxPressure = StringExtensions.ToFloat(str, 0f);
+				WaterTreatmentWaterTank.maximumPressure = StringExtensions.ToFloat(str, 0f);
 			},
-			Default = "300"
+			Default = "360"
 		},
 		new ConsoleSystem.Command
 		{
-			Name = "pressuredecaypertick",
+			Name = "pressuredecayperminute",
 			Parent = "watertreatmentwatertank",
-			FullName = "watertreatmentwatertank.pressuredecaypertick",
+			FullName = "watertreatmentwatertank.pressuredecayperminute",
 			ServerAdmin = true,
 			Saved = true,
 			Variable = true,
-			GetOveride = () => WaterTreatmentWaterTank.pressureDecayPerTick.ToString(),
+			GetOveride = () => WaterTreatmentWaterTank.pressureDecayPerMinute.ToString(),
 			SetOveride = delegate(string str)
 			{
-				WaterTreatmentWaterTank.pressureDecayPerTick = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "pressureoffthreshold",
-			Parent = "watertreatmentwatertank",
-			FullName = "watertreatmentwatertank.pressureoffthreshold",
-			ServerAdmin = true,
-			Saved = true,
-			Variable = true,
-			GetOveride = () => WaterTreatmentWaterTank.pressureOffThreshold.ToString(),
-			SetOveride = delegate(string str)
-			{
-				WaterTreatmentWaterTank.pressureOffThreshold = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "pressureonthreshold",
-			Parent = "watertreatmentwatertank",
-			FullName = "watertreatmentwatertank.pressureonthreshold",
-			ServerAdmin = true,
-			Saved = true,
-			Variable = true,
-			GetOveride = () => WaterTreatmentWaterTank.pressureOnThreshold.ToString(),
-			SetOveride = delegate(string str)
-			{
-				WaterTreatmentWaterTank.pressureOnThreshold = StringExtensions.ToFloat(str, 0f);
-			}
-		},
-		new ConsoleSystem.Command
-		{
-			Name = "secondsbeforedecayingpressure",
-			Parent = "watertreatmentwatertank",
-			FullName = "watertreatmentwatertank.secondsbeforedecayingpressure",
-			ServerAdmin = true,
-			Saved = true,
-			Variable = true,
-			GetOveride = () => WaterTreatmentWaterTank.secondsBeforeDecayingPressure.ToString(),
-			SetOveride = delegate(string str)
-			{
-				WaterTreatmentWaterTank.secondsBeforeDecayingPressure = StringExtensions.ToFloat(str, 0f);
+				WaterTreatmentWaterTank.pressureDecayPerMinute = StringExtensions.ToFloat(str, 0f);
 			}
 		},
 		new ConsoleSystem.Command

@@ -101,7 +101,7 @@ public class NPCNavigator : BaseNavigator
 		}
 		if (traversingNavMeshLink)
 		{
-			Vector3 val = base.Agent.destination - base.BaseEntity.ServerPosition;
+			Vector3 val = base.Agent.destinationWS - base.BaseEntity.ServerPosition;
 			if (((Vector3)(ref val)).sqrMagnitude > 1f)
 			{
 				val = currentNavMeshLinkEndPos - base.BaseEntity.ServerPosition;
@@ -110,10 +110,10 @@ public class NPCNavigator : BaseNavigator
 			_ = 0.001f;
 			return;
 		}
-		Vector3 val2 = base.Agent.destination - base.BaseEntity.ServerPosition;
+		Vector3 val2 = base.Agent.destinationWS - base.BaseEntity.ServerPosition;
 		if (((Vector3)(ref val2)).sqrMagnitude > 1f)
 		{
-			val2 = base.Agent.desiredVelocity;
+			val2 = base.Agent.desiredVelocityWS;
 			Vector3 normalized = ((Vector3)(ref val2)).normalized;
 			if (((Vector3)(ref normalized)).sqrMagnitude > 0.001f)
 			{

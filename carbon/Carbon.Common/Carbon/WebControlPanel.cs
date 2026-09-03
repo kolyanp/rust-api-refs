@@ -1124,7 +1124,7 @@ public static class WebControlPanel
 				NetworkOut = (int)((Net.sv != null) ? ((BaseNetwork)Net.sv).GetStat((Connection)null, (StatTypeLong)1) : 0),
 				Restarting = SingletonComponent<ServerMgr>.Instance.Restarting,
 				SaveCreatedTime = SaveRestore.SaveCreatedTime.ToString(CultureInfo.CurrentCulture),
-				Version = 2632,
+				Version = 2633,
 				Protocol = Protocol.printable
 			};
 		}

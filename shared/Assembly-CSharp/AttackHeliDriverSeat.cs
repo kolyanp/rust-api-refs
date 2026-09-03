@@ -33,4 +33,9 @@ public class AttackHeliDriverSeat : BaseVehicleSeat
 			return _owner;
 		}
 	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
 }

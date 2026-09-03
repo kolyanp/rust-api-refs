@@ -4,7 +4,7 @@ public class ItemModBaitContainer : ItemModContainer
 {
 	protected override bool ForceAcceptItemCheck => true;
 
-	protected override bool CanAcceptItem(Item item, int count)
+	protected override bool CanAcceptItem(BasePlayer player, Item item, int count)
 	{
 		ItemModCompostable component = ((Component)item.info).GetComponent<ItemModCompostable>();
 		if ((Object)(object)component != (Object)null)

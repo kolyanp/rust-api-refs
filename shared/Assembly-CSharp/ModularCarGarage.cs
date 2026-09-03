@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using Oxide.Core;
 using ProtoBuf;
@@ -38,8 +39,8 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public MagnetSnap magnetSnap;
 
-	[Header("ModularCarGarage")]
 	[SerializeField]
+	[Header("ModularCarGarage")]
 	public Transform vehicleLift;
 
 	[SerializeField]
@@ -63,8 +64,8 @@ public class ModularCarGarage : ContainerIOEntity
 	[SerializeField]
 	public Transform vehicleLiftPos;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	public float recycleEfficiency = 0.5f;
 
 	[SerializeField]
@@ -111,9 +112,9 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public const float TimeToDestroyChassis = 10f;
 
-	public const Flags Flag_EnteringKeycode = Flags.Reserved7;
+	public const Flags Flag_EnteringKeycode = Flags.Reserved9;
 
-	public const Flags Flag_PlayerObstructing = Flags.Reserved8;
+	public const Flags Flag_PlayerObstructing = Flags.Reserved10;
 
 	public ModularCar carOccupant
 	{
@@ -157,9 +158,9 @@ public class ModularCarGarage : ContainerIOEntity
 
 	public bool IsDestroyingChassis => HasFlag(Flags.Reserved6);
 
-	private bool IsEnteringKeycode => HasFlag(Flags.Reserved7);
+	private bool IsEnteringKeycode => HasFlag(Flags.Reserved9);
 
-	public bool PlayerObstructingLift => HasFlag(Flags.Reserved8);
+	public bool PlayerObstructingLift => HasFlag(Flags.Reserved10);
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
@@ -665,7 +666,7 @@ public class ModularCarGarage : ContainerIOEntity
 			if (PlayerObstructingLift != hasAnyContents)
 			{
 				using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-				flagsUpdateScope.Set(Flags.Reserved8, hasAnyContents);
+				flagsUpdateScope.Set(Flags.Reserved10, hasAnyContents);
 			}
 		}
 		UpdateCarOccupant();
@@ -747,7 +748,7 @@ public class ModularCarGarage : ContainerIOEntity
 	{
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.Reserved7, b: false);
+			flagsUpdateScope.Set(Flags.Reserved9, b: false);
 		}
 		if ((Object)(object)player == (Object)null)
 		{
@@ -908,9 +909,9 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public unsafe void RPC_RepairItem(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -945,33 +946,34 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenEditing(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
 		if (!((Object)(object)player == (Object)null) && !LiftIsMoving)
 		{
 			PlayerOpenLoot(player);
+			Facepunch.Rust.Analytics.Azure.OnCarOpenEditing(player, this);
 		}
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_DiedWithKeypadOpen(RPCMessage msg)
 	{
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.Reserved7, b: false);
+			flagsUpdateScope.Set(Flags.Reserved9, b: false);
 		}
 		lootingPlayers.Clear();
 		RefreshLiftState();
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_SelectedLootItem(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -1032,12 +1034,12 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_StartKeycodeEntry(RPCMessage msg)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved7, b: true);
+		flagsUpdateScope.Set(Flags.Reserved9, b: true);
 	}
 
 	[RPC_Server]
@@ -1068,9 +1070,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_RequestRemoveLock(RPCMessage msg)
 	{
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
@@ -1082,9 +1084,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestNewCode(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
@@ -1104,9 +1106,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartDestroyingChassis(RPCMessage msg)
 	{
@@ -1119,10 +1121,10 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_StopDestroyingChassis(RPCMessage msg)
 	{
 		StopChassisDestroy();

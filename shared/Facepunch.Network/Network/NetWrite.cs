@@ -27,6 +27,16 @@ public class NetWrite : Stream, IPooled
 
 	public long serverTicks;
 
+	public ulong profilerEntityId;
+
+	public uint profilerPrefabId;
+
+	public uint profilerAux;
+
+	public ushort profilerInfoId;
+
+	public bool profilerAuxIsStringId;
+
 	public Priority priority;
 
 	public List<Connection> connections = new List<Connection>();
@@ -76,6 +86,11 @@ public class NetWrite : Stream, IPooled
 		}
 		stream = null;
 		serverTicks = 0L;
+		profilerEntityId = 0uL;
+		profilerPrefabId = 0u;
+		profilerAux = 0u;
+		profilerInfoId = 0;
+		profilerAuxIsStringId = false;
 	}
 
 	public void LeavePool()
@@ -105,6 +120,7 @@ public class NetWrite : Stream, IPooled
 		{
 			connections.Add(info.connection);
 		}
+		NetProfileCapture.OnSend(peer, this);
 		if (BaseNetwork.Multithreading)
 		{
 			peer.EnqueueWrite(this);
@@ -141,6 +157,7 @@ public class NetWrite : Stream, IPooled
 		{
 			connections.Add(info.connection);
 		}
+		NetProfileCapture.OnSend(peer, this, immediate: true);
 		peer.ProcessWrite(this);
 	}
 

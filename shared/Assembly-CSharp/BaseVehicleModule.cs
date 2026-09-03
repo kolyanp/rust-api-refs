@@ -31,8 +31,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	private const float TIME_BETWEEN_LOCK_REFRESH = 1f;
 
-	[SerializeField]
 	[Header("Vehicle Module")]
+	[SerializeField]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -40,14 +40,14 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 
 	public VisualGroup visualGroup;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private VehicleLight[] lights;
 
 	public LODLevel[] lodRenderers;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private List<ConditionalObject> conditionals;
 
 	[Header("Trigger Parent")]
@@ -243,8 +243,8 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Use(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -303,6 +303,11 @@ public class BaseVehicleModule : BaseVehicle, IPrefabPreProcess
 		base.Save(info);
 		info.msg.vehicleModule = Pool.Get<VehicleModule>();
 		info.msg.vehicleModule.socketIndex = FirstSocketIndex;
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override void PreProcess(IPrefabProcessor process, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)

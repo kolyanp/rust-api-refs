@@ -6,7 +6,6 @@ using Epic.OnlineServices.AntiCheatCommon;
 using Epic.OnlineServices.AntiCheatServer;
 using Epic.OnlineServices.Connect;
 using Epic.OnlineServices.Reports;
-using Facepunch.Math;
 using Network;
 using Oxide.Core;
 using Unity.Collections;
@@ -304,7 +303,6 @@ public static class EACServer
 
 	private static void SendToClient(ref OnMessageToClientCallbackInfo data)
 	{
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
 		IntPtr clientHandle = ((OnMessageToClientCallbackInfo)(ref data)).ClientHandle;
 		Connection connection = GetConnection(clientHandle);
 		if (connection == null)
@@ -316,10 +314,6 @@ public static class EACServer
 		netWrite.PacketID(Message.Type.EAC);
 		netWrite.UInt32((uint)((OnMessageToClientCallbackInfo)(ref data)).MessageData.Count);
 		netWrite.Write(((OnMessageToClientCallbackInfo)(ref data)).MessageData.Array, ((OnMessageToClientCallbackInfo)(ref data)).MessageData.Offset, ((OnMessageToClientCallbackInfo)(ref data)).MessageData.Count);
-		if (PacketProfiler.shouldCaptureDetailedProfiling)
-		{
-			PacketProfiler.LogDetailedOutbound(Message.Type.EAC, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true);
-		}
 		netWrite.Send(new SendInfo(connection));
 	}
 

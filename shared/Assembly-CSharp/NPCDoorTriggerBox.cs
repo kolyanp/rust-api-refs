@@ -51,13 +51,19 @@ public class NPCDoorTriggerBox : MonoBehaviour
 		}
 	}
 
-	public void TryOpenDoorFor(BaseEntity entity)
+	public bool TryOpenDoorFor(BaseEntity entity)
 	{
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0054: Unknown result type (might be due to invalid IL or missing references)
-		if (!((Object)(object)door == (Object)null) && !door.isClient && !door.IsLocked() && !door.IsOpen() && !door.isSecurityDoor && !(Vector3.Distance(((Component)entity).transform.position, ((Component)this).transform.position) > AI.npc_door_trigger_size * 2f))
+		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)door == (Object)null || door.isClient || door.IsLocked() || door.IsOpen() || door.isSecurityDoor)
 		{
-			door.SetOpen(open: true);
+			return false;
 		}
+		if (Vector3.Distance(((Component)entity).transform.position, ((Component)this).transform.position) > AI.npc_door_trigger_size * 2f)
+		{
+			return false;
+		}
+		door.SetOpen(open: true);
+		return true;
 	}
 }

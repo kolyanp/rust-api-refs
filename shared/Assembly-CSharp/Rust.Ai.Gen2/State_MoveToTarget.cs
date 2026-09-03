@@ -1,4 +1,5 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 namespace Rust.Ai.Gen2;
@@ -23,7 +24,6 @@ public class State_MoveToTarget : FSMStateBase
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)payload.entity != (Object)null)
 		{
 			base.Senses.TrySetTarget(payload.entity);
@@ -38,7 +38,6 @@ public class State_MoveToTarget : FSMStateBase
 
 	public override EFSMStateStatus OnStateUpdate(float deltaTime)
 	{
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Agent.hasPath && succeedWhenDestinationIsReached)
 		{
 			return EFSMStateStatus.Success;
@@ -56,18 +55,16 @@ public class State_MoveToTarget : FSMStateBase
 		base.OnStateExit();
 	}
 
-	protected virtual bool GetMoveDestination(out Vector3 destination)
+	protected virtual bool GetMoveDestination(out NavVector3 destination)
 	{
-		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0015: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTargetPosition(out var targetPosition))
 		{
-			destination = Vector3.zero;
+			destination = NavVector3.zero;
 			return false;
 		}
-		destination = targetPosition;
+		NavVector3 navVector = base.Agent.WorldToNavSpace(targetPosition);
+		destination = navVector;
 		return true;
 	}
 }

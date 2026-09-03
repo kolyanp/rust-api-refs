@@ -15,7 +15,7 @@ public class LiquidContainerCrude : LiquidContainer
 		base.inventory.allowItemsToIncreaseToMaxStackSize = true;
 	}
 
-	private bool CanAcceptItem(Item arg1, int arg2)
+	private bool CanAcceptItem(BasePlayer player, Item arg1, int arg2)
 	{
 		bool flag = false;
 		ItemDefinition[] validItems = ValidItems;

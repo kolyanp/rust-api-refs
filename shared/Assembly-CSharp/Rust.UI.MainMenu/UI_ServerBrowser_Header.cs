@@ -12,8 +12,8 @@ public class UI_ServerBrowser_Header : MonoBehaviour
 		Descending
 	}
 
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private FlexTransition _ascendingTransition;
 
 	[SerializeField]

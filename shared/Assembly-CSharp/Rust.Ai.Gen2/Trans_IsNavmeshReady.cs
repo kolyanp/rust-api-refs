@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using ConVar;
 using Facepunch;
 using Prefabs.Misc;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -95,9 +95,15 @@ public class Trans_IsNavmeshReady : FSMTransitionBase
 						return false;
 					}
 				}
+				NavVector3 positionNS = base.Agent.WorldToNavSpace(((Component)Owner).transform.position);
+				NavHit hitNS;
+				return base.Agent.SamplePosition(positionNS, out hitNS, 2f);
 			}
-			NavMeshHit hitNS;
-			return base.Agent.SamplePosition(((Component)Owner).transform.position, out hitNS, 0.5f);
+			if (!base.Agent.IsNavMeshBuilt)
+			{
+				return false;
+			}
+			return base.Agent.isOnNavMesh;
 		}
 	}
 }

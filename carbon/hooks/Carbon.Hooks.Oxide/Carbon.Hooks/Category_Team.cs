@@ -14,13 +14,13 @@ public class Category_Team
 	public class Team_RelationshipManager
 	{
 		[Patch("OnTeamCreate", "OnTeamCreate", "RelationshipManager", "TryCreateTeam", new string[] { "BasePlayer" })]
-		[Identifier("5c0d8e5c043d4a34a406e8edededaae1")]
+		[Identifier("4bc545f860c4442f9fc984cdc2a8bfe5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_5c0d8e5c043d4a34a406e8edededaae1 : Patch
+		public class Team_RelationshipManager_4bc545f860c4442f9fc984cdc2a8bfe5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -50,14 +50,14 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamRejectInvite", "OnTeamRejectInvite", "RelationshipManager", "rejectinvite", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("b0ac6921967c4718a7e93b9dd32d2a05")]
+		[Identifier("b5a7f768fd9a4b9fb5986c4d9b0d1a6a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Parameter("local2", "RelationshipManager+PlayerTeam", false)]
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_b0ac6921967c4718a7e93b9dd32d2a05 : Patch
+		public class Team_RelationshipManager_b5a7f768fd9a4b9fb5986c4d9b0d1a6a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -89,14 +89,14 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamLeave", "OnTeamLeave", "RelationshipManager", "leaveteam", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("6ade48e6647e42ee88e250d6d80db584")]
+		[Identifier("11f905819a674387854cf50eb7421c42")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "RelationshipManager+PlayerTeam", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_6ade48e6647e42ee88e250d6d80db584 : Patch
+		public class Team_RelationshipManager_11f905819a674387854cf50eb7421c42 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -128,7 +128,7 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamKick", "OnTeamKick", "RelationshipManager", "kickmember", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("2e4d5115d72b47afba9135800122e244")]
+		[Identifier("2915853d63924d23a6ca5f5c646a40ce")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "RelationshipManager+PlayerTeam", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -136,7 +136,7 @@ public class Category_Team
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_2e4d5115d72b47afba9135800122e244 : Patch
+		public class Team_RelationshipManager_2915853d63924d23a6ca5f5c646a40ce : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -171,14 +171,14 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamAcceptInvite", "OnTeamAcceptInvite", "RelationshipManager", "acceptinvite", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("568dc161136d49bca7e5de9c1614d84f")]
+		[Identifier("35dad0c1ef1040e4b3aeb2bf7a696d60")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local2", "RelationshipManager+PlayerTeam", false)]
 		[Parameter("local0", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_568dc161136d49bca7e5de9c1614d84f : Patch
+		public class Team_RelationshipManager_35dad0c1ef1040e4b3aeb2bf7a696d60 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -210,12 +210,12 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamDisband", "OnTeamDisband", "RelationshipManager", "DisbandTeam", new string[] { "RelationshipManager/PlayerTeam" })]
-		[Identifier("3cd8e5d526c1472cbc8f90250de368ef")]
+		[Identifier("73536c610b18425e961fd469d35b3164")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_3cd8e5d526c1472cbc8f90250de368ef : Patch
+		public class Team_RelationshipManager_73536c610b18425e961fd469d35b3164 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -245,14 +245,15 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamCreated", "OnTeamCreated", "RelationshipManager", "TryCreateTeam", new string[] { "BasePlayer" })]
-		[Identifier("6f03685085734a0cbe3d23c762ee0656")]
+		[Identifier("fbca3d229bc94fe19e75aef8291927b7")]
 		[Dependencies(new string[] { "OnTeamCreate" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("local0", "RelationshipManager+PlayerTeam", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_6f03685085734a0cbe3d23c762ee0656 : Patch
+		public class Team_RelationshipManager_fbca3d229bc94fe19e75aef8291927b7 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -280,12 +281,13 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamDisbanded", "OnTeamDisbanded", "RelationshipManager", "DisbandTeam", new string[] { "RelationshipManager/PlayerTeam" })]
-		[Identifier("d3fd5281098e470ca79fc62135a4af06")]
+		[Identifier("6fd0c818c53543b2806ccd9a80b12112")]
 		[Dependencies(new string[] { "OnTeamDisband" })]
 		[Options(/*Could not decode attribute arguments.*/)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_d3fd5281098e470ca79fc62135a4af06 : Patch
+		public class Team_RelationshipManager_6fd0c818c53543b2806ccd9a80b12112 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -311,7 +313,7 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamMemberInvite", "OnTeamMemberInvite [sendofflineinvite]", "RelationshipManager", "sendofflineinvite", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("4dc4eb128a3c4251901f0304142826c9")]
+		[Identifier("d8201919c4e145599907594235647629")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "RelationshipManager+PlayerTeam", false)]
 		[Parameter("local0", "BasePlayer", false)]
@@ -319,7 +321,7 @@ public class Category_Team
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_4dc4eb128a3c4251901f0304142826c9 : Patch
+		public class Team_RelationshipManager_d8201919c4e145599907594235647629 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -356,11 +358,11 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamMemberInvite", "OnTeamMemberInvite [sendinvite]", "RelationshipManager", "sendinvite", new string[] { "ConsoleSystem/Arg" })]
-		[Identifier("d7dabe624aed48b092fa9142d03a17aa")]
+		[Identifier("0578618ac2044037898ff0745ae81033")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManager_d7dabe624aed48b092fa9142d03a17aa : Patch
+		public class Team_RelationshipManager_0578618ac2044037898ff0745ae81033 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -433,7 +435,7 @@ public class Category_Team
 	public class Team_BasePlayer
 	{
 		[Patch("OnTeamUpdate", "OnTeamUpdate", "BasePlayer", "UpdateTeam", new string[] { "System.UInt64" })]
-		[Identifier("2f32c5c2a7674a0ba184ad13e12dd9a5")]
+		[Identifier("c3a87fc52fa344fba3d6beafcd278caf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BasePlayer", false)]
 		[Parameter("newTeam", "System.UInt64", false)]
@@ -441,7 +443,7 @@ public class Category_Team
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_BasePlayer_2f32c5c2a7674a0ba184ad13e12dd9a5 : Patch
+		public class Team_BasePlayer_c3a87fc52fa344fba3d6beafcd278caf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -478,7 +480,7 @@ public class Category_Team
 		}
 
 		[Patch("OnTeamUpdated", "OnTeamUpdated", "BasePlayer", "TeamUpdate", new string[] { "System.Boolean" })]
-		[Identifier("67b034d2cdfd4783a87c2fa927887c27")]
+		[Identifier("f0a4db7d82b54ffb9f666758cc295df4")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "BasePlayer", false)]
 		[Parameter("local3", "ProtoBuf.PlayerTeam", false)]
@@ -486,14 +488,14 @@ public class Category_Team
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_BasePlayer_67b034d2cdfd4783a87c2fa927887c27 : Patch
+		public class Team_BasePlayer_f0a4db7d82b54ffb9f666758cc295df4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
 				int x = 0;
 				foreach (CodeInstruction instruction in Instructions)
 				{
-					if (x++ != 275)
+					if (x++ != 277)
 					{
 						yield return instruction;
 						continue;
@@ -527,13 +529,13 @@ public class Category_Team
 	public class Team_RelationshipManagerPlayerTeam
 	{
 		[Patch("OnTeamMemberPromote", "OnTeamMemberPromote", "RelationshipManager/PlayerTeam", "SetTeamLeader", new string[] { "System.UInt64" })]
-		[Identifier("9c5933db3f5745fcb4c88ccaac04048d")]
+		[Identifier("78abaf9064754f1ca4f981a67b985b52")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "RelationshipManager+PlayerTeam", false)]
 		[Return(typeof(void))]
 		[Category("Team")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Team_RelationshipManagerPlayerTeam_9c5933db3f5745fcb4c88ccaac04048d : Patch
+		public class Team_RelationshipManagerPlayerTeam_78abaf9064754f1ca4f981a67b985b52 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

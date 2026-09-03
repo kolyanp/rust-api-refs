@@ -9,6 +9,8 @@ public class LootGrid : MonoBehaviour
 
 	public int Count = 1;
 
+	public bool SuppressCookingIcon;
+
 	public GameObject ItemIconPrefab;
 
 	public Sprite BackgroundImage;
@@ -30,9 +32,11 @@ public class LootGrid : MonoBehaviour
 		for (int i = 0; i < Count; i++)
 		{
 			ItemIcon component = Object.Instantiate<GameObject>(ItemIconPrefab, ((Component)this).transform).GetComponent<ItemIcon>();
+			component.setSlotFromSiblingIndex = false;
 			component.slot = Offset + i;
 			component.emptySlotBackgroundSprite = BackgroundImage ?? component.emptySlotBackgroundSprite;
 			component.containerSource = inventory;
+			component.suppressCookingIcon = SuppressCookingIcon;
 			_icons.Add(component);
 		}
 	}

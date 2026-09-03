@@ -2,7 +2,6 @@ using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/ContactShadowsRendererFeature")]
-[RustRendererFeatureCameraComponent(typeof(ContactShadowsCamera), typeof(ContactShadowsCameraContext))]
 public class ContactShadowsRendererFeature : RustRendererFeature
 {
 	[Range(0f, 1f)]
@@ -42,6 +41,16 @@ public class ContactShadowsRendererFeature : RustRendererFeature
 	public float blurDepthTolerance = 0.1f;
 
 	public Shader screenSpaceShadowsShader;
+
+	public override RustRendererFeatureCameraBase CreateCameraComponent()
+	{
+		return (RustRendererFeatureCameraBase)(object)new ContactShadowsCamera();
+	}
+
+	public override RustRendererFeatureCameraContext CreateCameraContext()
+	{
+		return (RustRendererFeatureCameraContext)(object)new ContactShadowsCameraContext();
+	}
 
 	public override void Create()
 	{

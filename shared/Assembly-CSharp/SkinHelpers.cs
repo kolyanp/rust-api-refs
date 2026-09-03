@@ -6,7 +6,14 @@ using UnityEngine;
 
 public static class SkinHelpers
 {
+	public const int RandomSkinId = -1;
+
 	private static Dictionary<int, int> _redirectSkinIdLookup = new Dictionary<int, int>();
+
+	public static bool IsRandom(int skinId)
+	{
+		return skinId == -1;
+	}
 
 	public static void SetSkin(GameObject itemModel, ItemDefinition itemDef, ulong skinID)
 	{

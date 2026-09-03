@@ -1,5 +1,3 @@
-using System;
-
 namespace Rust.Ai.Gen2.Nav;
 
 public class Tile
@@ -8,9 +6,7 @@ public class Tile
 
 	public int ty;
 
-	public IntPtr tileBytes;
-
-	public int dataSize;
+	public bool hasData;
 
 	public bool wasBuiltOnce;
 

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Text;
 using ConVar;
 using Facepunch;
+using Facepunch.Rust;
 using Network;
 using ProtoBuf;
 using Rust;
@@ -100,8 +101,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Pre-spawned world-space monitor UI (a prefab child like the spectator screen) that shows only the countdown to impact. Initialised in ClientInit.")]
 	public SatelliteCountdownScreenUI countdownScreen;
 
-	[Header("Power")]
 	[Tooltip("Items the player must have, and which are consumed, to power up the terminal. amount is the minimum required/consumed; set maxAmount higher to roll a random cost in that range each session (leave maxAmount at -1/0 for a fixed cost).")]
+	[Header("Power")]
 	public List<ItemAmountRanged> powerCost = new List<ItemAmountRanged>();
 
 	private List<int> resolvedPowerCost = new List<int>();
@@ -109,8 +110,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Child SatelliteFuelStorage prefab the player loads the power-up items into. Spawned and parented to this computer on first init.")]
 	public GameObjectRef fuelStoragePrefab;
 
-	[Tooltip("Number of satellites to generate each session")]
 	[Header("Satellites")]
+	[Tooltip("Number of satellites to generate each session")]
 	public int satelliteCount = 6;
 
 	[Header("Satellite Prefab")]
@@ -118,6 +119,13 @@ public class SatelliteControlComputer : BaseMountable
 
 	[Tooltip("Prevent-building volume spawned at the locked crash site to reserve the area during descent")]
 	public GameObjectRef preventBuildingPrefab;
+
+	[Header("Siren")]
+	[Tooltip("Pre-spawned child of this entity's prefab (must live inside the entity prefab, not the launch site — monument-authored references don't reach the client entity). Leave disabled in the prefab; enabled only while a satellite is descending. Optional — skipped when unset.")]
+	public Transform launchSiren;
+
+	[Tooltip("Inverse of launchSiren — enabled whenever launchSiren is not. Same prefab rules: must be a pre-spawned child of this entity's prefab. Optional — skipped when unset.")]
+	public Transform launchSirenOff;
 
 	[Header("Audio")]
 	public SoundDefinition selectSatellite;
@@ -609,7 +617,7 @@ public class SatelliteControlComputer : BaseMountable
 	{
 		if (HasFlag(Flags.Reserved10) && Time.time >= targeting.cooldownEndTime)
 		{
-			SetFlag(Flags.Reserved10, b: false);
+			SetFlagLocal(Flags.Reserved10, b: false);
 			targeting.cooldownEndTime = 0f;
 			GenerateSatellites();
 			RollPowerCost();
@@ -621,8 +629,8 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	public void RPC_RequestSatelliteList(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) && currentSatellites != null && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -631,8 +639,8 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_PowerUp(RPCMessage msg)
 	{
@@ -668,7 +676,7 @@ public class SatelliteControlComputer : BaseMountable
 			}
 			TakePowerCost();
 		}
-		SetFlag(Flags.Reserved8, b: true);
+		SetFlagLocal(Flags.Reserved8, b: true);
 		GenerateSatellites();
 		SendNetworkUpdate();
 	}
@@ -801,7 +809,7 @@ public class SatelliteControlComputer : BaseMountable
 			SatelliteFuelStorage fuelStorage = GetFuelStorage();
 			if (!((Object)(object)fuelStorage == (Object)null))
 			{
-				fuelStorage.PlayerOpenLoot(player, "", doPositionChecks: false);
+				fuelStorage.PlayerOpenLoot(player);
 			}
 		}
 	}
@@ -827,9 +835,9 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	public void RPC_SelectSatellite(RPCMessage msg)
 	{
 		if (State == ControlState.Ready && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -845,7 +853,7 @@ public class SatelliteControlComputer : BaseMountable
 				fuelRemaining = satelliteData.fuel;
 				float control_window = Satellite.control_window;
 				controlPhaseEndTime = Time.time + control_window;
-				SetFlag(Flags.Reserved9, b: true);
+				SetFlagLocal(Flags.Reserved9, b: true);
 				SendNetworkUpdate();
 				ClientRPC(RpcTarget.Player("RPC_ControlPhaseStarted", msg.player), control_window, fuelRemaining, Satellite.default_crash_radius, selectedSatelliteIndex);
 				TryInitialOffsetAttempt(msg.player, 0);
@@ -1143,14 +1151,16 @@ public class SatelliteControlComputer : BaseMountable
 		lateralOffset += val * num2;
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_LockTrajectory(RPCMessage msg)
 	{
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		if (HasFlag(Flags.Reserved9) && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()) && !targetingSearchActive)
 		{
 			EndControlPhase(msg.player);
+			Analytics.Azure.OnSatelliteLockTrajectory(msg.player, targeting.center);
 		}
 	}
 
@@ -1251,17 +1261,20 @@ public class SatelliteControlComputer : BaseMountable
 
 	private void EndControlPhase(BasePlayer notifyPlayer = null)
 	{
-		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
 		if (!HasFlag(Flags.Reserved9))
 		{
 			return;
 		}
-		SetFlag(Flags.Reserved9, b: false);
-		SetFlag(Flags.Reserved8, b: false);
-		SetFlag(Flags.Reserved10, b: true);
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.Local))
+		{
+			flagsUpdateScope.Set(Flags.Reserved9, b: false);
+			flagsUpdateScope.Set(Flags.Reserved8, b: false);
+			flagsUpdateScope.Set(Flags.Reserved10, b: true);
+		}
 		controlPhaseEndTime = 0f;
 		targeting.cooldownEndTime = Time.time + RollCooldownSeconds();
 		SendNetworkUpdate();
@@ -1490,6 +1503,8 @@ public class SatelliteControlComputer : BaseMountable
 
 	public void OnSatelliteCrashed(bool crashed = true)
 	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		Analytics.Azure.OnSatelliteCrashed(crashed, targeting.finalCrashPos);
 		targeting.isDescending = false;
 		if ((Object)(object)ActiveDescending == (Object)(object)this)
 		{
@@ -1543,10 +1558,10 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[Menu("satcomp.powerup", "Power Up Terminal")]
 	[Menu.ShowIf("Menu_PowerUp_ShowIf")]
-	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
+	[Menu("satcomp.powerup", "Power Up Terminal")]
 	[Menu.Icon("power")]
+	[Menu.Description("satcomp.powerup_desc", "Power up the satellite terminal")]
 	public void Menu_PowerUp(BasePlayer player)
 	{
 	}
@@ -1557,8 +1572,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
-	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
 	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
+	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
 	[Menu.Icon("open")]
 	public void Menu_LoadFuel(BasePlayer player)
 	{

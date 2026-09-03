@@ -14,9 +14,9 @@ public abstract class UINexusMapBase : BaseMonoBehaviour, IPointerDownHandler, I
 
 	public RectTransform MissingView;
 
-	public ScrollRectEx MapScrollRect;
+	public ScrollRect MapScrollRect;
 
-	public ScrollRectZoom MapScrollZoom;
+	public ZoomImage MapScrollZoom;
 
 	public RectTransform CameraPositon;
 

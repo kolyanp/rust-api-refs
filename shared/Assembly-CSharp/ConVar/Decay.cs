@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Facepunch.Math;
 using UnityEngine;
 
 namespace ConVar;
@@ -144,6 +145,41 @@ public class Decay : ConsoleSystem
 	[ServerVar(Help = "Doors in the 4th upkeep bracket will cost this value per day to maintain")]
 	public static float bracket_3_doorfraction = 0.333f;
 
+	public const int UpkeepGroupTierCount = 3;
+
+	[ServerVar(Help = "Should upkeep cost scale with the number of players authed on the tool cupboard")]
+	public static bool upkeep_group_scaling = true;
+
+	[ServerVar(Help = "Players who authed within this many hours still count towards the group size, even if they have since deauthed")]
+	public static float upkeep_group_window_hours = 24f;
+
+	[ServerVar(Help = "Number of players in the 1st (free) upkeep group tier")]
+	public static int upkeep_group_tier_0_playercount = 4;
+
+	[ServerVar(Help = "Each player in the 1st upkeep group tier increases upkeep cost by this fraction")]
+	public static float upkeep_group_tier_0_increase = 0f;
+
+	[ServerVar(Help = "Number of players in the 2nd (small group) upkeep group tier")]
+	public static int upkeep_group_tier_1_playercount = 6;
+
+	[ServerVar(Help = "Each player in the 2nd upkeep group tier increases upkeep cost by this fraction")]
+	public static float upkeep_group_tier_1_increase = 0.02f;
+
+	[ServerVar(Help = "Each player in the 3rd (large group) upkeep group tier increases upkeep cost by this fraction, this tier is unlimited")]
+	public static float upkeep_group_tier_2_increase = 0.04f;
+
+	[ServerVar(Help = "Upper limit on the group size upkeep multiplier")]
+	public static float upkeep_group_max_multiplier = 3f;
+
+	[ServerVar(Help = "Should players holding a code on one of the building's doors count towards the group size, whether it is the master code or the guest code")]
+	public static bool upkeep_group_count_locks = true;
+
+	[ServerVar(Help = "Maximum number of players a tool cupboard remembers in the group window, oldest are dropped first")]
+	public static int upkeep_group_history_max = 256;
+
+	[ServerVar(Help = "If a code lock has <= this number of users it won't count its users towards group upkeep tax")]
+	public static int upkeep_lock_min_users = 2;
+
 	[ReplicatedVar(Help = "Upkeep scale for external walls and gates")]
 	public static float high_wall_upkeep = 0.2f;
 
@@ -180,6 +216,78 @@ public class Decay : ConsoleSystem
 		foreach (DecayEntity item in BaseNetworkable.serverEntities.OfType<DecayEntity>())
 		{
 			item.DecayTick(force: true);
+		}
+	}
+
+	private static BuildingPrivlidge GetPrivilegeForAuthHistoryCommand(Arg arg)
+	{
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("This command can only be run by a player");
+			return null;
+		}
+		BuildingPrivlidge buildingPrivilege = basePlayer.GetBuildingPrivilege();
+		if ((Object)(object)buildingPrivilege == (Object)null)
+		{
+			arg.ReplyWith("You are not in range of a tool cupboard");
+			return null;
+		}
+		return buildingPrivilege;
+	}
+
+	private static void ReplyWithGroupUpkeep(Arg arg, BuildingPrivlidge privilege)
+	{
+		arg.ReplyWith(string.Format("Group size {0} ({1} authed, {2} in the group window), upkeep multiplier {3:0.###}", new object[4]
+		{
+			privilege.GetGroupAuthCount(),
+			privilege.authorizedPlayers.Count,
+			privilege.recentGroupMembers.Count,
+			privilege.GetGroupUpkeepMultiplier()
+		}));
+	}
+
+	[ServerVar(Help = "addfakeauthhistory <count>, adds fake deauthed players to the auth history of the tool cupboard you are standing in, for testing group upkeep tiers")]
+	public static void addfakeauthhistory(Arg arg)
+	{
+		BuildingPrivlidge privilegeForAuthHistoryCommand = GetPrivilegeForAuthHistoryCommand(arg);
+		if ((Object)(object)privilegeForAuthHistoryCommand == (Object)null)
+		{
+			return;
+		}
+		int num = arg.GetInt(0, 1);
+		if (num <= 0)
+		{
+			arg.ReplyWith("Count must be greater than zero");
+			return;
+		}
+		uint current = (uint)Epoch.Current;
+		ulong num2 = 1uL;
+		for (int i = 0; i < num; i++)
+		{
+			for (; privilegeForAuthHistoryCommand.recentGroupMembers.ContainsKey(num2) || privilegeForAuthHistoryCommand.authorizedPlayers.Contains(num2); num2++)
+			{
+			}
+			privilegeForAuthHistoryCommand.recentGroupMembers[num2] = current;
+			num2++;
+		}
+		privilegeForAuthHistoryCommand.RecalculateGroupUpkeep();
+		privilegeForAuthHistoryCommand.MarkProtectedMinutesDirty();
+		privilegeForAuthHistoryCommand.SendNetworkUpdate();
+		ReplyWithGroupUpkeep(arg, privilegeForAuthHistoryCommand);
+	}
+
+	[ServerVar(Help = "Clears the deauthed player history on the tool cupboard you are standing in, dropping its group upkeep back to the number of authed players")]
+	public static void clearauthhistory(Arg arg)
+	{
+		BuildingPrivlidge privilegeForAuthHistoryCommand = GetPrivilegeForAuthHistoryCommand(arg);
+		if (!((Object)(object)privilegeForAuthHistoryCommand == (Object)null))
+		{
+			privilegeForAuthHistoryCommand.recentGroupMembers.Clear();
+			privilegeForAuthHistoryCommand.RecalculateGroupUpkeep();
+			privilegeForAuthHistoryCommand.MarkProtectedMinutesDirty();
+			privilegeForAuthHistoryCommand.SendNetworkUpdate();
+			ReplyWithGroupUpkeep(arg, privilegeForAuthHistoryCommand);
 		}
 	}
 

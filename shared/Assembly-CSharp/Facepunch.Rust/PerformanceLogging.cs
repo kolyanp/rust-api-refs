@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ConVar;
+using Facepunch.Nexus;
+using Facepunch.Nexus.Models;
 using Facepunch.Ping;
 using Network;
 using UnityEngine;
@@ -351,6 +353,25 @@ public class PerformanceLogging
 			IEnumerable<HarmonyModInfo> harmonyMods = HarmonyLoader.GetHarmonyMods();
 			record.AddObject("harmony_mods", harmonyMods);
 			record.AddField("harmony_mod_count", harmonyMods.Count());
+		}
+		if (!isClient && NexusServer.Started)
+		{
+			record.AddField("nexus_endpoint", Nexus.endpoint);
+			EventRecord eventRecord = record;
+			NexusZoneClient zoneClient = NexusServer.ZoneClient;
+			int? obj3;
+			if (zoneClient == null)
+			{
+				obj3 = null;
+			}
+			else
+			{
+				ZoneDetails zone = zoneClient.Zone;
+				obj3 = ((zone != null) ? new int?(zone.ZoneId) : ((int?)null));
+			}
+			eventRecord.AddField("nexus_zone_id", obj3 ?? (-1));
+			record.AddField("nexus_zone_key", NexusServer.ZoneKey ?? "");
+			record.AddField("nexus_controller", Nexus.zoneController);
 		}
 		record.AddObject("hardware", Analytics.Azure.GetHardwareData()).AddObject("application", Analytics.Azure.GetApplicationData());
 		stopwatch.Stop();

@@ -18,6 +18,8 @@ public class ElectricWindmill : IOEntity
 
 	public Transform wooshOrigin;
 
+	public SoundPlayer mechanicalSound;
+
 	private float cachedHeight;
 
 	public float serverWindSpeed;

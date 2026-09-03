@@ -14,6 +14,8 @@ public class UI_SettingsTweakSlider : UI_SettingsTweakConvar
 
 	private TimeSince mouseDown;
 
+	private bool isRefreshingFromConvar;
+
 	public UnityEvent OnMouseUp;
 
 	private float GetSliderValue()

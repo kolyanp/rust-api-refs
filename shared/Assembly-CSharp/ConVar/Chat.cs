@@ -58,8 +58,8 @@ public class Chat : ConsoleSystem
 	[ReplicatedVar]
 	public static bool hideChatInTutorial = true;
 
-	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
 	[ServerVar(Help = "Number of messages to keep in memory for chat history")]

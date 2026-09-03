@@ -11,8 +11,11 @@ public class TriggerRadiation : TriggerBase
 
 	public bool BypassArmor;
 
-	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
+	[Tooltip("Armor scales the dose instead of subtracting from it, so rad gear always reduces this volume but only full rad protection blocks it entirely. Ignored if BypassArmor is set.")]
+	public bool ScaleByArmor;
+
 	[Space]
+	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
 	[Min(0f)]
 	public float falloff = 0.1f;
 
@@ -20,9 +23,9 @@ public class TriggerRadiation : TriggerBase
 
 	public Vector3 falloffPerAxis;
 
-	[Space]
 	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	[FormerlySerializedAs("UseColliderRadius")]
+	[Space]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;
@@ -40,6 +43,8 @@ public class TriggerRadiation : TriggerBase
 	private SphereCollider sphereCollider;
 
 	private BoxCollider boxCollider;
+
+	private float FalloffFraction => Mathf.Clamp(falloff, 0.01f, 1f);
 
 	public bool UseColliderScale => DontScaleRadiationSize;
 
@@ -124,55 +129,55 @@ public class TriggerRadiation : TriggerBase
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00de: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00fa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0132: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ff: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0212: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0219: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0225: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0238: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0275: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02bd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0120: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0138: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0152: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0176: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0209: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0223: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0242: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0249: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0252: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0259: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0278: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0288: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0296: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ce: Unknown result type (might be due to invalid IL or missing references)
 		if (ApplyLocalHeightCheck && ((Component)this).transform.InverseTransformPoint(position).y < MinLocalHeight)
 		{
 			return 0f;
@@ -181,7 +186,7 @@ public class TriggerRadiation : TriggerBase
 		{
 			return 0f;
 		}
-		if (UseLOSCheck && !GamePhysics.LineOfSight(((Component)this).gameObject.transform.position, position, 2097152))
+		if (UseLOSCheck && !GamePhysics.LineOfSight(((Component)this).gameObject.transform.position, position, 2097152, 0f, 0.25f))
 		{
 			return 0f;
 		}
@@ -191,7 +196,7 @@ public class TriggerRadiation : TriggerBase
 		{
 			float radiationRadius = GetRadiationRadius();
 			float num2 = (IncreaseDamageNearCenter ? Vector3.Distance(((Component)this).gameObject.transform.position, position) : 0f);
-			num = Mathf.InverseLerp(radiationRadius, radiationRadius * (1f - falloff), num2);
+			num = Mathf.InverseLerp(radiationRadius, radiationRadius * (1f - FalloffFraction), num2);
 		}
 		else if (UseBox)
 		{
@@ -209,7 +214,7 @@ public class TriggerRadiation : TriggerBase
 			}
 			else
 			{
-				val3 = item * (1f - falloff);
+				val3 = item * (1f - FalloffFraction);
 			}
 			if (val2.x <= val3.x && val2.y <= val3.y && val2.z <= val3.z)
 			{
@@ -227,8 +232,17 @@ public class TriggerRadiation : TriggerBase
 				num = 0f;
 			}
 		}
-		float num6 = radiationAmount;
-		if (!BypassArmor)
+		float num6;
+		if (BypassArmor)
+		{
+			num6 = radiationAmount;
+		}
+		else if (ScaleByArmor)
+		{
+			float num7 = 1f - Mathf.Clamp01(radProtection / (Radiation.MaxExposureProtection * 100f));
+			num6 = radiationAmount * num7;
+		}
+		else
 		{
 			num6 = Radiation.GetRadiationAfterProtection(radiationAmount, radProtection);
 		}

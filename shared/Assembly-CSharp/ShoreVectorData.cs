@@ -5,8 +5,8 @@ public class ShoreVectorData : BaseScriptableObject
 	[ReadOnly]
 	public float WorldSize;
 
-	[Header("Shore Vectors")]
 	[ReadOnly]
+	[Header("Shore Vectors")]
 	public float[] Distances;
 
 	[ReadOnly]

@@ -47,8 +47,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 
 	public Vector3 headLookOffset;
 
-	[Header("Spine")]
 	[Range(0f, 1f)]
+	[Header("Spine")]
 	[SerializeField]
 	private float spineBlend;
 
@@ -73,8 +73,8 @@ public class RidableHorseAnimation : EntityComponent<RidableHorse>, IClientCompo
 	[SerializeField]
 	private Vector3[] localSpinePositions;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private Vector3 originalHipPosition;
 
 	[SerializeField]

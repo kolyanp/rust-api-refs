@@ -223,13 +223,13 @@ public class ResearchTable : StorageContainer
 		base.inventory.canAcceptItem = ItemFilter;
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (targetSlot == 1 && (Object)(object)item.info != (Object)(object)researchResource)
 		{
 			return false;
 		}
-		return base.ItemFilter(item, targetSlot);
+		return base.ItemFilter(player, item, targetSlot);
 	}
 
 	public Item GetTargetItem()
@@ -269,8 +269,8 @@ public class ResearchTable : StorageContainer
 		base.PlayerStoppedLooting(player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void DoResearch(RPCMessage msg)
 	{
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
@@ -281,13 +281,9 @@ public class ResearchTable : StorageContainer
 		}
 		BasePlayer player = msg.player;
 		Item targetItem = GetTargetItem();
-		if (targetItem == null || Interface.CallHook("CanResearchItem", player, targetItem) != null || targetItem.amount > 1 || !IsItemResearchable(targetItem))
+		if (targetItem != null && Interface.CallHook("CanResearchItem", player, targetItem) == null && targetItem.amount <= 1 && IsItemResearchable(targetItem) && (!onlyOneUser || !((Object)(object)msg.player.inventory.loot.entitySource != (Object)(object)this)))
 		{
-			return;
-		}
-		Interface.CallHook("OnItemResearch", this, targetItem, player);
-		if (!onlyOneUser || !((Object)(object)msg.player.inventory.loot.entitySource != (Object)(object)this))
-		{
+			Interface.CallHook("OnItemResearch", this, targetItem, player);
 			targetItem.CollectedForCrafting(player);
 			researchFinishedTime = Time.realtimeSinceStartup + researchDuration;
 			Invoke(ResearchAttemptFinished, researchDuration);

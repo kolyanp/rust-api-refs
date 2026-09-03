@@ -9,6 +9,8 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 
 	public Camera viewmodelCam;
 
+	private ViewModelCamera viewmodelCamComponent;
+
 	[SerializeField]
 	private GameObject parent;
 
@@ -27,6 +29,8 @@ public class SkinViewer2 : SingletonComponent<SkinViewer2>
 	private Cubemap originalReflectionCubemap;
 
 	private DefaultReflectionMode originalReflectionMode;
+
+	private bool hasStoredReflectionSettings;
 
 	public List<SkinViewerRenderSettings> renderSettings;
 

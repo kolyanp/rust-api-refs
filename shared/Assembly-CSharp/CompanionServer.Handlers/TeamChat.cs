@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 
@@ -6,13 +7,13 @@ namespace CompanionServer.Handlers;
 
 public class TeamChat : BasePlayerHandler<AppEmpty>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
 		if (playerTeam == null)
 		{
 			SendError("no_team");
-			return;
+			return default(ValueTask);
 		}
 		AppResponse val = Pool.Get<AppResponse>();
 		val.teamChat = Pool.Get<AppTeamChat>();
@@ -32,5 +33,6 @@ public class TeamChat : BasePlayerHandler<AppEmpty>
 			}
 		}
 		Send(val);
+		return default(ValueTask);
 	}
 }

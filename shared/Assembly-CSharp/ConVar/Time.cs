@@ -51,8 +51,8 @@ public class Time : ConsoleSystem
 		}
 	}
 
-	[ServerVar]
 	[Help("The time scale")]
+	[ServerVar]
 	public static float timescale
 	{
 		get
@@ -65,8 +65,8 @@ public class Time : ConsoleSystem
 		}
 	}
 
-	[ReplicatedVar]
 	[Help("Time scale which only affects mission timers")]
+	[ReplicatedVar]
 	public static float missiontimerscale
 	{
 		get

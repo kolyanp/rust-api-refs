@@ -47,9 +47,18 @@ public class PlaceCliffsUniform : ProceduralComponent
 		//IL_018a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_018c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0191: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ef: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0319: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_031d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
@@ -155,9 +164,14 @@ public class PlaceCliffsUniform : ProceduralComponent
 						}
 						if (flag)
 						{
-							prefab.SpawnedCount++;
-							World.AddPrefab("Decor", prefab, val, rotation, scale2);
-							break;
+							Quaternion rot2 = Quaternion.Euler(((Quaternion)(ref rotation)).eulerAngles);
+							if (prefab.CheckTerrainFootprint(val, rot2, scale2))
+							{
+								prefab.FillTerrainFootprint(val, rot2, scale2);
+								prefab.SpawnedCount++;
+								World.AddPrefab("Decor", prefab, val, rotation, scale2);
+								break;
+							}
 						}
 					}
 				}

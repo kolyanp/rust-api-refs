@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Facepunch.Math;
 using UnityEngine;
 
@@ -18,6 +21,21 @@ public static class Output
 		public int Time;
 	}
 
+	private struct ThreadedEntry
+	{
+		public string Message;
+
+		public string Stacktrace;
+
+		public LogType Type;
+	}
+
+	private static readonly ConcurrentQueue<ThreadedEntry> threadedLogs = new ConcurrentQueue<ThreadedEntry>();
+
+	private const int MaxQueuedThreadedLogs = 10000;
+
+	private static int MainThreadId;
+
 	public static bool installed = false;
 
 	public static Queue<Entry> HistoryOutput = new Queue<Entry>();
@@ -30,12 +48,52 @@ public static class Output
 
 	public static void Install()
 	{
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Expected O, but got Unknown
 		if (!installed)
 		{
+			MainThreadId = Thread.CurrentThread.ManagedThreadId;
 			Application.logMessageReceived += new LogCallback(LogHandler);
+			Application.logMessageReceivedThreaded += new LogCallback(ThreadedLogHandler);
+			PreUpdateHook.OnUpdate = (Action)Delegate.Combine(PreUpdateHook.OnUpdate, new Action(ProcessThreadedLogs));
+			TaskScheduler.UnobservedTaskException += UnobservedTaskExceptionHandler;
 			installed = true;
+		}
+	}
+
+	private static void UnobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs e)
+	{
+		foreach (Exception innerException in e.Exception.InnerExceptions)
+		{
+			Debug.LogException(innerException);
+		}
+		e.SetObserved();
+	}
+
+	private static void ThreadedLogHandler(string log, string stacktrace, LogType type)
+	{
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0044: Unknown result type (might be due to invalid IL or missing references)
+		if (Thread.CurrentThread.ManagedThreadId != MainThreadId && threadedLogs.Count < 10000)
+		{
+			threadedLogs.Enqueue(new ThreadedEntry
+			{
+				Message = log,
+				Stacktrace = stacktrace,
+				Type = type
+			});
+		}
+	}
+
+	public static void ProcessThreadedLogs()
+	{
+		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
+		ThreadedEntry result;
+		while (threadedLogs.TryDequeue(out result))
+		{
+			LogHandler(result.Message, result.Stacktrace, result.Type);
 		}
 	}
 

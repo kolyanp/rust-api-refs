@@ -25,8 +25,8 @@ public class Climate : SingletonComponent<Climate>
 		[Horizontal(4, -1)]
 		public Float4 FogAmbientIntensity = Float4.One();
 
-		[Horizontal(4, -1)]
 		[Range(0f, 1f)]
+		[Horizontal(4, -1)]
 		public Float4 FogAmbientSaturation = Float4.One();
 
 		[Horizontal(4, -1)]

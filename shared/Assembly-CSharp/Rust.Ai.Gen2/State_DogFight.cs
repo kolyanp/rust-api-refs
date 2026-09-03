@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -68,31 +68,10 @@ public class State_DogFight : FSMStateBase
 		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a2: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0115: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0180: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ad: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ef: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f7: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Failure;
@@ -113,46 +92,50 @@ public class State_DogFight : FSMStateBase
 		}
 		Vector3 val2 = normalized2;
 		shouldGoRightNext = !shouldGoRightNext;
-		Vector3 val3 = Quaternion.AngleAxis(Random.Range(-50f, 50f), Vector3.up) * val2;
-		float radius;
+		Vector3 directionWS = Quaternion.AngleAxis(Random.Range(-50f, 50f), Vector3.up) * val2;
+		float num;
 		RustNavMeshAgent.Speeds value;
 		if (Random.value > 0.95f && Vector3.Distance(targetPosition, position) > 8f)
 		{
-			radius = Random.Range(3f, 4f);
+			num = Random.Range(3f, 4f);
 			value = RustNavMeshAgent.Speeds.Sprint;
 		}
 		else
 		{
-			radius = Random.Range(1f, 2f);
+			num = Random.Range(1f, 2f);
 			value = RustNavMeshAgent.Speeds.Walk;
 		}
-		PooledList<Vector3> val4 = Pool.Get<PooledList<Vector3>>();
+		NavVector3 nextPosition = base.Agent.nextPosition;
+		NavVector3 aNS = base.Agent.WorldToNavDirection(directionWS);
+		PooledList<NavVector3> val3 = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			Eqs.SamplePositionsInDonutShape(position, (List<Vector3>)(object)val4, radius);
+			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val3, num, num, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				foreach (Vector3 item3 in (List<Vector3>)(object)val4)
+				foreach (NavVector3 item3 in (List<NavVector3>)(object)val3)
 				{
-					val = item3 - position;
-					float item = Mathx.RemapValClamped(Vector3.Dot(val3, ((Vector3)(ref val)).normalized), -1f, 1f, 0f, 1f);
-					((List<(Vector3, float)>)(object)pooledScoreList).Add((item3, item));
+					float item = Mathx.RemapValClamped(NavVector3.Dot(aNS, (item3 - nextPosition).NormalizeXZ()), -1f, 1f, 0f, 1f);
+					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item3, item));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);
-				Matrix4x4 worldToNavMeshSpace = Owner.WorldToNavMeshSpace;
-				Matrix4x4 navMeshToWorldSpace = Owner.NavMeshToWorldSpace;
-				foreach (var item4 in (List<(Vector3, float)>)(object)pooledScoreList)
+				foreach (var item4 in (List<(NavVector3, float)>)(object)pooledScoreList)
 				{
-					Vector3 item2 = item4.Item1;
-					Vector3 positionNS = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(item2);
-					if (base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f))
+					NavVector3 item2 = item4.Item1;
+					NavVector3 navVector = item2;
+					if (!flag)
 					{
-						Vector3 position2 = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(((NavMeshHit)(ref hitNS)).position);
-						if (!base.Agent.IsInWater(position2) && base.Agent.SetDestinationWithParams(((NavMeshHit)(ref hitNS)).position, autoBraking: false, value))
+						if (!base.Agent.SamplePosition(item2, out var hitNS, 3.5f))
 						{
-							return EFSMStateStatus.None;
+							continue;
 						}
+						navVector = hitNS.position;
+					}
+					Vector3 positionWS = base.Agent.NavToWorldSpace(navVector);
+					if (!base.Agent.IsInWater(positionWS) && base.Agent.SetDestinationWithParams(navVector, autoBraking: false, value))
+					{
+						return EFSMStateStatus.None;
 					}
 				}
 				return EFSMStateStatus.Failure;
@@ -164,7 +147,7 @@ public class State_DogFight : FSMStateBase
 		}
 		finally
 		{
-			((IDisposable)val4)?.Dispose();
+			((IDisposable)val3)?.Dispose();
 		}
 	}
 }

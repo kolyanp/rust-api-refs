@@ -1,9 +1,9 @@
-using Facepunch.Flexbox;
 using Rust.UI;
+using UnityEngine;
 
 public class UINexusMapWidget : UINexusMapBase
 {
-	public RustButton FocusButton;
+	public CanvasGroup MapCanvas;
 
-	public FlexTransition RevealTransition;
+	public RustButton FocusButton;
 }

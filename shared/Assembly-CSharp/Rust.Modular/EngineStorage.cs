@@ -32,8 +32,8 @@ public class EngineStorage : StorageContainer
 	[SerializeField]
 	public int accelerationBoostSlots;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int topSpeedBoostSlots;
 
 	[ReadOnly]
@@ -61,6 +61,11 @@ public class EngineStorage : StorageContainer
 	public float GetAveragedLoadoutPercent()
 	{
 		return (accelerationBoostPercent + topSpeedBoostPercent + fuelEconomyBoostPercent) / 3f;
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override void Load(LoadInfo info)
@@ -119,9 +124,9 @@ public class EngineStorage : StorageContainer
 		RefreshLoadoutData();
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		if (!base.ItemFilter(item, targetSlot))
+		if (!base.ItemFilter(player, item, targetSlot))
 		{
 			return false;
 		}

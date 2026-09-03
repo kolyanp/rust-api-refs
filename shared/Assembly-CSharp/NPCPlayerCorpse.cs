@@ -9,9 +9,13 @@ public class NPCPlayerCorpse : PlayerCorpse
 		return Server.npccorpsedespawn;
 	}
 
-	public override bool CanLoot()
+	public override bool CanLoot(BasePlayer player)
 	{
-		return lootEnabled;
+		if (lootEnabled)
+		{
+			return base.CanLoot(player);
+		}
+		return false;
 	}
 
 	public void SetLootableIn(float when)

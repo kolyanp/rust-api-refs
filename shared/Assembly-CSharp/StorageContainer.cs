@@ -285,9 +285,9 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 	{
 	}
 
-	public virtual bool ItemFilter(Item item, int targetSlot)
+	public virtual bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
-		object obj = Interface.CallHook("OnItemFilter", item, this, targetSlot);
+		object obj = Interface.CallHook("OnItemFilter", item, this, targetSlot, player);
 		if (obj is bool)
 		{
 			return (bool)obj;
@@ -383,7 +383,7 @@ public class StorageContainer : DecayEntity, IItemContainerEntity, IIdealSlotEnt
 		if (isLootable)
 		{
 			BasePlayer player = rpc.player;
-			if (Object.op_Implicit((Object)(object)player) && player.CanInteract())
+			if (Object.op_Implicit((Object)(object)player) && player.CanInteract() && !player.IsBlockedFromLootingByMountable())
 			{
 				PlayerOpenLoot(player);
 			}

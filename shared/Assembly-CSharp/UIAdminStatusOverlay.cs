@@ -7,4 +7,6 @@ public class UIAdminStatusOverlay : SingletonComponent<UIAdminStatusOverlay>
 	public GameObject creativeOverlay;
 
 	public GameObject godOverlay;
+
+	public GameObject infiniteAmmoOverlay;
 }

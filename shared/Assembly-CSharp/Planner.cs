@@ -151,8 +151,8 @@ public class Planner : HeldEntity
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void DoPlace(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -171,8 +171,8 @@ public class Planner : HeldEntity
 	}
 
 	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void StartDurationPlace(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -293,7 +293,7 @@ public class Planner : HeldEntity
 			if ((Object)(object)target.entity == (Object)null)
 			{
 				ownerPlayer.ShowToast(GameTip.Styles.Error, ConstructionErrors.CouldntFindEntity, false);
-				ConstructionErrors.Log(ownerPlayer, ((object)Unsafe.As<NetworkableId, NetworkableId>(ref msg.entity)/*cast due to constrained. prefix*/).ToString());
+				ConstructionErrors.Log(ownerPlayer, ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref msg.entity)/*cast due to constrained. prefix*/).ToString());
 				return;
 			}
 			msg.ray = new Ray(((Component)target.entity).transform.TransformPoint(((Ray)(ref msg.ray)).origin), ((Component)target.entity).transform.TransformDirection(((Ray)(ref msg.ray)).direction));

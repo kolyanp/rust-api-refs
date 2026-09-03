@@ -241,6 +241,10 @@ public class PrefabPreProcess : IPrefabProcessor
 				RemoveChildEntities(go);
 			}
 		}
+		if (!isServerside)
+		{
+			DisableWheelColliders(go);
+		}
 		if (options.StripEmptyChildren)
 		{
 			BaseEntity baseEntity = default(BaseEntity);
@@ -355,6 +359,20 @@ public class PrefabPreProcess : IPrefabProcessor
 				Object.DestroyImmediate((Object)(object)((Component)baseNetworkable).gameObject, true);
 			}
 		}
+	}
+
+	private void DisableWheelColliders(GameObject go)
+	{
+		List<WheelCollider> list = Pool.Get<List<WheelCollider>>();
+		this.FindComponents<WheelCollider>(go.transform, list);
+		foreach (WheelCollider item in list)
+		{
+			if (!((Object)(object)((Component)item).GetComponentInParent<Rigidbody>(true) != (Object)null))
+			{
+				((Collider)item).enabled = false;
+			}
+		}
+		Pool.FreeUnmanaged<WheelCollider>(ref list);
 	}
 
 	private bool TryGetHierarchyGroup(out GameObject obj)

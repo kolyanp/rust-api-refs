@@ -18,7 +18,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 
 	private static readonly Dictionary<ulong, BasePlayer> SpawnedPlayers = new Dictionary<ulong, BasePlayer>();
 
-	private static readonly List<string> PlayerIds = new List<string>();
+	private static readonly List<ulong> PlayerIds = new List<ulong>();
 
 	private static readonly List<NetworkableId> EntitiesToProtect = new List<NetworkableId>();
 
@@ -27,10 +27,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 	protected override void Handle()
 	{
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
 		UidMapping.Clear();
 		base.Request.InspectUids((UidInspector<ulong>)UpdateWithNewUid);
 		UidToEntity.Clear();
@@ -42,7 +39,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 			if (entity.basePlayer != null)
 			{
 				ulong userid = entity.basePlayer.userid;
-				PlayerIds.Add(userid.ToString("G"));
+				PlayerIds.Add(userid);
 				BasePlayer basePlayer = BasePlayer.FindByID(userid) ?? BasePlayer.FindSleeping(userid);
 				if ((Object)(object)basePlayer != (Object)null)
 				{
@@ -72,13 +69,6 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 		RepositionEntitiesFromTransfer();
 		SpawnedPlayers.Clear();
 		SpawnEntities(SpawnedPlayers);
-		foreach (NetworkableId item in EntitiesToProtect)
-		{
-			if (BaseNetworkable.serverEntities.Find(item) is BaseEntity baseEntity)
-			{
-				baseEntity.EnableTransferProtection();
-			}
-		}
 		TeamMapping.Clear();
 		foreach (PlayerSecondaryData secondaryDatum in base.Request.secondaryData)
 		{
@@ -139,7 +129,7 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 	{
 		try
 		{
-			await NexusServer.ZoneClient.CompleteTransfers((IEnumerable<string>)PlayerIds);
+			await NexusServer.ZoneClient.CompleteTransfers((IEnumerable<ulong>)PlayerIds);
 		}
 		catch (Exception ex)
 		{
@@ -231,6 +221,9 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
 		Application.isLoadingSave = true;
 		try
 		{
@@ -259,9 +252,16 @@ public class TransferHandler : BaseNexusRequestHandler<TransferRequest>
 					});
 				}
 			}
-			foreach (KeyValuePair<BaseEntity, Entity> item2 in EntityToSpawn)
+			foreach (NetworkableId item2 in EntitiesToProtect)
 			{
-				BaseEntity key2 = item2.Key;
+				if (BaseNetworkable.serverEntities.Find(item2) is BaseEntity baseEntity2)
+				{
+					baseEntity2.EnableTransferProtection();
+				}
+			}
+			foreach (KeyValuePair<BaseEntity, Entity> item3 in EntityToSpawn)
+			{
+				BaseEntity key2 = item3.Key;
 				if (!((Object)(object)key2 == (Object)null))
 				{
 					key2.UpdateNetworkGroup();

@@ -76,7 +76,7 @@ public class BuildingPrivilegeRetro : BuildingPrivlidge
 
 	private float GetResourceProportion(int id)
 	{
-		int amount = base.inventory.GetAmount(id, onlyUsableAmounts: false);
+		int amount = base.inventory.GetAmount(id);
 		float num = ItemManager.FindItemDefinition(id).stackable;
 		return (float)amount / ((float)(base.inventory.capacity - 5) * num);
 	}

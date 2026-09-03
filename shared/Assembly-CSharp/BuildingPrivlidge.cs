@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ConVar;
 using Facepunch;
+using Facepunch.Math;
 using Facepunch.Rust;
 using Network;
 using Oxide.Core;
@@ -33,6 +34,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public struct BuildingPrivilegePreserveInfo
 	{
 		public HashSet<ulong> authedPlayers;
+
+		public Dictionary<ulong, uint> recentGroupMembers;
 	}
 
 	public const Flags Flag_Raidable = Flags.Reserved7;
@@ -44,6 +47,10 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	private const float RefreshBatchInterval = 0.2f;
 
 	public float cachedProtectedMinutes;
+
+	private float cachedGroupUpkeepMultiplier = 1f;
+
+	private int cachedGroupAuthCount;
 
 	public float nextProtectedCalcTime;
 
@@ -85,6 +92,9 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public static Grid<BuildingPrivlidge> InvisibleAuthGrid = new Grid<BuildingPrivlidge>(32, 8096f);
 
 	private static ListHashSet<ItemDefinition> allowedConstructionFast = null;
+
+	[NonSerialized]
+	public Dictionary<ulong, uint> recentGroupMembers = new Dictionary<ulong, uint>();
 
 	private Action delayedUpdateCB;
 
@@ -349,20 +359,26 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	{
 		if (base.isServer)
 		{
-			if (!doors)
-			{
-				return CalculateBuildingTaxRate();
-			}
-			return CalculateDoorTaxRate();
+			return (doors ? CalculateDoorTaxRate() : CalculateBuildingTaxRate()) * cachedGroupUpkeepMultiplier;
 		}
 		return 0f;
+	}
+
+	public float GetGroupUpkeepMultiplier()
+	{
+		return cachedGroupUpkeepMultiplier;
+	}
+
+	public int GetGroupAuthCount()
+	{
+		return cachedGroupAuthCount;
 	}
 
 	public float GetEntityUpkeepMultiplier(DecayEntity entity, float buildingFraction, float doorFraction)
 	{
 		if (entity.Upkeep != null && entity.Upkeep.highWall)
 		{
-			return ConVar.Decay.high_wall_upkeep;
+			return ConVar.Decay.high_wall_upkeep * cachedGroupUpkeepMultiplier;
 		}
 		if (!(entity is Door))
 		{
@@ -530,6 +546,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 
 	public override void DecayTick(bool force = false)
 	{
+		RecalculateGroupUpkeep();
 		BuildingBlock nearbyBuildingBlock = GetNearbyBuildingBlock();
 		if ((Object)(object)nearbyBuildingBlock != (Object)null)
 		{
@@ -576,6 +593,166 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	public void MarkProtectedMinutesDirty(float delay = 0f)
 	{
 		nextProtectedCalcTime = Time.realtimeSinceStartup + delay;
+	}
+
+	public static float CalculateGroupUpkeepMultiplier(int authCount)
+	{
+		if (!ConVar.Decay.upkeep_group_scaling)
+		{
+			return 1f;
+		}
+		if (authCount <= 0)
+		{
+			return 1f;
+		}
+		int num = authCount;
+		float num2 = 0f;
+		for (int i = 0; i < 3; i++)
+		{
+			int num3;
+			float num4;
+			switch (i)
+			{
+			case 0:
+				num3 = ConVar.Decay.upkeep_group_tier_0_playercount;
+				num4 = ConVar.Decay.upkeep_group_tier_0_increase;
+				break;
+			case 1:
+				num3 = ConVar.Decay.upkeep_group_tier_1_playercount;
+				num4 = ConVar.Decay.upkeep_group_tier_1_increase;
+				break;
+			default:
+				num3 = int.MaxValue;
+				num4 = ConVar.Decay.upkeep_group_tier_2_increase;
+				break;
+			}
+			if (num <= 0)
+			{
+				break;
+			}
+			int num5 = Mathf.Min(num, Mathf.Max(0, num3));
+			num -= num5;
+			num2 += (float)num5 * num4;
+		}
+		return Mathf.Min(1f + num2, ConVar.Decay.upkeep_group_max_multiplier);
+	}
+
+	public void RecalculateGroupUpkeep()
+	{
+		uint current = (uint)Epoch.Current;
+		RefreshDoorGroupMembers(current);
+		PruneGroupMembers(current);
+		int num = authorizedPlayers.Count + recentGroupMembers.Count;
+		float num2 = CalculateGroupUpkeepMultiplier(num);
+		if (num != cachedGroupAuthCount || num2 != cachedGroupUpkeepMultiplier)
+		{
+			cachedGroupAuthCount = num;
+			cachedGroupUpkeepMultiplier = num2;
+			AddDelayedUpdate();
+		}
+	}
+
+	private void RefreshDoorGroupMembers(uint now)
+	{
+		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		if (!ConVar.Decay.upkeep_group_count_locks)
+		{
+			return;
+		}
+		BuildingManager.Building building = GetBuilding();
+		if (building == null)
+		{
+			return;
+		}
+		Enumerator<Door> enumerator = building.doors.GetEnumerator();
+		try
+		{
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.GetSlot(Slot.Lock) is CodeLock codeLock && codeLock.whitelistPlayers.Count + codeLock.guestPlayers.Count > ConVar.Decay.upkeep_lock_min_users)
+				{
+					RefreshDoorGroupMembers(codeLock.whitelistPlayers, now);
+					RefreshDoorGroupMembers(codeLock.guestPlayers, now);
+				}
+			}
+		}
+		finally
+		{
+			((IDisposable)enumerator/*cast due to constrained. prefix*/).Dispose();
+		}
+	}
+
+	private void RefreshDoorGroupMembers(List<ulong> users, uint now)
+	{
+		foreach (ulong user in users)
+		{
+			if (!authorizedPlayers.Contains(user))
+			{
+				recentGroupMembers[user] = now;
+			}
+		}
+	}
+
+	private void PruneGroupMembers(uint now)
+	{
+		if (recentGroupMembers.Count == 0)
+		{
+			return;
+		}
+		long num = (long)Mathf.Max(0f, ConVar.Decay.upkeep_group_window_hours * 3600f);
+		PooledList<ulong> val = Pool.Get<PooledList<ulong>>();
+		try
+		{
+			foreach (KeyValuePair<ulong, uint> recentGroupMember in recentGroupMembers)
+			{
+				if (authorizedPlayers.Contains(recentGroupMember.Key))
+				{
+					((List<ulong>)(object)val).Add(recentGroupMember.Key);
+					continue;
+				}
+				long num2 = (long)now - (long)recentGroupMember.Value;
+				if (num2 >= num || num2 < 0)
+				{
+					((List<ulong>)(object)val).Add(recentGroupMember.Key);
+				}
+			}
+			foreach (ulong item in (List<ulong>)(object)val)
+			{
+				recentGroupMembers.Remove(item);
+			}
+			TrimGroupMembersToMax();
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	private void TrimGroupMembersToMax()
+	{
+		int num = Mathf.Max(0, ConVar.Decay.upkeep_group_history_max);
+		while (recentGroupMembers.Count > num)
+		{
+			ulong key = 0uL;
+			uint num2 = 0u;
+			bool flag = false;
+			foreach (KeyValuePair<ulong, uint> recentGroupMember in recentGroupMembers)
+			{
+				if (!flag || recentGroupMember.Value < num2)
+				{
+					num2 = recentGroupMember.Value;
+					key = recentGroupMember.Key;
+					flag = true;
+				}
+			}
+			if (flag)
+			{
+				recentGroupMembers.Remove(key);
+				continue;
+			}
+			break;
+		}
 	}
 
 	private static float CalculateTaxRate(int entityCount, bool blocks)
@@ -851,6 +1028,12 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	{
 		base.ResetState();
 		authorizedPlayers.Clear();
+		cachedGroupUpkeepMultiplier = 1f;
+		cachedGroupAuthCount = 0;
+		if (base.isServer)
+		{
+			recentGroupMembers.Clear();
+		}
 	}
 
 	public bool CanBuild(BasePlayer player)
@@ -899,6 +1082,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			Vector3 position = ((Component)this).transform.position;
 			InvisibleAuthGrid.Add(this, position.x, position.z);
 		}
+		RecalculateGroupUpkeep();
 		OnServerInit_Softcore();
 	}
 
@@ -909,10 +1093,16 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		{
 			authorizedPlayers.Add(authorizedPlayer);
 		}
+		recentGroupMembers.Clear();
+		foreach (KeyValuePair<ulong, uint> recentGroupMember in source.recentGroupMembers)
+		{
+			recentGroupMembers.Add(recentGroupMember.Key, recentGroupMember.Value);
+		}
+		RecalculateGroupUpkeep();
 		UpdatePrivilegeReceivers();
 	}
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		using (TimeWarning.New("BuildPrivItemFilter"))
 		{
@@ -941,7 +1131,7 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			{
 				return flag;
 			}
-			return base.ItemFilter(item, targetSlot);
+			return base.ItemFilter(player, item, targetSlot);
 		}
 	}
 
@@ -967,6 +1157,19 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			info.msg.buildingPrivilege.doorCostFraction = CalculateUpkeepCostFraction(doors: true);
 			info.msg.buildingPrivilege.clientAuthed = IsAuthed(info.forConnection.userid);
 			info.msg.buildingPrivilege.clientAnyAuthed = AnyAuthed();
+			info.msg.buildingPrivilege.groupUpkeepMultiplier = GetGroupUpkeepMultiplier();
+			info.msg.buildingPrivilege.groupAuthCount = GetGroupAuthCount();
+		}
+		else if (recentGroupMembers.Count > 0)
+		{
+			info.msg.buildingPrivilege.recentGroupMembers = Pool.Get<List<BuildingPrivilegeGroupMember>>();
+			foreach (KeyValuePair<ulong, uint> recentGroupMember in recentGroupMembers)
+			{
+				BuildingPrivilegeGroupMember val = Pool.Get<BuildingPrivilegeGroupMember>();
+				val.userid = recentGroupMember.Key;
+				val.lastCountedTime = recentGroupMember.Value;
+				info.msg.buildingPrivilege.recentGroupMembers.Add(val);
+			}
 		}
 		if (!info.forDisk && !info.msg.buildingPrivilege.clientAuthed)
 		{
@@ -975,9 +1178,9 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		info.msg.buildingPrivilege.users = Pool.Get<List<PlayerNameID>>();
 		foreach (ulong authorizedPlayer in authorizedPlayers)
 		{
-			PlayerNameID val = Pool.Get<PlayerNameID>();
-			val.userid = authorizedPlayer;
-			info.msg.buildingPrivilege.users.Add(val);
+			PlayerNameID val2 = Pool.Get<PlayerNameID>();
+			val2.userid = authorizedPlayer;
+			info.msg.buildingPrivilege.users.Add(val2);
 		}
 	}
 
@@ -1004,6 +1207,24 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		if (!info.fromDisk)
 		{
 			cachedProtectedMinutes = info.msg.buildingPrivilege.protectedMinutes;
+			cachedGroupUpkeepMultiplier = Mathf.Max(1f, info.msg.buildingPrivilege.groupUpkeepMultiplier);
+			cachedGroupAuthCount = info.msg.buildingPrivilege.groupAuthCount;
+		}
+		else
+		{
+			if (!base.isServer)
+			{
+				return;
+			}
+			recentGroupMembers.Clear();
+			if (info.msg.buildingPrivilege.recentGroupMembers != null)
+			{
+				foreach (BuildingPrivilegeGroupMember recentGroupMember in info.msg.buildingPrivilege.recentGroupMembers)
+				{
+					recentGroupMembers[recentGroupMember.userid] = recentGroupMember.lastCountedTime;
+				}
+			}
+			RecalculateGroupUpkeep();
 		}
 	}
 
@@ -1093,7 +1314,9 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		if (!AtMaxAuthCapacity())
 		{
 			authorizedPlayers.Add(targetPlayerId);
+			recentGroupMembers.Remove(targetPlayerId);
 			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, granter, authorizedPlayers, "added", targetPlayerId);
+			RecalculateGroupUpkeep();
 			UpdateMaxAuthCapacity();
 			UpdatePrivilegeReceivers();
 		}
@@ -1103,14 +1326,16 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	{
 		if (authorizedPlayers.Remove(targetPlayerId))
 		{
+			recentGroupMembers[targetPlayerId] = (uint)Epoch.Current;
 			Facepunch.Rust.Analytics.Azure.OnEntityAuthChanged(this, fromPly, authorizedPlayers, "removed", targetPlayerId);
+			RecalculateGroupUpkeep();
 			UpdateMaxAuthCapacity();
 			UpdatePrivilegeReceivers();
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null)
@@ -1126,11 +1351,22 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)
 		{
-			authorizedPlayers.Clear();
-			UpdateMaxAuthCapacity();
-			UpdatePrivilegeReceivers();
+			ClearAuthList();
 			SendNetworkUpdate();
 		}
+	}
+
+	public void ClearAuthList()
+	{
+		uint current = (uint)Epoch.Current;
+		foreach (ulong authorizedPlayer in authorizedPlayers)
+		{
+			recentGroupMembers[authorizedPlayer] = current;
+		}
+		authorizedPlayers.Clear();
+		RecalculateGroupUpkeep();
+		UpdateMaxAuthCapacity();
+		UpdatePrivilegeReceivers();
 	}
 
 	[RPC_Server.IsVisible(3f)]
@@ -1248,6 +1484,11 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		{
 			buildingPrivilegePreserve.authedPlayers.Add(authorizedPlayer);
 		}
+		buildingPrivilegePreserve.recentGroupMembers = Pool.Get<Dictionary<ulong, uint>>();
+		foreach (KeyValuePair<ulong, uint> recentGroupMember in recentGroupMembers)
+		{
+			buildingPrivilegePreserve.recentGroupMembers.Add(recentGroupMember.Key, recentGroupMember.Value);
+		}
 	}
 
 	public override void Reskin_Restore(ref SprayCan.ReskinPreserveInfo preserveInfo)
@@ -1259,6 +1500,12 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 			authorizedPlayers.Add(authedPlayer);
 		}
 		Pool.FreeUnmanaged<ulong>(ref buildingPrivilegePreserve.authedPlayers);
+		foreach (KeyValuePair<ulong, uint> recentGroupMember in buildingPrivilegePreserve.recentGroupMembers)
+		{
+			recentGroupMembers[recentGroupMember.Key] = recentGroupMember.Value;
+		}
+		Pool.FreeUnmanaged<ulong, uint>(ref buildingPrivilegePreserve.recentGroupMembers);
+		RecalculateGroupUpkeep();
 	}
 
 	public override bool HasSlot(Slot slot)

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,16 +8,20 @@ namespace Rust.Ai.Gen2;
 
 public class RustNavMeshPath
 {
-	public readonly List<Vector3> corners;
+	public readonly List<NavVector3> corners;
 
 	public NavMeshPathStatus status;
 
 	public NavMeshPath unityPath;
 
+	public readonly ulong[] polyRefs;
+
+	public int polyRefCount;
+
 	public float GetPathLength()
 	{
-		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavMeshPath.GetPathLength"))
 		{
 			float num = 0f;
@@ -25,32 +31,19 @@ public class RustNavMeshPath
 			}
 			for (int i = 0; i < corners.Count - 1; i++)
 			{
-				num += Vector3.Distance(corners[i], corners[i + 1]);
+				num += Vector3.Distance(corners[i].Value, corners[i + 1].Value);
 			}
 			return num;
 		}
 	}
 
-	public Vector3 GetOrigin()
+	public NavVector3 GetDestinationNS()
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 		if (corners.Count < 1)
 		{
-			return Vector3.zero;
+			return NavVector3.zero;
 		}
-		return corners[0];
-	}
-
-	public Vector3 GetDestinationNS()
-	{
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000e: Unknown result type (might be due to invalid IL or missing references)
-		if (corners.Count < 1)
-		{
-			return Vector3.zero;
-		}
-		List<Vector3> list = corners;
+		List<NavVector3> list = corners;
 		return list[list.Count - 1];
 	}
 
@@ -60,6 +53,7 @@ public class RustNavMeshPath
 		corners.Clear();
 		status = (NavMeshPathStatus)2;
 		unityPath = null;
+		polyRefCount = 0;
 	}
 
 	public void CopyFrom(RustNavMeshPath other)
@@ -70,13 +64,16 @@ public class RustNavMeshPath
 		corners.AddRange(other.corners);
 		status = other.status;
 		unityPath = other.unityPath;
+		Array.Copy(other.polyRefs, polyRefs, other.polyRefCount);
+		polyRefCount = other.polyRefCount;
 	}
 
 	public RustNavMeshPath()
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
-		corners = new List<Vector3>();
+		corners = new List<NavVector3>();
 		status = (NavMeshPathStatus)2;
+		polyRefs = new ulong[256];
 		base._002Ector();
 	}
 }

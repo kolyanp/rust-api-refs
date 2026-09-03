@@ -276,6 +276,37 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 		}
 	}
 
+	public float GiveResourcesForDamage(BasePlayer player, float damage, float destroyFraction, AttackEntity attackWeapon)
+	{
+		if (!player.IsValid())
+		{
+			return 0f;
+		}
+		if (damage <= 0f)
+		{
+			return 0f;
+		}
+		if (startingItemCounts <= 0f)
+		{
+			return 0f;
+		}
+		float num = base.baseEntity.MaxHealth();
+		if (num <= 0f)
+		{
+			return 0f;
+		}
+		float num2 = Mathf.Min(damage, base.baseEntity.Health());
+		float num3 = num / startingItemCounts;
+		float num4 = Mathf.Floor(num2 / num3);
+		if (num4 < 1f)
+		{
+			return 0f;
+		}
+		float num5 = num4 * num3;
+		GiveResources(player, num5, destroyFraction, attackWeapon);
+		return num5;
+	}
+
 	public void DestroyFraction(float fraction)
 	{
 		foreach (ItemAmount containedItem in containedItems)
@@ -376,6 +407,10 @@ public class ResourceDispenser : EntityComponent<BaseEntity>, IServerComponent
 			return 0;
 		}
 		if ((Object)(object)basePlayer.modifiers == (Object)null)
+		{
+			return 0;
+		}
+		if (base.baseEntity is MonumentBlocker)
 		{
 			return 0;
 		}

@@ -1,10 +1,5 @@
-public class CrossbowWeapon : BaseProjectile
+public class CrossbowWeapon : ArrowWeapon
 {
-	public override bool ForceSendMagazine(SaveInfo saveInfo)
-	{
-		return true;
-	}
-
 	public override void DidAttackServerside()
 	{
 		SendNetworkUpdateImmediate();

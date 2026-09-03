@@ -158,8 +158,8 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	private void UpdatePoster(RPCMessage msg)
 	{
@@ -199,9 +199,9 @@ public class WantedPoster : DecayEntity, ISignage, IUGCBrowserEntity, ILOD, ISer
 		SendNetworkUpdate();
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	private void ClearPlayer(RPCMessage msg)
 	{
 		//IL_005d: Unknown result type (might be due to invalid IL or missing references)

@@ -1,6 +1,6 @@
 using System;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -34,29 +34,21 @@ public class State_Flank : FSMStateBase
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTargetLKP(out var lkp, applyHeightOffset: false, predict: true))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		Matrix4x4 worldToNavMeshSpace = Owner.WorldToNavMeshSpace;
-		Vector3 positionNS = ((Matrix4x4)(ref worldToNavMeshSpace)).MultiplyPoint(lkp);
+		NavVector3 positionNS = base.Agent.WorldToNavSpace(lkp);
 		if (!base.Agent.SamplePosition(positionNS, out var hitNS, 3.5f))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Agent.CalculatePath(((NavMeshHit)(ref hitNS)).position, PathToLkp) && (int)PathToLkp.status != 0)
+		if (!base.Agent.CalculatePath(hitNS.position, PathToLkp) || (int)PathToLkp.status != 0)
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!NPCFlankSpot.Find(base.Agent, ((NavMeshHit)(ref hitNS)).position, PathToLkp, PathToFlank, PathFromFlankToEnemy))
+		if (!NPCFlankSpot.Find(base.Agent, hitNS.position, PathToLkp, PathToFlank, PathFromFlankToEnemy))
 		{
 			return EFSMStateStatus.Failure;
 		}
@@ -104,19 +96,13 @@ public class State_Flank : FSMStateBase
 
 	public static float ComputePathsInitialSimilarity(RustNavMeshPath pathA, RustNavMeshPath pathB)
 	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("ComputePathDistance"))
 		{
 			int num = Mathf.Min(pathA.corners.Count, pathB.corners.Count);
 			float num2 = 0f;
 			for (int i = 0; i + 1 < num && !(pathA.corners[i] != pathB.corners[i]) && !(pathA.corners[i + 1] != pathB.corners[i + 1]); i++)
 			{
-				num2 += Vector3.Distance(pathA.corners[i], pathA.corners[i + 1]);
+				num2 += NavVector3.Distance(pathA.corners[i], pathA.corners[i + 1]);
 			}
 			return num2 / Mathf.Min(pathA.GetPathLength(), pathB.GetPathLength());
 		}

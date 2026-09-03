@@ -55,6 +55,12 @@ public class SleepingBagCamper : SleepingBag
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+		AssociatedSeat = default(EntityRef<BaseVehicleSeat>);
+	}
+
 	protected override bool CanAccessBed(BasePlayer player)
 	{
 		if (!base.CanAccessBed(player) || !(GetParentEntity() is VehicleModuleCamper vehicleModuleCamper))
@@ -135,8 +141,8 @@ public class SleepingBagCamper : SleepingBag
 		return (RespawnState)1;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void ServerClearBed(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -48,6 +48,10 @@ public class Prefab : IComparable<Prefab>
 
 	private TerrainPlacement[] cachedTerrainPlacements;
 
+	private TerrainFootprint cachedTerrainFootprint;
+
+	private bool cachedTerrainFootprintValid;
+
 	private WaterCheck[] cachedWaterChecks;
 
 	private BoundsCheck[] cachedBoundsChecks;
@@ -55,6 +59,19 @@ public class Prefab : IComparable<Prefab>
 	private DecorComponent[] cachedDecorComponents;
 
 	private EnvironmentVolumeCheck[] cachedEnvironmentVolumeChecks;
+
+	private TerrainFootprint TerrainFootprint
+	{
+		get
+		{
+			if (!cachedTerrainFootprintValid)
+			{
+				cachedTerrainFootprint = Attribute.Find<TerrainFootprint>(ID);
+				cachedTerrainFootprintValid = true;
+			}
+			return cachedTerrainFootprint;
+		}
+	}
 
 	public static PrefabAttribute.Library DefaultAttribute => PrefabAttribute.server;
 
@@ -127,6 +144,22 @@ public class Prefab : IComparable<Prefab>
 			cachedTerrainAnchors = Attribute.FindAll<TerrainAnchor>(ID);
 		}
 		return Object.transform.ApplyTerrainAnchors(cachedTerrainAnchors, ref pos, rot, scale, filter);
+	}
+
+	public bool CheckTerrainFootprint(Vector3 pos, Quaternion rot, Vector3 scale)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		return Object.transform.CheckTerrainFootprint(TerrainFootprint, pos, rot, scale);
+	}
+
+	public void FillTerrainFootprint(Vector3 pos, Quaternion rot, Vector3 scale)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0013: Unknown result type (might be due to invalid IL or missing references)
+		Object.transform.FillTerrainFootprint(TerrainFootprint, pos, rot, scale);
 	}
 
 	public bool ApplyTerrainChecks(Vector3 pos, Quaternion rot, Vector3 scale, SpawnFilter filter = null)

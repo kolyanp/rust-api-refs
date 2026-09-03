@@ -1033,37 +1033,45 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		cUI.Destroy("hammereditor.cui", player);
 	}
 
-	private void OnPlayerInput(BasePlayer player, InputState state)
+	private unsafe void OnPlayerInput(BasePlayer player, InputState state)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0313: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0355: Unknown result type (might be due to invalid IL or missing references)
+		//IL_034e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0376: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0203: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0205: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0166: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0170: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_030f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_021f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0246: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0248: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0288: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0295: Invalid comparison between Unknown and I4
-		//IL_029a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0257: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0260: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0293: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_029e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02f8: Invalid comparison between Unknown and I4
+		//IL_02fd: Unknown result type (might be due to invalid IL or missing references)
 		if (lastCreativeModePlayers.TryGetValue(EncryptedValue<ulong>.op_Implicit(player.userID), out var value) && state.WasJustPressed((BUTTON)134217728) && CanBeToggled(value))
 		{
 			bool flag = state.IsDown((BUTTON)128);
@@ -1074,15 +1082,23 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 				BaseLock val3 = value.GetLock();
 				if (val3 != null)
 				{
-					((BaseEntity)val3).SetFlag((Flags)16, !((BaseEntity)val3).IsLocked(), false, true);
-					return;
+					FlagsUpdateScope val4 = ((BaseEntity)val3).StartSetFlags((FlagsUpdateMode)2);
+					try
+					{
+						((FlagsUpdateScope)(ref val4)).Set((Flags)16, !((BaseEntity)val3).IsLocked(), false);
+						return;
+					}
+					finally
+					{
+						((IDisposable)(*(FlagsUpdateScope*)(&val4))/*cast due to constrained. prefix*/).Dispose();
+					}
 				}
 			}
-			VendingMachine val4 = (VendingMachine)(object)((value is VendingMachine) ? value : null);
-			if (val4 == null)
+			VendingMachine val5 = (VendingMachine)(object)((value is VendingMachine) ? value : null);
+			if (val5 == null)
 			{
-				BuildingBlock val5 = (BuildingBlock)(object)((value is BuildingBlock) ? value : null);
-				if (val5 == null)
+				BuildingBlock val6 = (BuildingBlock)(object)((value is BuildingBlock) ? value : null);
+				if (val6 == null)
 				{
 					if (!(value is Candle) && !(value is SteeringWheel) && !(value is Door))
 					{
@@ -1092,64 +1108,88 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 							{
 								if (!(value is EngineSwitch))
 								{
-									MiningQuarry val6 = (MiningQuarry)(object)((value is MiningQuarry) ? value : null);
-									if (val6 != null)
+									MiningQuarry val7 = (MiningQuarry)(object)((value is MiningQuarry) ? value : null);
+									if (val7 != null)
 									{
-										val6.staticType = (QuarryType)(val6.staticType + 1);
-										if ((int)val6.staticType > 3)
+										val7.staticType = (QuarryType)(val7.staticType + 1);
+										if ((int)val7.staticType > 3)
 										{
-											val6.staticType = (QuarryType)0;
+											val7.staticType = (QuarryType)0;
 										}
-										val6.UpdateStaticDeposit();
+										val7.UpdateStaticDeposit();
 									}
 								}
 								else
 								{
 									BaseEntity parentEntity = ((BaseNetworkable)value).GetParentEntity();
-									MiningQuarry val7 = (MiningQuarry)(object)((parentEntity is MiningQuarry) ? parentEntity : null);
-									if (val7 != null)
+									MiningQuarry val8 = (MiningQuarry)(object)((parentEntity is MiningQuarry) ? parentEntity : null);
+									if (val8 != null)
 									{
-										val7.EngineSwitch(!((BaseEntity)val7).IsOn());
+										val8.EngineSwitch(!((BaseEntity)val8).IsOn());
 									}
 								}
 							}
 							else
 							{
-								value.SetFlag(val2, !value.HasFlag(val2), false, true);
+								FlagsUpdateScope val9 = value.StartSetFlags((FlagsUpdateMode)2);
+								try
+								{
+									((FlagsUpdateScope)(ref val9)).Set(val2, !value.HasFlag(val2), false);
+								}
+								finally
+								{
+									((IDisposable)(*(FlagsUpdateScope*)(&val9))/*cast due to constrained. prefix*/).Dispose();
+								}
 							}
 						}
 						else
 						{
 							bool flag2 = value.HasFlag(val2);
-							value.SetFlag(val2, !flag2, false, true);
-							value.SetFlag((Flags)65536, !flag2, false, true);
+							FlagsUpdateScope val10 = value.StartSetFlags((FlagsUpdateMode)2);
+							try
+							{
+								((FlagsUpdateScope)(ref val10)).Set(val2, !flag2, false);
+								((FlagsUpdateScope)(ref val10)).Set((Flags)65536, !flag2, false);
+							}
+							finally
+							{
+								((IDisposable)(*(FlagsUpdateScope*)(&val10))/*cast due to constrained. prefix*/).Dispose();
+							}
 						}
 					}
 					else
 					{
-						value.SetFlag(val, !value.HasFlag(val), false, true);
+						FlagsUpdateScope val11 = value.StartSetFlags((FlagsUpdateMode)2);
+						try
+						{
+							((FlagsUpdateScope)(ref val11)).Set(val, !value.HasFlag(val), false);
+						}
+						finally
+						{
+							((IDisposable)(*(FlagsUpdateScope*)(&val11))/*cast due to constrained. prefix*/).Dispose();
+						}
 					}
 				}
-				else if ((PrefabAttribute)(object)val5.blockDefinition != (PrefabAttribute)null && val5.blockDefinition.canRotateAfterPlacement)
+				else if ((PrefabAttribute)(object)val6.blockDefinition != (PrefabAttribute)null && val6.blockDefinition.canRotateAfterPlacement)
 				{
-					Transform transform = ((Component)val5).transform;
-					transform.localRotation *= Quaternion.Euler(val5.blockDefinition.rotationAmount);
-					((BaseEntity)val5).RefreshEntityLinks();
-					((StabilityEntity)val5).UpdateSurroundingEntities();
-					val5.UpdateSkin(true);
-					val5.RefreshNeighbours(false);
-					((BaseNetworkable)val5).SendNetworkUpdateImmediate();
-					((BaseEntity)val5).ClientRPC(RpcTarget.NetworkGroup("RefreshSkin"));
-					if (!val5.globalNetworkCooldown)
+					Transform transform = ((Component)val6).transform;
+					transform.localRotation *= Quaternion.Euler(val6.blockDefinition.rotationAmount);
+					((BaseEntity)val6).RefreshEntityLinks();
+					((StabilityEntity)val6).UpdateSurroundingEntities();
+					val6.UpdateSkin(true);
+					val6.RefreshNeighbours(false);
+					((BaseNetworkable)val6).SendNetworkUpdateImmediate();
+					((BaseEntity)val6).ClientRPC(RpcTarget.NetworkGroup("RefreshSkin"));
+					if (!val6.globalNetworkCooldown)
 					{
-						val5.globalNetworkCooldown = true;
-						GlobalNetworkHandler.server.TrySendNetworkUpdate((BaseNetworkable)(object)val5);
-						((FacepunchBehaviour)val5).CancelInvoke((Action)val5.ResetGlobalNetworkCooldown);
-						((FacepunchBehaviour)val5).Invoke((Action)val5.ResetGlobalNetworkCooldown, 15f);
+						val6.globalNetworkCooldown = true;
+						GlobalNetworkHandler.server.TrySendNetworkUpdate((BaseNetworkable)(object)val6);
+						((FacepunchBehaviour)val6).CancelInvoke((Action)val6.ResetGlobalNetworkCooldown);
+						((FacepunchBehaviour)val6).Invoke((Action)val6.ResetGlobalNetworkCooldown, 15f);
 					}
 				}
 			}
-			else if (val4.CanRotate())
+			else if (val5.CanRotate())
 			{
 				((Component)value).transform.rotation = Quaternion.LookRotation(-((Component)value).transform.forward, ((Component)value).transform.up);
 				((BaseNetworkable)value).SendNetworkUpdate((NetworkQueue)0);
@@ -1521,7 +1561,7 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		editor.isRepairingOrDestroyingBuilding = false;
 	}
 
-	private IEnumerator MoveEntityRoutine(HammerEditor editor, BaseEntity entity)
+	private unsafe IEnumerator MoveEntityRoutine(HammerEditor editor, BaseEntity entity)
 	{
 		int layer = 1218652417;
 		if (editor.waterLayer)
@@ -1540,11 +1580,27 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 		}
 		if (entity is BaseHelicopter)
 		{
-			entity.SetFlag((Flags)16777216, true, false, true);
+			FlagsUpdateScope val = entity.StartSetFlags((FlagsUpdateMode)2);
+			try
+			{
+				((FlagsUpdateScope)(ref val)).Set((Flags)16777216, true, false);
+			}
+			finally
+			{
+				((IDisposable)(*(FlagsUpdateScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
+			}
 		}
 		if (entity is RidableHorse)
 		{
-			entity.SetFlag((Flags)2097152, true, false, true);
+			FlagsUpdateScope val2 = entity.StartSetFlags((FlagsUpdateMode)2);
+			try
+			{
+				((FlagsUpdateScope)(ref val2)).Set((Flags)2097152, true, false);
+			}
+			finally
+			{
+				((IDisposable)(*(FlagsUpdateScope*)(&val2))/*cast due to constrained. prefix*/).Dispose();
+			}
 		}
 		ClearGUI(player);
 		RaycastHit hit = default(RaycastHit);
@@ -1561,11 +1617,11 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			GamePhysics.TraceAll(player.eyes.HeadRay(), 0f, hits, editor.moveDistance, layer, (QueryTriggerInteraction)1, (BaseEntity)null);
 			for (int i = 0; i < hits.Count; i++)
 			{
-				RaycastHit val = hits[i];
-				BaseEntity entity2 = RaycastHitEx.GetEntity(val);
+				RaycastHit val3 = hits[i];
+				BaseEntity entity2 = RaycastHitEx.GetEntity(val3);
 				if (!((Object)(object)entity2 == (Object)(object)entity) && !BaseEntityEx.HasEntityInParents(entity2, entity))
 				{
-					hit = val;
+					hit = val3;
 					break;
 				}
 			}
@@ -1582,9 +1638,9 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			float num = Time.deltaTime * MoveLerp;
 			transform.position = Vector3.Lerp(transform.position, ((RaycastHit)(ref hit)).point, num);
 			Quaternion localRotation = transform.localRotation;
-			Quaternion val2 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref hit)).normal) * Quaternion.Euler(rotation);
+			Quaternion val4 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref hit)).normal) * Quaternion.Euler(rotation);
 			lookRotation = player.eyes.GetLookRotation();
-			transform.localRotation = Quaternion.Slerp(localRotation, val2 * Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref lookRotation)).eulerAngles, 0f)), num);
+			transform.localRotation = Quaternion.Slerp(localRotation, val4 * Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref lookRotation)).eulerAngles, 0f)), num);
 			((BaseNetworkable)entity).SendNetworkUpdate_Position();
 			yield return null;
 		}
@@ -1593,9 +1649,9 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			RaycastHit hit2 = default(RaycastHit);
 			GamePhysics.Trace(new Ray(transform.position, Vector3.down), 0f, ref hit2, float.MaxValue, layer, (QueryTriggerInteraction)1, (BaseEntity)null);
 			Vector3 targetPosition = ((RaycastHit)(ref hit2)).point;
-			Quaternion val3 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref hit2)).normal) * Quaternion.Euler(rotation);
+			Quaternion val5 = Quaternion.FromToRotation(Vector3.up, ((RaycastHit)(ref hit2)).normal) * Quaternion.Euler(rotation);
 			lookRotation = player.eyes.GetLookRotation();
-			Quaternion targetRotation = val3 * Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref lookRotation)).eulerAngles, 0f));
+			Quaternion targetRotation = val5 * Quaternion.Euler(Vector3Ex.WithX(((Quaternion)(ref lookRotation)).eulerAngles, 0f));
 			if (targetPosition != Vector3.zero)
 			{
 				float currentTime = 0f;
@@ -1634,19 +1690,35 @@ public class HammerModule : CarbonModule<HammerModule.HammerConfig, HammerModule
 			((Component)rigidbody).transform.hasChanged = true;
 			rigidbody.WakeUp();
 		}
-		BaseBoat val4 = (BaseBoat)(object)((entity is BaseBoat) ? entity : null);
-		if (val4 != null)
+		BaseBoat val6 = (BaseBoat)(object)((entity is BaseBoat) ? entity : null);
+		if (val6 != null)
 		{
-			((BaseVehicle)val4).OnServerWake();
+			((BaseVehicle)val6).OnServerWake();
 		}
 		Pool.FreeUnmanaged<RaycastHit>(ref hits);
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && entity is BaseHelicopter)
 		{
-			entity.SetFlag((Flags)16777216, false, false, true);
+			FlagsUpdateScope val7 = entity.StartSetFlags((FlagsUpdateMode)2);
+			try
+			{
+				((FlagsUpdateScope)(ref val7)).Set((Flags)16777216, false, false);
+			}
+			finally
+			{
+				((IDisposable)(*(FlagsUpdateScope*)(&val7))/*cast due to constrained. prefix*/).Dispose();
+			}
 		}
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && entity is RidableHorse)
 		{
-			entity.SetFlag((Flags)2097152, false, false, true);
+			FlagsUpdateScope val8 = entity.StartSetFlags((FlagsUpdateMode)2);
+			try
+			{
+				((FlagsUpdateScope)(ref val8)).Set((Flags)2097152, false, false);
+			}
+			finally
+			{
+				((IDisposable)(*(FlagsUpdateScope*)(&val8))/*cast due to constrained. prefix*/).Dispose();
+			}
 		}
 		if (BaseNetworkableEx.IsValid((BaseNetworkable)(object)entity) && !(entity is BaseCorpse) && !BaseEntityEx.HasEntityInParents(entity, (BaseEntity)(object)player) && !BaseEntityEx.HasEntityInParents((BaseEntity)(object)player, entity))
 		{

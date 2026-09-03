@@ -151,7 +151,6 @@ public class WaterSystem : MonoBehaviour
 		}
 		set
 		{
-			value = Mathf.Max(value, 0f);
 			if (!Mathf.Approximately(oceanLevel, value))
 			{
 				oceanLevel = value;

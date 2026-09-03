@@ -14,7 +14,7 @@ public class Category_Structure
 		[Parameter("priv", typeof(BuildingPrivlidge), false)]
 		[Parameter("targetId", typeof(ulong), false)]
 		[Parameter("player", typeof(BasePlayer), false)]
-		[Return(typeof(object))]
+		[Return(typeof(void))]
 		[Assembly("Carbon.Common.dll")]
 		[OxideCompatible]
 		public class OnCupboardAssign : Patch
@@ -27,7 +27,7 @@ public class Category_Structure
 		[Info("Called when a cupboard attempts to authorize a player.")]
 		[Parameter("priv", typeof(BuildingPrivlidge), false)]
 		[Parameter("player", typeof(BasePlayer), false)]
-		[Return(typeof(object))]
+		[Return(typeof(void))]
 		[Assembly("Carbon.Common.dll")]
 		[OxideCompatible]
 		public class OnCupboardAuthorize : Patch

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using ConVar;
 using Development.Attributes;
 using Facepunch;
-using Facepunch.Math;
 using Facepunch.Rust;
 using Facepunch.Rust.Profiling;
 using Network;
@@ -51,50 +50,37 @@ public static class ConsoleNetwork
 
 	internal static void SendClientReply(Connection cn, string strCommand)
 	{
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.sv.IsConnected())
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.ConsoleMessage);
 			netWrite.String(strCommand);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedOutbound(Message.Type.ConsoleMessage, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true, strCommand);
-			}
 			netWrite.Send(new SendInfo(cn));
 		}
 	}
 
 	public static void SendClientCommand(Connection cn, string strCommand, params object[] args)
 	{
-		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.sv.IsConnected() && Interface.CallHook("OnSendCommand", cn, strCommand, args) == null)
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.ConsoleCommand);
 			string val = ConsoleSystem.BuildCommand(strCommand, args);
 			netWrite.String(val);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedOutbound(Message.Type.ConsoleCommand, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true, strCommand);
-			}
+			NetProfileCapture.Annotate(netWrite, strCommand);
 			netWrite.Send(new SendInfo(cn));
 		}
 	}
 
 	public static void SendClientCommandImmediate(Connection cn, string strCommand, params object[] args)
 	{
-		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		if (Net.sv.IsConnected())
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.ConsoleCommand);
-			string text = ConsoleSystem.BuildCommand(strCommand, args);
-			netWrite.String(text);
-			if (PacketProfiler.shouldCaptureDetailedProfiling)
-			{
-				PacketProfiler.LogDetailedOutbound(Message.Type.ConsoleCommand, NetworkableId.EmptyId, null, (int)netWrite.Length, null, Epoch.Current, server: true, text);
-			}
+			string val = ConsoleSystem.BuildCommand(strCommand, args);
+			netWrite.String(val);
+			NetProfileCapture.Annotate(netWrite, strCommand);
 			netWrite.SendImmediate(new SendInfo(cn)
 			{
 				priority = Priority.Immediate
@@ -110,6 +96,7 @@ public static class ConsoleNetwork
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.ConsoleCommand);
 			netWrite.String(ConsoleSystem.BuildCommand(strCommand, args));
+			NetProfileCapture.Annotate(netWrite, strCommand);
 			netWrite.Send(new SendInfo(cn));
 		}
 	}
@@ -121,6 +108,7 @@ public static class ConsoleNetwork
 			NetWrite netWrite = Net.sv.StartWrite();
 			netWrite.PacketID(Message.Type.ConsoleCommand);
 			netWrite.String(ConsoleSystem.BuildCommand(strCommand, args));
+			NetProfileCapture.Annotate(netWrite, strCommand);
 			netWrite.Send(new SendInfo(Net.sv.connections));
 		}
 	}
@@ -142,6 +130,7 @@ public static class ConsoleNetwork
 		NetWrite netWrite = Net.sv.StartWrite();
 		netWrite.PacketID(Message.Type.ConsoleCommand);
 		netWrite.String(ConsoleSystem.BuildCommand(strCommand, args));
+		NetProfileCapture.Annotate(netWrite, strCommand);
 		netWrite.Send(new SendInfo(list));
 		Pool.FreeUnmanaged<Connection>(ref list);
 	}

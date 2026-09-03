@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Facepunch;
 using UnityEngine;
 
-public class ScientistBoatOilrigManager : BaseEntity
+public class ScientistBoatOilrigManager : MonoBehaviour
 {
 	private BoatGroupSpawner _spawner;
 

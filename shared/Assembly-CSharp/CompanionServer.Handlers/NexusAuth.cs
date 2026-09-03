@@ -1,4 +1,4 @@
-using System.Globalization;
+using System.Threading.Tasks;
 using ConVar;
 using Facepunch;
 using Facepunch.Nexus;
@@ -17,15 +17,14 @@ public class NexusAuth : BaseHandler<AppGetNexusAuth>
 		return base.Validate();
 	}
 
-	public override async void Execute()
+	public override async ValueTask Execute()
 	{
 		if (base.Request.playerId == 0L)
 		{
 			SendError("invalid_playerid");
 			return;
 		}
-		string text = base.Request.playerId.ToString("G", CultureInfo.InvariantCulture);
-		NexusPlayer val = await NexusServer.ZoneClient.GetPlayer(text);
+		NexusPlayer val = await NexusServer.ZoneClient.GetPlayer(base.Request.playerId);
 		Variable val2 = default(Variable);
 		if (val == null || !val.TryGetVariable("appKey", ref val2) || (int)val2.Type != 1 || base.Proto.appKey != val2.GetAsString())
 		{

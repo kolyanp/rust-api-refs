@@ -16,24 +16,25 @@ using ProtoBuf;
 using Rust;
 using Rust.Ai;
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("debug")]
+[ResetStaticFields]
 public class Debugging : ConsoleSystem
 {
 	private const string NO_RECOVER_ARG = "--no-recover";
 
-	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	[ServerVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
+	[ClientVar(Help = "(Generated) When enabled, validates trigger collider configurations each physics update to catch incorrectly parented or sized trigger volumes")]
 	public static bool checktriggers = false;
 
 	[ServerVar(Help = "(Generated) When enabled, validates that trigger colliders are correctly parented to their entities during physics updates; helps catch mis-parenting bugs")]
 	public static bool checkparentingtriggers = true;
 
-	[ClientVar(Saved = false, Help = "Shows some debug info for dismount attempts.")]
 	[ServerVar]
+	[ClientVar(Saved = false, Help = "Shows some debug info for dismount attempts.")]
 	public static bool DebugDismounts = false;
 
 	[ClientVar(ClientAdmin = true, Saved = false, Help = "Duration in seconds to keep ddraw for dismount attempts visible")]
@@ -60,8 +61,8 @@ public class Debugging : ConsoleSystem
 	[ServerVar(Help = "(Generated) When true, nav mesh obstacle components on loot containers are disabled in the deep sea zone to improve performance in underwater areas")]
 	public static bool disableLootNavObstaclesInDeepSea = true;
 
-	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	[ServerVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
+	[ClientVar(Help = "(Generated) When enabled, logs debug information about object callback invocations to the console; useful for tracing event callback chains")]
 	public static bool callbacks = false;
 
 	[ClientVar(Help = "(Generated) When enabled, Unity Debug.Log output is written to disk; disabling first logs a final message before suppressing further output")]
@@ -86,8 +87,8 @@ public class Debugging : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Generates and logs a render info report showing draw calls, batch counts, triangle counts, and shadow caster counts for the current frame")]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar(Help = "(Generated) Generates and logs a render info report showing draw calls, batch counts, triangle counts, and shadow caster counts for the current frame")]
 	public static void renderinfo(Arg arg)
 	{
 		RenderInfo.GenerateReport();
@@ -133,13 +134,50 @@ public class Debugging : ConsoleSystem
 		ServerConsole.PrintColoured(text, (ConsoleColor)color);
 	}
 
-	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	[ClientVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
+	[ServerVar(Help = "(Generated) Stalls the main thread for the given duration in seconds (clamped 0-1); admin-only; used to test timeout handling and watchdog systems")]
 	public static void stall(Arg arg)
 	{
 		float num = Mathf.Clamp(arg.GetFloat(0), 0f, 1f);
 		arg.ReplyWith("Stalling for " + num + " seconds...");
 		Thread.Sleep(Mathf.RoundToInt(num * 1000f));
+	}
+
+	[ClientVar(ClientAdmin = true, Help = "Intentionally crash the process to verify the native crash handler. Optional category: accessviolation (default), fatalerror, abort, purevirtual, monoabort")]
+	public static void forcecrash(Arg arg)
+	{
+		//IL_0058: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
+		string text = arg.GetString(0, "accessviolation");
+		ForcedCrashCategory val;
+		switch (text.ToLowerInvariant())
+		{
+		case "accessviolation":
+			val = (ForcedCrashCategory)0;
+			break;
+		case "fatalerror":
+			val = (ForcedCrashCategory)1;
+			break;
+		case "abort":
+			val = (ForcedCrashCategory)2;
+			break;
+		case "purevirtual":
+			val = (ForcedCrashCategory)3;
+			break;
+		case "monoabort":
+			val = (ForcedCrashCategory)4;
+			break;
+		default:
+			arg.ReplyWith("Unknown crash category \"" + text + "\" - use accessviolation, fatalerror, abort, purevirtual or monoabort");
+			return;
+		}
+		Debug.LogWarning((object)$"debug.forcecrash - intentionally crashing this process with {val}");
+		Utils.ForceCrash(val);
 	}
 
 	[ServerVar(Help = "Repair all items in inventory")]
@@ -310,6 +348,70 @@ public class Debugging : ConsoleSystem
 			}
 		}
 		arg.ReplyWith(stringBuilder.ToString());
+	}
+
+	private static MonumentBlocker FindClosestMonumentBlocker(Arg arg, float range, out float closestDistance)
+	{
+		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		closestDistance = float.MaxValue;
+		BasePlayer basePlayer = ArgEx.Player(arg);
+		if ((Object)(object)basePlayer == (Object)null)
+		{
+			arg.ReplyWith("This command can only be run by a player");
+			return null;
+		}
+		PooledList<MonumentBlocker> val = Pool.Get<PooledList<MonumentBlocker>>();
+		try
+		{
+			global::Vis.Entities(((Component)basePlayer).transform.position, range, (List<MonumentBlocker>)(object)val, -1, (QueryTriggerInteraction)2);
+			MonumentBlocker monumentBlocker = null;
+			foreach (MonumentBlocker item in (List<MonumentBlocker>)(object)val)
+			{
+				if (item.isServer)
+				{
+					float num = item.Distance(((Component)basePlayer).transform.position);
+					if (!(num >= closestDistance))
+					{
+						monumentBlocker = item;
+						closestDistance = num;
+					}
+				}
+			}
+			if ((Object)(object)monumentBlocker == (Object)null)
+			{
+				arg.ReplyWith($"No monument blocker found within {range}m");
+			}
+			return monumentBlocker;
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
+	[ServerVar(Help = "Prints the health and decay state of the monument blocker closest to you. Optional argument: search range in metres (default 100)")]
+	public static void printmonumentblocker(Arg arg)
+	{
+		float range = arg.GetFloat(0, 100f);
+		MonumentBlocker monumentBlocker = FindClosestMonumentBlocker(arg, range, out var closestDistance);
+		if (!((Object)(object)monumentBlocker == (Object)null))
+		{
+			arg.ReplyWith($"Closest monument blocker is {closestDistance:0.##}m away\n{monumentBlocker.GetDebugStatus()}");
+		}
+	}
+
+	[ServerVar(Help = "<minutes> (optional: <range>) - Adds the given number of minutes to the decay grace period timer of the monument blocker closest to you, making it start decaying that much sooner. Negative values rewind the timer")]
+	public static void addmonumentblockergrace(Arg arg)
+	{
+		float num = arg.GetFloat(0);
+		float range = arg.GetFloat(1, 100f);
+		MonumentBlocker monumentBlocker = FindClosestMonumentBlocker(arg, range, out var closestDistance);
+		if (!((Object)(object)monumentBlocker == (Object)null))
+		{
+			monumentBlocker.AddGracePeriodTime(num * 60f);
+			arg.ReplyWith($"Added {num} minutes of grace period to the monument blocker {closestDistance:0.##}m away\n{monumentBlocker.GetDebugStatus()}");
+		}
 	}
 
 	[ServerVar(Help = "(Generated) Logs all server entity network group IDs and prefab names to the console; useful for debugging network visibility and group assignment")]

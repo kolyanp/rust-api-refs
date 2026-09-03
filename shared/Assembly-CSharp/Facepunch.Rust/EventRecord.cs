@@ -613,10 +613,10 @@ public class EventRecord : IPooled
 	{
 		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0361: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0375: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_037e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0395: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03a9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03b2: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)entity == (Object)null || entity.net == null)
 		{
 			return this;
@@ -674,6 +674,11 @@ public class EventRecord : IPooled
 		{
 			AddField(key, "_grade", (int)buildingBlock.grade);
 			AddField(key, "_building_id", (int)buildingBlock.buildingID);
+		}
+		if (entity is IOEntity iOEntity)
+		{
+			AddField(key, "_io_type", (int)iOEntity.ioType);
+			AddField(key, "_current_energy", iOEntity.GetCurrentEnergy());
 		}
 		AddField(key, "_prefab", entity.ShortPrefabName);
 		Transform transform = ((Component)entity).transform;

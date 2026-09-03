@@ -35,7 +35,7 @@ public class NexusClanWrapper : IClan
 
 	public long Created => Internal.Created;
 
-	public ulong Creator => NexusClanUtil.GetSteamId(Internal.Creator);
+	public ulong Creator => Internal.Creator;
 
 	public string Motd { get; private set; }
 
@@ -119,6 +119,11 @@ public class NexusClanWrapper : IClan
 		}
 	}
 
+	public long GetLatestScore()
+	{
+		return Internal.Score;
+	}
+
 	public async ValueTask RefreshIfStale()
 	{
 		if (RealTimeSince.op_Implicit(_sinceLastRefresh) > 30f)
@@ -139,35 +144,51 @@ public class NexusClanWrapper : IClan
 
 	public async ValueTask<ClanValueResult<ClanLogs>> GetLogs(int limit, ulong bySteamId)
 	{
-		NexusClanResult<List<ClanLogEntry>> val = await Internal.GetLogs(NexusClanUtil.GetPlayerId(bySteamId), limit);
-		List<ClanLogEntry> source = default(List<ClanLogEntry>);
-		if (val.IsSuccess && val.TryGetResponse(ref source))
+		try
 		{
-			return ClanValueResult<ClanLogs>.op_Implicit(new ClanLogs
+			NexusClanResult<List<ClanLogEntry>> val = await Internal.GetLogs(bySteamId, limit);
+			List<ClanLogEntry> source = default(List<ClanLogEntry>);
+			if (val.IsSuccess && val.TryGetResponse(ref source))
 			{
-				ClanId = ClanId,
-				Entries = ((IEnumerable<ClanLogEntry>)source).Select((Func<ClanLogEntry, ClanLogEntry>)delegate(ClanLogEntry e)
+				return ClanValueResult<ClanLogs>.op_Implicit(new ClanLogs
 				{
-					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-					//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-					return new ClanLogEntry
+					ClanId = ClanId,
+					Entries = ((IEnumerable<ClanLogEntry>)source).Select((Func<ClanLogEntry, ClanLogEntry>)delegate(ClanLogEntry e)
 					{
-						Timestamp = ((ClanLogEntry)(ref e)).Timestamp * 1000,
-						EventKey = ((ClanLogEntry)(ref e)).EventKey,
-						Arg1 = ((ClanLogEntry)(ref e)).Arg1,
-						Arg2 = ((ClanLogEntry)(ref e)).Arg2,
-						Arg3 = ((ClanLogEntry)(ref e)).Arg3,
-						Arg4 = ((ClanLogEntry)(ref e)).Arg4
-					};
-				}).ToList()
-			});
+						//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+						//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+						return new ClanLogEntry
+						{
+							Timestamp = ((ClanLogEntry)(ref e)).Timestamp * 1000,
+							EventKey = ((ClanLogEntry)(ref e)).EventKey,
+							Arg1 = ((ClanLogEntry)(ref e)).Arg1,
+							Arg2 = ((ClanLogEntry)(ref e)).Arg2,
+							Arg3 = ((ClanLogEntry)(ref e)).Arg3,
+							Arg4 = ((ClanLogEntry)(ref e)).Arg4
+						};
+					}).ToList()
+				});
+			}
+			return ClanValueResult<ClanLogs>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
 		}
-		return ClanValueResult<ClanLogs>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return ClanValueResult<ClanLogs>.op_Implicit((ClanResult)0);
+		}
 	}
 
 	public async ValueTask<ClanResult> UpdateLastSeen(ulong steamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.UpdateLastSeen(NexusClanUtil.GetPlayerId(steamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.UpdateLastSeen(steamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> SetMotd(string newMotd, ulong bySteamId)
@@ -180,18 +201,26 @@ public class NexusClanWrapper : IClan
 		{
 			return (ClanResult)5;
 		}
-		string playerId = NexusClanUtil.GetPlayerId(bySteamId);
-		NexusClan obj = Internal;
-		ClanVariablesUpdate val = default(ClanVariablesUpdate);
-		((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(2)
+		try
 		{
-			new VariableUpdate("motd", newMotd, (bool?)null, (bool?)null),
-			new VariableUpdate("motd_author", playerId, (bool?)null, (bool?)null)
-		};
-		((ClanVariablesUpdate)(ref val)).EventKey = "set_motd";
-		((ClanVariablesUpdate)(ref val)).Arg1 = playerId;
-		((ClanVariablesUpdate)(ref val)).Arg2 = newMotd;
-		return NexusClanUtil.ToClanResult(await obj.UpdateVariables(val));
+			string text = bySteamId.ToString("G");
+			NexusClan obj = Internal;
+			ClanVariablesUpdate val = default(ClanVariablesUpdate);
+			((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(2)
+			{
+				new VariableUpdate("motd", newMotd, (bool?)null, (bool?)null),
+				new VariableUpdate("motd_author", text, (bool?)null, (bool?)null)
+			};
+			((ClanVariablesUpdate)(ref val)).EventKey = "set_motd";
+			((ClanVariablesUpdate)(ref val)).Arg1 = text;
+			((ClanVariablesUpdate)(ref val)).Arg2 = newMotd;
+			return NexusClanUtil.ToClanResult(await obj.UpdateVariables(val));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> SetLogo(byte[] newLogo, ulong bySteamId)
@@ -204,16 +233,24 @@ public class NexusClanWrapper : IClan
 		{
 			return (ClanResult)5;
 		}
-		string playerId = NexusClanUtil.GetPlayerId(bySteamId);
-		NexusClan obj = Internal;
-		ClanVariablesUpdate val = default(ClanVariablesUpdate);
-		((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(1)
+		try
 		{
-			new VariableUpdate("logo", (Memory<byte>)newLogo, (bool?)null, (bool?)null)
-		};
-		((ClanVariablesUpdate)(ref val)).EventKey = "set_logo";
-		((ClanVariablesUpdate)(ref val)).Arg1 = playerId;
-		return NexusClanUtil.ToClanResult(await obj.UpdateVariables(val));
+			string arg = bySteamId.ToString("G");
+			NexusClan obj = Internal;
+			ClanVariablesUpdate val = default(ClanVariablesUpdate);
+			((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(1)
+			{
+				new VariableUpdate("logo", (Memory<byte>)newLogo, (bool?)null, (bool?)null)
+			};
+			((ClanVariablesUpdate)(ref val)).EventKey = "set_logo";
+			((ClanVariablesUpdate)(ref val)).Arg1 = arg;
+			return NexusClanUtil.ToClanResult(await obj.UpdateVariables(val));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> SetColor(Color32 newColor, ulong bySteamId)
@@ -228,42 +265,90 @@ public class NexusClanWrapper : IClan
 		{
 			return (ClanResult)5;
 		}
-		string playerId = NexusClanUtil.GetPlayerId(bySteamId);
-		NexusClan obj = Internal;
-		ClanVariablesUpdate val = default(ClanVariablesUpdate);
-		((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(1)
+		try
 		{
-			new VariableUpdate("color", newColor.ToInt32().ToString("G"), (bool?)null, (bool?)null)
-		};
-		((ClanVariablesUpdate)(ref val)).EventKey = "set_color";
-		((ClanVariablesUpdate)(ref val)).Arg1 = playerId;
-		((ClanVariablesUpdate)(ref val)).Arg2 = newColor.ToHex();
-		return NexusClanUtil.ToClanResult(await obj.UpdateVariables(val));
+			string arg = bySteamId.ToString("G");
+			NexusClan obj = Internal;
+			ClanVariablesUpdate val = default(ClanVariablesUpdate);
+			((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(1)
+			{
+				new VariableUpdate("color", newColor.ToInt32().ToString("G"), (bool?)null, (bool?)null)
+			};
+			((ClanVariablesUpdate)(ref val)).EventKey = "set_color";
+			((ClanVariablesUpdate)(ref val)).Arg1 = arg;
+			((ClanVariablesUpdate)(ref val)).Arg2 = newColor.ToHex();
+			return NexusClanUtil.ToClanResult(await obj.UpdateVariables(val));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> Invite(ulong steamId, ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.Invite(NexusClanUtil.GetPlayerId(steamId), NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.Invite(steamId, bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> CancelInvite(ulong steamId, ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.CancelInvite(NexusClanUtil.GetPlayerId(steamId), NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.CancelInvite(steamId, bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> AcceptInvite(ulong steamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.AcceptInvite(NexusClanUtil.GetPlayerId(steamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.AcceptInvite(steamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> Kick(ulong steamId, ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.Kick(NexusClanUtil.GetPlayerId(steamId), NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.Kick(steamId, bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> SetPlayerRole(ulong steamId, int newRoleId, ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.SetPlayerRole(NexusClanUtil.GetPlayerId(steamId), newRoleId, NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.SetPlayerRole(steamId, newRoleId, bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> SetPlayerNotes(ulong steamId, string notes, ulong bySteamId)
@@ -276,80 +361,135 @@ public class NexusClanWrapper : IClan
 		{
 			return (ClanResult)5;
 		}
-		string playerId = NexusClanUtil.GetPlayerId(steamId);
-		string playerId2 = NexusClanUtil.GetPlayerId(bySteamId);
-		NexusClan obj = Internal;
-		ClanVariablesUpdate val = default(ClanVariablesUpdate);
-		((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(1)
+		try
 		{
-			new VariableUpdate("notes", notes, (bool?)null, (bool?)null)
-		};
-		((ClanVariablesUpdate)(ref val)).EventKey = "set_notes";
-		((ClanVariablesUpdate)(ref val)).Arg1 = playerId2;
-		((ClanVariablesUpdate)(ref val)).Arg2 = playerId;
-		((ClanVariablesUpdate)(ref val)).Arg3 = notes;
-		return NexusClanUtil.ToClanResult(await obj.UpdatePlayerVariables(playerId, val));
+			NexusClan obj = Internal;
+			ulong num = steamId;
+			ClanVariablesUpdate val = default(ClanVariablesUpdate);
+			((ClanVariablesUpdate)(ref val)).Variables = new List<VariableUpdate>(1)
+			{
+				new VariableUpdate("notes", notes, (bool?)null, (bool?)null)
+			};
+			((ClanVariablesUpdate)(ref val)).EventKey = "set_notes";
+			((ClanVariablesUpdate)(ref val)).Arg1 = bySteamId.ToString("G");
+			((ClanVariablesUpdate)(ref val)).Arg2 = steamId.ToString("G");
+			((ClanVariablesUpdate)(ref val)).Arg3 = notes;
+			return NexusClanUtil.ToClanResult(await obj.UpdatePlayerVariables(num, val));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> CreateRole(ClanRole role, ulong bySteamId)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		return NexusClanUtil.ToClanResult(await Internal.CreateRole(NexusClanUtil.ToRoleParameters(role), NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.CreateRole(NexusClanUtil.ToRoleParameters(role), bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> UpdateRole(ClanRole role, ulong bySteamId)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		return NexusClanUtil.ToClanResult(await Internal.UpdateRole(role.RoleId, NexusClanUtil.ToRoleParameters(role), NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.UpdateRole(role.RoleId, NexusClanUtil.ToRoleParameters(role), bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> SwapRoleRanks(int roleIdA, int roleIdB, ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.SwapRoleRanks(roleIdA, roleIdB, NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.SwapRoleRanks(roleIdA, roleIdB, bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> DeleteRole(int roleId, ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.DeleteRole(roleId, NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.DeleteRole(roleId, bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanResult> Disband(ulong bySteamId)
 	{
-		return NexusClanUtil.ToClanResult(await Internal.Disband(NexusClanUtil.GetPlayerId(bySteamId)));
+		try
+		{
+			return NexusClanUtil.ToClanResult(await Internal.Disband(bySteamId));
+		}
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return (ClanResult)0;
+		}
 	}
 
 	public async ValueTask<ClanValueResult<ClanScoreEvents>> GetScoreEvents(int limit, ulong bySteamId)
 	{
-		NexusClanResult<List<ClanScoreEventEntry>> val = await Internal.GetScoreEvents(NexusClanUtil.GetPlayerId(bySteamId), limit);
-		List<ClanScoreEventEntry> source = default(List<ClanScoreEventEntry>);
-		if (val.IsSuccess && val.TryGetResponse(ref source))
+		try
 		{
-			return ClanValueResult<ClanScoreEvents>.op_Implicit(new ClanScoreEvents
+			NexusClanResult<List<ClanScoreEventEntry>> val = await Internal.GetScoreEvents(bySteamId, limit);
+			List<ClanScoreEventEntry> source = default(List<ClanScoreEventEntry>);
+			if (val.IsSuccess && val.TryGetResponse(ref source))
 			{
-				ClanId = ClanId,
-				ScoreEvents = ((IEnumerable<ClanScoreEventEntry>)source).Select((Func<ClanScoreEventEntry, ClanScoreEvent>)delegate(ClanScoreEventEntry e)
+				return ClanValueResult<ClanScoreEvents>.op_Implicit(new ClanScoreEvents
 				{
-					//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-					//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-					//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-					return new ClanScoreEvent
+					ClanId = ClanId,
+					ScoreEvents = ((IEnumerable<ClanScoreEventEntry>)source).Select((Func<ClanScoreEventEntry, ClanScoreEvent>)delegate(ClanScoreEventEntry e)
 					{
-						Timestamp = ((ClanScoreEventEntry)(ref e)).Timestamp * 1000,
-						Type = (ClanScoreEventType)((ClanScoreEventEntry)(ref e)).Type,
-						Score = ((ClanScoreEventEntry)(ref e)).Score,
-						Multiplier = ((ClanScoreEventEntry)(ref e)).Multiplier,
-						SteamId = NexusClanUtil.TryGetSteamId(((ClanScoreEventEntry)(ref e)).PlayerId),
-						OtherSteamId = NexusClanUtil.TryGetSteamId(((ClanScoreEventEntry)(ref e)).OtherPlayerId),
-						OtherClanId = ((ClanScoreEventEntry)(ref e)).OtherClanId,
-						Arg1 = ((ClanScoreEventEntry)(ref e)).Arg1,
-						Arg2 = ((ClanScoreEventEntry)(ref e)).Arg2
-					};
-				}).ToList()
-			});
+						//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+						//IL_0026: Unknown result type (might be due to invalid IL or missing references)
+						//IL_008d: Unknown result type (might be due to invalid IL or missing references)
+						return new ClanScoreEvent
+						{
+							Timestamp = ((ClanScoreEventEntry)(ref e)).Timestamp * 1000,
+							Type = (ClanScoreEventType)((ClanScoreEventEntry)(ref e)).Type,
+							Score = ((ClanScoreEventEntry)(ref e)).Score,
+							Multiplier = ((ClanScoreEventEntry)(ref e)).Multiplier,
+							SteamId = ((ClanScoreEventEntry)(ref e)).PlayerId,
+							OtherSteamId = ((ClanScoreEventEntry)(ref e)).OtherPlayerId,
+							OtherClanId = ((ClanScoreEventEntry)(ref e)).OtherClanId,
+							Arg1 = ((ClanScoreEventEntry)(ref e)).Arg1,
+							Arg2 = ((ClanScoreEventEntry)(ref e)).Arg2
+						};
+					}).ToList()
+				});
+			}
+			return ClanValueResult<ClanScoreEvents>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
 		}
-		return ClanValueResult<ClanScoreEvents>.op_Implicit(NexusClanUtil.ToClanResult(val.ResultCode));
+		catch (Exception ex)
+		{
+			Debug.LogException(ex);
+			return ClanValueResult<ClanScoreEvents>.op_Implicit((ClanResult)0);
+		}
 	}
 
 	public ValueTask<ClanResult> AddScoreEvent(ClanScoreEvent scoreEvent)
@@ -360,19 +500,17 @@ public class NexusClanWrapper : IClan
 		//IL_001b: Expected I4, but got Unknown
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0049: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		NexusClan obj = Internal;
 		NewClanScoreEventEntry val = default(NewClanScoreEventEntry);
 		((NewClanScoreEventEntry)(ref val)).Type = (int)scoreEvent.Type;
 		((NewClanScoreEventEntry)(ref val)).Score = scoreEvent.Score;
 		((NewClanScoreEventEntry)(ref val)).Multiplier = scoreEvent.Multiplier;
-		((NewClanScoreEventEntry)(ref val)).PlayerId = NexusClanUtil.GetPlayerId(scoreEvent.SteamId);
-		((NewClanScoreEventEntry)(ref val)).OtherPlayerId = NexusClanUtil.GetPlayerId(scoreEvent.OtherSteamId);
+		((NewClanScoreEventEntry)(ref val)).PlayerId = scoreEvent.SteamId.GetValueOrDefault();
+		((NewClanScoreEventEntry)(ref val)).OtherPlayerId = scoreEvent.OtherSteamId.GetValueOrDefault();
 		((NewClanScoreEventEntry)(ref val)).OtherClanId = scoreEvent.OtherClanId;
 		((NewClanScoreEventEntry)(ref val)).Arg1 = scoreEvent.Arg1;
 		((NewClanScoreEventEntry)(ref val)).Arg2 = scoreEvent.Arg2;

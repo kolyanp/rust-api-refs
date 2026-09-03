@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Facepunch;
 using OceanSimulationJobs;
 using Unity.Collections;
 using Unity.Jobs;
@@ -557,7 +558,7 @@ public class OceanSimulation : IDisposable
 		_cachedBatchJob.Count = positions.Length;
 		ref Rust.Water5.GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
 		int num = positions.Length;
-		int batchSize = GamePhysics.GetBatchSize(positions.Length);
+		int batchSize = ThreadUtils.GetBatchSize(positions.Length);
 		JobHandle val = default(JobHandle);
 		val = IJobParallelForExtensions.ScheduleByRef<Rust.Water5.GetHeightBatchedJob>(ref cachedBatchJob, num, batchSize, val);
 		((JobHandle)(ref val)).Complete();
@@ -590,7 +591,7 @@ public class OceanSimulation : IDisposable
 		_cachedBatchJob.Count = positions.Length;
 		ref Rust.Water5.GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
 		int length = positions.Length;
-		int batchSize = GamePhysics.GetBatchSize(positions.Length);
+		int batchSize = ThreadUtils.GetBatchSize(positions.Length);
 		JobHandle val = default(JobHandle);
 		val = IJobParallelForExtensions.ScheduleByRef<Rust.Water5.GetHeightBatchedJob>(ref cachedBatchJob, length, batchSize, val);
 		((JobHandle)(ref val)).Complete();
@@ -622,7 +623,7 @@ public class OceanSimulation : IDisposable
 		_cachedBatchJob.Count = positions.Length;
 		ref Rust.Water5.GetHeightBatchedJob cachedBatchJob = ref _cachedBatchJob;
 		int length = positions.Length;
-		int batchSize = GamePhysics.GetBatchSize(positions.Length);
+		int batchSize = ThreadUtils.GetBatchSize(positions.Length);
 		JobHandle val = default(JobHandle);
 		val = IJobParallelForExtensions.ScheduleByRef<Rust.Water5.GetHeightBatchedJob>(ref cachedBatchJob, length, batchSize, val);
 		((JobHandle)(ref val)).Complete();

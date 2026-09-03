@@ -300,7 +300,10 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 		if (inventory != null)
 		{
 			BasePlayer player = rpc.player;
-			PlayerOpenLoot(player);
+			if (CanLoot(player))
+			{
+				PlayerOpenLoot(player);
+			}
 		}
 	}
 
@@ -387,6 +390,11 @@ public class DroppedItemContainer : BaseCombatEntity, LootPanel.IHasLootPanel, I
 				Debug.LogWarning((object)("Dropped item container without inventory: " + ((object)this).ToString()));
 			}
 		}
+	}
+
+	public bool CanLoot(BasePlayer player)
+	{
+		return !player.IsBlockedFromLootingByMountable();
 	}
 
 	public override bool ShouldInheritNetworkGroup()

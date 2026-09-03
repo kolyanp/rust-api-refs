@@ -32,9 +32,13 @@ internal sealed class AssemblyManager : CarbonBehaviour, IAssemblyManager
 		"UnityEngine.UnityWebRequestAssetBundleModule", "UnityEngine.UnityWebRequestAudioModule", "UnityEngine.UnityWebRequestModule", "UnityEngine.UnityWebRequestTextureModule", "UnityEngine.UnityWebRequestWWWModule", "UnityEngine.VehiclesModule", "UnityEngine", "Facepunch.Steamworks.Win64"
 	});
 
+	private static readonly IReadOnlyList<string> _proxyLibs = new global::_003C_003Ez__ReadOnlySingleElementList<string>("Carbon.Proxy");
+
 	public IReadOnlyList<string> RefBlacklist => _blacklistLibs;
 
 	public IReadOnlyList<string> RefWhitelist => _whitelistLibs;
+
+	public IReadOnlyList<string> RefProxy => _proxyLibs;
 
 	public IAddonManager Components { get; private set; }
 

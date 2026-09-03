@@ -25,7 +25,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 
 	public const Flags Crafting = Flags.Reserved1;
 
-	public const Flags FullOutput = Flags.Reserved2;
+	public const Flags FullOutput = Flags.Reserved3;
 
 	public Renderer MeshRenderer;
 
@@ -223,8 +223,8 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 	{
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (_inventory != null)
@@ -295,7 +295,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		}
 	}
 
-	private bool CanAcceptItem(Item item, int index)
+	private bool CanAcceptItem(BasePlayer player, Item item, int index)
 	{
 		if (index >= 0 && index <= 3 && !item.IsBlueprint())
 		{
@@ -376,13 +376,13 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 			{
 				using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 				{
-					flagsUpdateScope.Set(Flags.Reserved2, b: true);
+					flagsUpdateScope.Set(Flags.Reserved3, b: true);
 				}
 				continue;
 			}
 			using (FlagsUpdateScope flagsUpdateScope2 = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope2.Set(Flags.Reserved2, b: false);
+				flagsUpdateScope2.Set(Flags.Reserved3, b: false);
 			}
 			foreach (ItemAmount ingredient2 in blueprint.GetIngredients())
 			{
@@ -689,7 +689,7 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 			flagsUpdateScope.Set(Flags.Busy, b: true);
 			if (!wantsOn)
 			{
-				flagsUpdateScope.Set(Flags.Reserved2, b: false);
+				flagsUpdateScope.Set(Flags.Reserved3, b: false);
 			}
 		}
 		Invoke(Unbusy, 0.5f);
@@ -703,9 +703,9 @@ public class IndustrialCrafter : IndustrialEntity, IItemContainerEntity, IIdealS
 		flagsUpdateScope.Set(Flags.Busy, b: false);
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	private void SvSwitch(RPCMessage msg)
 	{
 		SetSwitch(!IsOn());

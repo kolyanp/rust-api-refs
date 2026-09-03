@@ -282,8 +282,8 @@ public class FlameThrower : AttackEntity
 		info.msg.baseProjectile.primaryMagazine.contents = ammo;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void SetFiring(RPCMessage msg)
 	{
 		bool flameState = msg.read.Bit();
@@ -340,8 +340,8 @@ public class FlameThrower : AttackEntity
 		SetFlameState(wantsOn: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	public void DoReload(RPCMessage msg)
 	{
 		BasePlayer ownerPlayer = GetOwnerPlayer();

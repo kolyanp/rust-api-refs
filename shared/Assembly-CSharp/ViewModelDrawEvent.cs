@@ -16,11 +16,13 @@ public struct ViewModelDrawEvent : IEquatable<ViewModelDrawEvent>
 
 	public int pass;
 
+	public bool needsFilteredRefraction;
+
 	public bool Equals(ViewModelDrawEvent other)
 	{
-		if (object.Equals(viewModelRenderer, other.viewModelRenderer) && object.Equals(renderer, other.renderer) && skipDepthPrePass == other.skipDepthPrePass && object.Equals(material, other.material) && subMesh == other.subMesh)
+		if (object.Equals(viewModelRenderer, other.viewModelRenderer) && object.Equals(renderer, other.renderer) && skipDepthPrePass == other.skipDepthPrePass && object.Equals(material, other.material) && subMesh == other.subMesh && pass == other.pass)
 		{
-			return pass == other.pass;
+			return needsFilteredRefraction == other.needsFilteredRefraction;
 		}
 		return false;
 	}
@@ -36,6 +38,6 @@ public struct ViewModelDrawEvent : IEquatable<ViewModelDrawEvent>
 
 	public override int GetHashCode()
 	{
-		return ((((((((((((Object)(object)viewModelRenderer != (Object)null) ? ((object)viewModelRenderer).GetHashCode() : 0) * 397) ^ (((Object)(object)renderer != (Object)null) ? ((object)renderer).GetHashCode() : 0)) * 397) ^ skipDepthPrePass.GetHashCode()) * 397) ^ (((Object)(object)material != (Object)null) ? ((object)material).GetHashCode() : 0)) * 397) ^ subMesh) * 397) ^ pass;
+		return ((((((((((((((Object)(object)viewModelRenderer != (Object)null) ? ((object)viewModelRenderer).GetHashCode() : 0) * 397) ^ (((Object)(object)renderer != (Object)null) ? ((object)renderer).GetHashCode() : 0)) * 397) ^ skipDepthPrePass.GetHashCode()) * 397) ^ (((Object)(object)material != (Object)null) ? ((object)material).GetHashCode() : 0)) * 397) ^ subMesh) * 397) ^ pass) * 397) ^ needsFilteredRefraction.GetHashCode();
 	}
 }

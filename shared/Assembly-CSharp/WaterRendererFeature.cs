@@ -2,7 +2,6 @@ using Rust.RenderPipeline.Runtime;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/WaterRendererFeature")]
-[RustRendererFeatureCameraComponent(typeof(WaterRendererCamera), typeof(WaterRendererCameraContext))]
 public class WaterRendererFeature : RustRendererFeature
 {
 	[SerializeField]
@@ -31,6 +30,16 @@ public class WaterRendererFeature : RustRendererFeature
 
 	[SerializeField]
 	private Shader underwaterEffectShader;
+
+	public override RustRendererFeatureCameraBase CreateCameraComponent()
+	{
+		return (RustRendererFeatureCameraBase)(object)new WaterRendererCamera();
+	}
+
+	public override RustRendererFeatureCameraContext CreateCameraContext()
+	{
+		return (RustRendererFeatureCameraContext)(object)new WaterRendererCameraContext();
+	}
 
 	public override void Create()
 	{

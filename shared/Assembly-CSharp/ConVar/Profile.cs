@@ -179,20 +179,20 @@ public class Profile : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Starts recording a Unity Profiler binary log to a timestamped file in the profile/ folder; requires ENABLE_PROFILER build flag")]
 	[ServerVar(Help = "(Generated) Starts recording a Unity Profiler binary log to a timestamped file in the profile/ folder; requires ENABLE_PROFILER build flag")]
+	[ClientVar(Help = "(Generated) Starts recording a Unity Profiler binary log to a timestamped file in the profile/ folder; requires ENABLE_PROFILER build flag")]
 	public static void start(Arg arg)
 	{
 	}
 
-	[ClientVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
 	[ServerVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
+	[ClientVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
 	public static void stop(Arg arg)
 	{
 	}
 
-	[ClientVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
 	[ServerVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
+	[ClientVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
 	public static void flush_analytics(Arg arg)
 	{
 	}

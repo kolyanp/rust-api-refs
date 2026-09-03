@@ -400,6 +400,11 @@ public abstract class BaseModularVehicle : GroundVehicle, PlayerInventory.ICanMo
 		rigidBody.centerOfMass = Vector3.Scale(realLocalCOM, GetCOMMultiplier());
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	public override void InitShared()
 	{
 		//IL_000e: Unknown result type (might be due to invalid IL or missing references)

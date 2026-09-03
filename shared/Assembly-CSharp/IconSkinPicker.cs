@@ -31,10 +31,15 @@ public class IconSkinPicker : MonoBehaviour
 
 	public static Phrase defaultSkin;
 
+	public static Phrase randomSkin;
+
 	static IconSkinPicker()
 	{
 		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Expected O, but got Unknown
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Expected O, but got Unknown
 		defaultSkin = new Phrase("skin.default", "Default");
+		randomSkin = new Phrase("skin.random", "Random");
 	}
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using AOT;
 using ConVar;
 using Facepunch;
@@ -22,6 +24,8 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 	private RustNavmesh _defaultNavmesh;
 
 	private HashSet<IndependantNavmesh> _navmeshes = new HashSet<IndependantNavmesh>();
+
+	private static readonly RecastWrapper.LogCallback logMessageDelegate = LogMessage;
 
 	private static readonly HashSet<BasePlayer> drawViewers = new HashSet<BasePlayer>();
 
@@ -51,6 +55,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				if (_defaultNavmesh != null)
 				{
 					_defaultNavmesh.EmitTileChangeEvents = true;
+					_defaultNavmesh.debugName = "default";
 				}
 				OnDefaultNavmeshInstanceChanged();
 			}
@@ -67,19 +72,12 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			}
 			return _navmeshes;
 		}
-		set
-		{
-			if (EnsureNewNavmesh())
-			{
-				_navmeshes = value;
-			}
-		}
 	}
 
 	[MonoPInvokeCallback(typeof(RecastWrapper.LogCallback))]
 	public static void LogMessage(string message)
 	{
-		if (EnsureNewNavmesh())
+		if (AI.logIssues && EnsureNewNavmesh())
 		{
 			Debug.Log((object)("[RustNav] DLL Log: " + message));
 		}
@@ -110,7 +108,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			Instance = this;
 			if (!AI.useUnityNavmesh)
 			{
-				RecastWrapper.SetLogCallback(LogMessage);
+				RecastWrapper.SetLogCallback(logMessageDelegate);
 			}
 		}
 		else
@@ -158,9 +156,10 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		{
 			tileBuilder = new BackgroundTileBuilder();
 		}
+		BakeStats.Reset();
 		BackgroundTileBuilder backgroundTileBuilder = tileBuilder;
 		bool synchronous2 = synchronous;
-		RustNavmesh rustNavmesh = new RustNavmesh(backgroundTileBuilder, null, null, null, shouldBuild: true, synchronous2);
+		RustNavmesh rustNavmesh = new RustNavmesh(backgroundTileBuilder, null, null, null, shouldBuild: true, synchronous2, forceHiRes: false, cullTilesFarFromShore: true);
 		if (rustNavmesh == null || !rustNavmesh.IsValid())
 		{
 			LogError("Failed to build default navmesh");
@@ -171,6 +170,14 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			DefaultNavmesh.Dispose();
 		}
 		DefaultNavmesh = rustNavmesh;
+	}
+
+	public void RebuildTileSynchronous(RustNavmesh navmesh, int tx, int ty)
+	{
+		if (tileBuilder != null && navmesh != null)
+		{
+			tileBuilder.EnqueueOnMainThread(navmesh, tx, ty, synchronous: true);
+		}
 	}
 
 	public void AddNavmesh(IndependantNavmesh navmesh)
@@ -204,6 +211,10 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 
 	private void OnDestroy()
 	{
+		if ((Object)(object)Instance == (Object)(object)this)
+		{
+			Instance = null;
+		}
 		if (!AI.useUnityNavmesh)
 		{
 			if (DefaultNavmesh != null)
@@ -257,14 +268,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 			{
 				Directory.CreateDirectory(directoryName);
 			}
-			using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
-			{
-				if (!DefaultNavmesh.Save(writer))
-				{
-					return false;
-				}
-			}
-			return true;
+			return DefaultNavmesh.Save(path);
 		}
 	}
 
@@ -282,24 +286,25 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				LogWarning("Navmesh file not found at path: " + path);
 				return false;
 			}
-			using (BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open)))
+			if (tileBuilder == null)
 			{
-				if (tileBuilder == null)
-				{
-					tileBuilder = new BackgroundTileBuilder();
-				}
-				RustNavmesh rustNavmesh = RustNavmesh.Load(reader, tileBuilder, synchronous);
-				if (rustNavmesh == null || !rustNavmesh.IsValid())
-				{
-					return false;
-				}
-				if (DefaultNavmesh != null)
-				{
-					DefaultNavmesh.Dispose();
-				}
-				DefaultNavmesh = rustNavmesh;
+				tileBuilder = new BackgroundTileBuilder();
 			}
-			ValidateNavmeshes();
+			RustNavmesh rustNavmesh = RustNavmesh.Load(path, tileBuilder, synchronous, cullTilesFarFromShore: true);
+			if (rustNavmesh == null || !rustNavmesh.IsValid())
+			{
+				return false;
+			}
+			if (DefaultNavmesh != null)
+			{
+				DefaultNavmesh.Dispose();
+			}
+			DefaultNavmesh = rustNavmesh;
+			RustNavMeshAgent.RebindAgentsAfterNavmeshSwap();
+			if (AI.checkTileValid)
+			{
+				ValidateNavmeshes();
+			}
 			return true;
 		}
 	}
@@ -319,6 +324,17 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				tileBuilder.Dispose();
 			}
 			tileBuilder = new BackgroundTileBuilder();
+			if (DefaultNavmesh != null)
+			{
+				DefaultNavmesh.SetTileBuilder(tileBuilder);
+			}
+			foreach (IndependantNavmesh navmesh in Navmeshes)
+			{
+				if ((Object)(object)navmesh != (Object)null && navmesh.Navmesh != null)
+				{
+					navmesh.Navmesh.SetTileBuilder(tileBuilder);
+				}
+			}
 			foreach (var item in (List<(RustNavmesh, int, int)>)(object)val)
 			{
 				tileBuilder.EnqueueOnMainThread(item.Item1, item.Item2, item.Item3);
@@ -342,11 +358,69 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		}
 	}
 
+	public string ReportNavmeshStats()
+	{
+		PooledList<RustNavmesh> val = Pool.Get<PooledList<RustNavmesh>>();
+		try
+		{
+			if (_defaultNavmesh != null && _defaultNavmesh.IsValid())
+			{
+				((List<RustNavmesh>)(object)val).Add(_defaultNavmesh);
+			}
+			foreach (IndependantNavmesh navmesh in _navmeshes)
+			{
+				if ((Object)(object)navmesh != (Object)null && navmesh.Navmesh != null && navmesh.Navmesh.IsValid())
+				{
+					((List<RustNavmesh>)(object)val).Add(navmesh.Navmesh);
+				}
+			}
+			for (int i = 0; i < ((List<RustNavmesh>)(object)val).Count - 1; i++)
+			{
+				int num = i;
+				for (int j = i + 1; j < ((List<RustNavmesh>)(object)val).Count; j++)
+				{
+					if (((List<RustNavmesh>)(object)val)[j].workerBuildTicks > ((List<RustNavmesh>)(object)val)[num].workerBuildTicks)
+					{
+						num = j;
+					}
+				}
+				if (num != i)
+				{
+					int index = i;
+					PooledList<RustNavmesh> val2 = val;
+					int index2 = num;
+					RustNavmesh rustNavmesh = ((List<RustNavmesh>)(object)val)[num];
+					RustNavmesh rustNavmesh2 = ((List<RustNavmesh>)(object)val)[i];
+					RustNavmesh rustNavmesh3 = (((List<RustNavmesh>)(object)val)[index] = rustNavmesh);
+					rustNavmesh3 = (((List<RustNavmesh>)(object)val2)[index2] = rustNavmesh2);
+				}
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.AppendLine($"=== RustNav navmeshes ({((List<RustNavmesh>)(object)val).Count}) by accumulated worker build time ===");
+			if (!RustNav.bakeStatsEnabled)
+			{
+				stringBuilder.AppendLine("(worker times only accumulate while rustnav.bakestatsenabled is true)");
+			}
+			double num2 = 1000.0 / (double)Stopwatch.Frequency;
+			foreach (RustNavmesh item in (List<RustNavmesh>)(object)val)
+			{
+				double num3 = (double)item.workerBuildTicks * num2;
+				string text = ((item.lastFullBuildSeconds >= 0.0) ? $"{item.lastFullBuildSeconds:F2}s" : "building");
+				stringBuilder.AppendLine(string.Format("{0,-40} worker {1,10:F1}ms  tiles {2,6}/{3,-6} first full build {4}", new object[5] { item.debugName, num3, item.NumBuiltTiles, item.TotalTiles, text }));
+			}
+			return stringBuilder.ToString();
+		}
+		finally
+		{
+			((IDisposable)val)?.Dispose();
+		}
+	}
+
 	public void RebuildTilesInBounds(Bounds rebuildBounds, bool synchronous = false)
 	{
 		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavigation.RebuildTilesInBounds"))
 		{
 			if (!EnsureNewNavmesh())
@@ -361,7 +435,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 				{
 					item.RebuildTilesInBounds(rebuildBounds, synchronous);
 				}
-				if (((List<IndependantNavmesh>)(object)val).Count <= 0 && IsDefaultNavmeshBuilt())
+				if (IsDefaultNavmeshBuilt())
 				{
 					DefaultNavmesh.RebuildTilesInBounds(rebuildBounds, synchronous);
 				}

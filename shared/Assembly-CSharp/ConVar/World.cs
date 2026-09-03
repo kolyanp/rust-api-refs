@@ -21,8 +21,8 @@ public class World : ConsoleSystem
 	[ServerVar(Help = "(Generated) Path to a world generation config file used by the procedural map generator; used when configString is empty")]
 	public static string configFile = string.Empty;
 
-	[ClientVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
 	[ServerVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
+	[ClientVar(Help = "(Generated) Prints a table of all monuments on the current map including type, display name, prefab path, and world position; admin/developer only")]
 	public static void monuments(Arg arg)
 	{
 		//IL_0093: Unknown result type (might be due to invalid IL or missing references)

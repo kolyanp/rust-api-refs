@@ -53,8 +53,8 @@ public class LifeInfographic : SingletonComponent<LifeInfographic>, IPrefabPrePr
 
 	public bool ShowDebugData;
 
-	[Tooltip("Automatically filled in by prefab preprocess")]
 	[ReadOnly]
+	[Tooltip("Automatically filled in by prefab preprocess")]
 	public EntityNameToItemDefinition[] EntityNameToItemDefinitions;
 
 	bool IPrefabPreProcess.CanRunDuringBundling => true;

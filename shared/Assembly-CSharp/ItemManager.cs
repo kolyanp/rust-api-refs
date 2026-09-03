@@ -23,6 +23,8 @@ public class ItemManager
 		public ItemDefinition Rock = FindItemDefinition("rock");
 
 		public ItemDefinition MasterKey = FindItemDefinition("apartment.master_key");
+
+		public ItemDefinition Fertilizer = FindItemDefinition("fertilizer");
 	}
 
 	private struct ItemRemove
@@ -99,28 +101,39 @@ public class ItemManager
 			select x).ToList();
 		Dictionary<int, ItemDefinition> dictionary = new Dictionary<int, ItemDefinition>();
 		Dictionary<string, ItemDefinition> dictionary2 = new Dictionary<string, ItemDefinition>(StringComparer.OrdinalIgnoreCase);
-		foreach (ItemDefinition item in list)
+		for (int num = 0; num < list.Count; num++)
 		{
-			item.Initialize(list);
-			if (dictionary.ContainsKey(item.itemid))
+			ItemDefinition itemDefinition = list[num];
+			if (dictionary.ContainsKey(itemDefinition.itemid))
 			{
-				ItemDefinition itemDefinition = dictionary[item.itemid];
-				Debug.LogWarning((object)("Item ID duplicate " + item.itemid + " (" + ((Object)item).name + ") - have you given your items unique shortnames?"), (Object)(object)((Component)item).gameObject);
-				Debug.LogWarning((object)("Other item is " + ((Object)itemDefinition).name), (Object)(object)itemDefinition);
-			}
-			else if (string.IsNullOrEmpty(item.shortname))
-			{
-				Debug.LogWarning((object)$"{item} has a null short name! id: {item.itemid} {item.displayName.english}");
+				ItemDefinition itemDefinition2 = dictionary[itemDefinition.itemid];
+				Debug.LogWarning((object)("Item ID duplicate " + itemDefinition.itemid + " (" + ((Object)itemDefinition).name + ") - have you given your items unique shortnames?"), (Object)(object)((Component)itemDefinition).gameObject);
+				Debug.LogWarning((object)("Other item is " + ((Object)itemDefinition2).name), (Object)(object)itemDefinition2);
+				list.RemoveAt(num);
+				num--;
 			}
 			else
 			{
-				dictionary.Add(item.itemid, item);
-				dictionary2.Add(item.shortname, item);
-				ItemBlueprint component = ((Component)item).GetComponent<ItemBlueprint>();
-				if ((Object)(object)component != (Object)null)
-				{
-					itemToBlueprint.Add(item, component);
-				}
+				dictionary.Add(itemDefinition.itemid, itemDefinition);
+				dictionary2.Add(itemDefinition.shortname, itemDefinition);
+			}
+		}
+		itemList = list;
+		itemDictionary = dictionary;
+		itemDictionaryByName = dictionary2;
+		Items = new ItemLookup();
+		foreach (ItemDefinition item in list)
+		{
+			item.Initialize(list);
+			if (string.IsNullOrEmpty(item.shortname))
+			{
+				Debug.LogWarning((object)$"{item} has a null short name! id: {item.itemid} {item.displayName.english}");
+				continue;
+			}
+			ItemBlueprint component = ((Component)item).GetComponent<ItemBlueprint>();
+			if ((Object)(object)component != (Object)null)
+			{
+				itemToBlueprint.Add(item, component);
 			}
 		}
 		stopwatch.Stop();
@@ -161,7 +174,6 @@ public class ItemManager
 			}
 		}
 		CalculateApartmentItemTaxes();
-		Items = new ItemLookup();
 	}
 
 	private static void CalculateApartmentItemTaxes()

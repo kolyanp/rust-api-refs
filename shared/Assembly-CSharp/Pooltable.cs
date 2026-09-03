@@ -14,8 +14,8 @@ public class Pooltable : BaseCombatEntity
 
 	private TimeSince timeSinceLastMove;
 
-	[Header("Shared")]
 	[SerializeField]
+	[Header("Shared")]
 	private float ballRadius;
 
 	[SerializeField]
@@ -45,19 +45,19 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private bool runWalkClippingChecks;
 
-	[SerializeField]
 	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
+	[SerializeField]
 	private Bounds walkAreaCheck;
 
-	[Header("Server")]
 	[SerializeField]
+	[Header("Server")]
 	private GameObjectRef mountableRef;
 
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[SerializeField]
 	[Header("Client")]
+	[SerializeField]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -87,13 +87,13 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval;
 
-	[Header("Ball Return")]
-	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	[SerializeField]
+	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
+	[Header("Ball Return")]
 	private WorldSpline ballReturnPath;
 
-	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
 	[SerializeField]
+	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
 	private GameObject[] basketBalls;
 
 	[SerializeField]
@@ -440,7 +440,8 @@ public class Pooltable : BaseCombatEntity
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
 		bool b = gameController != null && gameController.HasGame && TimeSince.op_Implicit(timeSinceLastMove) > idle_reset_seconds;
-		SetFlag(Flags.Reserved1, b);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved1, b);
 	}
 
 	public override void Save(SaveInfo info)
@@ -461,7 +462,7 @@ public class Pooltable : BaseCombatEntity
 				return;
 			}
 			info.msg.Pooltable = Pool.Get<Pooltable>();
-			info.msg.Pooltable.poolBalls = (List<PoolBallData>)(object)Pool.Get<PooledList<PoolBallData>>();
+			info.msg.Pooltable.poolBalls = Pool.Get<List<PoolBallData>>();
 			if (physicsEngine != null && physicsEngine.IsReady)
 			{
 				info.msg.Pooltable.poolBalls.Clear();
@@ -487,8 +488,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -497,8 +498,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -545,8 +546,8 @@ public class Pooltable : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null)
@@ -555,8 +556,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_RequestMount(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null && gameController.HasGame && gameController.CanMount(msg.player.userID))
@@ -629,8 +630,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))
@@ -639,8 +640,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestCancelGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanCancelGame(msg.player))

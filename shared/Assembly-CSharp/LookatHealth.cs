@@ -8,6 +8,10 @@ public class LookatHealth : MonoBehaviour
 	{
 	}
 
+	public interface IHealthBarDisplay
+	{
+	}
+
 	public static bool Enabled = true;
 
 	public GameObject container;

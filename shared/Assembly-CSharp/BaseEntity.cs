@@ -8,7 +8,6 @@ using ConVar;
 using Development.Attributes;
 using Facepunch;
 using Facepunch.Extend;
-using Facepunch.Math;
 using Facepunch.Rust;
 using Network;
 using Network.Visibility;
@@ -1284,6 +1283,12 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public const string RpcClientDeprecationNotice = "Use ClientRPC( RpcTarget ) overloads";
 
+	private static bool transferProtectedRpcsResolved;
+
+	private static uint clientLoadingCompleteRpc;
+
+	private static uint clientKeepConnectionAliveRpc;
+
 	[NonSerialized]
 	public BaseEntity creatorEntity;
 
@@ -1741,79 +1746,6 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return baseEntity.HasFlag(f);
 	}
 
-	[Obsolete("Use SetFlagLocal or disposable StartSetFlags instead.")]
-	public void SetFlag(Flags f, bool b, bool recursive = false, bool networkupdate = true)
-	{
-		Flags flags = this.flags;
-		if (b)
-		{
-			if (HasFlag(f))
-			{
-				return;
-			}
-			this.flags |= f;
-		}
-		else
-		{
-			if (!HasFlag(f))
-			{
-				return;
-			}
-			this.flags &= ~f;
-		}
-		OnFlagsChanged(flags, this.flags);
-		if (networkupdate)
-		{
-			SendNetworkUpdate();
-			if (flags != this.flags)
-			{
-				GlobalNetworkHandler.server?.TrySendNetworkUpdate(this);
-			}
-		}
-		else
-		{
-			InvalidateNetworkCache();
-		}
-		if (recursive && children != null)
-		{
-			for (int i = 0; i < children.Count; i++)
-			{
-				children[i].SetFlag(f, b, recursive: true);
-			}
-		}
-	}
-
-	public void SetFlagLocal(Flags f, bool b, bool recursive = false)
-	{
-		Flags old = flags;
-		if (b)
-		{
-			if (HasFlag(f))
-			{
-				return;
-			}
-			flags |= f;
-		}
-		else
-		{
-			if (!HasFlag(f))
-			{
-				return;
-			}
-			flags &= ~f;
-		}
-		OnFlagsChanged(old, flags);
-		InvalidateNetworkCache();
-		if (recursive && children != null)
-		{
-			int i = 0;
-			for (int count = children.Count; i < count; i++)
-			{
-				children[i].SetFlagLocal(f, b, recursive: true);
-			}
-		}
-	}
-
 	public bool IsOn()
 	{
 		return HasFlag(Flags.On);
@@ -1896,6 +1828,37 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		}
 	}
 
+	public void SetFlagLocal(Flags f, bool b, bool recursive = false)
+	{
+		Flags old = flags;
+		if (b)
+		{
+			if (HasFlag(f))
+			{
+				return;
+			}
+			flags |= f;
+		}
+		else
+		{
+			if (!HasFlag(f))
+			{
+				return;
+			}
+			flags &= ~f;
+		}
+		OnFlagsChanged(old, flags);
+		InvalidateNetworkCache();
+		if (recursive && children != null)
+		{
+			int i = 0;
+			for (int count = children.Count; i < count; i++)
+			{
+				children[i].SetFlagLocal(f, b, recursive: true);
+			}
+		}
+	}
+
 	public FlagsUpdateScope StartSetFlags(FlagsUpdateMode updateMode)
 	{
 		return new FlagsUpdateScope(this, updateMode);
@@ -1925,9 +1888,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public void SendNetworkUpdate_Flags()
 	{
-		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		if (Application.isLoading || Application.isLoadingSave || base.IsDestroyed || net == null || !isSpawned)
 		{
 			return;
@@ -1935,26 +1896,20 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		using (TimeWarning.New("SendNetworkUpdate_Flags"))
 		{
 			LogEntry(RustLog.EntryType.Network, 3, "SendNetworkUpdate_Flags");
-			if (Interface.CallHook("OnEntityFlagsNetworkUpdate", this) != null)
+			if (Interface.CallHook("OnEntityFlagsNetworkUpdate", this) == null)
 			{
-				return;
-			}
-			List<Connection> subscribers = GetSubscribers();
-			if (subscribers != null && subscribers.Count > 0)
-			{
-				NetWrite netWrite = Net.sv.StartWrite();
-				netWrite.PacketID(Message.Type.EntityFlags);
-				netWrite.EntityID(net.ID);
-				netWrite.Int32((int)flags);
-				SendInfo info = new SendInfo(subscribers);
-				if (PacketProfiler.shouldCaptureDetailedProfiling)
+				List<Connection> subscribers = GetSubscribers();
+				if (subscribers != null && subscribers.Count > 0)
 				{
-					BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(net.ID) as BaseEntity;
-					PacketProfiler.LogDetailedOutbound(Message.Type.EntityFlags, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, (int)netWrite.Length, null, Epoch.Current, server: true, flags.ToString());
+					NetWrite netWrite = Net.sv.StartWrite();
+					netWrite.PacketID(Message.Type.EntityFlags);
+					netWrite.EntityID(net.ID);
+					netWrite.Int32((int)flags);
+					SendInfo info = new SendInfo(subscribers);
+					netWrite.Send(info);
 				}
-				netWrite.Send(info);
+				((Component)this).gameObject.SendOnSendNetworkUpdate(this);
 			}
-			((Component)this).gameObject.SendOnSendNetworkUpdate(this);
 		}
 	}
 
@@ -2523,9 +2478,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public void DestroyOnClient(Connection connection)
 	{
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
 		if (children != null)
 		{
 			foreach (BaseEntity child in children)
@@ -2533,26 +2486,20 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 				child.DestroyOnClient(connection);
 			}
 		}
-		if (!Net.sv.IsConnected())
+		if (Net.sv.IsConnected())
 		{
-			return;
+			if (net.connection == connection && this is BasePlayer)
+			{
+				Debug.LogError((object)"Attempted to send EntityDestroy to connection's local player, this would cause chaos on the client. Skipping message");
+				return;
+			}
+			NetWrite netWrite = Net.sv.StartWrite();
+			netWrite.PacketID(Message.Type.EntityDestroy);
+			netWrite.EntityID(net.ID);
+			netWrite.UInt8(0);
+			netWrite.Send(new SendInfo(connection));
+			LogEntry(RustLog.EntryType.Network, 2, "EntityDestroy");
 		}
-		if (net.connection == connection && this is BasePlayer)
-		{
-			Debug.LogError((object)"Attempted to send EntityDestroy to connection's local player, this would cause chaos on the client. Skipping message");
-			return;
-		}
-		NetWrite netWrite = Net.sv.StartWrite();
-		netWrite.PacketID(Message.Type.EntityDestroy);
-		netWrite.EntityID(net.ID);
-		netWrite.UInt8(0);
-		if (PacketProfiler.shouldCaptureDetailedProfiling)
-		{
-			BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(net.ID) as BaseEntity;
-			PacketProfiler.LogDetailedOutbound(Message.Type.EntityDestroy, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, (int)netWrite.Length, null, Epoch.Current, server: true);
-		}
-		netWrite.Send(new SendInfo(connection));
-		LogEntry(RustLog.EntryType.Network, 2, "EntityDestroy");
 	}
 
 	public void SendChildrenNetworkUpdate()
@@ -2757,8 +2704,8 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public unsafe void SV_RPCMessage(uint nameID, Message message)
 	{
-		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		Assert.IsTrue(base.isServer, "Should be server!");
 		BasePlayer basePlayer = NetworkPacketEx.Player(message);
 		if (!basePlayer.IsValid())
@@ -2785,13 +2732,21 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			}
 			return;
 		}
+		if (basePlayer.IsTransferProtected() && !IsAllowedWhileTransferProtected(nameID))
+		{
+			if (Global.developer > 0)
+			{
+				Debug.Log((object)("SV_RPCMessage: player is transfer protected " + (object)basePlayer));
+			}
+			return;
+		}
 		FieldOperationLimitScope val = message.read.UseProtoDeserializationLimits();
 		try
 		{
 			(byte[], int) buffer = message.read.GetBuffer();
 			if (OnRpcMessage(basePlayer, nameID, message))
 			{
-				if (!basePlayer.IsRealNull())
+				if (!basePlayer.IsRealNull() && Facepunch.Rust.Analytics.Azure.ShouldLogRPC(StringPool.Get(nameID)))
 				{
 					Facepunch.Rust.Analytics.Azure.OnServerRPC(basePlayer, nameID, buffer.Item1, buffer.Item2);
 				}
@@ -2813,6 +2768,29 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		{
 			((IDisposable)(*(FieldOperationLimitScope*)(&val))/*cast due to constrained. prefix*/).Dispose();
 		}
+	}
+
+	private static bool IsAllowedWhileTransferProtected(uint nameID)
+	{
+		if (!transferProtectedRpcsResolved)
+		{
+			clientLoadingCompleteRpc = StringPool.Get("ClientLoadingComplete");
+			clientKeepConnectionAliveRpc = StringPool.Get("ClientKeepConnectionAlive");
+			transferProtectedRpcsResolved = true;
+			if (clientLoadingCompleteRpc == 0)
+			{
+				Debug.LogError((object)"Couldn't resolve the ClientLoadingComplete RPC id - transfer protection will never be released!");
+			}
+		}
+		if (nameID != clientLoadingCompleteRpc || nameID == 0)
+		{
+			if (nameID == clientKeepConnectionAliveRpc)
+			{
+				return nameID != 0;
+			}
+			return false;
+		}
+		return true;
 	}
 
 	[PoolAnalyzerNonCaching]
@@ -2864,17 +2842,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 	protected NetWrite ClientRPCStart(string funcName)
 	{
 		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
 		NetWrite netWrite = Net.sv.StartWrite();
 		netWrite.PacketID(Message.Type.RPCMessage);
 		netWrite.EntityID(net.ID);
 		netWrite.UInt32(StringPool.Get(funcName));
-		if (PacketProfiler.shouldCaptureDetailedProfiling)
-		{
-			BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(net.ID) as BaseEntity;
-			PacketProfiler.LogDetailedOutbound(Message.Type.RPCMessage, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, -1, null, Epoch.Current, server: true, funcName);
-		}
 		return netWrite;
 	}
 
@@ -4023,8 +3994,6 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 	protected NetWrite SV_PackedSyncVarNetStart()
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("PackedSyncVar"))
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
@@ -4033,11 +4002,6 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 				netWrite.PacketID(Message.Type.PackedSyncVar);
 				netWrite.EntityID(net.ID);
 				netWrite.UInt32(_serverSyncVarQueue);
-				if (PacketProfiler.shouldCaptureDetailedProfiling)
-				{
-					BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(net.ID) as BaseEntity;
-					PacketProfiler.LogDetailedOutbound(Message.Type.PackedSyncVar, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, -1, null, Epoch.Current, server: true);
-				}
 				return netWrite;
 			}
 		}
@@ -4068,8 +4032,6 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 	private NetWrite SV_SyncVarNetStart(byte nameID)
 	{
 		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SyncVar"))
 		{
 			NetWrite netWrite = Net.sv.StartWrite();
@@ -4078,11 +4040,6 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 				netWrite.PacketID(Message.Type.SyncVar);
 				netWrite.EntityID(net.ID);
 				netWrite.UInt8(nameID);
-				if (PacketProfiler.shouldCaptureDetailedProfiling)
-				{
-					BaseEntity baseEntity = BaseNetworkable.serverEntities.Find(net.ID) as BaseEntity;
-					PacketProfiler.LogDetailedOutbound(Message.Type.SyncVar, net.ID, ((Object)(object)baseEntity != (Object)null) ? baseEntity.PrefabName : null, -1, null, Epoch.Current, server: true);
-				}
 				return netWrite;
 			}
 		}
@@ -4228,23 +4185,27 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 
 	public void ForceUpdateTriggers(bool enter = true, bool exit = true, bool invoke = true)
 	{
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0061: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0129: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
+		if (this is BasePlayer { isInvisible: not false })
+		{
+			return;
+		}
 		List<TriggerBase> list = Pool.Get<List<TriggerBase>>();
 		List<TriggerBase> list2 = Pool.Get<List<TriggerBase>>();
 		if (triggers != null)
@@ -4419,6 +4380,9 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		parentBone = 0u;
 		OwnerID = 0uL;
 		flags = (Flags)0;
+		skinID = 0uL;
+		attachmentID = 0uL;
+		HasBrain = false;
 		parentEntity = default(EntityRef);
 		ResetSyncVars();
 		LookupPrefab();
@@ -5566,7 +5530,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			{
 				if (Vector3Ex.IsNaNOrInfinity(baseEntity.pos))
 				{
-					Debug.LogWarning((object)(((object)this).ToString() + " has broken position - " + ((object)Unsafe.As<Vector3, Vector3>(ref baseEntity.pos)/*cast due to constrained. prefix*/).ToString()));
+					Debug.LogWarning((object)(((object)this).ToString() + " has broken position - " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref baseEntity.pos)/*cast due to constrained. prefix*/).ToString()));
 					baseEntity.pos = Vector3.zero;
 				}
 				((Component)this).transform.localPosition = baseEntity.pos;
@@ -7080,7 +7044,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 	}
 
 	[PoolAnalyzerNonCaching]
-	public void ClientRPC(RpcTarget target, float arg1, byte arg2, float arg3, byte arg4)
+	public void ClientRPC(RpcTarget target, float arg1, byte arg2, float arg3, byte arg4, bool arg5)
 	{
 		if (Net.sv.IsConnected() && net != null)
 		{
@@ -7090,6 +7054,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			netWrite.UInt8(arg2);
 			netWrite.Float(arg3);
 			netWrite.UInt8(arg4);
+			netWrite.Bool(arg5);
 			ClientRPCSend(netWrite, target.Connections);
 			FreeRPCTarget(target);
 		}

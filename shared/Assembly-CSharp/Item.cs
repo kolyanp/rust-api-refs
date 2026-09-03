@@ -41,8 +41,6 @@ public class Item : IPooled
 
 	public int position;
 
-	public float busyTime;
-
 	public float removeTime;
 
 	public float fuel;
@@ -432,7 +430,6 @@ public class Item : IPooled
 		dirty = false;
 		amount = 1;
 		position = 0;
-		busyTime = 0f;
 		removeTime = 0f;
 		fuel = 0f;
 		isServer = false;
@@ -966,13 +963,13 @@ public class Item : IPooled
 		return false;
 	}
 
-	public bool CanMoveTo(ItemContainer newcontainer, int iTargetPos = -1)
+	public bool CanMoveTo(BasePlayer player, ItemContainer newcontainer, int iTargetPos = -1)
 	{
 		if (IsChildContainer(newcontainer))
 		{
 			return false;
 		}
-		if (newcontainer.CanAcceptItem(this, iTargetPos) != ItemContainer.CanAcceptResult.CanAccept)
+		if (newcontainer.CanAcceptItem(player, this, iTargetPos) != ItemContainer.CanAcceptResult.CanAccept)
 		{
 			return false;
 		}
@@ -991,10 +988,10 @@ public class Item : IPooled
 	{
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0584: Unknown result type (might be due to invalid IL or missing references)
 		//IL_058a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0591: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0590: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0597: Unknown result type (might be due to invalid IL or missing references)
+		//IL_059d: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("MoveToContainer"))
 		{
 			BasePlayer playerOwner = newcontainer.playerOwner;
@@ -1049,7 +1046,7 @@ public class Item : IPooled
 						Item slot = newcontainer.GetSlot(i);
 						if (slot == null)
 						{
-							if (CanMoveTo(newcontainer, i))
+							if (CanMoveTo(sourcePlayer, newcontainer, i))
 							{
 								iTargetPos = i;
 								break;
@@ -1077,7 +1074,7 @@ public class Item : IPooled
 			{
 				return false;
 			}
-			if (!CanMoveTo(newcontainer, iTargetPos))
+			if (!CanMoveTo(sourcePlayer, newcontainer, iTargetPos))
 			{
 				return false;
 			}
@@ -1133,7 +1130,7 @@ public class Item : IPooled
 					int iTargetPos2 = position;
 					ItemContainer newcontainer2 = slot2.parent;
 					int num3 = slot2.position;
-					if (!slot2.CanMoveTo(itemContainer2, iTargetPos2))
+					if (!slot2.CanMoveTo(sourcePlayer, itemContainer2, iTargetPos2))
 					{
 						return false;
 					}
@@ -1330,20 +1327,6 @@ public class Item : IPooled
 		Vector3 val = default(Vector3);
 		((Vector3)(ref val))._002Ector(Mathf.Sin(num), 1f, Mathf.Cos(num));
 		return Drop(vPos + Vector3.up * 0.1f, val * force);
-	}
-
-	public bool IsBusy()
-	{
-		if (busyTime > Time.time)
-		{
-			return true;
-		}
-		return false;
-	}
-
-	public void BusyFor(float fTime)
-	{
-		busyTime = Time.time + fTime;
 	}
 
 	public bool IsRemoved()
@@ -1957,12 +1940,12 @@ public class Item : IPooled
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_016d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0172: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
 		dirty = false;
 		Item val = Pool.Get<Item>();
 		val.UID = uid;
@@ -1971,7 +1954,7 @@ public class Item : IPooled
 		val.amount = amount;
 		val.flags = (int)flags;
 		val.removetime = removeTime;
-		val.locktime = busyTime;
+		val.locktime = 0f;
 		val.instanceData = instanceData;
 		val.worldEntity = worldEnt.uid;
 		val.heldEntity = heldEntity.uid;
@@ -2029,8 +2012,8 @@ public class Item : IPooled
 	{
 		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)info == (Object)null || info.itemid != load.itemid)
 		{
@@ -2048,7 +2031,6 @@ public class Item : IPooled
 		cookTimeLeft = load.cooktime;
 		amount = load.amount;
 		position = load.slot;
-		busyTime = load.locktime;
 		removeTime = load.removetime;
 		flags = (Flag)load.flags;
 		worldEnt.uid = load.worldEntity;

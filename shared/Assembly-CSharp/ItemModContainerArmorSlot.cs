@@ -82,7 +82,7 @@ public class ItemModContainerArmorSlot : ItemModContainer
 		}
 	}
 
-	protected bool CanAcceptArmorItem(Item item, int count)
+	protected bool CanAcceptArmorItem(BasePlayer player, Item item, int count)
 	{
 		if (item == null || (Object)(object)item.info == (Object)null)
 		{

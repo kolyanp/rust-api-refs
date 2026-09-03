@@ -364,8 +364,8 @@ public class ScriptCompilationThread : BaseThreadedJob
 
 	private List<MetadataReference> _addReferences()
 	{
-		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0162: Unknown result type (might be due to invalid IL or missing references)
 		List<MetadataReference> list = new List<MetadataReference>();
 		string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(InitialSource.FilePath);
 		_injectReference(fileNameWithoutExtension, "0Harmony", list, _libraryDirectories, direct: true);
@@ -380,30 +380,44 @@ public class ScriptCompilationThread : BaseThreadedJob
 				Logger.Debug(fileNameWithoutExtension, $"Error loading common reference '{item}': {arg}", 4);
 			}
 		}
-		foreach (KeyValuePair<Type, KeyValuePair<string, byte[]>> item2 in Community.Runtime.AssemblyEx.Modules.Loaded)
+		if (Community.Runtime.Config.Compiler.EnableProxy)
+		{
+			foreach (string item2 in Community.Runtime.AssemblyEx.RefProxy)
+			{
+				try
+				{
+					_injectReference(fileNameWithoutExtension, item2, list, _libraryDirectories);
+				}
+				catch (Exception arg2)
+				{
+					Logger.Debug(fileNameWithoutExtension, $"Error loading proxy reference '{item2}': {arg2}", 4);
+				}
+			}
+		}
+		foreach (KeyValuePair<Type, KeyValuePair<string, byte[]>> item3 in Community.Runtime.AssemblyEx.Modules.Loaded)
 		{
 			try
 			{
-				string fileName = Path.GetFileName(item2.Value.Key);
-				using MemoryStream memoryStream = new MemoryStream(item2.Value.Value);
+				string fileName = Path.GetFileName(item3.Value.Key);
+				using MemoryStream memoryStream = new MemoryStream(item3.Value.Value);
 				PortableExecutableReference val = MetadataReference.CreateFromStream((Stream)memoryStream, default(MetadataReferenceProperties), (DocumentationProvider)null, (string)null);
 				list.Add((MetadataReference)(object)val);
 				_referenceCache[fileName] = val;
 			}
-			catch (Exception arg2)
+			catch (Exception arg3)
 			{
-				Logger.Debug(fileNameWithoutExtension, $"Error loading module reference '{item2}': {arg2}", 4);
+				Logger.Debug(fileNameWithoutExtension, $"Error loading module reference '{item3}': {arg3}", 4);
 			}
 		}
-		foreach (KeyValuePair<Type, KeyValuePair<string, byte[]>> item3 in Community.Runtime.AssemblyEx.Extensions.Loaded)
+		foreach (KeyValuePair<Type, KeyValuePair<string, byte[]>> item4 in Community.Runtime.AssemblyEx.Extensions.Loaded)
 		{
 			try
 			{
-				_injectExtensionReference(Path.GetFileName(item3.Value.Key), list);
+				_injectExtensionReference(Path.GetFileName(item4.Value.Key), list);
 			}
-			catch (Exception arg3)
+			catch (Exception arg4)
 			{
-				Logger.Debug(fileNameWithoutExtension, $"Error loading extension reference '{item3}': {arg3}", 4);
+				Logger.Debug(fileNameWithoutExtension, $"Error loading extension reference '{item4}': {arg4}", 4);
 			}
 		}
 		return list;

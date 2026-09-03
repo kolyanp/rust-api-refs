@@ -301,7 +301,7 @@ public class ApartmentCommands : ConsoleSystem
 			val.AddRow(new string[3]
 			{
 				item.ShortPrefabName,
-				((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+				((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
 				text2
 			});
 		}

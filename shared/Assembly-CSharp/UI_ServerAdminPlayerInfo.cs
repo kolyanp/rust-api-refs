@@ -9,8 +9,8 @@ public class UI_ServerAdminPlayerInfo : UI_Window
 
 	private static readonly Phrase PermanentPhrase;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RawImage avatarImage;
 
 	[SerializeField]
@@ -46,8 +46,8 @@ public class UI_ServerAdminPlayerInfo : UI_Window
 	[SerializeField]
 	private RustText teamIDText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RustInput muteReasonInput;
 
 	[SerializeField]

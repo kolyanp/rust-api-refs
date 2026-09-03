@@ -44,7 +44,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	{
 		public const Flags EmptyInv = Flags.Reserved1;
 
-		public const Flags IsVending = Flags.Reserved2;
+		public const Flags IsVending = Flags.Reserved10;
 
 		public const Flags DroneAccessible = Flags.Reserved3;
 
@@ -815,9 +815,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	public void SV_RequestLongTermData(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -835,8 +835,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void SV_RequestPurchaseData(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1074,7 +1074,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return PowerConsumption;
 	}
 
-	public float GetSpoilMultiplier(Item arg)
+	public virtual float GetSpoilMultiplier(Item arg)
 	{
 		if (IsPowered())
 		{
@@ -1243,12 +1243,12 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 			InstallDefaultSellOrders();
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope.Set(Flags.Reserved2, b: false);
+				flagsUpdateScope.Set(Flags.Reserved10, b: false);
 			}
 			base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 			RefreshSellOrderStockLevel();
 			ItemContainer itemContainer = base.inventory;
-			itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+			itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 			UpdateMapMarker();
 		}
 	}
@@ -1402,7 +1402,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		base.PostServerLoad();
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.Reserved2, b: false);
+			flagsUpdateScope.Set(Flags.Reserved10, b: false);
 		}
 		RefreshSellOrderStockLevel();
 		UpdateMapMarker();
@@ -1453,7 +1453,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		vend_numberOfTransactions = numberOfTransactions;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.Reserved2, b: true);
+			flagsUpdateScope.Set(Flags.Reserved10, b: true);
 		}
 		if (HasVendingSounds())
 		{
@@ -1469,15 +1469,15 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		vend_numberOfTransactions = -1;
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
-			flagsUpdateScope.Set(Flags.Reserved2, b: false);
+			flagsUpdateScope.Set(Flags.Reserved10, b: false);
 		}
 		PendingItemId = 0;
 		ClientRPC(RpcTarget.NetworkGroup("CLIENT_CancelVendingSounds"));
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void BuyItemRentableShop(RPCMessage rpc)
 	{
 		if (GetParentEntity() is RentableShop)
@@ -1486,9 +1486,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void BuyItem(RPCMessage rpc)
 	{
 		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
@@ -1537,8 +1537,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		Decay.RadialDecayTouch(((Component)this).transform.position, 40f, 2097408);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void TransactionStart(RPCMessage rpc)
 	{
 	}
@@ -1778,8 +1778,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public virtual void RPC_Broadcast(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1795,8 +1795,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_SetSkinMode(RPCMessage msg)
 	{
 		if (CanPlayerAdmin(msg.player))
@@ -1807,8 +1807,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public virtual void RPC_UpdateShopName(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1901,8 +1901,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenShop(RPCMessage msg)
 	{
 		if (OccupiedCheck(msg.player) && Interface.CallHook("OnVendingShopOpen", this, msg.player) == null)
@@ -1912,8 +1912,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenAdmin(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1935,9 +1935,9 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		industrialItemIncoming = false;
 	}
 
-	public bool CanAcceptItem(Item item, int targetSlot)
+	public bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
-		object obj = Interface.CallHook("CanVendingAcceptItem", this, item, targetSlot);
+		object obj = Interface.CallHook("CanVendingAcceptItem", this, item, targetSlot, player);
 		if (obj is bool)
 		{
 			return (bool)obj;
@@ -2005,8 +2005,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		return ((Component)this).transform.TransformPoint(localDropPosition);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_DeleteSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2047,8 +2047,8 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 		SendSellOrders(player);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_MoveSellOrder(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -2241,7 +2241,7 @@ public class VendingMachine : ContainerIOEntity, IUGCBrowserEntity, IFoodSpoilMo
 
 	public bool IsVending()
 	{
-		return HasFlag(Flags.Reserved2);
+		return HasFlag(Flags.Reserved10);
 	}
 
 	public virtual bool PlayerBehind(BasePlayer player)

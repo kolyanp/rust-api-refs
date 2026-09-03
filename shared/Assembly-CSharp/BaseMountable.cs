@@ -87,8 +87,8 @@ public class BaseMountable : BaseCombatEntity
 
 	public float mountLOSVertOffset;
 
-	[Tooltip("The speed of the posde animation for this mountable.")]
 	[Range(0f, 1f)]
+	[Tooltip("The speed of the posde animation for this mountable.")]
 	[Header("Mount Pose")]
 	public float mountedAnimationSpeed;
 
@@ -146,6 +146,9 @@ public class BaseMountable : BaseCombatEntity
 	public bool allowSleeperMounting;
 
 	public bool shouldShowHudHealth;
+
+	[Tooltip("Block looting of containers while mounted to this entity")]
+	public bool blockLooting;
 
 	[Help("Set this to true if the mountable is enclosed so it doesn't move inside cars and such")]
 	public bool animateClothInLocalSpace;
@@ -333,6 +336,11 @@ public class BaseMountable : BaseCombatEntity
 	public bool IsMounted()
 	{
 		return AnyMounted();
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override void Save(SaveInfo info)
@@ -741,16 +749,16 @@ public class BaseMountable : BaseCombatEntity
 
 	public void MountPlayer(BasePlayer player)
 	{
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00da: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)_mounted != (Object)null || (Object)(object)mountAnchor == (Object)null || Interface.CallHook("CanMountEntity", player, this) != null)
 		{
 			return;
@@ -759,6 +767,10 @@ public class BaseMountable : BaseCombatEntity
 		_mounted = player;
 		Transform val = mountAnchor;
 		player.SetMounted(this);
+		if (blockLooting)
+		{
+			player.inventory.loot.Clear();
+		}
 		if (!ShouldRepositionPerFrame())
 		{
 			if ((Object)(object)player.GetParentEntity() != (Object)(object)this)

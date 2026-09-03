@@ -43,6 +43,8 @@ public interface IBaseProcessor
 
 	T Get<T>(string fileName) where T : IProcess;
 
+	string GetInstanceKey(string path);
+
 	void Prepare(string path);
 
 	void Prepare(string name, string path);

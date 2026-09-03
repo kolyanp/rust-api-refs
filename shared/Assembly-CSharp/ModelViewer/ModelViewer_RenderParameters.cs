@@ -31,8 +31,8 @@ public class ModelViewer_RenderParameters
 	[Header("Anti Aliasing")]
 	public PostProcessLayer.Antialiasing antialiasing;
 
-	[Header("Shadows")]
 	[Range(1f, 4f)]
+	[Header("Shadows")]
 	public int shadowCascades;
 
 	[Range(1f, 3f)]
@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias;
 
-	[Header("Contact Shadows")]
 	[Header("                ")]
+	[Header("Contact Shadows")]
 	public bool enableContactShadows;
 
 	[Range(0f, 1f)]
@@ -98,12 +98,12 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent;
 
-	[Tooltip("Controls the initial occlusion contribution offset.")]
 	[Range(0f, 0.99f)]
+	[Tooltip("Controls the initial occlusion contribution offset.")]
 	public float Bias;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -118,22 +118,22 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Intensity parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToIntensity;
 
 	public Color FadeToTint;
 
-	[Range(0f, 32f)]
 	[Tooltip("Final Radius parameter.")]
+	[Range(0f, 32f)]
 	public float FadeToRadius;
 
-	[Range(0f, 16f)]
 	[Tooltip("Final PowerExponent parameter.")]
+	[Range(0f, 16f)]
 	public float FadeToPowerExponent;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToThickness;
 
 	[Header("                ")]

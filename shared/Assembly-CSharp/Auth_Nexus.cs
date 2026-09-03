@@ -108,6 +108,11 @@ public static class Auth_Nexus
 			Debug.LogWarning((object)$"Couldn't find NexusPlayer for {connection.userid}, skipping setting up their app key");
 		}
 		connection.authStatusNexus = "ok";
+		BasePlayer basePlayer = BasePlayer.FindSleeping(connection.userid);
+		if ((Object)(object)basePlayer != (Object)null && basePlayer.IsLoadingAfterTransfer())
+		{
+			connection.skipQueue = true;
+		}
 		void Reject(string reason)
 		{
 			ConnectionAuth.Reject(connection, reason);

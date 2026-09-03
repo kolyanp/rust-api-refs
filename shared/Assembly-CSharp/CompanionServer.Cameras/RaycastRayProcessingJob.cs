@@ -43,8 +43,8 @@ public struct RaycastRayProcessingJob : IJobParallelFor
 	[ReadOnly]
 	public NativeArray<byte> colliderMaterials;
 
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<int> colliderHits;
 
 	[WriteOnly]

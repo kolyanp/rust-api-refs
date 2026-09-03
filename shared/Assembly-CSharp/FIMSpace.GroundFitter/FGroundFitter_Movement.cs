@@ -33,8 +33,8 @@ public class FGroundFitter_Movement : MonoBehaviour
 	[Tooltip("Protecting from going through walls when slope is very big and ground fitter is jumping into it")]
 	public bool NotFallingThrough;
 
-	[Tooltip("You need collider and rigidbody on object to make it work right - ALSO CHANGE YOUR CAMERA UPDATE CLOCK TO FIXED UPDATE AND USE TIME.fixedDeltaTime - ! For now it can cause errors when jumping, character can go through floor sometimes ! - Will be upgraded in future versions")]
 	[Header("(experimental)")]
+	[Tooltip("You need collider and rigidbody on object to make it work right - ALSO CHANGE YOUR CAMERA UPDATE CLOCK TO FIXED UPDATE AND USE TIME.fixedDeltaTime - ! For now it can cause errors when jumping, character can go through floor sometimes ! - Will be upgraded in future versions")]
 	public bool UsePhysics;
 
 	[Tooltip("Disabling translating object from code and running animation without need to hold minimum movement speed")]
@@ -90,16 +90,16 @@ public class FGroundFitter_Movement : MonoBehaviour
 
 	private float? yAdjustPos;
 
-	[HideInInspector]
 	[Tooltip("If you want to set some animator parameter during being grounded")]
+	[HideInInspector]
 	public string SetIsGroundedParam;
 
-	[Tooltip("If you want to set some animator parameter during accelerating moving")]
 	[HideInInspector]
+	[Tooltip("If you want to set some animator parameter during accelerating moving")]
 	public string SetIsMovingParam;
 
-	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
 	[HideInInspector]
+	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
 	public bool UseSlidingMat;
 
 	private static PhysicsMaterial pm_Sliding = null;

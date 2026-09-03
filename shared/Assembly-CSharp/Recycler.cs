@@ -215,10 +215,13 @@ public class Recycler : StorageContainer, IPowergridEntity
 		if (base.isServer)
 		{
 			ItemContainer itemContainer = base.inventory;
-			itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(RecyclerItemFilter));
+			itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(RecyclerItemFilter));
 			ItemContainer itemContainer2 = base.inventory;
 			itemContainer2.onItemAddedRemoved = (Action<Item, bool>)Delegate.Combine(itemContainer2.onItemAddedRemoved, new Action<Item, bool>(OnItemAddedRemoved));
-			RecyclerTypeSyncVar = (int)recyclerType;
+			if (!Application.isLoadingSave)
+			{
+				RecyclerTypeSyncVar = (int)recyclerType;
+			}
 			UpdateInSafeZone();
 			Server_RefreshPowergridState();
 		}
@@ -238,7 +241,7 @@ public class Recycler : StorageContainer, IPowergridEntity
 		}
 	}
 
-	public bool RecyclerItemFilter(Item item, int targetSlot)
+	public bool RecyclerItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		int num = Mathf.CeilToInt((float)base.inventory.capacity * 0.5f);
 		if (targetSlot == -1)
@@ -264,8 +267,8 @@ public class Recycler : StorageContainer, IPowergridEntity
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void SVSwitch(RPCMessage msg)
 	{
 		bool flag = msg.read.Bit();
@@ -663,16 +666,16 @@ public class Recycler : StorageContainer, IPowergridEntity
 	{
 	}
 
-	private void OnSyncVar_Server_RecyclerTypeSyncVar(int newValue)
+	private void OnSyncVar_RecyclerTypeSyncVar(int? oldValue, int newValue)
 	{
 	}
 
 	protected unsafe override bool WriteSyncVar(byte id, NetWrite writer)
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
 		switch (id)
 		{
 		case 0:
@@ -690,7 +693,6 @@ public class Recycler : StorageContainer, IPowergridEntity
 				Debug.Log((object)("SyncVar Writing: RecyclerTypeSyncVar for " + ((object)(*(NetworkableId*)(&iD))/*cast due to constrained. prefix*/).ToString()));
 			}
 			SyncVarNetWrite(writer, __sync_RecyclerTypeSyncVar);
-			OnSyncVar_Server_RecyclerTypeSyncVar(__sync_RecyclerTypeSyncVar);
 			return true;
 		default:
 			return base.WriteSyncVar(id, writer);
@@ -716,9 +718,13 @@ public class Recycler : StorageContainer, IPowergridEntity
 		case 1:
 			try
 			{
-				_ = __sync_RecyclerTypeSyncVar;
-				int _sync_RecyclerTypeSyncVar = reader.Int32();
-				__sync_RecyclerTypeSyncVar = _sync_RecyclerTypeSyncVar;
+				int? oldValue = __sync_RecyclerTypeSyncVar;
+				int newValue = (__sync_RecyclerTypeSyncVar = reader.Int32());
+				if (fromAutoSave)
+				{
+					oldValue = null;
+				}
+				OnSyncVar_RecyclerTypeSyncVar(oldValue, newValue);
 			}
 			catch (Exception ex)
 			{

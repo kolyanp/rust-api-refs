@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -45,49 +45,28 @@ public class State_TryAmbushUnderwater : FSMStateBase
 
 	private EFSMStateStatus FindNewUnderwaterWaitingPosition()
 	{
-		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0062: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0092: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0161: Unknown result type (might be due to invalid IL or missing references)
-		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
+		NavVector3 nextPosition = base.Agent.nextPosition;
+		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			float radius = Random.Range(distanceRange.x, distanceRange.y);
-			Eqs.SamplePositionsInDonutShape(base.Agent.nextPosition, (List<Vector3>)(object)val, radius);
+			float num = Random.Range(distanceRange.x, distanceRange.y);
+			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
 			if (Vector3.Distance(divePosition, ((Component)Owner).transform.position) > maxDistFromDivingPoint)
 			{
 				Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 				try
 				{
-					Vector3 val2 = divePosition - ((Component)Owner).transform.position;
-					Vector3 normalized = ((Vector3)(ref val2)).normalized;
-					foreach (Vector3 item2 in (List<Vector3>)(object)val)
+					NavVector3 normalized = (base.Agent.WorldToNavSpace(divePosition) - nextPosition).normalized;
+					foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 					{
-						val2 = item2 - ((Component)Owner).transform.position;
-						float item = Vector3.Dot(normalized, ((Vector3)(ref val2)).normalized);
-						((List<(Vector3, float)>)(object)pooledScoreList).Add((item2, item));
+						float item = NavVector3.Dot(normalized, (item2 - nextPosition).NormalizeXZ());
+						((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, item));
 					}
 					pooledScoreList.SortByScoreDesc(Owner);
-					pooledScoreList.Reorder((List<Vector3>)(object)val);
+					pooledScoreList.Reorder((List<NavVector3>)(object)val);
 				}
 				finally
 				{
@@ -96,17 +75,26 @@ public class State_TryAmbushUnderwater : FSMStateBase
 			}
 			else
 			{
-				ListEx.Shuffle<Vector3>((List<Vector3>)(object)val, (uint)Environment.TickCount);
+				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val, (uint)Environment.TickCount);
 			}
-			foreach (Vector3 item3 in (List<Vector3>)(object)val)
+			foreach (NavVector3 item3 in (List<NavVector3>)(object)val)
 			{
-				if (base.Agent.SamplePosition(item3, out var hitNS, 10f) && base.Agent.IsInWater(((NavMeshHit)(ref hitNS)).position))
+				NavVector3 navVector = item3;
+				if (!flag)
+				{
+					if (!base.Agent.SamplePosition(item3, out var hitNS, 10f))
+					{
+						continue;
+					}
+					navVector = hitNS.position;
+				}
+				if (base.Agent.IsInWater(navVector))
 				{
 					RustNavMeshAgent agent = base.Agent;
-					Vector3 position = ((NavMeshHit)(ref hitNS)).position;
+					NavVector3 targetPositionNS = navVector;
 					RustNavMeshAgent.Speeds? gait = ((!base.Agent.IsSwimming) ? RustNavMeshAgent.Speeds.Run : RustNavMeshAgent.Speeds.Sneak);
 					float? swimDepth = 3f;
-					if (agent.SetDestinationWithParams(position, autoBraking: true, gait, null, null, null, swimDepth))
+					if (agent.SetDestinationWithParams(targetPositionNS, autoBraking: true, gait, null, null, null, swimDepth))
 					{
 						return EFSMStateStatus.None;
 					}

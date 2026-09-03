@@ -86,7 +86,7 @@ public class NexusDockTerminal : BaseEntity
 		float num = 0f;
 		if ((Object)(object)instance.CurrentFerry != (Object)null && !instance.CurrentFerry.IsRetiring)
 		{
-			estimates.Add((instance.CurrentFerry.NextZone, num));
+			estimates.Add((instance.CurrentFerry.ExpectedNextZone, num));
 			SeenFerries.Add(instance.CurrentFerry.OwnerZone);
 		}
 		NexusFerry[] queuedFerries = instance.QueuedFerries;
@@ -94,7 +94,7 @@ public class NexusDockTerminal : BaseEntity
 		{
 			if (!((Object)(object)nexusFerry == (Object)null) && !nexusFerry.IsRetiring)
 			{
-				estimates.Add((nexusFerry.NextZone, num));
+				estimates.Add((nexusFerry.ExpectedNextZone, num));
 				num += instance.WaitTime;
 				SeenFerries.Add(nexusFerry.OwnerZone);
 			}
@@ -102,86 +102,52 @@ public class NexusDockTerminal : BaseEntity
 		string zoneKey = NexusServer.ZoneKey;
 		foreach (NexusZoneDetails zone in NexusServer.Zones)
 		{
-			if (SeenFerries.Contains(zone.Key) || !((Dictionary<string, VariableData>)(object)zone.Variables).TryGetValue("ferry", out VariableData value) || (int)((VariableData)(ref value)).Type != 1 || string.IsNullOrWhiteSpace(((VariableData)(ref value)).Value) || !((VariableData)(ref value)).Value.Contains(zoneKey, StringComparison.InvariantCultureIgnoreCase) || !NexusUtil.TryParseFerrySchedule(zone.Key, ((VariableData)(ref value)).Value, out var schedule))
+			if (SeenFerries.Contains(zone.Key) || !((Dictionary<string, VariableData>)(object)zone.Variables).TryGetValue("ferry", out VariableData value) || (int)((VariableData)(ref value)).Type != 1 || string.IsNullOrWhiteSpace(((VariableData)(ref value)).Value) || !((VariableData)(ref value)).Value.Contains(zoneKey, StringComparison.InvariantCultureIgnoreCase) || !NexusUtil.TryParseFerrySchedule(zone.Key, ((VariableData)(ref value)).Value, out var entries) || List.FindIndex<string>((IReadOnlyList<string>)entries, zoneKey, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase) < 0)
 			{
 				continue;
 			}
-			int num2 = List.FindIndex<string>((IReadOnlyList<string>)schedule, zoneKey, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase);
-			if (num2 < 0)
+			if (!NexusFerry.TryPredictNextZone(entries, zoneKey, zone.Key, out var nextZoneKey))
 			{
-				continue;
+				NexusFerry.TryGetNextScheduledZone(entries, zoneKey, out nextZoneKey);
 			}
-			string item = ((num2 < schedule.Length - 1) ? schedule[num2 + 1] : schedule[0]);
 			if (!NexusServer.TryGetFerryStatus(zone.Key, out var currentZone, out var status))
 			{
-				estimates.Add((item, null));
+				estimates.Add((nextZoneKey, null));
 				SeenFerries.Add(zone.Key);
 				continue;
 			}
-			int num3 = List.FindIndex<string>((IReadOnlyList<string>)schedule, currentZone, (IEqualityComparer<string>)StringComparer.InvariantCultureIgnoreCase);
-			if (num3 < 0)
+			if (status.isRetiring)
 			{
-				estimates.Add((item, null));
 				SeenFerries.Add(zone.Key);
 				continue;
 			}
-			float num4 = 0f;
-			int idx = num3;
-			NexusFerry.State state = (NexusFerry.State)status.state;
-			if (idx == num3)
+			IReadOnlyList<string> readOnlyList2;
+			if (status.schedule == null || status.schedule.Count <= 0)
 			{
-				if (state == NexusFerry.State.SailingIn)
-				{
-					num4 += num + TravelTime;
-				}
-				else if (state <= NexusFerry.State.Waiting)
-				{
-					num4 += num;
-				}
-				else
-				{
-					num4 += instance.WaitTime + TravelTime;
-					NextIdx();
-				}
+				IReadOnlyList<string> readOnlyList = entries;
+				readOnlyList2 = readOnlyList;
 			}
 			else
 			{
-				if (state <= NexusFerry.State.Stopping)
-				{
-					num4 += TravelTime;
-				}
-				if (state <= NexusFerry.State.Waiting)
-				{
-					num4 += instance.WaitTime;
-				}
-				if (state <= NexusFerry.State.SailingOut)
-				{
-					num4 += TravelTime;
-				}
+				IReadOnlyList<string> readOnlyList = status.schedule;
+				readOnlyList2 = readOnlyList;
 			}
-			while (idx != num2)
+			IReadOnlyList<string> schedule = readOnlyList2;
+			if (NexusFerry.TryPredictNextZone(schedule, zoneKey, status.ownerZone, out var nextZoneKey2))
 			{
-				num4 += TravelTime + instance.WaitTime + TravelTime;
-				NextIdx();
+				nextZoneKey = nextZoneKey2;
 			}
-			estimates.Add((item, num4));
+			float? item = EstimateTimeUntilArrival(schedule, status.ownerZone, currentZone, (NexusFerry.State)status.state, zoneKey, num, instance.WaitTime);
+			estimates.Add((nextZoneKey, item));
 			SeenFerries.Add(zone.Key);
-			void NextIdx()
-			{
-				idx++;
-				if (idx >= schedule.Length)
-				{
-					idx = 0;
-				}
-			}
 		}
 		SeenFerries.Clear();
 		estimates.Sort(delegate((string NextZone, float? Estimate) a, (string NextZone, float? Estimate) b)
 		{
-			int num5 = StringComparer.InvariantCultureIgnoreCase.Compare(a.NextZone, b.NextZone);
-			if (num5 != 0)
+			int num2 = StringComparer.InvariantCultureIgnoreCase.Compare(a.NextZone, b.NextZone);
+			if (num2 != 0)
 			{
-				return num5;
+				return num2;
 			}
 			if (!a.Estimate.HasValue && !b.Estimate.HasValue)
 			{
@@ -193,6 +159,58 @@ public class NexusDockTerminal : BaseEntity
 			}
 			return (!b.Estimate.HasValue) ? (-1) : a.Estimate.Value.CompareTo(b.Estimate.Value);
 		});
+	}
+
+	private float? EstimateTimeUntilArrival(IReadOnlyList<string> schedule, string ownerZone, string currentZoneKey, NexusFerry.State state, string thisZoneKey, float queueTime, float waitTime)
+	{
+		if (schedule == null || schedule.Count == 0)
+		{
+			return null;
+		}
+		if (string.Equals(currentZoneKey, thisZoneKey, StringComparison.InvariantCultureIgnoreCase))
+		{
+			if (state == NexusFerry.State.SailingIn)
+			{
+				return queueTime + TravelTime;
+			}
+			if (state <= NexusFerry.State.Waiting)
+			{
+				return queueTime;
+			}
+		}
+		float timeUntilDeparture = 0f;
+		if (state <= NexusFerry.State.Stopping)
+		{
+			timeUntilDeparture += TravelTime;
+		}
+		if (state <= NexusFerry.State.Waiting)
+		{
+			timeUntilDeparture += waitTime;
+		}
+		if (state <= NexusFerry.State.SailingOut)
+		{
+			timeUntilDeparture += TravelTime;
+		}
+		return WalkRoute(useRouting: true) ?? WalkRoute(useRouting: false);
+		float? WalkRoute(bool useRouting)
+		{
+			float num = timeUntilDeparture;
+			string fromZoneKey = currentZoneKey;
+			for (int i = 0; i < schedule.Count; i++)
+			{
+				if (!(useRouting ? NexusFerry.TryPredictNextZone(schedule, fromZoneKey, ownerZone, out var nextZoneKey) : NexusFerry.TryGetNextScheduledZone(schedule, fromZoneKey, out nextZoneKey)))
+				{
+					return null;
+				}
+				if (string.Equals(nextZoneKey, thisZoneKey, StringComparison.InvariantCultureIgnoreCase))
+				{
+					return num + TravelTime;
+				}
+				num += TravelTime + waitTime + TravelTime;
+				fromZoneKey = nextZoneKey;
+			}
+			return null;
+		}
 	}
 
 	public override void Save(SaveInfo info)

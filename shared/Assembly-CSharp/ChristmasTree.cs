@@ -4,7 +4,7 @@ public class ChristmasTree : StorageContainer
 {
 	public GameObject[] decorations;
 
-	public override bool ItemFilter(Item item, int targetSlot)
+	public override bool ItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if ((Object)(object)((Component)item.info).GetComponent<ItemModXMasTreeDecoration>() == (Object)null)
 		{
@@ -17,7 +17,7 @@ public class ChristmasTree : StorageContainer
 				return false;
 			}
 		}
-		return base.ItemFilter(item, targetSlot);
+		return base.ItemFilter(player, item, targetSlot);
 	}
 
 	public override void OnItemAddedOrRemoved(Item item, bool added)

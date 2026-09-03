@@ -202,13 +202,13 @@ public class MortarEntityOld : StorageContainer
 		base.inventory.capacity = 1;
 	}
 
-	public bool CanAcceptItem(Item item, int slot)
+	public bool CanAcceptItem(BasePlayer player, Item item, int slot)
 	{
 		return IsMortarAmmo(item);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void FireGun(RPCMessage rpc)
 	{
 		if (!CanFireGun())
@@ -272,8 +272,8 @@ public class MortarEntityOld : StorageContainer
 		Debug.Log((object)$"Launching mortar with velocity of {Math.Round(((Vector3)(ref overrideVel)).magnitude, 1)}m/s with drag of {component.drag} and gravity of {component.gravityModifier}");
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SwitchAdjustmentAngle(RPCMessage rpc)
 	{
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
@@ -290,8 +290,8 @@ public class MortarEntityOld : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetAdjustmentMode(RPCMessage rpc)
 	{
 		bool b = rpc.read.Bool();

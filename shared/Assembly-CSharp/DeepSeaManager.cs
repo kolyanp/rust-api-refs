@@ -2368,6 +2368,22 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		((Renderer)component).shadowCastingMode = (ShadowCastingMode)0;
 	}
 
+	public static bool UseDeepSeaVisuals(Vector3 position)
+	{
+		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+		if (!DeepSea.terrain_everywhere)
+		{
+			return IsInsideDeepSea(position);
+		}
+		return true;
+	}
+
+	public static bool UseDeepSeaVisuals(BaseNetworkable entity)
+	{
+		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
+		return UseDeepSeaVisuals(((Component)entity).transform.position);
+	}
+
 	public static bool IsInsideDeepSea(Vector3 position)
 	{
 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
@@ -2523,7 +2539,7 @@ public class DeepSeaManager : PointEntity<DeepSeaManager>
 		info.msg.deepSeaManager = Pool.Get<DeepSeaManager>();
 		if (info.forDisk)
 		{
-			info.msg.deepSeaManager.foodPaid = (List<ulong>)(object)Pool.Get<PooledList<ulong>>();
+			info.msg.deepSeaManager.foodPaid = Pool.Get<List<ulong>>();
 			info.msg.deepSeaManager.foodPaid.AddRange(foodTollPaid);
 			return;
 		}

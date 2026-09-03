@@ -15,14 +15,25 @@ public class HelicopterDebris : ServerGib
 
 	private ResourceDispenser resourceDispenser;
 
-	public float tooHotUntil;
+	private const int coolDownTime = 480;
 
 	private static Phrase TooHotToHarvestPhrase;
 
 	public override void ServerInit()
 	{
 		base.ServerInit();
-		tooHotUntil = Time.realtimeSinceStartup + 480f;
+		if (!Application.isLoadingSave)
+		{
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			flagsUpdateScope.Set(Flags.OnFire, b: true);
+		}
+		Invoke(OnCooledDown, 480f);
+	}
+
+	public void OnCooledDown()
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.OnFire, b: false);
 	}
 
 	public override void PhysicsInit(Mesh mesh)
@@ -55,7 +66,7 @@ public class HelicopterDebris : ServerGib
 
 	public bool IsTooHot()
 	{
-		return tooHotUntil > Time.realtimeSinceStartup;
+		return HasFlag(Flags.OnFire);
 	}
 
 	public override void OnAttacked(HitInfo info)

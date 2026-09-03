@@ -24,36 +24,6 @@ public static class NexusClanUtil
 
 	public static readonly List<VariableUpdate> DefaultLeaderVariables;
 
-	private static readonly Memoized<string, ulong> SteamIdToPlayerId;
-
-	public static string GetPlayerId(ulong steamId)
-	{
-		return SteamIdToPlayerId.Get(steamId);
-	}
-
-	public static string GetPlayerId(ulong? steamId)
-	{
-		if (!steamId.HasValue)
-		{
-			return null;
-		}
-		return SteamIdToPlayerId.Get(steamId.Value);
-	}
-
-	public static ulong GetSteamId(string playerId)
-	{
-		return ulong.Parse(playerId);
-	}
-
-	public static ulong? TryGetSteamId(string playerId)
-	{
-		if (!ulong.TryParse(playerId, out var result))
-		{
-			return null;
-		}
-		return result;
-	}
-
 	public static void GetMotd(this NexusClan clan, out string motd, out long motdTimestamp, out ulong motdAuthor)
 	{
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
@@ -72,7 +42,7 @@ public static class NexusClanUtil
 		{
 			motd = val.GetAsString();
 			motdTimestamp = val.LastUpdated * 1000;
-			motdAuthor = GetSteamId(val2.GetAsString());
+			motdAuthor = (ulong.TryParse(val2.GetAsString(), out var result) ? result : 0);
 		}
 	}
 
@@ -119,12 +89,12 @@ public static class NexusClanUtil
 	public static ClanMember ToClanMember(this NexusClanMember member)
 	{
 		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
 		Variable val = default(Variable);
 		member.TryGetVariable("notes", ref val);
 		return new ClanMember
 		{
-			SteamId = GetSteamId(member.PlayerId),
+			SteamId = member.PlayerId,
 			RoleId = member.RoleId,
 			Joined = member.Joined * 1000,
 			LastSeen = member.LastSeen * 1000,
@@ -136,11 +106,11 @@ public static class NexusClanUtil
 	public static ClanInvite ToClanInvite(this ClanInvite invite)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
 		return new ClanInvite
 		{
-			SteamId = GetSteamId(((ClanInvite)(ref invite)).PlayerId),
-			Recruiter = GetSteamId(((ClanInvite)(ref invite)).RecruiterPlayerId),
+			SteamId = ((ClanInvite)(ref invite)).PlayerId,
+			Recruiter = ((ClanInvite)(ref invite)).RecruiterPlayerId,
 			Timestamp = ((ClanInvite)(ref invite)).Created * 1000
 		};
 	}
@@ -230,6 +200,5 @@ public static class NexusClanUtil
 			new VariableUpdate("can_set_motd", bool.TrueString, (bool?)null, (bool?)null),
 			new VariableUpdate("can_set_player_notes", bool.TrueString, (bool?)null, (bool?)null)
 		};
-		SteamIdToPlayerId = new Memoized<string, ulong>((Func<ulong, string>)((ulong steamId) => steamId.ToString("G")));
 	}
 }

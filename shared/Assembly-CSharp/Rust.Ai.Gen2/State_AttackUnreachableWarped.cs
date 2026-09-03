@@ -52,8 +52,8 @@ public class State_AttackUnreachableWarped : FSMStateBase
 	public static bool SampleGroundPositionUnderTarget(RustNavMeshAgent agent, BasePlayer targetAsPlayer, out Vector3 projectedLocation)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0055: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		if (targetAsPlayer.IsOnGround() && !targetAsPlayer.OnLadder())
@@ -63,7 +63,7 @@ public class State_AttackUnreachableWarped : FSMStateBase
 		}
 		float radius = BasePlayer.GetRadius();
 		bool result = agent.SampleGroundPositionWithPhysics(((Component)targetAsPlayer).transform.position, out var hitInfoNS, 2f, radius * 0.5f);
-		projectedLocation = ((RaycastHit)(ref hitInfoNS)).point;
+		projectedLocation = agent.NavToWorldSpace(hitInfoNS.point);
 		return result;
 	}
 

@@ -1520,41 +1520,42 @@ public static class AntiHack
 		//IL_007a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ba: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0101: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0102: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ff: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0108: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
 		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0125: Unknown result type (might be due to invalid IL or missing references)
-		//IL_012e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_019e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01bc: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01da: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01e8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d0: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("AntiHack.TestInsideTerrain"))
 		{
 			if (!TerrainMeta.TerrainRenderer || !Object.op_Implicit((Object)(object)TerrainMeta.HeightMap) || !Object.op_Implicit((Object)(object)TerrainMeta.Collision))
@@ -1568,11 +1569,8 @@ public static class AntiHack
 			NativeArray<float> results2 = new NativeArray<float>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
 			JobHandle heights = TerrainMeta.HeightMap.GetHeights(posi, results2);
 			JobHandle.ScheduleBatchedJobs();
-			NativeArray<float> val = new NativeArray<float>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
-			for (int j = 0; j < posi.Length; j++)
-			{
-				val[j] = TerrainMeta.SampleTerrainMeshHeight(posi[j]);
-			}
+			NativeArray<float> heights2 = new NativeArray<float>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
+			TerrainMeta.SampleTerrainMeshHeights(posi, heights2);
 			((JobHandle)(ref heights)).Complete();
 			NativeList<int> indicesToCheck = new NativeList<int>(posi.Length, AllocatorHandle.op_Implicit((Allocator)3));
 			NativeArray<Vector3> posiToCheck = new NativeArray<Vector3>(posi.Length, (Allocator)3, (NativeArrayOptions)0);
@@ -1585,13 +1583,13 @@ public static class AntiHack
 				RadiiToCheck = radiiToCheck,
 				Posi = posi,
 				HeightMapHeights = results2.AsReadOnly(),
-				TerrainHeights = val.AsReadOnly(),
+				TerrainHeights = heights2.AsReadOnly(),
 				TerrainPadding = ConVar.AntiHack.terrain_padding,
 				RadiusToCheck = 0.01f
 			};
 			IJobExtensions.RunByRef<InsideTerrainHeightsChecksJob>(ref insideTerrainHeightsChecksJob);
 			results2.Dispose();
-			val.Dispose();
+			heights2.Dispose();
 			if (!indicesToCheck.IsEmpty)
 			{
 				NativeArray<Vector3> subArray = posiToCheck.GetSubArray(0, indicesToCheck.Length);
@@ -1713,14 +1711,14 @@ public static class AntiHack
 			Posi = posi,
 			Distance = ConVar.AntiHack.mesh_inside_check_distance
 		};
-		int batchSize = GamePhysics.GetBatchSize(posi.Length);
+		int batchSize = ThreadUtils.GetBatchSize(posi.Length);
 		int length = posi.Length;
 		JobHandle val2 = default(JobHandle);
 		val2 = IJobForExtensions.ScheduleParallel<GenerateInsideMeshCommandsJob>(obj, length, batchSize, val2);
 		((JobHandle)(ref val2)).Complete();
 		NativeArray<RaycastHit> val3 = default(NativeArray<RaycastHit>);
 		val3._002Ector(posi.Length, (Allocator)3, (NativeArrayOptions)0);
-		int batchSize2 = GamePhysics.GetBatchSize(val.Length);
+		int batchSize2 = ThreadUtils.GetBatchSize(val.Length);
 		NativeArray<RaycastCommand> val4 = val;
 		NativeArray<RaycastHit> val5 = val3;
 		val2 = default(JobHandle);
@@ -1779,12 +1777,12 @@ public static class AntiHack
 			Posi = posi,
 			Distance = ConVar.AntiHack.mesh_inside_check_distance
 		};
-		int batchSize = GamePhysics.GetBatchSize(posi.Length);
+		int batchSize = ThreadUtils.GetBatchSize(posi.Length);
 		int length = posi.Length;
 		JobHandle val2 = default(JobHandle);
 		val2 = IJobForExtensions.ScheduleParallel<GenerateInsideMeshCommandsJob>(obj, length, batchSize, val2);
 		((JobHandle)(ref val2)).Complete();
-		int batchSize2 = GamePhysics.GetBatchSize(val.Length);
+		int batchSize2 = ThreadUtils.GetBatchSize(val.Length);
 		NativeArray<RaycastCommand> val3 = val;
 		NativeArray<RaycastHit> val4 = hits;
 		val2 = default(JobHandle);

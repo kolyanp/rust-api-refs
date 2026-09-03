@@ -35,8 +35,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		Blackjack
 	}
 
-	[Header("Card Game")]
 	[SerializeField]
+	[Header("Card Game")]
 	private GameObjectRef uiPrefab;
 
 	public ItemDefinition scrapItemDef;
@@ -622,8 +622,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		GameController?.LeaveTable(msg.player.userID);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -676,8 +676,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_Editor_MakeRandomMove(RPCMessage msg)
 	{
 		if (Application.isEditor)

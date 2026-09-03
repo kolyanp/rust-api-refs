@@ -128,11 +128,11 @@ public class MiningQuarry : BaseResourceExtractor
 		if (base.isServer)
 		{
 			ItemContainer inventory = ((Component)fuelStoragePrefab.instance).GetComponent<StorageContainer>().inventory;
-			inventory.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(inventory.canAcceptItem, new Func<Item, int, bool>(CanAcceptItem));
+			inventory.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(inventory.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptItem));
 		}
 	}
 
-	public bool CanAcceptItem(Item item, int targetSlot)
+	public bool CanAcceptItem(BasePlayer player, Item item, int targetSlot)
 	{
 		return item.info.shortname == "diesel_barrel";
 	}

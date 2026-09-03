@@ -176,10 +176,10 @@ public class ItemCrafter : EntityComponent<BasePlayer>
 
 	public void FinishCrafting(ItemCraftTask task)
 	{
-		//IL_0388: Unknown result type (might be due to invalid IL or missing references)
-		//IL_038f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0396: Unknown result type (might be due to invalid IL or missing references)
-		//IL_039c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0389: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0390: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0397: Unknown result type (might be due to invalid IL or missing references)
+		//IL_039d: Unknown result type (might be due to invalid IL or missing references)
 		task.amount--;
 		task.numCrafted++;
 		ulong skin = ItemDefinition.FindSkin(task.blueprint.targetItem.itemid, task.skinID);

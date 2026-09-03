@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects;
 
+[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
-[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -114,8 +114,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Tooltip("Adjusts the overall exposure of the scene.")]
 		[Min(0f)]
+		[Tooltip("Adjusts the overall exposure of the scene.")]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -162,8 +162,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 		public Texture texture;
 
-		[Tooltip("Blending factor.")]
 		[Range(0f, 1f)]
+		[Tooltip("Blending factor.")]
 		public float contribution;
 
 		public static LUTSettings defaultSettings => new LUTSettings
@@ -213,17 +213,17 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Range(-2f, 2f)]
 		public float temperatureShift;
 
-		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		[Range(-2f, 2f)]
+		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		public float tint;
 
+		[Space]
 		[Range(-0.5f, 0.5f)]
 		[Tooltip("Shift the hue of all colors.")]
-		[Space]
 		public float hue;
 
-		[Tooltip("Pushes the intensity of all colors.")]
 		[Range(0f, 2f)]
+		[Tooltip("Pushes the intensity of all colors.")]
 		public float saturation;
 
 		[Tooltip("Adjusts the saturation so that clipping is minimized as colors approach full saturation.")]
@@ -234,17 +234,17 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Range(0f, 10f)]
 		public float value;
 
-		[Space]
-		[Range(0f, 2f)]
 		[Tooltip("Expands or shrinks the overall range of tonal values.")]
+		[Range(0f, 2f)]
+		[Space]
 		public float contrast;
 
 		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		[Range(0.01f, 5f)]
 		public float gain;
 
-		[Range(0.01f, 5f)]
 		[Tooltip("Applies a pow function to the source.")]
+		[Range(0.01f, 5f)]
 		public float gamma;
 
 		public static BasicsSettings defaultSettings => new BasicsSettings
@@ -352,20 +352,20 @@ public class TonemappingColorGrading : MonoBehaviour
 		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public BasicsSettings basics;
 
-		[Space]
 		[ChannelMixer]
+		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public CurvesSettings curves;
 
-		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
 		[Space]
+		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
 		public bool useDithering;
 
 		[Tooltip("Displays the generated LUT in the top left corner of the GameView.")]
@@ -393,16 +393,16 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SerializeField]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private TonemappingSettings m_Tonemapping = TonemappingSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]

@@ -28,6 +28,7 @@ public class PartialMobileStaticGrid<T> where T : MonoBehaviour
 		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00d3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
 		if (TimeSince.op_Implicit(lastMobileUpdate) < 1f)
 		{
 			return;
@@ -48,6 +49,7 @@ public class PartialMobileStaticGrid<T> where T : MonoBehaviour
 					{
 						grid.Remove(val);
 						grid.Add(val, position.x, position.z);
+						mobilePositions[val] = position;
 					}
 				}
 			}
@@ -81,26 +83,43 @@ public class PartialMobileStaticGrid<T> where T : MonoBehaviour
 	{
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		if (!grid.Contains(target))
+		//IL_0042: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)target == (Object)null)
 		{
-			Vector3 position = ((Component)(object)target).transform.position;
-			grid.Add(target, position.x, position.z);
-			bool flag = false;
-			if ((Object)(object)rootParent == (Object)null)
+			return;
+		}
+		Vector3 position = ((Component)(object)target).transform.position;
+		if (grid.Contains(target))
+		{
+			grid.Remove(target);
+		}
+		grid.Add(target, position.x, position.z);
+		bool flag = false;
+		if ((Object)(object)rootParent == (Object)null)
+		{
+			rootParent = associatedEntity.GetRootParentEntity();
+		}
+		if ((Object)(object)rootParent != (Object)null && rootParent.syncPosition)
+		{
+			flag = true;
+		}
+		if (flag)
+		{
+			if (mobilePositions.Contains(target))
 			{
-				rootParent = associatedEntity.GetRootParentEntity();
+				mobilePositions[target] = position;
 			}
-			if ((Object)(object)rootParent != (Object)null && rootParent.syncPosition)
-			{
-				flag = true;
-			}
-			if (flag)
+			else
 			{
 				mobilePositions.Add(target, position);
 			}
+		}
+		else if (mobilePositions.Contains(target))
+		{
+			mobilePositions.Remove(target);
 		}
 	}
 

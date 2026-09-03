@@ -16,6 +16,11 @@ public class AttackHeliGunnerSeat : BaseVehicleSeat
 		}
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	public override bool CanHoldItems()
 	{
 		if ((Object)(object)Owner != (Object)null)

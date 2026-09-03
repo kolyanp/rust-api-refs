@@ -383,9 +383,9 @@ public class Handcuffs : BaseMelee
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void RPC_ReqCancelUnlockMiniGame(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;

@@ -40,6 +40,11 @@ public class BaseNPC2 : BaseCombatEntity
 		return 10f;
 	}
 
+	public override float AntiHackPadding()
+	{
+		return 2f;
+	}
+
 	public override void InitShared()
 	{
 		base.InitShared();

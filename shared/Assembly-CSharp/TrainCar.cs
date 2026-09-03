@@ -52,8 +52,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 
 	public float lastDecayTick;
 
-	[SerializeField]
 	[Header("Train Car")]
+	[SerializeField]
 	public float corpseSeconds = 60f;
 
 	[SerializeField]
@@ -101,8 +101,8 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 	[SerializeField]
 	public float wheelRadius = 0.615f;
 
-	[FormerlySerializedAs("fxFinalExplosion")]
 	[SerializeField]
+	[FormerlySerializedAs("fxFinalExplosion")]
 	public GameObjectRef fxDestroyed;
 
 	[SerializeField]
@@ -1029,6 +1029,11 @@ public class TrainCar : BaseVehicle, TriggerHurtNotChild.IHurtTriggerUser, Train
 			bool front = msg.read.Bit();
 			coupling.Uncouple(front);
 		}
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override void PreProcess(IPrefabProcessor process, GameObject rootObj, string name, bool serverside, bool clientside, bool bundling)

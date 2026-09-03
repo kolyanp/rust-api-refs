@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace CompanionServer.Handlers;
 
 public class Time : BasePlayerHandler<AppEmpty>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
 		TOD_Sky instance = TOD_Sky.Instance;
 		TOD_Time time = instance.Components.Time;
@@ -19,5 +20,6 @@ public class Time : BasePlayerHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.time = val;
 		Send(val2);
+		return default(ValueTask);
 	}
 }

@@ -10,7 +10,7 @@ public class WaterWell : LiquidContainer
 {
 	public Animator animator;
 
-	private const Flags Pumping = Flags.Reserved2;
+	private const Flags Pumping = Flags.Reserved4;
 
 	private const Flags WaterFlow = Flags.Reserved3;
 
@@ -77,20 +77,20 @@ public class WaterWell : LiquidContainer
 	{
 		base.ServerInit();
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.Reserved2, b: false);
+		flagsUpdateScope.Set(Flags.Reserved4, b: false);
 		flagsUpdateScope.Set(Flags.Reserved3, b: false);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_Pump(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
-		if (!((Object)(object)player == (Object)null) && !player.IsDead() && !player.IsSleeping() && !(player.metabolism.calories.value < caloriesPerPump) && !HasFlag(Flags.Reserved2))
+		if (!((Object)(object)player == (Object)null) && !player.IsDead() && !player.IsSleeping() && !(player.metabolism.calories.value < caloriesPerPump) && !HasFlag(Flags.Reserved4))
 		{
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
-				flagsUpdateScope.Set(Flags.Reserved2, b: true);
+				flagsUpdateScope.Set(Flags.Reserved4, b: true);
 			}
 			player.metabolism.calories.value -= caloriesPerPump;
 			player.metabolism.SendChanges();
@@ -107,7 +107,7 @@ public class WaterWell : LiquidContainer
 
 	public void StopPump()
 	{
-		SetFlagLocal(Flags.Reserved2, b: false);
+		SetFlagLocal(Flags.Reserved4, b: false);
 		SendNetworkUpdateImmediate();
 	}
 

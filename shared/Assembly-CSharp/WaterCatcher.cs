@@ -2,7 +2,7 @@ using System;
 using Oxide.Core;
 using UnityEngine;
 
-public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceiver, IWaterTreatmentSwitchReceiver
+public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceiver
 {
 	public class WaterCatcherWorkQueue : PersistentObjectWorkQueue<WaterCatcher>
 	{
@@ -36,7 +36,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public float rainTestSize;
 
-	public const float collectInterval = 60f;
+	protected const float collectInterval = 60f;
 
 	public bool lockInventory;
 
@@ -50,8 +50,6 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 	public int requiredPowergridStage;
 
 	public bool requireOilSwitchActive;
-
-	public bool requireWaterTreatmentSwitchActive;
 
 	public float overrideCollectInterval;
 
@@ -76,7 +74,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 
 	public const Flags Flag_PumpInProcess = Flags.Reserved10;
 
-	private TimeUntil nextCollect;
+	protected TimeUntil nextCollect;
 
 	public static WaterCatcherWorkQueue CollectWorkQueue = new WaterCatcherWorkQueue();
 
@@ -120,10 +118,6 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		{
 			OilSwitchBroadcast.RegisterReceiver(this);
 		}
-		if (requireWaterTreatmentSwitchActive)
-		{
-			WaterTreatmentSwitchBroadcast.RegisterReceiver(this);
-		}
 	}
 
 	internal override void DoServerDestroy()
@@ -134,13 +128,9 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		{
 			OilSwitchBroadcast.DeregisterReceiver(this);
 		}
-		if (requireWaterTreatmentSwitchActive)
-		{
-			WaterTreatmentSwitchBroadcast.DeregisterReceiver(this);
-		}
 	}
 
-	public void CollectWater()
+	protected virtual void CollectWater()
 	{
 		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
@@ -179,7 +169,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		AddResource(Mathf.CeilToInt(maxItemToCreate * num2));
 	}
 
-	public bool IsFull()
+	protected bool IsFull()
 	{
 		if (base.inventory.itemList.Count == 0)
 		{
@@ -192,7 +182,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		return true;
 	}
 
-	private bool hasResource()
+	protected bool hasResource()
 	{
 		if (base.inventory.itemList.Count == 0)
 		{
@@ -213,7 +203,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		return !Physics.SphereCast(new Ray(((Matrix4x4)(ref localToWorldMatrix)).MultiplyPoint3x4(testPositionOffset), Vector3.up), testSize, testDistance, 161546513);
 	}
 
-	public void AddResource(int iAmount)
+	protected void AddResource(int iAmount)
 	{
 		if (!ForceEnableConditionalSpawning && conditionalSpawning && !HasFlag(Flags.Reserved3))
 		{
@@ -257,7 +247,12 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 			if (slot != null && (Object)(object)slot.info == (Object)(object)LiquidContainerCrude.CrudeItem)
 			{
 				limitStack2 = ItemContainer.LimitStack.None;
-				iAmount = Mathf.Min(iAmount, LiquidContainerCrude.MaxStackSizeCrude - slot.amount);
+				iAmount = Mathf.Min(new int[3]
+				{
+					iAmount,
+					LiquidContainerCrude.MaxStackSizeCrude - slot.amount,
+					maxStackSize - slot.amount
+				});
 			}
 			if (iAmount <= 0)
 			{
@@ -272,7 +267,7 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 		UpdateOnFlag();
 	}
 
-	private IOEntity CheckPushLiquid(IOEntity connected, int amount, IOEntity fromSource, int depth)
+	protected IOEntity CheckPushLiquid(IOEntity connected, int amount, IOEntity fromSource, int depth)
 	{
 		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
@@ -317,20 +312,16 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 				}
 			}
 		}
-		if (connected is LiquidContainer { inventory: not null } liquidContainer && liquidContainer.inventory.GetAmount(itemToCreate.itemid, onlyUsableAmounts: false) < liquidContainer.inventory.maxStackSize)
+		if (connected is LiquidContainer { inventory: not null } liquidContainer && liquidContainer.inventory.GetAmount(itemToCreate.itemid) < liquidContainer.inventory.maxStackSize)
 		{
 			return connected;
 		}
 		return null;
 	}
 
-	public void ToggleProducing(bool state)
+	public virtual void ToggleProducing(bool state)
 	{
 		if (state && requireOilSwitchActive && currentOilRigMultiplier <= 0f)
-		{
-			state = false;
-		}
-		if (state && requireWaterTreatmentSwitchActive && !WaterTreatmentSwitchBroadcast.WaterTreatmentSwitchEnabled)
 		{
 			state = false;
 		}
@@ -361,11 +352,6 @@ public class WaterCatcher : LiquidContainer, IPowergridEntity, IOilSwitchReceive
 	{
 		currentOilRigMultiplier = newValue;
 		ToggleProducing(newValue > 0f);
-	}
-
-	public void OnWaterTreatmentSwitchToggled(bool state)
-	{
-		ToggleProducing(state);
 	}
 
 	protected override void OnWaterMoved(int amount)

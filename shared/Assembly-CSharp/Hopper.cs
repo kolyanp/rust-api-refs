@@ -116,7 +116,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 
 	public const Flags MovingItems = Flags.Reserved1;
 
-	public const Flags StandardMount = Flags.Reserved2;
+	public const Flags StandardMount = Flags.Reserved4;
 
 	public const Flags BarrelMount = Flags.Reserved3;
 
@@ -405,7 +405,7 @@ public class Hopper : IndustrialEntity, IIndustrialStorage
 		}
 		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
 		flagsUpdateScope.Set(Flags.Reserved3, mountType == MountType.Barrel);
-		flagsUpdateScope.Set(Flags.Reserved2, mountType == MountType.Flat);
+		flagsUpdateScope.Set(Flags.Reserved4, mountType == MountType.Flat);
 	}
 
 	private void QueueScan()

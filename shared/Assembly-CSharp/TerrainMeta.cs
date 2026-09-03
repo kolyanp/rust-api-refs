@@ -1,8 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.CompilerServices;
 using Facepunch;
 using Oxide.Core;
 using Unity.Burst;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -56,6 +62,105 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		public Vector3 Size;
 
 		public Vector3 OneOverSize;
+	}
+
+	[StructLayout(LayoutKind.Auto)]
+	[CompilerGenerated]
+	private struct _003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed : IAsyncStateMachine
+	{
+		public int _003C_003E1__state;
+
+		public AsyncUniTaskMethodBuilder _003C_003Et__builder;
+
+		public int start;
+
+		public NativeArray<float> heights;
+
+		public ReadOnly<Vector3> posi;
+
+		public int end;
+
+		private UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter _003C_003Eu__1;
+
+		private void MoveNext()
+		{
+			//IL_0094: Unknown result type (might be due to invalid IL or missing references)
+			int num = _003C_003E1__state;
+			try
+			{
+				UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter awaiter;
+				if (num != 0)
+				{
+					awaiter = UnsafeScriptingAccess.SwitchToMultithreading().GetAwaiter();
+					if (!awaiter.IsCompleted)
+					{
+						num = (_003C_003E1__state = 0);
+						_003C_003Eu__1 = awaiter;
+						((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).AwaitUnsafeOnCompleted<UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter, _003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed>(ref awaiter, ref this);
+						return;
+					}
+				}
+				else
+				{
+					awaiter = _003C_003Eu__1;
+					_003C_003Eu__1 = default(UnsafeScriptingAccess.MaybeSwitchToThreadPool.Awaiter);
+					num = (_003C_003E1__state = -1);
+				}
+				awaiter.GetResult();
+				TimeWarning timeWarning = TimeWarning.New("SampleTerrainMeshHeightsAsync");
+				try
+				{
+					UnsafeScriptingAccess unsafeScriptingAccess = UnsafeScriptingAccess.Start();
+					try
+					{
+						for (int i = start; i < end; i++)
+						{
+							heights[i] = SampleTerrainMeshHeight(posi[i]);
+						}
+					}
+					finally
+					{
+						if (num < 0)
+						{
+							((IDisposable)unsafeScriptingAccess/*cast due to constrained. prefix*/).Dispose();
+						}
+					}
+				}
+				finally
+				{
+					if (num < 0)
+					{
+						((IDisposable)timeWarning)?.Dispose();
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				_003C_003E1__state = -2;
+				((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetException(exception);
+				return;
+			}
+			_003C_003E1__state = -2;
+			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetResult();
+		}
+
+		void IAsyncStateMachine.MoveNext()
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in MoveNext
+			this.MoveNext();
+		}
+
+		[DebuggerHidden]
+		private void SetStateMachine(IAsyncStateMachine stateMachine)
+		{
+			((AsyncUniTaskMethodBuilder)(ref _003C_003Et__builder)).SetStateMachine(stateMachine);
+		}
+
+		void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+		{
+			//ILSpy generated this explicit interface implementation from .override directive in SetStateMachine
+			this.SetStateMachine(stateMachine);
+		}
 	}
 
 	public TerrainRenderer terrainRenderer = new TerrainRenderer();
@@ -269,6 +374,57 @@ public class TerrainMeta : SingletonComponent<TerrainMeta>
 		float num2 = NormalizeZ(worldPos.z);
 		float interpolatedHeight = TerrainData.GetInterpolatedHeight(num, num2);
 		return Position.y + interpolatedHeight;
+	}
+
+	public static void SampleTerrainMeshHeights(ReadOnly<Vector3> posi, NativeArray<float> heights)
+	{
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		using (TimeWarning.New("SampleTerrainMeshHeights"))
+		{
+			int batchSize = ThreadUtils.GetBatchSize(posi.Length, 4, 256);
+			int num = (posi.Length + batchSize - 1) / batchSize;
+			if (num >= 4)
+			{
+				List<UniTask> list = new List<UniTask>();
+				for (int i = 0; i < num; i++)
+				{
+					int num2 = i * batchSize;
+					int end = Math.Min(num2 + batchSize, posi.Length);
+					list.Add(SampleAsync(heights, posi, num2, end));
+				}
+				ThreadUtils.WaitForTasks(list);
+			}
+			else
+			{
+				for (int j = 0; j < posi.Length; j++)
+				{
+					heights[j] = SampleTerrainMeshHeight(posi[j]);
+				}
+			}
+		}
+		[AsyncStateMachine(typeof(_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed))]
+		static UniTask SampleAsync(NativeArray<float> heights2, ReadOnly<Vector3> posi2, int start, int end2)
+		{
+			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0007: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000e: Unknown result type (might be due to invalid IL or missing references)
+			//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+			//IL_0049: Unknown result type (might be due to invalid IL or missing references)
+			_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed obj = default(_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed);
+			obj._003C_003Et__builder = AsyncUniTaskMethodBuilder.Create();
+			obj.heights = heights2;
+			obj.posi = posi2;
+			obj.start = start;
+			obj.end = end2;
+			obj._003C_003E1__state = -1;
+			((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Start<_003C_003CSampleTerrainMeshHeights_003Eg__SampleAsync_007C134_0_003Ed>(ref obj);
+			return ((AsyncUniTaskMethodBuilder)(ref obj._003C_003Et__builder)).Task;
+		}
 	}
 
 	public static bool OutOfBounds(Vector3 worldPos)

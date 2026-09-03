@@ -52,12 +52,12 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 
 	public Menu.Option UpgradeMenu;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private float openAnimLength = 4f;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	private float closeAnimLength = 4f;
 
 	public const Flags ReverseOpen = Flags.Reserved1;
@@ -638,8 +638,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	protected void RPC_OpenDoor(RPCMessage rpc)
 	{
 		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
@@ -798,8 +798,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 	{
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_KnockDoor(RPCMessage rpc)
 	{
 		//IL_0076: Unknown result type (might be due to invalid IL or missing references)
@@ -867,8 +867,8 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_NotifyWoundedOpen(RPCMessage msg)
 	{
 		//IL_0041: Unknown result type (might be due to invalid IL or missing references)
@@ -1242,9 +1242,9 @@ public class Door : AnimatedBuildingBlock, INotifyTrigger, ISimpleUpgradable
 		global::SimpleUpgrade.DoUpgrade(this, player, upgradeItem);
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void DoSimpleUpgrade(RPCMessage msg)
 	{
 		if (base.SecondsSinceAttacked < 30f)

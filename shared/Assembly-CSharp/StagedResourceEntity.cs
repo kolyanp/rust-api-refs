@@ -1,43 +1,26 @@
 using System;
-using System.Collections.Generic;
 using Facepunch;
-using Network;
 using ProtoBuf;
+using Rust.Rendering.IndirectInstancing;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class StagedResourceEntity : ResourceEntity
 {
-	[Serializable]
-	public class ResourceStage
-	{
-		public float health;
+	[Header("Staged Resource Entity")]
+	public GameObjectRef changeStageEffect;
 
-		public GameObject instance;
-	}
+	[Tooltip("The LOD component whose visuals are swapped per destruction stage. Supports MeshLOD (meshes only) and StagedRendererLOD (meshes and materials).")]
+	[FormerlySerializedAs("ResourceMeshLod")]
+	public InstancedLODComponent LODComponent;
 
-	public List<ResourceStage> stages = new List<ResourceStage>();
+	public MeshCollider[] ResourceMeshColliders = Array.Empty<MeshCollider>();
 
 	protected int stage;
 
-	public GameObjectRef changeStageEffect;
-
-	public MeshLOD ResourceMeshLod;
-
-	public MeshCollider ResourceMeshCollider;
-
 	private Action UpdateNetworkStageAction;
 
-	public GameObject gibSourceTest;
-
-	private StagedResourceEntityInfo cachedInfo;
-
-	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
-	{
-		using (TimeWarning.New("StagedResourceEntity.OnRpcMessage"))
-		{
-		}
-		return base.OnRpcMessage(player, rpc, msg);
-	}
+	private StagedDestructionEntityInfo cachedInfo;
 
 	public int GetStage()
 	{
@@ -96,18 +79,18 @@ public class StagedResourceEntity : ResourceEntity
 	private int FindBestStage()
 	{
 		float num = Mathf.InverseLerp(0f, MaxHealth(), Health());
-		StagedResourceEntityInfo.ResourceStage[] array = GetInfo().Stages;
-		for (int i = 0; i < array.Length; i++)
+		StagedDestructionEntityInfo.ResourceStage[] stages = GetInfo().Stages;
+		for (int i = 0; i < stages.Length; i++)
 		{
-			if (num >= array[i].Health)
+			if (num >= stages[i].Health)
 			{
 				return i;
 			}
 		}
-		return array.Length - 1;
+		return stages.Length - 1;
 	}
 
-	private StagedResourceEntityInfo GetInfo()
+	private StagedDestructionEntityInfo GetInfo()
 	{
 		if (cachedInfo != null)
 		{
@@ -115,17 +98,36 @@ public class StagedResourceEntity : ResourceEntity
 		}
 		if (base.isServer)
 		{
-			cachedInfo = PrefabAttribute.server.Find<StagedResourceEntityInfo>(prefabID);
+			cachedInfo = PrefabAttribute.server.Find<StagedDestructionEntityInfo>(prefabID);
 		}
 		return cachedInfo;
 	}
 
 	private void UpdateStage()
 	{
-		if (GetInfo().Stages.Length != 0)
+		if (GetInfo().Stages.Length == 0)
 		{
-			ResourceMeshCollider.sharedMesh = cachedInfo.GetCollisionMesh(stage);
-			GroundWatch.PhysicsChanged(((Component)this).gameObject);
+			return;
 		}
+		StagedDestructionEntityInfo.StageCollider[] colliders = cachedInfo.GetColliders(stage);
+		int num = ((colliders != null) ? colliders.Length : 0);
+		for (int i = 0; i < ResourceMeshColliders.Length; i++)
+		{
+			MeshCollider val = ResourceMeshColliders[i];
+			if (!((Object)(object)val == (Object)null))
+			{
+				Mesh val2 = ((i < num) ? colliders[i] : null)?.Mesh;
+				if ((Object)(object)val.sharedMesh != (Object)(object)val2)
+				{
+					val.sharedMesh = val2;
+				}
+				bool flag = (Object)(object)val2 != (Object)null;
+				if (((Collider)val).enabled != flag)
+				{
+					((Collider)val).enabled = flag;
+				}
+			}
+		}
+		GroundWatch.PhysicsChanged(((Component)this).gameObject);
 	}
 }

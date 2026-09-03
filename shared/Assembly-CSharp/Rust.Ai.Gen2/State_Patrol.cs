@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -24,7 +24,7 @@ public class State_Patrol : FSMStateBase
 
 	private NpcZoneComponent _npcZoneComponent;
 
-	private Vector3? spawnPositionNS;
+	private NavVector3? spawnPositionNS;
 
 	private Vector3? desiredEndDirection;
 
@@ -40,11 +40,10 @@ public class State_Patrol : FSMStateBase
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
 		Reset();
 		if (!spawnPositionNS.HasValue)
 		{
-			spawnPositionNS = Owner.ServerNavMeshPos;
+			spawnPositionNS = base.Agent.nextPosition;
 		}
 		if (!TrySetPatrolDestination())
 		{
@@ -58,106 +57,64 @@ public class State_Patrol : FSMStateBase
 
 	private bool TrySetPatrolDestination()
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
-		//IL_005e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
-		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0085: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0098: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0119: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0135: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0155: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0167: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01be: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0252: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0257: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0266: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0271: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0276: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0292: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0297: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02b1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0186: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ca: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0285: Unknown result type (might be due to invalid IL or missing references)
+		//IL_028a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02c4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d3: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 serverNavMeshPos = Owner.ServerNavMeshPos;
-		bool flag = Vector3.Distance(spawnPositionNS.Value, serverNavMeshPos) > homeRadius;
-		PooledList<Vector3> val = Pool.Get<PooledList<Vector3>>();
+		//IL_01e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02eb: Unknown result type (might be due to invalid IL or missing references)
+		NavVector3 nextPosition = base.Agent.nextPosition;
+		bool flag = NavVector3.Distance(spawnPositionNS.Value, nextPosition) > homeRadius;
+		PooledList<NavVector3> val = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			float radius = Random.Range(distanceRange.x, distanceRange.y);
-			Eqs.SamplePositionsInDonutShape(serverNavMeshPos, (List<Vector3>)(object)val, radius);
+			float num = Random.Range(distanceRange.x, distanceRange.y);
+			bool flag2 = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val, num, num, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				Vector3 val2 = spawnPositionNS.Value - serverNavMeshPos;
-				Vector3 normalized = ((Vector3)(ref val2)).normalized;
-				foreach (Vector3 item2 in (List<Vector3>)(object)val)
+				NavVector3 normalized = (spawnPositionNS.Value - nextPosition).normalized;
+				foreach (NavVector3 item2 in (List<NavVector3>)(object)val)
 				{
-					float num = 0f;
-					if (flag)
-					{
-						float num2 = num;
-						val2 = item2 - serverNavMeshPos;
-						num = num2 + Mathx.RemapValClamped(Vector3.Dot(normalized, ((Vector3)(ref val2)).normalized), -1f, 1f, 0f, 1f);
-					}
-					else
-					{
-						num += Random.value;
-					}
-					((List<(Vector3, float)>)(object)pooledScoreList).Add((item2, num));
+					float num2 = 0f;
+					num2 = ((!flag) ? (num2 + Random.value) : (num2 + Mathx.RemapValClamped(NavVector3.Dot(normalized, (item2 - nextPosition).NormalizeXZ()), -1f, 1f, 0f, 1f)));
+					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item2, num2));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);
-				Matrix4x4 navMeshToWorldSpace = Owner.NavMeshToWorldSpace;
-				foreach (var item3 in (List<(Vector3, float)>)(object)pooledScoreList)
+				foreach (var item3 in (List<(NavVector3, float)>)(object)pooledScoreList)
 				{
-					Vector3 item = item3.Item1;
-					if (!base.Agent.SamplePosition(item, out var hitNS, 3.5f))
+					NavVector3 item = item3.Item1;
+					NavVector3 navVector = item;
+					if (!flag2)
 					{
-						continue;
+						if (!base.Agent.SamplePosition(item, out var hitNS, 3.5f))
+						{
+							continue;
+						}
+						navVector = hitNS.position;
 					}
-					Vector3 val3 = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(((NavMeshHit)(ref hitNS)).position);
-					if (!NpcZoneComponent.IsPointInsideZone(val3) || base.Agent.IsInWater(val3) || !base.Agent.CalculatePath(((NavMeshHit)(ref hitNS)).position, Path))
+					Vector3 val2 = base.Agent.NavToWorldSpace(navVector);
+					if (!NpcZoneComponent.IsPointInsideZone(val2) || base.Agent.IsInWater(val2) || !base.Agent.CalculatePath(navVector, Path))
 					{
 						continue;
 					}
 					if ((int)Path.status != 0)
 					{
-						Vector3 val4 = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(Path.GetDestinationNS());
-						if (!NpcZoneComponent.IsPointInsideZone(val4) || base.Agent.IsInWater(val4))
+						Vector3 val3 = base.Agent.NavToWorldSpace(Path.GetDestinationNS());
+						if (!NpcZoneComponent.IsPointInsideZone(val3) || base.Agent.IsInWater(val3))
 						{
 							continue;
 						}
@@ -166,14 +123,15 @@ public class State_Patrol : FSMStateBase
 					base.Agent.speed = base.Agent.GetSpeedForGait(speed);
 					if (base.Agent.lastValidPath.Count >= 2)
 					{
-						List<Vector3> lastValidPath = base.Agent.lastValidPath;
-						Vector3 val5 = lastValidPath[lastValidPath.Count - 1];
-						List<Vector3> lastValidPath2 = base.Agent.lastValidPath;
-						Vector3 val6 = Vector3Ex.NormalizeXZ(val5 - lastValidPath2[lastValidPath2.Count - 2]) * 3f;
-						Vector3 direction = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyVector(val6);
-						List<Vector3> lastValidPath3 = base.Agent.lastValidPath;
-						Vector3 val7 = ((Matrix4x4)(ref navMeshToWorldSpace)).MultiplyPoint(lastValidPath3[lastValidPath3.Count - 1]);
-						if (base.Senses.Trace(val7 + base.Senses.EyeOffset, direction, out var hitInfo, 1218519041, "patrol"))
+						List<NavVector3> lastValidPath = base.Agent.lastValidPath;
+						NavVector3 navVector2 = lastValidPath[lastValidPath.Count - 1];
+						List<NavVector3> lastValidPath2 = base.Agent.lastValidPath;
+						NavVector3 directionNS = (navVector2 - lastValidPath2[lastValidPath2.Count - 2]).NormalizeXZ() * 3f;
+						Vector3 direction = base.Agent.NavToWorldDirection(directionNS);
+						RustNavMeshAgent agent = base.Agent;
+						List<NavVector3> lastValidPath3 = base.Agent.lastValidPath;
+						Vector3 val4 = agent.NavToWorldSpace(lastValidPath3[lastValidPath3.Count - 1]);
+						if (base.Senses.Trace(val4 + base.Senses.EyeOffset, direction, out var hitInfo, 1218519041, "patrol"))
 						{
 							desiredEndDirection = Vector3Ex.WithY(((RaycastHit)(ref hitInfo)).normal, 0f);
 						}

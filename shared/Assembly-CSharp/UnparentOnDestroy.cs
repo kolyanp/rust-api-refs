@@ -6,8 +6,11 @@ public class UnparentOnDestroy : MonoBehaviour, IOnParentDestroying
 
 	public void OnParentDestroying()
 	{
-		((Component)this).transform.parent = null;
-		GameManager.Destroy(((Component)this).gameObject, (destroyAfterSeconds <= 0f) ? 1f : destroyAfterSeconds);
+		if (!PoolableEx.IsPooledPrefabChild(((Component)this).gameObject))
+		{
+			((Component)this).transform.parent = null;
+			GameManager.Destroy(((Component)this).gameObject, (destroyAfterSeconds <= 0f) ? 1f : destroyAfterSeconds);
+		}
 	}
 
 	protected void OnValidate()

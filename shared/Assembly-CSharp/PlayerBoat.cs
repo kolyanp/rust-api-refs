@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ConVar;
 using Development.Attributes;
 using Facepunch;
 using Oxide.Core;
@@ -387,8 +388,8 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 					float num2 = dragByDirectionOfTravel[i];
 					Vector3 val2 = Quaternion.Euler(0f, (float)num, 0f) * forward;
 					Vector3 val3 = val + val2 * 5f;
-					DDraw.Arrow(p, val, val3, Color.yellow, 30f, 0.5f, distanceFade: true, zTest: false);
-					DDraw.Text(p, val3 + Vector3.up * 1f, $"{num}°: {num2:F4}", Color.yellow, 30f);
+					UnityEngine.DDraw.Arrow(p, val, val3, Color.yellow, 30f, 0.5f, distanceFade: true, zTest: false);
+					UnityEngine.DDraw.Text(p, val3 + Vector3.up * 1f, $"{num}°: {num2:F4}", Color.yellow, 30f);
 				}
 			}
 		}
@@ -787,6 +788,10 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		info.msg.playerBoat.size = ((Bounds)(ref bounds)).size;
 		info.msg.playerBoat.lastEditLocalPos = lastEditLocalPos;
 		info.msg.playerBoat.lastEditLocalRot = lastEditLocalRot;
+		if (info.forDisk)
+		{
+			info.msg.playerBoat.timeSinceLastUsed = ((TimeSince)(ref timeSinceLastUsed)).PassedSince(info.cachedTime.Time);
+		}
 	}
 
 	public override void PostServerLoad()
@@ -810,7 +815,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		BoatBuildingStation.GetBoatBlocksOBBExtents(BoatBuildingBlocks.Cached, ((Component)this).transform.forward, out var _, out var halfExtents, out var _);
 		if (!IsDying)
 		{
-			((Component)this).transform.position = Vector3Ex.WithY(((Component)this).transform.position, 0f);
+			((Component)this).transform.position = Vector3Ex.WithY(((Component)this).transform.position, Env.oceanlevel);
 			((Component)this).transform.localEulerAngles = new Vector3(0f, ((Component)this).transform.localEulerAngles.y, 0f);
 		}
 		Init(BoatBuildingBlocks.Cached, null, halfExtents, loading: true);
@@ -2467,12 +2472,18 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		base.Load(info);
 		lastEditLocalPos = info.msg.playerBoat.lastEditLocalPos;
 		lastEditLocalRot = info.msg.playerBoat.lastEditLocalRot;
 		if (base.isServer)
 		{
 			rigidBody.isKinematic = true;
+			if (info.fromDisk)
+			{
+				timeSinceLastUsed = TimeSince.op_Implicit(info.msg.playerBoat.timeSinceLastUsed);
+			}
 		}
 	}
 
@@ -2865,7 +2876,7 @@ public class PlayerBoat : BaseBoat, Anchor.IAnchorable, TriggerHurtNotChild.IHur
 		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
 		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
-		Vector3 val = Vector3Ex.WithY(((Component)this).transform.position, 0f);
+		Vector3 val = Vector3Ex.WithY(((Component)this).transform.position, Env.oceanlevel);
 		Quaternion val2 = Quaternion.Euler(Vector3Ex.WithXZ(((Component)this).transform.eulerAngles, 0f, 0f));
 		outPosition = val + val2 * lastEditLocalPos;
 		outRotation = val2 * Quaternion.Euler(lastEditLocalRot);

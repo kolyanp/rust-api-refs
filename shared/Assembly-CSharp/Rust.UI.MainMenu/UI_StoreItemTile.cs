@@ -29,8 +29,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	public CoverImage coverImage;
 
-	[SerializeField]
 	[Header("Header")]
+	[SerializeField]
 	[Space]
 	private GameObject headerTextGroup;
 
@@ -43,8 +43,8 @@ public class UI_StoreItemTile : BaseMonoBehaviour
 	[SerializeField]
 	private UI_StoreAddCartButton cartButton;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject ownedOverlay;
 
 	[SerializeField]

@@ -148,8 +148,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	[Tooltip("If true, this item will support item ownership even if it's stacksize is >1")]
 	public bool supportsStackableOwnership;
 
-	[Header("Spawn Tables")]
 	[Tooltip("How rare this item is and how much it costs to research")]
+	[Header("Spawn Tables")]
 	public Rarity rarity;
 
 	public Rarity despawnRarity;
@@ -274,7 +274,9 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 
 	public ItemModBurnable ItemModBurnable { get; set; }
 
-	public ItemModCookable ItemModCookable { get; set; }
+	public CookableItemInfo ItemModCookable { get; set; }
+
+	public CookableItemInfo ItemModCompostable { get; private set; }
 
 	public ItemModEntity ItemModEntity { get; private set; }
 
@@ -459,6 +461,25 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		return _worldModelMass;
 	}
 
+	public int GetWorldModelTriCount(int lod = 0)
+	{
+		if (worldModelPrefab == null || !worldModelPrefab.isValid)
+		{
+			return 0;
+		}
+		GameObject val = worldModelPrefab.Get();
+		if ((Object)(object)val == (Object)null)
+		{
+			return 0;
+		}
+		WorldModel worldModel = default(WorldModel);
+		if (val.TryGetComponent<WorldModel>(ref worldModel))
+		{
+			return worldModel.GetTriCount(lod);
+		}
+		return 0;
+	}
+
 	public bool HasFlag(Flag f)
 	{
 		return (flags & f) == f;
@@ -480,12 +501,21 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		Children = itemList.Where((ItemDefinition x) => (Object)(object)x.Parent == (Object)(object)this).ToArray();
 		ItemModWearable = ((Component)this).GetComponent<ItemModWearable>();
 		ItemModBurnable = ((Component)this).GetComponent<ItemModBurnable>();
-		ItemModCookable = ((Component)this).GetComponent<ItemModCookable>();
+		ItemModCookable component = ((Component)this).GetComponent<ItemModCookable>();
+		if ((Object)(object)component != (Object)null)
+		{
+			ItemModCookable = new CookableItemInfo(component);
+		}
 		ItemModEntity = ((Component)this).GetComponent<ItemModEntity>();
 		HasItemModEntity = (Object)(object)ItemModEntity != (Object)null;
 		ItemModSpriteConfig = ((Component)this).GetComponent<ItemModSpriteConfig>();
 		isHoldable = (Object)(object)((Component)this).GetComponent<ItemModEntity>() != (Object)null;
 		isUsable = (Object)(object)((Component)this).GetComponent<ItemModEntity>() != (Object)null || (Object)(object)((Component)this).GetComponent<ItemModConsume>() != (Object)null;
+		ItemModCompostable component2 = ((Component)this).GetComponent<ItemModCompostable>();
+		if ((Object)(object)component2 != (Object)null && component2.TotalFertilizerProduced > 0f)
+		{
+			ItemModCompostable = new CookableItemInfo(component2);
+		}
 	}
 
 	public GameObjectRef GetWorldModel(int amount)

@@ -179,7 +179,7 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 				_coverPointBlockers.AddRange(componentsInChildren2);
 			}
 		}
-		if (CoverPoints.Count != 0 || !RustNavMeshHelpers.SamplePosition(((Component)this).transform.position, out var hitNS, ((Component)this).transform.localScale.y * cover_point_sample_step_height, -1))
+		if (CoverPoints.Count != 0 || !RustNavMeshHelpers.SamplePosition(((Component)this).transform.position, out var hitWS, ((Component)this).transform.localScale.y * cover_point_sample_step_height, -1))
 		{
 			return;
 		}
@@ -192,7 +192,7 @@ public class CoverPointVolume : MonoBehaviour, IServerComponent
 			{
 				for (float num3 = position.y - val.y; num3 < position.y + val.y; num3 += cover_point_sample_step_height)
 				{
-					if (!NavMesh.FindClosestEdge(new Vector3(num, num3, num2), ref info, ((NavMeshHit)(ref hitNS)).mask))
+					if (!NavMesh.FindClosestEdge(new Vector3(num, num3, num2), ref info, ((NavMeshHit)(ref hitWS)).mask))
 					{
 						continue;
 					}

@@ -17,6 +17,7 @@ public class Category_Fun
 		[Info("Gets called whenever a chicken gets scared due to the presence of another potential threat.")]
 		[Parameter("chicken", typeof(Chicken), false)]
 		[Parameter("threat", typeof(BaseEntity), false)]
+		[Return(typeof(void), Discarded = true)]
 		public class OnChickenScared : Patch
 		{
 			public static void Postfix(BaseAIBrain brain)
@@ -41,6 +42,7 @@ public class Category_Fun
 
 		[Patch("CanAcceptBackpackItem", "CanAcceptBackpackItem", typeof(ItemModBackpack), "CanAcceptItem", new Type[]
 		{
+			typeof(BasePlayer),
 			typeof(Item),
 			typeof(Item),
 			typeof(int)
@@ -51,7 +53,7 @@ public class Category_Fun
 		[Return(typeof(bool))]
 		public class CanAcceptBackpackItem : Patch
 		{
-			public static bool Prefix(Item backpack, Item item, int slot, ref bool __result)
+			public static bool Prefix(BasePlayer player, Item backpack, Item item, int slot, ref bool __result)
 			{
 				if (!(HookCaller.CallStaticHook(2306141762u, (object)backpack, (object)item) is bool flag))
 				{
@@ -68,6 +70,7 @@ public class Category_Fun
 		[Patch("OnJackieChan", "OnJackieChan", typeof(BasePlayer), "PlayerInit", new Type[] { typeof(Connection) })]
 		[Parameter("player", typeof(BasePlayer), false)]
 		[Info("Checks if player that connected is Jackie Chan.")]
+		[Return(typeof(void), Discarded = true)]
 		public class OnJackieChan : Patch
 		{
 			public static void Prefix(Connection c)

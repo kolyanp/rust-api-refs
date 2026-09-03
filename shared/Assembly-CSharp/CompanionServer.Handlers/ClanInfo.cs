@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 
@@ -5,7 +6,7 @@ namespace CompanionServer.Handlers;
 
 public class ClanInfo : BaseClanHandler<AppEmpty>
 {
-	public override async void Execute()
+	public override async ValueTask Execute()
 	{
 		IClan clan = await GetClan();
 		if (clan == null)

@@ -84,12 +84,12 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private FlexGridsElement grid;
 
-	[SerializeField]
 	[Tooltip("The source of the items, for analytics")]
+	[SerializeField]
 	private StoreSource source;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]
@@ -98,12 +98,12 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private int maxCellCount;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	public int cellWidth;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	public int cellHeight;
 
 	public bool fixedGrid;
@@ -133,6 +133,10 @@ public class UI_StoreItemGrid : MonoBehaviour
 
 	public bool dynamicContent;
 
+	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
+	[SerializeField]
+	private List<UI_StoreItemGrid> excludeItemsFromGrids;
+
 	[SerializeField]
 	private RuleMatchMode ruleMatchMode;
 
@@ -152,6 +156,7 @@ public class UI_StoreItemGrid : MonoBehaviour
 		orderingRules = new List<OrderingRule>();
 		whiteListedItems = new List<SteamInventoryItem>();
 		dynamicContent = true;
+		excludeItemsFromGrids = new List<UI_StoreItemGrid>();
 		ruleMatchMode = RuleMatchMode.Any;
 		rules = new List<StoreFilterRule>();
 		((MonoBehaviour)this)._002Ector();

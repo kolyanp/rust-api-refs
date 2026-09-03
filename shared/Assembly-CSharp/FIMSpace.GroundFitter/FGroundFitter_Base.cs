@@ -9,16 +9,16 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 {
 	[Header("> Main Variables <", order = 0)]
 	[Space(4f, order = 1)]
-	[Tooltip("How quick rotation should be corrected to target")]
 	[Range(1f, 30f)]
+	[Tooltip("How quick rotation should be corrected to target")]
 	public float FittingSpeed;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing whole rotation motion")]
+	[Range(0f, 1f)]
 	public float TotalSmoother;
 
-	[Tooltip("Transform which will be rotated by script, usually it can be the same transform as component's")]
 	[Space(3f)]
+	[Tooltip("Transform which will be rotated by script, usually it can be the same transform as component's")]
 	[HideInInspector]
 	public Transform TransformToRotate;
 
@@ -27,26 +27,26 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	public bool GlueToGround;
 
 	[Header("> Tweaking Settings <", order = 0)]
-	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
-	[Range(0f, 1f)]
 	[Space(4f, order = 1)]
+	[Range(0f, 1f)]
+	[Tooltip("If forward/pitch rotation value should go in lighter value than real normal hit direction")]
 	public float MildForwardValue;
 
 	[Tooltip("Maximum rotation angle in rotation of x/pitch axis, so rotating forward - degrees value of maximum rotation")]
 	[Range(0f, 90f)]
 	public float MaxForwardRotation;
 
-	[Space(5f)]
 	[Range(0f, 1f)]
 	[Tooltip("If side rotation value/roll should go in lighter value than real normal hit direction")]
+	[Space(5f)]
 	public float MildHorizontalValue;
 
 	[Tooltip("Max roll rotation. If rotation should work on also on x axis - good for spiders, can look wrong on quadropeds etc.")]
 	[Range(0f, 90f)]
 	public float MaxHorizontalRotation;
 
-	[Header("> Advanced settings <", order = 0)]
 	[Tooltip("We should cast raycast from position little higher than foots of your game object")]
+	[Header("> Advanced settings <", order = 0)]
 	[Space(4f, order = 1)]
 	public float RaycastHeightOffset;
 
@@ -59,8 +59,8 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 	[Tooltip("Blending with predicted forward raycast rotation")]
 	public float AheadBlend;
 
-	[HideInInspector]
 	[Tooltip("Offset over ground")]
+	[HideInInspector]
 	public float UpOffset;
 
 	[Space(8f)]
@@ -75,8 +75,8 @@ public abstract class FGroundFitter_Base : MonoBehaviour
 
 	internal Vector3 WorldUp;
 
-	[Space(8f)]
 	[Tooltip("Casting more raycsts under object to detect ground more precisely, then we use average from all casts to set new rotation")]
+	[Space(8f)]
 	public bool ZoneCast;
 
 	public Vector2 ZoneCastDimensions;

@@ -54,7 +54,7 @@ public class FileStorage : IDisposable
 
 	private MruDictionary<uint, CacheData> _cache;
 
-	public static FileStorage server = new FileStorage("sv.files." + 287, server: true);
+	public static FileStorage server = new FileStorage("sv.files." + 288, server: true);
 
 	private string filePath;
 

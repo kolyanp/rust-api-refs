@@ -4,12 +4,14 @@ using Network;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class RentableShopVendingMachine : InvisibleVendingMachine
+public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEntity
 {
 	private RentableShop _cachedParent;
 
 	[SerializeField]
 	private ItemListScriptableObject BannedItemsList;
+
+	private const Flags Refrigerated = Flags.Reserved12;
 
 	private RentableShop ParentRentableShop
 	{
@@ -338,6 +340,19 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 		return false;
 	}
 
+	public override float GetSpoilMultiplier(Item arg)
+	{
+		if (!Powergrid.enabled)
+		{
+			return base.GetSpoilMultiplier(arg);
+		}
+		if (HasFlag(Flags.Reserved12))
+		{
+			return PoweredFoodSpoilageRateMultiplier;
+		}
+		return base.GetSpoilMultiplier(arg);
+	}
+
 	public override void ServerInit()
 	{
 		base.ServerInit();
@@ -351,8 +366,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 	{
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(12f)]
+	[RPC_Server]
 	public void RPC_AddSellOrderRelaxedDistance(RPCMessage msg)
 	{
 		RPC_AddSellOrder(msg);
@@ -365,8 +380,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 		base.RPC_UpdateShopName(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_BuyItem(RPCMessage msg)
 	{
 		BuyItem(msg);
@@ -386,15 +401,15 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 		SV_RequestPurchaseData(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_DeleteSellOrderDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteSellOrder(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_DeleteAllSellOrdersDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteAllSellOrders(msg);
@@ -428,5 +443,16 @@ public class RentableShopVendingMachine : InvisibleVendingMachine
 			return PlayerInventory.CanMoveFromResponse.Success();
 		}
 		return base.CanMoveFrom(player, item);
+	}
+
+	public bool Server_ShouldConnectToPowergrid()
+	{
+		return true;
+	}
+
+	public void Server_OnPowergridStageChanged(int newStage)
+	{
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate_Flags);
+		flagsUpdateScope.Set(Flags.Reserved12, newStage > 0);
 	}
 }

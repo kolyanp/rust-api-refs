@@ -512,9 +512,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		flagsUpdateScope.Set(Flags.Locked, BoatLock.HasALock);
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestAddLock(RPCMessage msg)
 	{
 		if (BoatLock.HasALock)
@@ -532,8 +532,8 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		flagsUpdateScope.Set(Flags.Locked, BoatLock.HasALock);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_TryMountWithKeycode(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -612,9 +612,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RequestFinishBuilding(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -631,8 +631,8 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public void RequestFinishBuildingFromWheel(RPCMessage msg)
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
@@ -665,9 +665,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RequestEditBoat(RPCMessage msg)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -687,9 +687,9 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void RequestDeployAndEditBoat(RPCMessage msg)
 	{
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
@@ -718,10 +718,10 @@ public class SteeringWheel : BaseMountable, global::IBoatBuildingPiece
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(15uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(float) })]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(15uL)]
 	public void ReceiveClientRotation(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !((Object)(object)GetMounted() != (Object)(object)msg.player) && !((Object)(object)ParentBoat == (Object)null))

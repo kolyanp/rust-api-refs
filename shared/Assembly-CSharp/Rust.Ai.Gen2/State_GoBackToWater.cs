@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
 [Serializable]
 public class State_GoBackToWater : State_MoveToTarget
 {
-	private Vector3 nearestWaterPoint;
+	private NavVector3 nearestWaterPoint;
 
 	public override EFSMStateStatus OnStateEnter(FSMPayload payload)
 	{
@@ -25,15 +25,8 @@ public class State_GoBackToWater : State_MoveToTarget
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0094: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fe: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
 		if (base.Agent.IsSwimming)
 		{
 			return EFSMStateStatus.Success;
@@ -46,17 +39,26 @@ public class State_GoBackToWater : State_MoveToTarget
 			Vector3 val = item * item2;
 			Vector3 val2 = ((Component)Owner).transform.position + ((Vector3)(ref val)).normalized * (((Vector3)(ref val)).magnitude + 10f);
 			val2.y = TerrainMeta.HeightMap.GetHeight(val2);
-			PooledList<Vector3> val3 = Pool.Get<PooledList<Vector3>>();
+			PooledList<NavVector3> val3 = Pool.Get<PooledList<NavVector3>>();
 			try
 			{
-				Eqs.SamplePositionsInDonutShape(val2, (List<Vector3>)(object)val3);
-				ListEx.Shuffle<Vector3>((List<Vector3>)(object)val3, (uint)Environment.TickCount);
-				nearestWaterPoint = val2;
-				foreach (Vector3 item3 in (List<Vector3>)(object)val3)
+				bool flag = Eqs.SampleNavigablePositions(base.Agent, base.Agent.WorldToNavSpace(val2), (List<NavVector3>)(object)val3, 10f, 10f, 8);
+				ListEx.Shuffle<NavVector3>((List<NavVector3>)(object)val3, (uint)Environment.TickCount);
+				nearestWaterPoint = base.Agent.WorldToNavSpace(val2);
+				foreach (NavVector3 item3 in (List<NavVector3>)(object)val3)
 				{
-					if (base.Agent.SamplePosition(item3, out var hitNS, 10f) && base.Agent.IsInWater(((NavMeshHit)(ref hitNS)).position))
+					NavVector3 positionNS = item3;
+					if (!flag)
 					{
-						nearestWaterPoint = ((NavMeshHit)(ref hitNS)).position;
+						if (!base.Agent.SamplePosition(item3, out var hitNS, 10f))
+						{
+							continue;
+						}
+						positionNS = hitNS.position;
+					}
+					if (base.Agent.IsInWater(positionNS))
+					{
+						nearestWaterPoint = positionNS;
 						break;
 					}
 				}
@@ -69,10 +71,8 @@ public class State_GoBackToWater : State_MoveToTarget
 		return base.OnStateEnter(payload);
 	}
 
-	protected override bool GetMoveDestination(out Vector3 destination)
+	protected override bool GetMoveDestination(out NavVector3 destination)
 	{
-		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0007: Unknown result type (might be due to invalid IL or missing references)
 		destination = nearestWaterPoint;
 		return true;
 	}

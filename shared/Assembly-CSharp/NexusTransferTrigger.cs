@@ -30,11 +30,12 @@ public class NexusTransferTrigger : BaseMonoBehaviour, IServerComponent
 		{
 			return;
 		}
-		BaseEntity entity = GameObjectEx.ToBaseEntity(((Component)other).gameObject);
-		if (!((Object)(object)entity == (Object)null))
+		BaseEntity baseEntity = GameObjectEx.ToBaseEntity(((Component)other).gameObject);
+		BaseEntity rootEntity;
+		if (!((Object)(object)baseEntity == (Object)null))
 		{
-			BaseEntity baseEntity = NexusServer.FindRootEntity(entity, includeFerry: true);
-			if (_controller.CanTransfer(baseEntity) && PendingEntities.Add(baseEntity))
+			rootEntity = NexusServer.FindRootEntity(baseEntity, includeFerry: true);
+			if (_controller.CanTransfer(rootEntity) && PendingEntities.Add(rootEntity))
 			{
 				TransferAndWait();
 			}
@@ -43,11 +44,11 @@ public class NexusTransferTrigger : BaseMonoBehaviour, IServerComponent
 		{
 			try
 			{
-				await NexusServer.TransferEntity(entity, zoneKey, method);
+				await NexusServer.TransferEntity(rootEntity, zoneKey, method);
 			}
 			finally
 			{
-				PendingEntities.Remove(entity);
+				PendingEntities.Remove(rootEntity);
 			}
 		}
 	}

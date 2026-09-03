@@ -118,15 +118,6 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	public override void ResetState()
-	{
-		base.ResetState();
-		activeBbq.Set(null);
-		activeLocker.Set(null);
-		activeStorage.Set(null);
-		wasLoaded = false;
-	}
-
 	public override void ModuleAdded(BaseModularVehicle vehicle, int firstSocketIndex)
 	{
 		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
@@ -314,8 +305,8 @@ public class VehicleModuleCamper : VehicleModuleSeating
 		info.msg.camperModule.storageID = activeStorage.uid;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenLocker(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

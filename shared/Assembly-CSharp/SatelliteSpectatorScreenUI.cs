@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class SatelliteSpectatorScreenUI : MonoBehaviour
 {
-	[Header("Map")]
 	[SerializeField]
+	[Header("Map")]
 	private RawImage mapImage;
 
 	[SerializeField]
@@ -24,8 +24,8 @@ public class SatelliteSpectatorScreenUI : MonoBehaviour
 	[SerializeField]
 	private RectTransform lockedCrashRect;
 
-	[Header("Text")]
 	[SerializeField]
+	[Header("Text")]
 	private RustText statusText;
 
 	[SerializeField]

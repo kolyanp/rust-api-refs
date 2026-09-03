@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Rust.Ai.Gen2;
 
@@ -50,21 +50,7 @@ public class State_FleeToHide : State_Flee
 		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ca: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00df: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ed: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
-		//IL_014e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0156: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a9: Unknown result type (might be due to invalid IL or missing references)
 		if (!base.Senses.FindTargetPosition(out var targetPosition))
 		{
 			return EFSMStateStatus.Success;
@@ -79,25 +65,34 @@ public class State_FleeToHide : State_Flee
 			num = 55f;
 		}
 		val2 = Quaternion.AngleAxis(num * (clockWise ? 1f : (-1f)), Vector3.up) * val2;
-		PooledList<Vector3> val3 = Pool.Get<PooledList<Vector3>>();
+		NavVector3 nextPosition = base.Agent.nextPosition;
+		NavVector3 aNS = base.Agent.WorldToNavDirection(val2);
+		PooledList<NavVector3> val3 = Pool.Get<PooledList<NavVector3>>();
 		try
 		{
-			Eqs.SamplePositionsInDonutShape(base.Agent.nextPosition, (List<Vector3>)(object)val3, distance);
+			bool flag = Eqs.SampleNavigablePositions(base.Agent, nextPosition, (List<NavVector3>)(object)val3, distance, distance, 8);
 			Eqs.PooledScoreList pooledScoreList = Pool.Get<Eqs.PooledScoreList>();
 			try
 			{
-				foreach (Vector3 item3 in (List<Vector3>)(object)val3)
+				foreach (NavVector3 item3 in (List<NavVector3>)(object)val3)
 				{
-					Vector3 val4 = val2;
-					Vector3 val5 = item3 - ((Component)Owner).transform.position;
-					float item = Vector3.Dot(val4, ((Vector3)(ref val5)).normalized);
-					((List<(Vector3, float)>)(object)pooledScoreList).Add((item3, item));
+					float item = NavVector3.Dot(aNS, (item3 - nextPosition).NormalizeXZ());
+					((List<(NavVector3, float)>)(object)pooledScoreList).Add((item3, item));
 				}
 				pooledScoreList.SortByScoreDesc(Owner);
-				foreach (var item4 in (List<(Vector3, float)>)(object)pooledScoreList)
+				foreach (var item4 in (List<(NavVector3, float)>)(object)pooledScoreList)
 				{
-					Vector3 item2 = item4.Item1;
-					if (base.Agent.SamplePosition(item2, out var hitNS, 10f) && (base.Agent.canSwim || !base.Agent.IsInWater(((NavMeshHit)(ref hitNS)).position)) && base.Agent.SetDestinationWithParams(((NavMeshHit)(ref hitNS)).position, autoBraking: false, speed))
+					NavVector3 item2 = item4.Item1;
+					NavVector3 navVector = item2;
+					if (!flag)
+					{
+						if (!base.Agent.SamplePosition(item2, out var hitNS, 10f))
+						{
+							continue;
+						}
+						navVector = hitNS.position;
+					}
+					if ((base.Agent.canSwim || !base.Agent.IsInWater(navVector)) && base.Agent.SetDestinationWithParams(navVector, autoBraking: false, speed))
 					{
 						return EFSMStateStatus.None;
 					}

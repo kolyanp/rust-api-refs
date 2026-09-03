@@ -15,6 +15,9 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 
 	public bool buildOnEnable;
 
+	[Tooltip("Bake this navmesh with the hi res build params. Needed for detailed structures like ghost ships, the tile builder only picks hi res by itself for building blocks and monument prevent building volumes")]
+	public bool forceHiRes;
+
 	private static SparseGridWithBounds<IndependantNavmesh> navmeshLookup = new SparseGridWithBounds<IndependantNavmesh>();
 
 	private Matrix4x4 buildTimeTransform;
@@ -77,17 +80,9 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 
 	private void OnEnable()
 	{
-		//IL_000a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		if (!AI.useUnityNavmesh)
+		if (!AI.useUnityNavmesh && buildOnEnable && (Object)(object)RustNavigation.Instance != (Object)null)
 		{
-			lastBounds = GetBounds();
-			navmeshLookup.Add(lastBounds, this);
-			if (buildOnEnable)
-			{
-				RustNavigation.Instance.AddNavmesh(this);
-			}
+			RustNavigation.Instance.AddNavmesh(this);
 		}
 	}
 
@@ -96,7 +91,10 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		if (!AI.useUnityNavmesh)
 		{
 			navmeshLookup.Remove(this);
-			RustNavigation.Instance.RemoveNavmesh(this);
+			if ((Object)(object)RustNavigation.Instance != (Object)null)
+			{
+				RustNavigation.Instance.RemoveNavmesh(this);
+			}
 			if (Navmesh != null)
 			{
 				Navmesh.Dispose();
@@ -107,14 +105,14 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 
 	private void LateUpdate()
 	{
-		//IL_0012: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0033: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
-		if (!AI.useUnityNavmesh && canMove)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
+		if (!AI.useUnityNavmesh && canMove && Navmesh != null)
 		{
 			Bounds bounds = GetBounds();
 			if (bounds != lastBounds)
@@ -131,22 +129,29 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0014: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
 			return;
 		}
 		buildTimeTransform = ((Component)this).transform.localToWorldMatrix;
-		RustNavmesh rustNavmesh = new RustNavmesh(tileBuilder, null, null, GetBounds(), shouldBuild: true, canMove || synchronous);
+		RustNavmesh rustNavmesh = new RustNavmesh(tileBuilder, null, null, GetBounds(), shouldBuild: true, canMove || synchronous, forceHiRes);
 		if (rustNavmesh == null || !rustNavmesh.IsValid())
 		{
 			RustNavigation.LogError("Failed to build independent navmesh for object " + ((Object)this).name);
 			return;
 		}
+		rustNavmesh.debugName = ((Object)((Component)this).transform.root).name;
 		if (Navmesh != null)
 		{
 			Navmesh.Dispose();
 		}
 		Navmesh = rustNavmesh;
+		navmeshLookup.Remove(this);
+		lastBounds = GetBounds();
+		navmeshLookup.Add(lastBounds, this);
 	}
 
 	public void RebuildTilesInBounds(Bounds bounds, bool synchronous = false)
@@ -169,86 +174,86 @@ public class IndependantNavmesh : MonoBehaviour, IServerComponent
 		}
 	}
 
-	public Vector3 TransformPointFromWorldSpaceToNavSpace(Vector3 worldPoint)
+	public NavVector3 TransformPointFromWorldSpaceToNavSpace(Vector3 worldPoint)
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh() || !canMove)
 		{
-			return worldPoint;
+			return new NavVector3(worldPoint);
 		}
 		Matrix4x4 worldToLocalMatrix = ((Component)this).transform.worldToLocalMatrix;
 		Vector3 val = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyPoint3x4(worldPoint);
-		return ((Matrix4x4)(ref buildTimeTransform)).MultiplyPoint3x4(val);
+		return new NavVector3(((Matrix4x4)(ref buildTimeTransform)).MultiplyPoint3x4(val));
 	}
 
-	public Vector3 TransformPointFromNavSpaceToWorldSpace(Vector3 navSpacePoint)
+	public Vector3 TransformPointFromNavSpaceToWorldSpace(NavVector3 navSpacePoint)
 	{
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh() || !canMove)
 		{
-			return navSpacePoint;
+			return navSpacePoint.Value;
 		}
 		Matrix4x4 val = ((Matrix4x4)(ref buildTimeTransform)).inverse;
-		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyPoint3x4(navSpacePoint);
+		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyPoint3x4(navSpacePoint.Value);
 		val = ((Component)this).transform.localToWorldMatrix;
 		return ((Matrix4x4)(ref val)).MultiplyPoint3x4(val2);
 	}
 
-	public Vector3 TransformDirectionFromNavSpaceToWorldSpace(Vector3 navSpaceDirection)
+	public Vector3 TransformDirectionFromNavSpaceToWorldSpace(NavVector3 navSpaceDirection)
 	{
-		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0010: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0036: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003f: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh() || !canMove)
 		{
-			return navSpaceDirection;
+			return navSpaceDirection.Value;
 		}
 		Matrix4x4 val = ((Matrix4x4)(ref buildTimeTransform)).inverse;
-		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyVector(navSpaceDirection);
+		Vector3 val2 = ((Matrix4x4)(ref val)).MultiplyVector(navSpaceDirection.Value);
 		val = ((Component)this).transform.localToWorldMatrix;
 		return ((Matrix4x4)(ref val)).MultiplyVector(val2);
 	}
 
-	public Vector3 TransformDirectionFromWorldSpaceToNavSpace(Vector3 worldSpaceDirection)
+	public NavVector3 TransformDirectionFromWorldSpaceToNavSpace(Vector3 worldSpaceDirection)
 	{
 		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0017: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0032: Unknown result type (might be due to invalid IL or missing references)
 		if (!RustNavigation.EnsureNewNavmesh() || !canMove)
 		{
-			return worldSpaceDirection;
+			return new NavVector3(worldSpaceDirection);
 		}
 		Matrix4x4 worldToLocalMatrix = ((Component)this).transform.worldToLocalMatrix;
 		Vector3 val = ((Matrix4x4)(ref worldToLocalMatrix)).MultiplyVector(worldSpaceDirection);
-		return ((Matrix4x4)(ref buildTimeTransform)).MultiplyVector(val);
+		return new NavVector3(((Matrix4x4)(ref buildTimeTransform)).MultiplyVector(val));
 	}
 
 	public bool FillDebugDrawProto(NavMeshData navMeshData, Bounds bounds)

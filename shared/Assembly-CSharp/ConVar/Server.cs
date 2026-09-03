@@ -19,8 +19,8 @@ using UnityEngine;
 
 namespace ConVar;
 
-[ResetStaticFields]
 [Factory("server")]
+[ResetStaticFields]
 public class Server : ConsoleSystem
 {
 	[ServerVar(Help = "(Generated) IP address the server binds to; leave empty to bind to all interfaces")]
@@ -287,9 +287,6 @@ public class Server : ConsoleSystem
 
 	[ServerVar(Saved = true, Help = "(Generated) Vertical eye-height offset in metres used when raycasting to determine whether a sprinkler can water a given plant")]
 	public static float sprinklerEyeHeightOffset = 3f;
-
-	[ServerVar(Saved = true, Help = "(Generated) When true, uses the old sprinkler initialisation process when loading a save; enable if upgrading from an older server version to avoid sprinkler layout issues")]
-	public static bool useLegacySprinklerLoadProcess = false;
 
 	[ServerVar(Saved = true, Help = "(Generated) Soil saturation level (0–1) at which a planter box is considered perfectly watered for quality bonuses; default 0.6")]
 	public static float optimalPlanterQualitySaturation = 0.6f;
@@ -686,7 +683,7 @@ public class Server : ConsoleSystem
 	public static int DestroyTaskBatchCount = 128;
 
 	[ServerVar(Help = "UsePlayerUpdateJobs 4 related - affects how many players get batched into 1 task by counting the size of their network queues. Higher number - less tasks")]
-	public static int ParallelNetworkQueueBatchSize = 256;
+	public static int ParallelNetworkQueueBatchSize = 16;
 
 	[CompilerGenerated]
 	private static Era _003CEra_003Ek__BackingField;
@@ -1691,7 +1688,7 @@ public class Server : ConsoleSystem
 			{
 				val.AddRow(new string[3]
 				{
-					((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
 					((object)((Component)item).transform.position/*cast due to constrained. prefix*/).ToString(),
 					StringExtensions.QuoteSafe(item.shopName)
 				});
@@ -1719,7 +1716,7 @@ public class Server : ConsoleSystem
 			{
 				val.AddRow(new string[3]
 				{
-					((object)Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
+					((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item.net.ID)/*cast due to constrained. prefix*/).ToString(),
 					((object)((Component)item).transform.position/*cast due to constrained. prefix*/).ToString(),
 					item.authorizedPlayers.Count.ToString()
 				});

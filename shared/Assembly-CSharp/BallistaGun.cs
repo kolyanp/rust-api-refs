@@ -69,8 +69,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	protected BaseProjectile.Magazine magazine;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected Transform muzzle;
 
 	[SerializeField]
@@ -85,8 +85,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	protected Animator animator;
 
-	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
 	[SerializeField]
+	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
 	protected bool runInLateUpdate;
 
 	[SerializeField]
@@ -112,8 +112,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[SerializeField]
 	[Header("Effects")]
+	[SerializeField]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -174,19 +174,13 @@ public class BallistaGun : BaseVehicleSeat
 	[HideInInspector]
 	public float reloadProgress;
 
-	private bool justReloaded;
-
 	private BasePlayer reloadingPlayer;
-
-	private float steerInput;
 
 	private float verticalRatio;
 
 	private bool wasShowingLegs;
 
 	private TimeSince lastReloadStartTime;
-
-	private float fixedMountYRotation;
 
 	[ClientVar(ClientAdmin = true, Help = "(Generated) When enabled, draws debug visualisations for this system (seismic sensor range sphere, escape capture state, etc.); editor/admin-only")]
 	public static bool debug;
@@ -418,6 +412,11 @@ public class BallistaGun : BaseVehicleSeat
 			return ballistaOwner.IsWaterlogged();
 		}
 		return false;
+	}
+
+	public override void ResetState()
+	{
+		base.ResetState();
 	}
 
 	public override void InitShared()
@@ -1346,8 +1345,8 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
@@ -1375,8 +1374,8 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{

@@ -14,8 +14,6 @@ namespace CompanionServer;
 
 public class NotificationList
 {
-	private const string ApiEndpoint = "https://companion-rust.facepunch.com/api/push/send";
-
 	private readonly HashSet<ulong> _subscriptions = new HashSet<ulong>();
 
 	private double _lastSend;
@@ -206,7 +204,7 @@ public class NotificationList
 		try
 		{
 			StringContent content2 = new StringContent(content, Encoding.UTF8, "application/json");
-			HttpResponseMessage httpResponseMessage = await WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/push/send", content2);
+			HttpResponseMessage httpResponseMessage = await WebUtil.HttpClient.PostAsync(App.endpoint + "/push/send", content2);
 			if (!httpResponseMessage.IsSuccessStatusCode)
 			{
 				DebugEx.LogWarning($"Failed to send notification: {httpResponseMessage.StatusCode}", (StackTraceLogType)0);

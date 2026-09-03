@@ -337,6 +337,17 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		return HasFlag(Flags.Locked);
 	}
 
+	private void UpdateEquipmentHealthToggles()
+	{
+		foreach (BaseEntity child in children)
+		{
+			if (child is HotAirBalloonEquipment hotAirBalloonEquipment && (Object)(object)hotAirBalloonEquipment.healthThresholdToggle != (Object)null)
+			{
+				hotAirBalloonEquipment.healthThresholdToggle.UpdateHealth(base.healthFraction);
+			}
+		}
+	}
+
 	public override void OnAttacked(HitInfo info)
 	{
 		if (IsSafe() && !info.damageTypes.Has(DamageType.Decay))
@@ -344,6 +355,12 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 			info.damageTypes.ScaleAll(0f);
 		}
 		base.OnAttacked(info);
+	}
+
+	public override void OnHealthChanged(float oldvalue, float newvalue)
+	{
+		base.OnHealthChanged(oldvalue, newvalue);
+		UpdateEquipmentHealthToggles();
 	}
 
 	protected override void OnChildAdded(BaseEntity child)
@@ -365,6 +382,7 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 			if ((Object)(object)hotAirBalloonEquipment != (Object)null)
 			{
 				hotAirBalloonEquipment.Added(this, isLoadingSave);
+				UpdateEquipmentHealthToggles();
 			}
 		}
 	}
@@ -419,8 +437,11 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		RebuildMaxHealthFromEquipment();
 		base.PostServerLoad();
 		ClearOwnerEntry();
-		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
-		flagsUpdateScope.Set(Flags.On, b: false);
+		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
+		{
+			flagsUpdateScope.Set(Flags.On, b: false);
+		}
+		UpdateEquipmentHealthToggles();
 	}
 
 	private void RebuildMaxHealthFromEquipment()
@@ -955,8 +976,8 @@ public class HotAirBalloon : BaseCombatEntity, VehicleSpawner.IVehicleSpawnUser,
 		return result;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_ReqEquipItem(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

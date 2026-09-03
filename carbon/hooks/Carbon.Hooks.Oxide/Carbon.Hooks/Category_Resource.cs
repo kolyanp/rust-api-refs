@@ -15,7 +15,7 @@ public class Category_Resource
 	public class Resource_ResourceDispenser
 	{
 		[Patch("OnDispenserGather", "OnDispenserGather", "ResourceDispenser", "GiveResourceFromItem", new string[] { "BasePlayer", "ItemAmount", "System.Single", "System.Single", "AttackEntity" })]
-		[Identifier("a2d14e0b8e6f4ce4840294f8c158c4ab")]
+		[Identifier("f39a09f2507246f281fe9a4bc2fe62a0")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ResourceDispenser", false)]
 		[Parameter("entity", "BasePlayer", false)]
@@ -23,7 +23,7 @@ public class Category_Resource
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ResourceDispenser_a2d14e0b8e6f4ce4840294f8c158c4ab : Patch
+		public class Resource_ResourceDispenser_f39a09f2507246f281fe9a4bc2fe62a0 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -57,14 +57,15 @@ public class Category_Resource
 		}
 
 		[Patch("OnDispenserBonus", "OnDispenserBonus", "ResourceDispenser", "AssignFinishBonus", new string[] { "BasePlayer", "System.Single", "AttackEntity" })]
-		[Identifier("f86c40a2e4254400bc4922905a867f0a")]
+		[Identifier("06537e17d17747fda7972c37005147e3")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ResourceDispenser", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("local4", "Item", false)]
+		[Return(typeof(Item), Continues = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ResourceDispenser_f86c40a2e4254400bc4922905a867f0a : Patch
+		public class Resource_ResourceDispenser_06537e17d17747fda7972c37005147e3 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -104,15 +105,16 @@ public class Category_Resource
 		}
 
 		[Patch("OnDispenserGathered", "OnDispenserGathered", "ResourceDispenser", "GiveResourceFromItem", new string[] { "BasePlayer", "ItemAmount", "System.Single", "System.Single", "AttackEntity" })]
-		[Identifier("d28176138d8b42d3b1fbebf111af9301")]
+		[Identifier("aa58c3aafa9146fdba6b017c9bd0d9b4")]
 		[Dependencies(new string[] { "OnDispenserGather" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ResourceDispenser", false)]
 		[Parameter("entity", "BasePlayer", false)]
 		[Parameter("local7", "Item", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ResourceDispenser_d28176138d8b42d3b1fbebf111af9301 : Patch
+		public class Resource_ResourceDispenser_aa58c3aafa9146fdba6b017c9bd0d9b4 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -142,15 +144,16 @@ public class Category_Resource
 		}
 
 		[Patch("OnDispenserBonusReceived", "OnDispenserBonusReceived", "ResourceDispenser", "AssignFinishBonus", new string[] { "BasePlayer", "System.Single", "AttackEntity" })]
-		[Identifier("eb53c2bc70aa44b6adf2ba5cd22dfc68")]
+		[Identifier("670d802ae70848d29c1e1bfc6cfc937f")]
 		[Dependencies(new string[] { "OnDispenserBonus" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ResourceDispenser", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Parameter("local4", "Item", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ResourceDispenser_eb53c2bc70aa44b6adf2ba5cd22dfc68 : Patch
+		public class Resource_ResourceDispenser_670d802ae70848d29c1e1bfc6cfc937f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -183,12 +186,13 @@ public class Category_Resource
 	public class Resource_SurveyCharge
 	{
 		[Patch("OnSurveyGather", "OnSurveyGather", "SurveyCharge", "Explode", new string[] { })]
-		[Identifier("d80c5d3bf12541feb5244f4bed827eb4")]
+		[Identifier("fa935de17d3d42dc8f5188ad78ee784f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "SurveyCharge", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_SurveyCharge_d80c5d3bf12541feb5244f4bed827eb4 : Patch
+		public class Resource_SurveyCharge_fa935de17d3d42dc8f5188ad78ee784f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -227,12 +231,13 @@ public class Category_Resource
 	public class Resource_ResourceDepositManager
 	{
 		[Patch("OnResourceDepositCreated", "OnResourceDepositCreated", "ResourceDepositManager", "CreateFromPosition", new string[] { "UnityEngine.Vector3" })]
-		[Identifier("bce9533056da4caa98b1f0c680ea12c1")]
+		[Identifier("a9c07fcb76424fc390968a3e2c1cee65")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local1", "ResourceDepositManager+ResourceDeposit", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ResourceDepositManager_bce9533056da4caa98b1f0c680ea12c1 : Patch
+		public class Resource_ResourceDepositManager_a9c07fcb76424fc390968a3e2c1cee65 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -261,13 +266,13 @@ public class Category_Resource
 	public class Resource_LootContainer
 	{
 		[Patch("OnLootSpawn", "OnLootSpawn [LootContainer]", "LootContainer", "SpawnLoot", new string[] { })]
-		[Identifier("59bf0ed6c2604600b6739f016acfcc73")]
+		[Identifier("6f512dc72b254d228bbc743fb4f3b67b")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "LootContainer", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_LootContainer_59bf0ed6c2604600b6739f016acfcc73 : Patch
+		public class Resource_LootContainer_6f512dc72b254d228bbc743fb4f3b67b : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -300,7 +305,7 @@ public class Category_Resource
 	public class Resource_CollectibleEntity
 	{
 		[Patch("OnCollectiblePickup", "OnCollectiblePickup", "CollectibleEntity", "DoPickup", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("8ab59b5ba6874aeab35a8e19d0e43f8e")]
+		[Identifier("276e0b85859c4ba693460273f61fa6ee")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CollectibleEntity", false)]
 		[Parameter("reciever", "BasePlayer", false)]
@@ -308,7 +313,7 @@ public class Category_Resource
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_CollectibleEntity_8ab59b5ba6874aeab35a8e19d0e43f8e : Patch
+		public class Resource_CollectibleEntity_276e0b85859c4ba693460273f61fa6ee : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -343,15 +348,16 @@ public class Category_Resource
 		}
 
 		[Patch("OnCollectiblePickedup", "OnCollectiblePickedup", "CollectibleEntity", "DoPickup", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("2ae761547b3d47ed906a67ed65556f65")]
+		[Identifier("9c609b60929c4bd5b315da8420408f5c")]
 		[Dependencies(new string[] { "OnCollectiblePickup" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CollectibleEntity", false)]
 		[Parameter("reciever", "BasePlayer", false)]
 		[Parameter("local9", "Item", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_CollectibleEntity_2ae761547b3d47ed906a67ed65556f65 : Patch
+		public class Resource_CollectibleEntity_9c609b60929c4bd5b315da8420408f5c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -384,14 +390,14 @@ public class Category_Resource
 	public class Resource_ExcavatorArm
 	{
 		[Patch("OnExcavatorGather", "OnExcavatorGather", "ExcavatorArm", "ProduceResources", new string[] { })]
-		[Identifier("b08a578a52354253acb8fb2bb1d8a2b2")]
+		[Identifier("ccb6c3a1a4504c67ac2e7e63f68b605e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ExcavatorArm", false)]
 		[Parameter("local8", "Item", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ExcavatorArm_b08a578a52354253acb8fb2bb1d8a2b2 : Patch
+		public class Resource_ExcavatorArm_ccb6c3a1a4504c67ac2e7e63f68b605e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -425,12 +431,13 @@ public class Category_Resource
 		}
 
 		[Patch("OnExcavatorMiningToggled", "OnExcavatorMiningToggled [start]", "ExcavatorArm", "BeginMining", new string[] { })]
-		[Identifier("f23f721d96bf4e76ac2e9e66295571aa")]
+		[Identifier("9aed5ef3063349b59042af2da6be0c3e")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ExcavatorArm", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ExcavatorArm_f23f721d96bf4e76ac2e9e66295571aa : Patch
+		public class Resource_ExcavatorArm_9aed5ef3063349b59042af2da6be0c3e : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -456,12 +463,13 @@ public class Category_Resource
 		}
 
 		[Patch("OnExcavatorMiningToggled", "OnExcavatorMiningToggled [stop]", "ExcavatorArm", "StopMining", new string[] { })]
-		[Identifier("8fde8ee28bf548f8a68618c595ad4f0e")]
+		[Identifier("ae812a89abc24531af041f52bb4e8ff8")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ExcavatorArm", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ExcavatorArm_8fde8ee28bf548f8a68618c595ad4f0e : Patch
+		public class Resource_ExcavatorArm_ae812a89abc24531af041f52bb4e8ff8 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -487,7 +495,7 @@ public class Category_Resource
 		}
 
 		[Patch("OnExcavatorResourceSet", "OnExcavatorResourceSet", "ExcavatorArm", "RPC_SetResourceTarget", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("08432dcc32f34e50b4190179dd15ea45")]
+		[Identifier("3f818a41fde6483c98e0f5c42c5b912c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "ExcavatorArm", false)]
 		[Parameter("local0", "System.String", false)]
@@ -495,7 +503,7 @@ public class Category_Resource
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_ExcavatorArm_08432dcc32f34e50b4190179dd15ea45 : Patch
+		public class Resource_ExcavatorArm_3f818a41fde6483c98e0f5c42c5b912c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -533,14 +541,15 @@ public class Category_Resource
 	public class Resource_GrowableEntity
 	{
 		[Patch("OnGrowableGathered", "OnGrowableGathered", "GrowableEntity", "GiveFruit", new string[] { "BasePlayer", "System.Int32", "System.Boolean", "System.Boolean" })]
-		[Identifier("70cc83fefd87457497f4b26d45ec6ced")]
+		[Identifier("078268ecba614bc2aad2afe1e42fc203")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "GrowableEntity", false)]
 		[Parameter("local0", "Item", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_GrowableEntity_70cc83fefd87457497f4b26d45ec6ced : Patch
+		public class Resource_GrowableEntity_078268ecba614bc2aad2afe1e42fc203 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -570,13 +579,13 @@ public class Category_Resource
 		}
 
 		[Patch("OnGrowableGather", "OnGrowableGather", "GrowableEntity", "PickFruit", new string[] { "BasePlayer", "System.Boolean" })]
-		[Identifier("f4642b5422e84c45b5f108554574b663")]
+		[Identifier("490a1678ab9146fa84fc8e24a5a1cc02")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "GrowableEntity", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_GrowableEntity_f4642b5422e84c45b5f108554574b663 : Patch
+		public class Resource_GrowableEntity_490a1678ab9146fa84fc8e24a5a1cc02 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -611,14 +620,14 @@ public class Category_Resource
 		}
 
 		[Patch("OnRemoveDying", "OnRemoveDying", "GrowableEntity", "RemoveDying", new string[] { "BasePlayer" })]
-		[Identifier("88a5bb84c254408aa65fd2d788b6dc3e")]
+		[Identifier("d80379ccf4794f5fa1ad5b15b9243905")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "GrowableEntity", false)]
 		[Parameter("receiver", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_GrowableEntity_88a5bb84c254408aa65fd2d788b6dc3e : Patch
+		public class Resource_GrowableEntity_d80379ccf4794f5fa1ad5b15b9243905 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -650,14 +659,14 @@ public class Category_Resource
 		}
 
 		[Patch("OnGrowableStateChange", "OnGrowableStateChange", "GrowableEntity", "ChangeState", new string[] { "PlantProperties/State", "System.Boolean", "System.Boolean" })]
-		[Identifier("5cf411788ee543d4b1401d90f7a35c6b")]
+		[Identifier("f0e1baa14e4444f6bc5461ddf8357aa5")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "GrowableEntity", false)]
 		[Parameter("state", "PlantProperties+State", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_GrowableEntity_5cf411788ee543d4b1401d90f7a35c6b : Patch
+		public class Resource_GrowableEntity_f0e1baa14e4444f6bc5461ddf8357aa5 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -693,13 +702,14 @@ public class Category_Resource
 	public class Resource_MiningQuarry
 	{
 		[Patch("OnQuarryConsumeFuel", "OnQuarryConsumeFuel", "MiningQuarry", "FuelCheck", new string[] { })]
-		[Identifier("5ec68194eb8949038688c0c158aff3bd")]
+		[Identifier("63189f3628c844029ab1ca0f56bc1b39")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "MiningQuarry", false)]
 		[Parameter("local0", "Item", false)]
+		[Return(typeof(Item), Continues = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_MiningQuarry_5ec68194eb8949038688c0c158aff3bd : Patch
+		public class Resource_MiningQuarry_63189f3628c844029ab1ca0f56bc1b39 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -737,11 +747,11 @@ public class Category_Resource
 		}
 
 		[Patch("OnQuarryGather", "OnQuarryGather", "MiningQuarry", "ProcessResources", new string[] { })]
-		[Identifier("e7e11ad6b00d49bcac31c4e005b0d2fa")]
+		[Identifier("2be92470a8b049f586fa2bec4bd4cbd2")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_MiningQuarry_e7e11ad6b00d49bcac31c4e005b0d2fa : Patch
+		public class Resource_MiningQuarry_2be92470a8b049f586fa2bec4bd4cbd2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -794,14 +804,14 @@ public class Category_Resource
 	public class Resource_CoalingTower
 	{
 		[Patch("OnCoalingTowerStart", "OnCoalingTowerStart", "CoalingTower", "RPC_Unload", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("d73f9c84fdea4963a15e38c492b888e7")]
+		[Identifier("72ac306f317f44bdb1db5967729c4e35")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "CoalingTower", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_CoalingTower_d73f9c84fdea4963a15e38c492b888e7 : Patch
+		public class Resource_CoalingTower_72ac306f317f44bdb1db5967729c4e35 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -834,11 +844,11 @@ public class Category_Resource
 		}
 
 		[Patch("OnCoalingTowerGather", "OnCoalingTowerGather", "CoalingTower", "EmptyTenPercent", new string[] { })]
-		[Identifier("435ca9ae80fb4bfb8937f553f5189037")]
+		[Identifier("98b2b89064db4ed2bc546cbc9226abdf")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_CoalingTower_435ca9ae80fb4bfb8937f553f5189037 : Patch
+		public class Resource_CoalingTower_98b2b89064db4ed2bc546cbc9226abdf : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -891,14 +901,14 @@ public class Category_Resource
 	public class Resource_EngineSwitch
 	{
 		[Patch("OnQuarryToggle", "OnQuarryToggle [on]", "EngineSwitch", "StartEngine", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("7970026f2c4f4ccc96ecd110a93c9821")]
+		[Identifier("8c1a1c7c267648e29c4fe0dbb960879c")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "MiningQuarry", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_EngineSwitch_7970026f2c4f4ccc96ecd110a93c9821 : Patch
+		public class Resource_EngineSwitch_8c1a1c7c267648e29c4fe0dbb960879c : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -931,14 +941,14 @@ public class Category_Resource
 		}
 
 		[Patch("OnQuarryToggle", "OnQuarryToggle [off]", "EngineSwitch", "StopEngine", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("e4ac7df144564b55acdb216f3dcd1797")]
+		[Identifier("1d44212a2ac0427689cdfd74d622814f")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "MiningQuarry", false)]
 		[Parameter("player", "BasePlayer", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_EngineSwitch_e4ac7df144564b55acdb216f3dcd1797 : Patch
+		public class Resource_EngineSwitch_1d44212a2ac0427689cdfd74d622814f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -971,14 +981,15 @@ public class Category_Resource
 		}
 
 		[Patch("OnQuarryToggled", "OnQuarryToggled [off]", "EngineSwitch", "StopEngine", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("ec3ebfc50d454d8bb4e8441a663c1c30")]
+		[Identifier("6650258e54254be89dd4039f71543b62")]
 		[Dependencies(new string[] { "OnQuarryToggle [off]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "MiningQuarry", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_EngineSwitch_ec3ebfc50d454d8bb4e8441a663c1c30 : Patch
+		public class Resource_EngineSwitch_6650258e54254be89dd4039f71543b62 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1007,14 +1018,15 @@ public class Category_Resource
 		}
 
 		[Patch("OnQuarryToggled", "OnQuarryToggled [on]", "EngineSwitch", "StartEngine", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("716ca34f48864c37a3a9a6ae3b0488f0")]
+		[Identifier("55b042a94dc4436ba105fe42152d241f")]
 		[Dependencies(new string[] { "OnQuarryToggle [on]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("local0", "MiningQuarry", false)]
 		[Parameter("player", "BasePlayer", false)]
+		[Return(typeof(void), Discarded = true)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_EngineSwitch_716ca34f48864c37a3a9a6ae3b0488f0 : Patch
+		public class Resource_EngineSwitch_55b042a94dc4436ba105fe42152d241f : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1043,12 +1055,12 @@ public class Category_Resource
 		}
 
 		[Patch("OnQuarryToggled", "OnQuarryToggled [off] [patch]", "EngineSwitch", "StopEngine", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("38587fe6014e466b93c1c35cf7bae059")]
+		[Identifier("22d235465a6944cc9488c1d878365879")]
 		[Dependencies(new string[] { "OnQuarryToggled [off]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_EngineSwitch_38587fe6014e466b93c1c35cf7bae059 : Patch
+		public class Resource_EngineSwitch_22d235465a6944cc9488c1d878365879 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1075,12 +1087,12 @@ public class Category_Resource
 		}
 
 		[Patch("OnQuarryToggled", "OnQuarryToggled [on] [patch]", "EngineSwitch", "StartEngine", new string[] { "BaseEntity/RPCMessage" })]
-		[Identifier("336a19b2feb448c8a216eb7c653df69b")]
+		[Identifier("73f6db8843004ba9a072869ad4593af2")]
 		[Dependencies(new string[] { "OnQuarryToggled [on]" })]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_EngineSwitch_336a19b2feb448c8a216eb7c653df69b : Patch
+		public class Resource_EngineSwitch_73f6db8843004ba9a072869ad4593af2 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1110,13 +1122,13 @@ public class Category_Resource
 	public class Resource_LootFill
 	{
 		[Patch("OnLootSpawn", "OnLootSpawn [LootFill]", "LootFill", "DelayFill", new string[] { })]
-		[Identifier("990d34d646e54158915c93e1199d4759")]
+		[Identifier("eb88cd6641c6450595067c4534ccdb3a")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Parameter("self", "LootFill", false)]
 		[Return(typeof(void))]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_LootFill_990d34d646e54158915c93e1199d4759 : Patch
+		public class Resource_LootFill_eb88cd6641c6450595067c4534ccdb3a : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{
@@ -1149,11 +1161,11 @@ public class Category_Resource
 	public class Resource_RandomItemDispenser
 	{
 		[Patch("OnRandomItemAward", "OnRandomItemAward", "RandomItemDispenser", "TryAward", new string[] { "RandomItemDispenser/RandomItemChance", "BasePlayer", "UnityEngine.Vector3" })]
-		[Identifier("940f4a206bc64fb7aaae77fea3e55899")]
+		[Identifier("ee4630cfdc404c53864f9ee98b43cd19")]
 		[Options(/*Could not decode attribute arguments.*/)]
 		[Category("Resource")]
 		[Assembly("Assembly-CSharp.dll")]
-		public class Resource_RandomItemDispenser_940f4a206bc64fb7aaae77fea3e55899 : Patch
+		public class Resource_RandomItemDispenser_ee4630cfdc404c53864f9ee98b43cd19 : Patch
 		{
 			public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> Instructions, ILGenerator Generator, MethodBase Method)
 			{

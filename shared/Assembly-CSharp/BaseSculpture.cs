@@ -54,8 +54,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	[SerializeField]
 	private CapsuleCollider playerPushCollider;
 
-	[SerializeField]
 	[Header("Mesh Painting")]
+	[SerializeField]
 	private GameObjectRef meshPaintDialogueRef;
 
 	[SerializeField]
@@ -110,6 +110,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	}
 
 	public float GridScale => gridScale;
+
+	public Renderer ClientBlockRenderer => clientBlockRenderer;
 
 	public Bounds GridBounds
 	{
@@ -336,8 +338,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		flagsUpdateScope.Set(Flags.Locked, b: true);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SV_UnlockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player, ignoreLock: true))
@@ -378,9 +380,9 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ServerUpdateProcessQueue.Clear();
 	}
 
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	private void SV_SendSculptureUpdate(RPCMessage msg)
 	{
 		if (msg.read.Length > 2000000 || !CanUpdateSculpture(msg.player) || !msg.read.TemporaryBytesWithSize(out var buffer, out var size))
@@ -827,7 +829,7 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 					{
 						val2.AddRow(new string[4]
 						{
-							((object)Unsafe.As<NetworkableId, NetworkableId>(ref item2.net.ID)/*cast due to constrained. prefix*/).ToString(),
+							((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref item2.net.ID)/*cast due to constrained. prefix*/).ToString(),
 							item2.crc.ToString(),
 							item2.__sync_crc.ToString(),
 							(item2.crc == item2.__sync_crc).ToString()

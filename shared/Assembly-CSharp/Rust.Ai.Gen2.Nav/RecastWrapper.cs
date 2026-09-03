@@ -16,6 +16,8 @@ public static class RecastWrapper
 
 	private const string DLLName = "RustNative";
 
+	public const int MAX_DONUT_POINTS = 64;
+
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
 	public static extern bool GetTilePolys(IntPtr navWrapper, int tx, int ty, [In][Out] Vector3[] outVertices, int maxPolys, out int outPolyCount);
@@ -29,31 +31,77 @@ public static class RecastWrapper
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool Raycast(IntPtr navMesh, in Vector3 startPos, in Vector3 endPos, out Vector3 hitLocation, out Vector3 hitNormal);
+	public static extern bool Raycast(IntPtr navMesh, ref ulong startRef, in Vector3 startPos, in Vector3 endPos, out Vector3 hitLocation, out Vector3 hitNormal);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool Move(IntPtr navMesh, ulong startRef, in Vector3 startPos, in Vector3 endPos, out ulong outRef, out Vector3 movedPos);
+	public static extern bool Move(IntPtr navMesh, ref ulong polyRef, in Vector3 startPos, in Vector3 endPos, out Vector3 movedPos);
 
 	[DllImport("RustNative")]
-	public static extern DtStatus FindPath(IntPtr navMesh, in Vector3 start, in Vector3 end, [Out] Vector3[] path, out int pathLength, int maxIterations);
+	public static extern DtStatus FindPath(IntPtr navMesh, ref ulong startRef, in Vector3 start, in Vector3 end, [Out] Vector3[] path, out int pathLength, [Out] ulong[] pathPolys, out int pathPolyCount, int maxIterations);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool FindDistanceToWall(IntPtr navMesh, ref ulong startRef, in Vector3 centerPos, float maxRadius, out float hitDistance, out Vector3 hitLocation, out Vector3 hitNormal);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool FindDonutPointsInCircle(IntPtr navMesh, ref ulong startRef, in Vector3 centerPos, float maxRadius, float minRadius, float angleOffset, int maxPoints, [Out] Vector3[] points, out int numFound);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool IsValidPolyRef(IntPtr navMesh, ulong polyRef);
+
+	[DllImport("RustNative")]
+	public static extern IntPtr CreateCorridor();
+
+	[DllImport("RustNative")]
+	public static extern void FreeCorridor(IntPtr corridor);
+
+	[DllImport("RustNative")]
+	public static extern void CorridorReset(IntPtr corridor, ulong polyRef, in Vector3 pos);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool CorridorSetPath(IntPtr corridor, [In] ulong[] polys, int npolys, in Vector3 targetPos);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool CorridorMove(IntPtr navMesh, IntPtr corridor, in Vector3 desiredPos, out Vector3 resultPos, out ulong firstPolyRef);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool CorridorMoveTargetPosition(IntPtr navMesh, IntPtr corridor, in Vector3 desiredTarget, out Vector3 resultTarget);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool CorridorOptimizeAndMove(IntPtr navMesh, IntPtr corridor, in Vector3 optimizeNext, float optimizationRange, in Vector3 desiredPos, out Vector3 resultPos, out ulong firstPolyRef);
+
+	[DllImport("RustNative")]
+	public static extern int CorridorFindCorners(IntPtr navMesh, IntPtr corridor, [Out] Vector3[] cornerVerts, int maxCorners, [MarshalAs(UnmanagedType.U1)] out bool endReached);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool CorridorIsValid(IntPtr navMesh, IntPtr corridor, int maxLookAhead);
+
+	[DllImport("RustNative")]
+	public static extern void CorridorOptimizeVisibility(IntPtr navMesh, IntPtr corridor, in Vector3 next, float optimizationRange);
+
+	[DllImport("RustNative")]
+	public static extern ulong CorridorGetFirstPoly(IntPtr corridor);
 
 	[DllImport("RustNative")]
 	public static extern void SetLogCallback(LogCallback callback);
+
+	[DllImport("RustNative")]
+	public static extern void SetLegacyBuild([MarshalAs(UnmanagedType.U1)] bool enabled);
 
 	[DllImport("RustNative")]
 	public static extern IntPtr CreateEmptyNavMesh(in NavMeshBuildParams buildParams, in Vector3 bmin, in Vector3 bmax);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool AddTileToNavMesh(IntPtr navMeshWrapper, in NavMeshBuildParams buildParams, IntPtr verts, int vertCount, IntPtr tris, int triCount, int tx, int ty);
-
-	[DllImport("RustNative")]
-	[return: MarshalAs(UnmanagedType.U1)]
 	public static extern bool RemoveTileFromNavMesh(IntPtr navMeshWrapper, int tx, int ty);
-
-	[DllImport("RustNative")]
-	public static extern IntPtr AllocateTileData(int dataSize);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
@@ -61,30 +109,11 @@ public static class RecastWrapper
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool SaveAll(string path, IntPtr navMeshWrapper);
-
-	[DllImport("RustNative")]
-	public static extern IntPtr LoadAll(in NavMeshBuildParams buildParams, string path);
-
-	[DllImport("RustNative")]
-	public static extern IntPtr PrebuildTile(IntPtr navMeshWrapper, in NavMeshBuildParams buildParams, IntPtr verts, int vertCount, IntPtr tris, int triCount, int tx, int ty, out int dataSize);
-
-	[DllImport("RustNative")]
-	[return: MarshalAs(UnmanagedType.U1)]
 	public static extern bool AddPrebuiltTileToNavMesh(IntPtr navMeshWrapper, int tx, int ty, IntPtr tileData, int dataSize);
 
 	[DllImport("RustNative")]
-	public static extern void PrebuildAndAddAllTiles(IntPtr navMeshWrapper, in NavMeshBuildParams buildParams, IntPtr verts, int vertCount, IntPtr tris, int triCount, int txChunk, int tyChunk, int tileNumX, int tileNumZ, int parallelBuildTileChunkSize);
-
-	[DllImport("RustNative")]
-	public static extern IntPtr CreateChunkyMesh(IntPtr verts, IntPtr tris, int triCount, int trisPerChunk);
-
-	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
-	public static extern bool FreeChunkyMesh(IntPtr chunkyMesh);
-
-	[DllImport("RustNative")]
-	public static extern IntPtr CreateHeightField(in NavMeshBuildParams buildParams, IntPtr chunkyMesh, IntPtr verts, int nverts, in Vector3 bmin, in Vector3 bmax);
+	public static extern bool ComputeTriangleYExtent(IntPtr verts, IntPtr tris, int triCount, float minX, float maxX, float minZ, float maxZ, out float outMinY, out float outMaxY);
 
 	[DllImport("RustNative")]
 	public static extern IntPtr CreateHeightFieldRaw(in NavMeshBuildParams buildParams, IntPtr verts, int nverts, IntPtr tris, int triCount, in Vector3 bmin, in Vector3 bmax);
@@ -108,7 +137,7 @@ public static class RecastWrapper
 	public static extern bool FreePolymesh(IntPtr polymesh);
 
 	[DllImport("RustNative")]
-	public static extern IntPtr CreateDetailPolymesh(in NavMeshBuildParams buildParams, IntPtr polyMesh, IntPtr compactHeightField);
+	public static extern IntPtr CreateDetailPolymesh(in NavMeshBuildParams buildParams, IntPtr polyMesh, IntPtr compactHeightField, float sampleDistMult, float sampleMaxErrorMult);
 
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
@@ -124,4 +153,17 @@ public static class RecastWrapper
 	[DllImport("RustNative")]
 	[return: MarshalAs(UnmanagedType.U1)]
 	public static extern bool ValidateNavMesh(IntPtr navWrapper);
+
+	[DllImport("RustNative")]
+	[return: MarshalAs(UnmanagedType.U1)]
+	public static extern bool SaveNavMesh(string path, IntPtr navWrapper, in NavMeshBuildParams buildParams, in Vector3 bmin, in Vector3 bmax, IntPtr managedBlob, int managedBlobSize, int flags, int threadCount);
+
+	[DllImport("RustNative")]
+	public static extern IntPtr LoadNavMesh(string path, out IntPtr managedBlob, out int managedBlobSize, int threadCount);
+
+	[DllImport("RustNative")]
+	public static extern void FreeManagedBlob(IntPtr blob);
+
+	[DllImport("RustNative")]
+	public static extern int GetNavMeshTileCoords(IntPtr navWrapper, IntPtr outCoords, int maxPairs);
 }

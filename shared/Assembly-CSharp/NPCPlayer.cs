@@ -426,11 +426,11 @@ public class NPCPlayer : BasePlayer
 	public virtual void MovementUpdate(float delta)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0063: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0068: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0069: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0078: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
 		if (!LegacyNavigation || base.isClient || !IsAlive() || IsWounded() || (!base.isMounted && !IsNavRunning()))
 		{
 			return;
@@ -439,14 +439,14 @@ public class NPCPlayer : BasePlayer
 		{
 			if (IsNavRunning())
 			{
-				NavAgent.destination = ServerPosition;
+				NavAgent.SetDestination(ServerPosition);
 			}
 			return;
 		}
 		Vector3 moveToPosition = ((Component)this).transform.position;
 		if (HasPath)
 		{
-			moveToPosition = NavAgent.nextPosition;
+			moveToPosition = NavAgent.nextPositionWS;
 		}
 		if (ValidateNextPosition(ref moveToPosition))
 		{
@@ -460,7 +460,7 @@ public class NPCPlayer : BasePlayer
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		if (!ValidBounds.Test(this, moveToPosition) && (Object)(object)((Component)this).transform != (Object)null && !base.IsDestroyed)
 		{
-			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
+			Debug.Log((object)("Invalid NavAgent Position: " + ((object)this)?.ToString() + " " + ((object)System.Runtime.CompilerServices.Unsafe.As<Vector3, Vector3>(ref moveToPosition)/*cast due to constrained. prefix*/).ToString() + " (destroying)"));
 			Kill();
 			return false;
 		}

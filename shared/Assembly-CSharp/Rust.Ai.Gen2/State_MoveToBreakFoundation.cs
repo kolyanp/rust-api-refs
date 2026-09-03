@@ -33,14 +33,14 @@ public class State_MoveToBreakFoundation : FSMStateBase
 		{
 			return false;
 		}
-		if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)State_CrocBreakFoundation.FindNearestTwigFoundationOnTargetBuilding(base.Agent, player), out BuildingBlock castedUnityObject) && base.Agent.SamplePosition(castedUnityObject.ClosestPoint(((Component)Owner).transform.position), out var hitNS, 10f))
+		if (BaseNetworkableEx.Is<BuildingBlock>((Object)(object)State_CrocBreakFoundation.FindNearestTwigFoundationOnTargetBuilding(base.Agent, player), out BuildingBlock castedUnityObject) && base.Agent.SamplePosition(castedUnityObject.ClosestPoint(((Component)Owner).transform.position), out var hitWS, 10f))
 		{
-			location = ((NavMeshHit)(ref hitNS)).position;
+			location = ((NavMeshHit)(ref hitWS)).position;
 			return true;
 		}
-		if (base.Agent.SamplePosition(position, out var hitNS2, 3f))
+		if (base.Agent.SamplePosition(position, out var hitWS2, 3f))
 		{
-			location = ((NavMeshHit)(ref hitNS2)).position;
+			location = ((NavMeshHit)(ref hitWS2)).position;
 			return true;
 		}
 		return false;

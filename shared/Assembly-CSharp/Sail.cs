@@ -12,8 +12,8 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	[ReplicatedVar]
 	public static float MaxThrustMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Sail")]
+	[SerializeField]
 	private float maxThrust = 1000f;
 
 	public float RaiseDuration = 1.5f;
@@ -35,6 +35,10 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 
 	public Animator Animator;
 
+	public GameObject RaisedFarVisual;
+
+	public GameObject LoweredFarVisual;
+
 	public GameObjectRef sailRotateEffect;
 
 	public const Flags Flag_Lowered = Flags.Reserved3;
@@ -44,6 +48,14 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 	public const Flags Flag_Raising = Flags.Reserved13;
 
 	public const Flags Flag_WindBlocked = Flags.Reserved14;
+
+	private static readonly int WindBlockedHash = Animator.StringToHash("windblocked");
+
+	private static readonly int LoweredHash = Animator.StringToHash("lowered");
+
+	private static readonly int LoweringHash = Animator.StringToHash("lowering");
+
+	private static readonly int RaisingHash = Animator.StringToHash("raising");
 
 	private TimeUntil timeUntilLoweredRaised;
 
@@ -543,9 +555,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		ToggleColliders();
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RaiseSail(RPCMessage msg)
 	{
 		Raise(msg.player);
@@ -589,9 +601,9 @@ public class Sail : DecayEntity, global::IBoatBuildingPiece, IBoatPropulsion
 		OnRaisedOrLowered();
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RotateSail(RPCMessage msg)
 	{
 		RotateSail(msg.player);

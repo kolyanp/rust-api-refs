@@ -108,8 +108,9 @@ public class PlanterBox : StorageContainer, ISplashable
 		base.inventory.onItemAddedRemoved = OnItemAddedOrRemoved;
 		base.inventory.SetOnlyAllowedItem(allowedItem);
 		ItemContainer itemContainer = base.inventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(InventoryItemFilter));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(InventoryItemFilter));
 		SetupTimeCaches();
+		Sprinkler.SplashableGrid.RegisterEntity(this);
 	}
 
 	public override void PostServerLoad()
@@ -177,7 +178,7 @@ public class PlanterBox : StorageContainer, ISplashable
 		}
 	}
 
-	public bool InventoryItemFilter(Item item, int targetSlot)
+	public bool InventoryItemFilter(BasePlayer player, Item item, int targetSlot)
 	{
 		if (item == null)
 		{

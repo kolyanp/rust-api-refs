@@ -19,8 +19,8 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private List<Rust.UI.MainMenu.ServerBrowserCategoryData> _categories;
 
-	[SerializeField]
 	[Header("Headers")]
+	[SerializeField]
 	private List<Rust.UI.MainMenu.ServerBrowserHeader> _headers;
 
 	[SerializeField]
@@ -45,12 +45,12 @@ public class UI_ServerBrowserPage : UI_Page
 	[SerializeField]
 	private RustInput _searchInput;
 
-	[Header("No Results")]
 	[SerializeField]
+	[Header("No Results")]
 	private UI_ServerBrowser_NoResults_Controller _noResultsController;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private FlexTransition _favouritesButtonAnimation;
 
 	[SerializeField]

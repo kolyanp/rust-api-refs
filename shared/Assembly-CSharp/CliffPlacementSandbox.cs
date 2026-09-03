@@ -33,6 +33,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private readonly List<TerrainModifier> _gizmoModifiers;
 
+	private readonly List<TerrainFootprint> _gizmoFootprints;
+
 	private int _gizmoTargetsFrame;
 
 	private readonly HashSet<Transform> _selectedGizmoRoots;
@@ -46,6 +48,23 @@ public class CliffPlacementSandbox : MonoBehaviour
 	private static readonly Color HeightAddColor;
 
 	private static readonly Color OtherModColor;
+
+	private static readonly Color FootprintColor;
+
+	private static readonly Color FootprintBandColor;
+
+	private static readonly Color FootprintSeatedColor;
+
+	private static readonly Color FootprintGapColor;
+
+	private static readonly Color FootprintInactiveColor;
+
+	[Header("Level URL download")]
+	[Tooltip("Paste the whole thing a server's `levelurl` prints, then press Download below. The file is cached next to the project and MapFilePath is pointed at it, ready to Initialize.")]
+	public string LevelUrl;
+
+	[Tooltip("Where downloaded maps are cached. A relative path is taken from the project root, i.e. alongside Assets rather than inside it, so Unity never tries to import them.")]
+	public string MapCacheFolder;
 
 	private WorldSerialization _mapSerialization;
 
@@ -67,12 +86,12 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus;
 
-	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	[Header("Terrain source")]
+	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	public TerrainSource Source;
 
 	[Header("Procedural (real Rust base heightmap)")]
-	[Tooltip("World seed fed to the real generator. 0 = auto.")]
+	[Tooltip("World seed fed to the real generator. Also supplies the seed for the pre-cliff T0 bake in Map File Region mode when the map came from a levelurl - uploaded maps have the seed stripped out of their name, so run `seed` on the server and paste the value here. A map taken from the server's own root folder carries it in the name and overwrites this field on load. 0 = auto.")]
 	public uint Seed;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -86,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle;
 
-	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	[Header("Terrain")]
+	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	public int HeightmapResolution;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -99,8 +118,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch;
 
-	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
 	[Header("Map file region (real .map crop)")]
+	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
 	public string MapFilePath;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -143,9 +162,6 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("When recalculating in Map File Region mode, re-apply each cliff's terrain modifiers at its real recorded map position instead of re-solving its anchors and moving it. This makes the recalc a faithful preview of the generated terrain around the cliff (anchors are still reported accepted/rejected for info). Turn off to also re-solve and move cliffs.")]
 	public bool RecalcKeepMapPositions;
 
-	[Tooltip("When recalculating in Map File Region mode, re-spawn the real cliffs from their source prefab assets first so edits made to the prefab in the Project window are reflected. Spawned cliffs are plain clones (not linked to the asset), so without this a recalc would re-carve using the stale, pre-edit cliff instances. Turn off to recalc the exact instances currently in the scene (e.g. after moving them by hand).")]
-	public bool ResyncCliffsFromPrefabsOnRecalc;
-
 	[Tooltip("Hot-reload: before Carve selected / Re-anchor selected run, re-spawn the selected cliff(s) from their source prefab assets so edits made in Prefab Mode (or the Project window) apply immediately - no need to exit and re-enter play mode. Spawned cliffs are plain clones not linked to the asset, so without this Carve/Re-anchor keep using the stale, pre-edit clone. Turn off to act on the exact instances in the scene (e.g. after hand-moving them).")]
 	public bool HotReloadPrefabsBeforeAction;
 
@@ -154,8 +170,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Replay each cliff's TerrainPlacement heightmap stamps during recalc, in addition to its TerrainModifiers. Rocks/formations flatten and blend the terrain under themselves with these stamps; the generator applies them before later pieces solve their anchors. Without replaying them the re-solve samples rougher, un-flattened terrain and rejects anchors the real map accepted. Turn off to replay only the height modifiers (the older behaviour).")]
 	public bool ReplayTerrainPlacementsOnRecalc;
 
-	[Tooltip("When re-anchoring, restrict the re-solve + reposition to cliffs whose name contains this text (case-insensitive); every other cliff stays locked to its faithful recorded map position. Leave empty to re-anchor every cliff. Re-anchoring ALL cliffs moves earlier pieces, which shifts the terrain later pieces were anchored to - so to test one edited prefab, set this to its name (e.g. 'cliff_hills_large_b') and only it will move.")]
-	public string ReAnchorOnlyName;
+	[Tooltip("Measure and fill each cliff's TerrainFootprint during recalc, the way the generator does just before the prefab is added. The gap readout is always reported; turn this off to see what the terrain looks like without the fill while still being told how deep the gap is.")]
+	public bool ApplyTerrainFootprintOnRecalc;
 
 	[Header("Placement gizmos (play mode)")]
 	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
@@ -175,6 +191,9 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	[Tooltip("Include any other (non-height) TerrainModifier gizmos (radius ring).")]
 	public bool GizmoModifierOther;
+
+	[Tooltip("Include TerrainFootprint gizmos: the captured base ring, its rim band, and a vertical marker at each ring point showing whether the terrain there is seated or has fallen away. Red markers are the gaps the anchors could not see.")]
+	public bool GizmoFootprint;
 
 	[Tooltip("Only draw placement gizmos within this many metres of the camera (0 = no limit). Keeps dense real-map regions readable by hiding far-away gizmos.")]
 	public float GizmoDrawDistance;
@@ -232,12 +251,6 @@ public class CliffPlacementSandbox : MonoBehaviour
 	private string _lastPlaceInfo;
 
 	private string _lastAnchorBreakdown;
-
-	private string _breakdownSubject;
-
-	private bool _editingTextField;
-
-	private bool _breakdownCapturedRejected;
 
 	private readonly List<GameObject> _spawnedCliffs;
 
@@ -343,17 +356,21 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private void RefreshGizmoTargets()
 	{
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0168: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0169: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ee: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f9: Unknown result type (might be due to invalid IL or missing references)
 		//IL_016e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0174: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0179: Unknown result type (might be due to invalid IL or missing references)
 		if (_gizmoTargetsFrame == Time.frameCount)
 		{
 			return;
@@ -361,6 +378,7 @@ public class CliffPlacementSandbox : MonoBehaviour
 		_gizmoTargetsFrame = Time.frameCount;
 		_gizmoAnchors.Clear();
 		_gizmoModifiers.Clear();
+		_gizmoFootprints.Clear();
 		if (GizmoSelectionMode)
 		{
 			RefreshGizmoTargetsFromSelection();
@@ -391,26 +409,46 @@ public class CliffPlacementSandbox : MonoBehaviour
 				_gizmoAnchors.Add(terrainAnchor);
 			}
 		}
-		if (!AnyModifierGizmoEnabled())
+		if (AnyModifierGizmoEnabled())
+		{
+			TerrainModifier[] array2 = Object.FindObjectsByType<TerrainModifier>((FindObjectsInactive)1, (FindObjectsSortMode)0);
+			foreach (TerrainModifier terrainModifier in array2)
+			{
+				if (((Object)(object)_terrainGO != (Object)null && ((Component)terrainModifier).transform.IsChildOf(_terrainGO.transform)) || !IsModifierGizmoEnabled(terrainModifier))
+				{
+					continue;
+				}
+				if (flag)
+				{
+					val2 = ((Component)terrainModifier).transform.position - val;
+					if (((Vector3)(ref val2)).sqrMagnitude > num)
+					{
+						continue;
+					}
+				}
+				_gizmoModifiers.Add(terrainModifier);
+			}
+		}
+		if (!GizmoFootprint)
 		{
 			return;
 		}
-		TerrainModifier[] array2 = Object.FindObjectsByType<TerrainModifier>((FindObjectsInactive)1, (FindObjectsSortMode)0);
-		foreach (TerrainModifier terrainModifier in array2)
+		TerrainFootprint[] array3 = Object.FindObjectsByType<TerrainFootprint>((FindObjectsInactive)1, (FindObjectsSortMode)0);
+		foreach (TerrainFootprint terrainFootprint in array3)
 		{
-			if (((Object)(object)_terrainGO != (Object)null && ((Component)terrainModifier).transform.IsChildOf(_terrainGO.transform)) || !IsModifierGizmoEnabled(terrainModifier))
+			if ((Object)(object)_terrainGO != (Object)null && ((Component)terrainFootprint).transform.IsChildOf(_terrainGO.transform))
 			{
 				continue;
 			}
 			if (flag)
 			{
-				val2 = ((Component)terrainModifier).transform.position - val;
+				val2 = ((Component)terrainFootprint).transform.position - val;
 				if (((Vector3)(ref val2)).sqrMagnitude > num)
 				{
 					continue;
 				}
 			}
-			_gizmoModifiers.Add(terrainModifier);
+			_gizmoFootprints.Add(terrainFootprint);
 		}
 	}
 
@@ -427,16 +465,23 @@ public class CliffPlacementSandbox : MonoBehaviour
 					_gizmoAnchors.Add(item);
 				}
 			}
-			if (!AnyModifierGizmoEnabled())
+			if (AnyModifierGizmoEnabled())
 			{
-				continue;
-			}
-			TerrainModifier[] componentsInChildren2 = ((Component)selectedGizmoRoot).GetComponentsInChildren<TerrainModifier>(true);
-			foreach (TerrainModifier terrainModifier in componentsInChildren2)
-			{
-				if (IsModifierGizmoEnabled(terrainModifier))
+				TerrainModifier[] componentsInChildren2 = ((Component)selectedGizmoRoot).GetComponentsInChildren<TerrainModifier>(true);
+				foreach (TerrainModifier terrainModifier in componentsInChildren2)
 				{
-					_gizmoModifiers.Add(terrainModifier);
+					if (IsModifierGizmoEnabled(terrainModifier))
+					{
+						_gizmoModifiers.Add(terrainModifier);
+					}
+				}
+			}
+			if (GizmoFootprint)
+			{
+				TerrainFootprint[] componentsInChildren3 = ((Component)selectedGizmoRoot).GetComponentsInChildren<TerrainFootprint>(true);
+				foreach (TerrainFootprint item2 in componentsInChildren3)
+				{
+					_gizmoFootprints.Add(item2);
 				}
 			}
 		}
@@ -483,7 +528,7 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private void OnRenderObject()
 	{
-		if (ShowPlacementGizmos && Application.isPlaying && (GizmoAnchors || AnyModifierGizmoEnabled()))
+		if (ShowPlacementGizmos && Application.isPlaying && (GizmoAnchors || AnyModifierGizmoEnabled() || GizmoFootprint))
 		{
 			RefreshGizmoTargets();
 			EnsureGizmoMaterial();
@@ -497,6 +542,10 @@ public class CliffPlacementSandbox : MonoBehaviour
 			for (int j = 0; j < _gizmoModifiers.Count; j++)
 			{
 				DrawModifierGizmo(_gizmoModifiers[j]);
+			}
+			for (int k = 0; k < _gizmoFootprints.Count; k++)
+			{
+				DrawFootprintGizmo(_gizmoFootprints[k]);
 			}
 			GL.End();
 			GL.PopMatrix();
@@ -571,6 +620,97 @@ public class CliffPlacementSandbox : MonoBehaviour
 		if (!(num <= 0f))
 		{
 			DrawCircleY(((Component)modifier).transform.position, num, ModifierColor(modifier));
+		}
+	}
+
+	private void DrawFootprintGizmo(TerrainFootprint footprint)
+	{
+		//IL_0011: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0022: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
+		//IL_003e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0089: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0131: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0133: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0140: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0163: Unknown result type (might be due to invalid IL or missing references)
+		//IL_016c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0178: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0188: Unknown result type (might be due to invalid IL or missing references)
+		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0196: Unknown result type (might be due to invalid IL or missing references)
+		//IL_019d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01a8: Unknown result type (might be due to invalid IL or missing references)
+		if (!footprint.HasRing)
+		{
+			return;
+		}
+		Transform transform = ((Component)footprint).transform;
+		Quaternion rotation = transform.rotation;
+		bool flag = footprint.IsActive(rotation);
+		Color color = (flag ? FootprintColor : FootprintInactiveColor);
+		float fillOffset = footprint.FillOffset;
+		Vector3 val = transform.TransformPoint(footprint.Center);
+		for (int i = 0; i < footprint.RunCount; i++)
+		{
+			footprint.GetRun(i, out var start, out var end, out var closed);
+			int num = end - start;
+			if (num < 2)
+			{
+				continue;
+			}
+			int num2 = (closed ? num : (num - 1));
+			for (int j = 0; j < num2; j++)
+			{
+				Vector3 a = transform.TransformPoint(footprint.Ring[start + j]);
+				Vector3 b = transform.TransformPoint(footprint.Ring[start + (j + 1) % num]);
+				DrawLine(a, b, color);
+			}
+			for (int k = 0; k < num; k++)
+			{
+				Vector3 val2 = transform.TransformPoint(footprint.Ring[start + k]);
+				Vector3 val3 = val - val2;
+				val3.y = 0f;
+				val3 = ((((Vector3)(ref val3)).sqrMagnitude > 1E-06f) ? ((Vector3)(ref val3)).normalized : Vector3.zero);
+				DrawLine(val2 - val3 * footprint.Feather, val2 + val3 * footprint.RimWidth, FootprintBandColor);
+				if (flag && Object.op_Implicit((Object)(object)TerrainMeta.HeightMap))
+				{
+					float height = TerrainMeta.HeightMap.GetHeight(val2);
+					float num3 = val2.y + fillOffset;
+					DrawLine(new Vector3(val2.x, height, val2.z), new Vector3(val2.x, num3, val2.z), (height >= num3) ? FootprintSeatedColor : FootprintGapColor);
+				}
+			}
 		}
 	}
 
@@ -979,24 +1119,64 @@ public class CliffPlacementSandbox : MonoBehaviour
 		}
 	}
 
-	public bool TryGetMapSeedSize(out uint size, out uint seed)
+	public bool TryGetMapSeedSize(out uint size, out uint seed, out string problem)
 	{
-		return TryParseSeedSizeFromMapName(out size, out seed);
+		return TryResolveMapSeedSize(out size, out seed, out problem);
 	}
 
-	private bool TryParseSeedSizeFromMapName(out uint size, out uint seed)
+	private bool TryResolveMapSeedSize(out uint size, out uint seed, out string problem)
+	{
+		problem = null;
+		ParseSeedSizeFromMapName(out size, out seed);
+		if (size != 0 && _mapWorldSize.x > 0f && Mathf.Abs((float)size - _mapWorldSize.x) > 1f)
+		{
+			problem = $"pre-cliff baseline: filename size {size} != map size {_mapWorldSize.x:0} " + "(is MapFilePath pointing at the right file?)";
+			return false;
+		}
+		if (size == 0 && _mapWorldSize.x > 0f)
+		{
+			size = (uint)Mathf.RoundToInt(_mapWorldSize.x);
+		}
+		if (size == 0)
+		{
+			problem = "pre-cliff baseline: couldn't work out the map size. Point MapFilePath at a .map whose name carries it, or Initialize once so it can be read out of the file.";
+			return false;
+		}
+		if (seed != 0)
+		{
+			Seed = seed;
+		}
+		else
+		{
+			seed = Seed;
+		}
+		if (seed == 0)
+		{
+			problem = $"pre-cliff baseline: size {size} is known, but this map's name carries no seed - " + "uploaded maps replace it with a generation timestamp. Run `seed` on the server and put the value in the Seed field, then reload.";
+			return false;
+		}
+		return true;
+	}
+
+	private void ParseSeedSizeFromMapName(out uint size, out uint seed)
 	{
 		size = 0u;
 		seed = 0u;
 		if (string.IsNullOrEmpty(MapFilePath))
 		{
-			return false;
+			return;
 		}
-		string[] array = Path.GetFileNameWithoutExtension(MapFilePath).Split('.');
-		List<uint> list = new List<uint>();
+		string text = Path.GetFileNameWithoutExtension(MapFilePath);
+		int num = text.IndexOf('_');
+		if (num >= 0)
+		{
+			text = text.Substring(0, num);
+		}
+		string[] array = text.Split('.');
+		List<ulong> list = new List<ulong>();
 		for (int i = 0; i < array.Length; i++)
 		{
-			if (uint.TryParse(array[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out var result))
+			if (ulong.TryParse(array[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out var result))
 			{
 				list.Add(result);
 			}
@@ -1005,13 +1185,16 @@ public class CliffPlacementSandbox : MonoBehaviour
 				list.Clear();
 			}
 		}
-		if (list.Count < 3)
+		if (list.Count >= 3)
 		{
-			return false;
+			ulong num2 = list[list.Count - 3];
+			ulong num3 = list[list.Count - 2];
+			if (num2 != 0L && num2 <= uint.MaxValue)
+			{
+				size = (uint)num2;
+				seed = (uint)((num3 != 0 && num3 <= uint.MaxValue) ? num3 : 0u);
+			}
 		}
-		size = list[list.Count - 3];
-		seed = list[list.Count - 2];
-		return size != 0;
 	}
 
 	private bool TryLoadPreCliff()
@@ -1023,17 +1206,11 @@ public class CliffPlacementSandbox : MonoBehaviour
 			_preCliffStatus = "pre-cliff baseline: only used in Map File Region mode";
 			return false;
 		}
-		if (!TryParseSeedSizeFromMapName(out var size, out var seed))
+		if (!TryResolveMapSeedSize(out var _, out var _, out var problem))
 		{
-			_preCliffStatus = "pre-cliff baseline: couldn't read seed/size from map filename (expected name.size.seed.protocol.map)";
+			_preCliffStatus = problem;
 			return false;
 		}
-		if (_mapWorldSize.x > 0f && Mathf.Abs((float)size - _mapWorldSize.x) > 1f)
-		{
-			_preCliffStatus = $"pre-cliff baseline: filename size {size} != map size {_mapWorldSize.x:0}";
-			return false;
-		}
-		Seed = seed;
 		_preCliffStatus = "pre-cliff baseline: editor only";
 		return false;
 	}
@@ -1299,7 +1476,7 @@ public class CliffPlacementSandbox : MonoBehaviour
 		Vector3 val3 = val2;
 		Vector3 val4 = val2 + val;
 		string arg = (flag2 ? ("map region '" + Path.GetFileName(MapFilePath) + "'") : (flag ? $"real base heightmap (seed {World.Seed})" : $"patch '{CurrentPatch}'"));
-		Debug.Log((object)($"[CliffSandbox] Initialized {_res}x{_res} terrain from {arg}. " + string.Format("Bounds X[{0:0}..{1:0}] Z[{2:0}..{3:0}] Y[{4:0}..{5:0}]. ", new object[6] { val3.x, val4.x, val3.z, val4.z, val3.y, val4.y }) + (flag2 ? "Edit a spawned cliff's prefab, then 'Recalculate all cliffs' (G) to re-solve." : (flag ? "Use 'Auto-place on slope' (F) to drop the cliff on a suitable incline." : "Drop a cliff inside these bounds, assign 'cliffRoot', then Place."))));
+		Debug.Log((object)($"[CliffSandbox] Initialized {_res}x{_res} terrain from {arg}. " + string.Format("Bounds X[{0:0}..{1:0}] Z[{2:0}..{3:0}] Y[{4:0}..{5:0}]. ", new object[6] { val3.x, val4.x, val3.z, val4.z, val3.y, val4.y }) + (flag2 ? "Edit a spawned cliff's prefab, then 'Recalculate selected' (G) to re-solve." : (flag ? "Use 'Auto-place on slope' (F) to drop the cliff on a suitable incline." : "Drop a cliff inside these bounds, assign 'cliffRoot', then Place."))));
 	}
 
 	private void MoveCameraToTerrainOverlook(Vector3 origin, Vector3 size)
@@ -1361,7 +1538,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 			return;
 		}
 		RestoreBaseline();
-		_lastPlaceInfo = PlaceCliffInstance(cliffRoot);
+		_lastAnchorBreakdown = string.Empty;
+		_lastPlaceInfo = PlaceCliffInstance(cliffRoot, captureBreakdown: true);
 		_heightmap.ApplyToTerrain();
 		if (FrameCameraOnPlacedCliff)
 		{
@@ -1371,100 +1549,55 @@ public class CliffPlacementSandbox : MonoBehaviour
 		Debug.Log((object)("[CliffSandbox] Placed '" + ((Object)cliffRoot).name + "': " + _lastPlaceInfo.Replace('\n', ' ') + (flag ? " | Anchors rejected: the terrain under the cliff doesn't fit the anchor extents. Orient the cliff to the slope (Auto-place F in Procedural mode), move it onto a steeper incline, or check the prefab's TerrainAnchor Extents/Offset." : string.Empty)));
 	}
 
-	public void RecalculateAllCliffs()
+	public void RecalculateSelectedCliffs()
 	{
 		if (!EnsureReady())
 		{
 			return;
 		}
-		if (ResyncCliffsFromPrefabsOnRecalc && Source == TerrainSource.MapFileRegion && SpawnRealCliffs)
+		List<Transform> list = CollectSelectedCliffRoots();
+		if (list.Count == 0)
 		{
-			SpawnRealCliffsInRegion();
-		}
-		HashSet<Transform> hashSet = CollectCliffRoots();
-		if (hashSet.Count == 0)
-		{
-			Debug.LogWarning((object)"[CliffSandbox] No cliffs found (need a TerrainAnchor/TerrainModifier in the hierarchy).");
+			_lastPlaceInfo = "Recalculate selected: nothing selected. Enable 'Click-to-select cliffs' and click the cliff to test, then press this again.";
+			_lastAnchorBreakdown = string.Empty;
+			Debug.LogWarning((object)"[CliffSandbox] Recalculate selected: no cliff selected.");
 			return;
 		}
-		List<Transform> list = OrderCliffRootsBySpawn(hashSet);
+		List<Transform> list2 = OrderCliffRootsBySpawn(list);
 		RestoreBaseline();
 		_lastAnchorBreakdown = string.Empty;
-		_breakdownCapturedRejected = false;
 		int num = 0;
-		List<string> list2 = new List<string>();
-		foreach (Transform item in list)
+		List<string> list3 = new List<string>();
+		StringBuilder stringBuilder = new StringBuilder();
+		foreach (Transform item in list2)
 		{
-			if (PlaceCliffInstance(item).Contains("REJECTED"))
+			string text = PlaceCliffInstance(item, _lastAnchorBreakdown.Length == 0);
+			if (text.Contains("REJECTED"))
 			{
-				list2.Add(((Object)item).name);
+				list3.Add(((Object)item).name);
 			}
 			else
 			{
 				num++;
 			}
+			stringBuilder.Append("\n" + ((Object)item).name + ": " + text.Replace('\n', ' '));
 		}
 		_heightmap.ApplyToTerrain();
-		string text = ComputePreCliffValidation();
-		_lastPlaceInfo = $"recalculated {list.Count} cliff(s), {num} accepted";
-		if (list2.Count > 0)
+		string text2 = ComputePreCliffValidation();
+		_lastPlaceInfo = $"Recalculated {list2.Count} selected cliff(s), {num} accepted" + ((list3.Count > 0) ? string.Format(", {0} REJECTED (no single height fits their anchors): {1}", list3.Count, string.Join(", ", list3)) : string.Empty) + "." + stringBuilder.ToString();
+		if (!string.IsNullOrEmpty(text2))
 		{
-			if (!string.IsNullOrEmpty(ReAnchorOnlyName))
-			{
-				List<string> list3 = list2.FindAll((string n) => n.IndexOf(ReAnchorOnlyName, StringComparison.OrdinalIgnoreCase) >= 0);
-				_lastPlaceInfo += ((list3.Count > 0) ? ("\ntarget '" + ReAnchorOnlyName + "' REJECTED (no single height fits its anchors): " + string.Join(", ", list3)) : $"\ntarget '{ReAnchorOnlyName}' anchors OK ({list2.Count} other piece(s) rejected, ignored)");
-			}
-			else
-			{
-				string text2 = string.Join(", ", list2.GetRange(0, Mathf.Min(12, list2.Count)));
-				if (list2.Count > 12)
-				{
-					text2 += $", (+{list2.Count - 12} more)";
-				}
-				_lastPlaceInfo += $"\n{list2.Count} anchor REJECT(s) (no single height fits all anchors): {text2}";
-			}
+			_lastPlaceInfo = _lastPlaceInfo + "\n" + text2;
 		}
-		if (!string.IsNullOrEmpty(text))
-		{
-			_lastPlaceInfo = _lastPlaceInfo + "\n" + text;
-		}
-		_breakdownSubject = ReAnchorOnlyName;
-		Debug.Log((object)("[CliffSandbox] " + _lastPlaceInfo.Replace('\n', ' ') + "."));
+		Debug.Log((object)("[CliffSandbox] " + _lastPlaceInfo.Replace('\n', ' ')));
 		if (!string.IsNullOrEmpty(_lastAnchorBreakdown))
 		{
-			Debug.Log((object)("[CliffSandbox] Anchor breakdown (" + ReAnchorOnlyName + "):\n" + _lastAnchorBreakdown));
+			Debug.Log((object)("[CliffSandbox] Anchor breakdown (selected):\n" + _lastAnchorBreakdown));
 		}
 	}
 
-	public void ReAnchorSelectedCliffs()
+	private List<Transform> CollectSelectedCliffRoots()
 	{
-		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0116: Unknown result type (might be due to invalid IL or missing references)
-		//IL_011b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0171: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0130: Unknown result type (might be due to invalid IL or missing references)
-		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0148: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0160: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
-		if (!EnsureReady())
-		{
-			return;
-		}
 		List<Transform> list = new List<Transform>();
 		foreach (Transform selectedGizmoRoot in _selectedGizmoRoots)
 		{
@@ -1473,6 +1606,39 @@ public class CliffPlacementSandbox : MonoBehaviour
 				list.Add(selectedGizmoRoot);
 			}
 		}
+		return list;
+	}
+
+	public void ReAnchorSelectedCliffs()
+	{
+		//IL_00ad: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_011c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0124: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0126: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0107: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0136: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0149: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0150: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0157: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0181: Unknown result type (might be due to invalid IL or missing references)
+		if (!EnsureReady())
+		{
+			return;
+		}
+		List<Transform> list = CollectSelectedCliffRoots();
 		if (list.Count == 0)
 		{
 			_lastPlaceInfo = "Re-anchor selected: nothing selected. Enable 'Click-to-select cliffs' and click the cliff to test, then press this again.";
@@ -1481,7 +1647,6 @@ public class CliffPlacementSandbox : MonoBehaviour
 			return;
 		}
 		_lastAnchorBreakdown = string.Empty;
-		_breakdownSubject = "selected";
 		int num = 0;
 		int num2 = 0;
 		int num3 = 0;
@@ -1528,30 +1693,23 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public void CarveSelectedCliffs()
 	{
-		//IL_0318: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0274: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0279: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0298: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_029c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02ce: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0228: Unknown result type (might be due to invalid IL or missing references)
+		//IL_022d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0231: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0236: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0250: Unknown result type (might be due to invalid IL or missing references)
 		if (!EnsureReady())
 		{
 			return;
 		}
-		List<Transform> list = new List<Transform>();
-		foreach (Transform selectedGizmoRoot in _selectedGizmoRoots)
-		{
-			if ((Object)(object)selectedGizmoRoot != (Object)null && !list.Contains(selectedGizmoRoot))
-			{
-				list.Add(selectedGizmoRoot);
-			}
-		}
+		List<Transform> list = CollectSelectedCliffRoots();
 		if (list.Count == 0)
 		{
 			_lastPlaceInfo = "Carve selected: nothing selected. Enable 'Click-to-select cliffs' and click the cliff to carve, then press this again.";
@@ -1649,17 +1807,18 @@ public class CliffPlacementSandbox : MonoBehaviour
 		Debug.Log((object)("[CliffSandbox] " + _lastPlaceInfo.Replace('\n', ' ')));
 	}
 
-	private List<Transform> OrderCliffRootsBySpawn(HashSet<Transform> roots)
+	private List<Transform> OrderCliffRootsBySpawn(List<Transform> roots)
 	{
+		HashSet<Transform> hashSet = new HashSet<Transform>(roots);
 		List<Transform> list = new List<Transform>(roots.Count);
-		HashSet<Transform> hashSet = new HashSet<Transform>();
+		HashSet<Transform> hashSet2 = new HashSet<Transform>();
 		for (int i = 0; i < _spawnedCliffs.Count; i++)
 		{
 			GameObject val = _spawnedCliffs[i];
 			if (!((Object)(object)val == (Object)null))
 			{
 				Transform root = val.transform.root;
-				if (roots.Contains(root) && hashSet.Add(root))
+				if (hashSet.Contains(root) && hashSet2.Add(root))
 				{
 					list.Add(root);
 				}
@@ -1667,7 +1826,7 @@ public class CliffPlacementSandbox : MonoBehaviour
 		}
 		foreach (Transform root2 in roots)
 		{
-			if (hashSet.Add(root2))
+			if (hashSet2.Add(root2))
 			{
 				list.Add(root2);
 			}
@@ -1675,69 +1834,63 @@ public class CliffPlacementSandbox : MonoBehaviour
 		return list;
 	}
 
-	private HashSet<Transform> CollectCliffRoots()
+	private string PlaceCliffInstance(Transform root, bool captureBreakdown)
 	{
-		HashSet<Transform> hashSet = new HashSet<Transform>();
-		TerrainAnchor[] array = Object.FindObjectsByType<TerrainAnchor>((FindObjectsInactive)1, (FindObjectsSortMode)0);
-		foreach (TerrainAnchor terrainAnchor in array)
-		{
-			hashSet.Add(((Component)terrainAnchor).transform.root);
-		}
-		TerrainModifier[] array2 = Object.FindObjectsByType<TerrainModifier>((FindObjectsInactive)1, (FindObjectsSortMode)0);
-		foreach (TerrainModifier terrainModifier in array2)
-		{
-			hashSet.Add(((Component)terrainModifier).transform.root);
-		}
-		if ((Object)(object)_terrainGO != (Object)null)
-		{
-			hashSet.Remove(_terrainGO.transform.root);
-		}
-		return hashSet;
-	}
-
-	private string PlaceCliffInstance(Transform root)
-	{
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0074: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0081: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0083: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0214: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0216: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0218: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01d9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01db: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0093: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0096: Unknown result type (might be due to invalid IL or missing references)
 		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_009d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01f4: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0206: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0210: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00d8: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00dd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e5: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0110: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0114: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0293: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0231: Unknown result type (might be due to invalid IL or missing references)
+		//IL_023b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0243: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00dc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00f0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00fc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_010f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0113: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0145: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0141: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0147: Unknown result type (might be due to invalid IL or missing references)
+		//IL_015b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0312: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0173: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0175: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0177: Unknown result type (might be due to invalid IL or missing references)
-		//IL_017d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0190: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0194: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cf: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01ae: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01b2: Unknown result type (might be due to invalid IL or missing references)
 		TerrainAnchor[] componentsInChildren = ((Component)root).GetComponentsInChildren<TerrainAnchor>(true);
 		TerrainModifier[] componentsInChildren2 = ((Component)root).GetComponentsInChildren<TerrainModifier>(true);
 		TerrainPlacement[] componentsInChildren3 = ((Component)root).GetComponentsInChildren<TerrainPlacement>(true);
 		List<TerrainModifier> list = new List<TerrainModifier>(componentsInChildren2.Length);
+		TerrainFootprint componentInChildren = ((Component)root).GetComponentInChildren<TerrainFootprint>(true);
 		PrefabAttribute[] attrs = componentsInChildren;
 		PrimeAttributes(attrs, root);
 		attrs = componentsInChildren3;
 		PrimeAttributes(attrs, root);
+		if ((bool)componentInChildren)
+		{
+			PrimeAttribute(componentInChildren, root);
+			componentInChildren.InvalidateRootRing();
+		}
 		for (int i = 0; i < componentsInChildren2.Length; i++)
 		{
 			PrimeAttribute(componentsInChildren2[i], root);
@@ -1756,24 +1909,34 @@ public class CliffPlacementSandbox : MonoBehaviour
 		{
 			flag = root.ApplyTerrainAnchors(componentsInChildren, ref pos, rotation, lossyScale, AnchorMode);
 		}
-		if (!string.IsNullOrEmpty(ReAnchorOnlyName) && ((Object)root).name.IndexOf(ReAnchorOnlyName, StringComparison.OrdinalIgnoreCase) >= 0 && !_breakdownCapturedRejected)
+		if (captureBreakdown && componentsInChildren.Length != 0)
 		{
 			Vector3 position2 = root.position;
 			_lastAnchorBreakdown = $"instance @ ({position2.x:0},{position2.y:0},{position2.z:0}):\n" + BuildAnchorBreakdown(componentsInChildren, position, rotation, lossyScale);
-			if (!flag)
+		}
+		bool flag2 = RecalcKeepMapPositions && Source == TerrainSource.MapFileRegion;
+		Vector3 pos2 = (flag2 ? position : pos);
+		float num = 0f;
+		bool flag3 = (bool)componentInChildren && componentInChildren.IsActive(rotation);
+		bool flag4 = true;
+		bool filled = false;
+		if (flag3)
+		{
+			num = componentInChildren.MeasureGap(pos2, rotation, lossyScale);
+			flag4 = componentInChildren.RejectAboveGap <= 0f || num <= componentInChildren.RejectAboveGap;
+			if (ApplyTerrainFootprintOnRecalc & flag4)
 			{
-				_breakdownCapturedRejected = true;
+				componentInChildren.Fill(pos2, rotation, lossyScale);
+				filled = true;
 			}
 		}
-		bool flag2 = (RecalcKeepMapPositions || (!string.IsNullOrEmpty(ReAnchorOnlyName) && ((Object)root).name.IndexOf(ReAnchorOnlyName, StringComparison.OrdinalIgnoreCase) < 0)) && Source == TerrainSource.MapFileRegion;
-		Vector3 pos2 = (flag2 ? position : pos);
-		int num = 0;
+		int num2 = 0;
 		if (ReplayTerrainPlacementsOnRecalc && componentsInChildren3.Length != 0)
 		{
 			try
 			{
 				root.ApplyTerrainPlacements(componentsInChildren3, pos2, rotation, lossyScale);
-				num = componentsInChildren3.Length;
+				num2 = componentsInChildren3.Length;
 			}
 			catch (Exception ex)
 			{
@@ -1789,8 +1952,27 @@ public class CliffPlacementSandbox : MonoBehaviour
 		{
 			root.position = new Vector3(root.position.x, pos.y, root.position.z);
 		}
-		int num2 = componentsInChildren2.Length - array.Length;
-		return string.Format("anchors: {0} ({1})\n", componentsInChildren.Length, flag ? "accepted" : "REJECTED") + string.Format("snap dY: {0:0.00}{1}\n", pos.y - y, flag2 ? " (locked to map pos)" : string.Empty) + $"height mods: {array.Length}" + ((num2 > 0) ? $" ({num2} non-height skipped)" : "") + ((num > 0) ? $", placements: {num}" : string.Empty);
+		int num3 = componentsInChildren2.Length - array.Length;
+		return string.Format("anchors: {0} ({1})\n", componentsInChildren.Length, flag ? "accepted" : "REJECTED") + string.Format("snap dY: {0:0.00}{1}\n", pos.y - y, flag2 ? " (locked to map pos)" : string.Empty) + $"height mods: {array.Length}" + ((num3 > 0) ? $" ({num3} non-height skipped)" : "") + ((num2 > 0) ? $", placements: {num2}" : string.Empty) + FootprintStatus(componentInChildren, rotation, flag3, flag4, filled, num);
+	}
+
+	private static string FootprintStatus(TerrainFootprint footprint, Quaternion rot, bool active, bool ok, bool filled, float gap)
+	{
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		if (!footprint)
+		{
+			return string.Empty;
+		}
+		if (!footprint.HasRing)
+		{
+			return "\nfootprint: no ring generated";
+		}
+		if (!active)
+		{
+			return $"\nfootprint: inactive (tilt {footprint.GetTilt(rot):0}° > MaxTiltDegrees {footprint.MaxTiltDegrees:0}°)";
+		}
+		string arg = ((!ok) ? $"REJECTED - over RejectAboveGap {footprint.RejectAboveGap:0.00}" : (filled ? $"filled, clamped at MaxFill {footprint.MaxFill:0.00}" : "measured only"));
+		return $"\nfootprint gap: {gap:0.00} m ({arg})";
 	}
 
 	private static bool IsHeightModifier(TerrainModifier m)
@@ -2154,16 +2336,19 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public CliffPlacementSandbox()
 	{
-		//IL_007f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_008f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ac: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a5: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
 		_gizmoAnchors = new List<TerrainAnchor>();
 		_gizmoModifiers = new List<TerrainModifier>();
+		_gizmoFootprints = new List<TerrainFootprint>();
 		_gizmoTargetsFrame = -1;
 		_selectedGizmoRoots = new HashSet<Transform>();
+		LevelUrl = string.Empty;
+		MapCacheFolder = "SandboxMaps";
 		_preCliffStatus = "pre-cliff baseline: not loaded";
 		Seed = 54321u;
 		ProceduralMapSize = 2000f;
@@ -2187,17 +2372,17 @@ public class CliffPlacementSandbox : MonoBehaviour
 		AnchorMode = TerrainAnchorMode.MaximizeHeight;
 		SnapCliffToAnchoredHeight = true;
 		RecalcKeepMapPositions = true;
-		ResyncCliffsFromPrefabsOnRecalc = true;
 		HotReloadPrefabsBeforeAction = true;
 		_nextSandboxCliffId = 1;
 		ReplayTerrainPlacementsOnRecalc = true;
-		ReAnchorOnlyName = string.Empty;
+		ApplyTerrainFootprintOnRecalc = true;
 		ShowPlacementGizmos = true;
 		GizmoAnchors = true;
 		GizmoModifierHeightSet = true;
 		GizmoModifierHeightRaise = true;
 		GizmoModifierHeightAdd = true;
 		GizmoModifierOther = true;
+		GizmoFootprint = true;
 		GizmoDrawDistance = 60f;
 		GizmoSelectionMode = true;
 		ShowPlayerScaleReference = true;
@@ -2211,7 +2396,6 @@ public class CliffPlacementSandbox : MonoBehaviour
 		DrawOnScreenControls = true;
 		_lastPlaceInfo = "-";
 		_lastAnchorBreakdown = string.Empty;
-		_breakdownSubject = string.Empty;
 		_spawnedCliffs = new List<GameObject>();
 		((MonoBehaviour)this)._002Ector();
 	}
@@ -2228,10 +2412,25 @@ public class CliffPlacementSandbox : MonoBehaviour
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
 		//IL_008c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0091: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00cd: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00eb: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0104: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0109: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0122: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0127: Unknown result type (might be due to invalid IL or missing references)
 		AnchorColor = new Color(0.2f, 0.9f, 1f, 1f);
 		HeightSetColor = new Color(0.3f, 1f, 0.4f, 1f);
 		HeightRaiseColor = new Color(1f, 0.85f, 0.2f, 1f);
 		HeightAddColor = new Color(1f, 0.4f, 0.9f, 1f);
 		OtherModColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+		FootprintColor = new Color(0.2f, 0.8f, 0.8f, 1f);
+		FootprintBandColor = new Color(0.2f, 0.8f, 0.8f, 0.35f);
+		FootprintSeatedColor = new Color(0.3f, 1f, 0.5f, 1f);
+		FootprintGapColor = new Color(1f, 0.35f, 0.2f, 1f);
+		FootprintInactiveColor = new Color(0.55f, 0.55f, 0.6f, 1f);
 	}
 }

@@ -7,6 +7,9 @@ public class TerrainAnchorRingGenerator : MonoBehaviour, IEditorComponent
 
 	public float PlaneHeight;
 
+	[Tooltip("Raises (or lowers, if negative) every generated anchor by this much relative to the slice plane, without moving the slice itself - the silhouette is still taken at PlaneHeight, so the gizmo shows the anchor ring floating off the outline by exactly this amount. Lifting the anchors sinks the rock into the terrain by the same distance, since the solve seats the root so the anchors meet the ground.\n\nNot the same as AnchorOffset: that is a slope-aware tolerance, scaled by slopeScale and always vertical. This is baked into the anchor's local position, so it rotates with the rock and shifts the sample points sideways on a tilted one.")]
+	public float AnchorLift;
+
 	public float StandOff = 3f;
 
 	public float Spacing = 4f;
@@ -25,4 +28,7 @@ public class TerrainAnchorRingGenerator : MonoBehaviour, IEditorComponent
 
 	[HideInInspector]
 	public List<TerrainAnchor> GeneratedAnchors = new List<TerrainAnchor>();
+
+	[HideInInspector]
+	public TerrainFootprint GeneratedFootprint;
 }

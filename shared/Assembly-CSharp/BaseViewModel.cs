@@ -21,11 +21,15 @@ public class BaseViewModel : FacepunchBehaviour, IPrefabPreProcess, IViewmodelWo
 
 	public bool useViewModelCamera = true;
 
+	public bool allowSkinViewerInspection = true;
+
 	public bool wantsHeldItemFlags;
 
 	public GameObject[] hideSightMeshes;
 
 	public ViewmodelType viewmodelType;
+
+	public bool createHandMesh;
 
 	public bool shouldOverridePosition;
 

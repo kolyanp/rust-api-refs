@@ -51,6 +51,8 @@ public class RustCore : CSPlugin
 
 	private static readonly DateTime Eoy = new DateTime(2026, 12, 31);
 
+	private static readonly DateTime OctoberForceWipe = new DateTime(2026, 10, 1);
+
 	internal static IEnumerable<string> RestrictedCommands => new string[4] { "ownerid", "moderatorid", "removeowner", "removemoderator" };
 
 	[HookMethod("GrantCommand")]
@@ -108,7 +110,7 @@ public class RustCore : CSPlugin
 				text2 = player2.Name;
 				permission.UpdateNickname(text4, text2);
 			}
-			if (permission.UserHasPermission(text2, text3))
+			if (permission.GetUserData(text4).Perms.Contains(text3))
 			{
 				player.Reply(string.Format(lang.GetMessage("PlayerAlreadyHasPermission", this, player.Id), text4, text3));
 				return;
@@ -809,7 +811,7 @@ public class RustCore : CSPlugin
 					{
 						return current;
 					}
-					if (current.net?.connection != null && ((object)Unsafe.As<NetworkableId, NetworkableId>(ref current.net.ID)/*cast due to constrained. prefix*/).Equals((object?)nameOrIdOrIp))
+					if (current.net?.connection != null && ((object)System.Runtime.CompilerServices.Unsafe.As<NetworkableId, NetworkableId>(ref current.net.ID)/*cast due to constrained. prefix*/).Equals((object?)nameOrIdOrIp))
 					{
 						return current;
 					}
@@ -1452,5 +1454,11 @@ public class RustCore : CSPlugin
 			return true;
 		}
 		return null;
+	}
+
+	[HookMethod("OnOvenCook")]
+	private object OnOvenCook(Composter composter, Item fuel)
+	{
+		return Interface.Oxide.CallDeprecatedHook("OnComposterUpdate", "OnOvenCook(Composter composter, Item fuel)", OctoberForceWipe, composter);
 	}
 }

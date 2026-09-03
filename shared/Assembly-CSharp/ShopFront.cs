@@ -13,7 +13,7 @@ public class ShopFront : StorageContainer
 	{
 		public const Flags VendorAccepted = Flags.Reserved1;
 
-		public const Flags CustomerAccepted = Flags.Reserved2;
+		public const Flags CustomerAccepted = Flags.Reserved4;
 
 		public const Flags Exchanging = Flags.Reserved3;
 	}
@@ -197,7 +197,7 @@ public class ShopFront : StorageContainer
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 		{
 			flagsUpdateScope.Set(Flags.Reserved1, b: false);
-			flagsUpdateScope.Set(Flags.Reserved2, b: false);
+			flagsUpdateScope.Set(Flags.Reserved4, b: false);
 			flagsUpdateScope.Set(Flags.Reserved3, b: false);
 		}
 		vendorInventory.SetLocked(isLocked: false);
@@ -209,7 +209,7 @@ public class ShopFront : StorageContainer
 	{
 		//IL_00ec: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00f1: Unknown result type (might be due to invalid IL or missing references)
-		if ((Object)(object)vendorPlayer != (Object)null && (Object)(object)customerPlayer != (Object)null && HasFlag(Flags.Reserved1) && HasFlag(Flags.Reserved2))
+		if ((Object)(object)vendorPlayer != (Object)null && (Object)(object)customerPlayer != (Object)null && HasFlag(Flags.Reserved1) && HasFlag(Flags.Reserved4))
 		{
 			if (Interface.CallHook("OnShopCompleteTrade", this) != null)
 			{
@@ -242,8 +242,8 @@ public class ShopFront : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AcceptClicked(RPCMessage msg)
 	{
 		if (!IsTradingPlayer(msg.player) || (Object)(object)vendorPlayer == (Object)null || (Object)(object)customerPlayer == (Object)null || Interface.CallHook("OnShopAcceptClick", this, msg.player) != null)
@@ -258,18 +258,18 @@ public class ShopFront : StorageContainer
 		}
 		else if (IsPlayerCustomer(msg.player))
 		{
-			flagsUpdateScope.Set(Flags.Reserved2, b: true);
+			flagsUpdateScope.Set(Flags.Reserved4, b: true);
 			customerInventory.SetLocked(isLocked: true);
 		}
-		if (HasFlag(Flags.Reserved1) && HasFlag(Flags.Reserved2))
+		if (HasFlag(Flags.Reserved1) && HasFlag(Flags.Reserved4))
 		{
 			flagsUpdateScope.Set(Flags.Reserved3, b: true);
 			Invoke(CompleteTrade, 2f);
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void CancelClicked(RPCMessage msg)
 	{
 		if (IsTradingPlayer(msg.player) && Interface.CallHook("OnShopCancelClick", this, msg.player) == null)
@@ -284,7 +284,7 @@ public class ShopFront : StorageContainer
 	{
 		base.ServerInit();
 		ItemContainer itemContainer = vendorInventory;
-		itemContainer.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<Item, int, bool>(CanAcceptVendorItem));
+		itemContainer.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptVendorItem));
 		if (customerInventory == null)
 		{
 			customerInventory = Pool.Get<ItemContainer>();
@@ -299,7 +299,7 @@ public class ShopFront : StorageContainer
 			customerInventory.onItemAddedToStack = OnItemAddedToStack;
 			customerInventory.onItemRemovedFromStack = OnItemRemovedFromStack;
 			ItemContainer itemContainer2 = customerInventory;
-			itemContainer2.canAcceptItem = (Func<Item, int, bool>)Delegate.Combine(itemContainer2.canAcceptItem, new Func<Item, int, bool>(CanAcceptCustomerItem));
+			itemContainer2.canAcceptItem = (Func<BasePlayer, Item, int, bool>)Delegate.Combine(itemContainer2.canAcceptItem, new Func<BasePlayer, Item, int, bool>(CanAcceptCustomerItem));
 			OnInventoryFirstCreated(customerInventory);
 		}
 	}
@@ -328,7 +328,7 @@ public class ShopFront : StorageContainer
 		ResetTrade();
 	}
 
-	private bool CanAcceptVendorItem(Item item, int targetSlot)
+	private bool CanAcceptVendorItem(BasePlayer player, Item item, int targetSlot)
 	{
 		if (swappingItems || ((Object)(object)vendorPlayer != (Object)null && (Object)(object)item.GetOwnerPlayer() == (Object)(object)vendorPlayer) || vendorInventory.itemList.Contains(item))
 		{
@@ -337,7 +337,7 @@ public class ShopFront : StorageContainer
 		return false;
 	}
 
-	private bool CanAcceptCustomerItem(Item item, int targetSlot)
+	private bool CanAcceptCustomerItem(BasePlayer player, Item item, int targetSlot)
 	{
 		if (swappingItems || ((Object)(object)customerPlayer != (Object)null && (Object)(object)item.GetOwnerPlayer() == (Object)(object)customerPlayer) || customerInventory.itemList.Contains(item))
 		{

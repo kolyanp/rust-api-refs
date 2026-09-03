@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Facepunch;
+using Rust.Ai.Gen2.Nav;
 using Spatial;
 using UnityEngine;
 
@@ -154,13 +155,13 @@ public class NpcCoverManager : SingletonComponent<NpcCoverManager>, IServerCompo
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0047: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0066: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("GetFirstUsableCover"))
 		{
 			BaseEntity baseEntity = agent.GetBaseEntity();
 			foreach (Cover cover in covers)
 			{
-				if ((!requireLoS || cover.GetFirstUnoccludedPeek(threatPosition, baseEntity) != Cover.Peeks.None) && agent.CalculatePath(cover.position, navPath) && (int)navPath.status == 0 && !(navPath.GetPathLength() > maxPathLength) && (!targetRadius.HasValue || !DoesPathIntersectTarget(navPath, threatPosition, targetRadius.Value)))
+				if ((!requireLoS || cover.GetFirstUnoccludedPeek(threatPosition, baseEntity) != Cover.Peeks.None) && agent.CalculatePath(cover.position, navPath) && (int)navPath.status == 0 && !(navPath.GetPathLength() > maxPathLength) && (!targetRadius.HasValue || !DoesPathIntersectTarget(navPath, agent.WorldToNavSpace(threatPosition), targetRadius.Value)))
 				{
 					return cover;
 				}
@@ -169,18 +170,16 @@ public class NpcCoverManager : SingletonComponent<NpcCoverManager>, IServerCompo
 		}
 	}
 
-	private static bool DoesPathIntersectTarget(RustNavMeshPath path, Vector3 targetPosition, float targetRadius)
+	private static bool DoesPathIntersectTarget(RustNavMeshPath path, NavVector3 targetPosition, float targetRadius)
 	{
-		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0019: Unknown result type (might be due to invalid IL or missing references)
-		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
 		for (int i = 0; i < path.corners.Count - 1; i++)
 		{
-			Vector3 start = path.corners[i];
-			Vector3 end = path.corners[i + 1];
-			if (SegmentSphereIntersection(start, end, targetPosition, targetRadius))
+			NavVector3 navVector = path.corners[i];
+			NavVector3 navVector2 = path.corners[i + 1];
+			if (SegmentSphereIntersection(navVector.Value, navVector2.Value, targetPosition.Value, targetRadius))
 			{
 				return true;
 			}

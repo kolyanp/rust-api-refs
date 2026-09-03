@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Facepunch;
 using ProtoBuf;
 
@@ -9,7 +10,7 @@ public interface IHandler : IPooled
 
 	ValidationResult Validate();
 
-	void Execute();
+	ValueTask Execute();
 
 	void SendError(string code);
 }

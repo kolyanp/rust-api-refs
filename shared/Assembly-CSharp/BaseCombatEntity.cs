@@ -1205,13 +1205,28 @@ public class BaseCombatEntity : BaseEntity
 
 	public override void ResetState()
 	{
+		//IL_0084: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008a: Unknown result type (might be due to invalid IL or missing references)
 		base.ResetState();
+		BaseCombatEntity baseCombatEntity = LookupPrefab<BaseCombatEntity>();
+		if ((Object)(object)baseCombatEntity != (Object)null)
+		{
+			baseProtection = baseCombatEntity.baseProtection;
+		}
 		health = MaxHealth();
 		maxHealthOverride = 0f;
 		if (base.isServer)
 		{
+			if ((Object)(object)baseCombatEntity != (Object)null)
+			{
+				_maxHealth = baseCombatEntity._maxHealth;
+			}
+			ResetLifeStateOnSpawn = true;
 			lastAttackedTime = float.NegativeInfinity;
 			lastDealtDamageTime = float.NegativeInfinity;
+			lastAttacker = null;
+			lastDealtDamageTo = null;
+			LastAttackedDir = default(Vector3);
 		}
 	}
 

@@ -139,21 +139,33 @@ public class PlaceCliffs : ProceduralComponent
 		//IL_03da: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03dc: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03de: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ec: Unknown result type (might be due to invalid IL or missing references)
+		//IL_03ee: Unknown result type (might be due to invalid IL or missing references)
 		//IL_03f0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f2: Unknown result type (might be due to invalid IL or missing references)
-		//IL_03f4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0402: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0404: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0406: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0408: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0416: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0418: Unknown result type (might be due to invalid IL or missing references)
 		//IL_041a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_041c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0433: Unknown result type (might be due to invalid IL or missing references)
-		//IL_043a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0441: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0477: Unknown result type (might be due to invalid IL or missing references)
-		//IL_047e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0485: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0425: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0427: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0429: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0437: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0439: Unknown result type (might be due to invalid IL or missing references)
+		//IL_043b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_044d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0454: Unknown result type (might be due to invalid IL or missing references)
+		//IL_045b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0473: Unknown result type (might be due to invalid IL or missing references)
+		//IL_047a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0481: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b2: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04c0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04d8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04df: Unknown result type (might be due to invalid IL or missing references)
+		//IL_04e6: Unknown result type (might be due to invalid IL or missing references)
 		if (World.Networked)
 		{
 			World.Spawn("Decor", "assets/bundled/prefabs/autospawn/" + ResourceFolder + "/");
@@ -231,19 +243,22 @@ public class PlaceCliffs : ProceduralComponent
 				Quaternion rot = val2 * random.Object.transform.localRotation;
 				Vector3 scale = num16 * random.Object.transform.localScale;
 				random.ApplyDecorComponents(ref pos, ref rot, ref scale);
-				if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorModeInitial, ((FilterModeInitial & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && !(pos.y < (float)num11) && !(pos.y > (float)num12) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterModeInitial & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale))
+				if (random.ApplyTerrainFilters(pos, rot, scale) && random.ApplyTerrainAnchors(ref pos, rot, scale, AnchorModeInitial, ((FilterModeInitial & SpawnFilterMode.TerrainAnchorPoints) != 0) ? Filter : null) && !(pos.y < (float)num11) && !(pos.y > (float)num12) && random.ApplyTerrainChecks(pos, rot, scale, ((FilterModeInitial & SpawnFilterMode.TerrainCheckPoints) != 0) ? Filter : null) && random.ApplyWaterChecks(pos, rot, scale) && random.ApplyEnvironmentVolumeChecks(pos, rot, scale) && random.CheckTerrainFootprint(pos, rot, scale))
 				{
 					CliffPlacement cliffPlacement = PlaceMale(array3, ref seed, random, pos, rot, scale);
 					CliffPlacement cliffPlacement2 = PlaceFemale(array4, ref seed, random, pos, rot, scale);
+					random.FillTerrainFootprint(pos, rot, scale);
 					World.AddPrefab("Decor", random, pos, rot, scale);
 					while (cliffPlacement != null && cliffPlacement.prefab != null)
 					{
+						cliffPlacement.prefab.FillTerrainFootprint(cliffPlacement.pos, cliffPlacement.rot, cliffPlacement.scale);
 						World.AddPrefab("Decor", cliffPlacement.prefab, cliffPlacement.pos, cliffPlacement.rot, cliffPlacement.scale);
 						cliffPlacement = cliffPlacement.next;
 						num4++;
 					}
 					while (cliffPlacement2 != null && cliffPlacement2.prefab != null)
 					{
+						cliffPlacement2.prefab.FillTerrainFootprint(cliffPlacement2.pos, cliffPlacement2.rot, cliffPlacement2.scale);
 						World.AddPrefab("Decor", cliffPlacement2.prefab, cliffPlacement2.pos, cliffPlacement2.rot, cliffPlacement2.scale);
 						cliffPlacement2 = cliffPlacement2.next;
 						num4++;

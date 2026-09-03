@@ -83,6 +83,7 @@ public class ServerGib : BaseCombatEntity
 				val2 = Vector3Ex.Range(-1f, 1f);
 				obj.angularVelocity = ((Vector3)(ref val2)).normalized * 1f;
 				component2.rigidBody.WakeUp();
+				component2.enableSaving = true;
 				component2.Spawn();
 				list.Add(component2);
 			}
@@ -104,7 +105,7 @@ public class ServerGib : BaseCombatEntity
 	public override void Save(SaveInfo info)
 	{
 		base.Save(info);
-		if (!info.forDisk && _gibName != "")
+		if (_gibName != "")
 		{
 			info.msg.servergib = Pool.Get<ServerGib>();
 			info.msg.servergib.gibName = _gibName;

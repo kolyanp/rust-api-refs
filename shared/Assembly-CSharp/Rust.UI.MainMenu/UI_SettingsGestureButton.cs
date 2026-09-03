@@ -25,8 +25,8 @@ public class UI_SettingsGestureButton : UI_SettingsGestureDraggable
 	[SerializeField]
 	private RustText gestureNameText;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform videoPreview;
 
 	[SerializeField]

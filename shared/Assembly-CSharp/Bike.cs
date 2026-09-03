@@ -80,20 +80,20 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[SerializeField]
 	public float maxFuelPerSec;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float pitchStabP;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float pitchStabD;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float twoWheelRollStabP;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float twoWheelRollStabD;
 
 	[Range(1f, 500f)]
@@ -212,8 +212,8 @@ public class Bike : GroundVehicle, CarPhysics<Bike>.ICar, TriggerHurtNotChild.IH
 	[SerializeField]
 	private GameObject fxHeavyDamageInstLight;
 
-	[Header("Sidecar")]
 	[SerializeField]
+	[Header("Sidecar")]
 	private Rigidbody sidecarRigidBody;
 
 	[SerializeField]

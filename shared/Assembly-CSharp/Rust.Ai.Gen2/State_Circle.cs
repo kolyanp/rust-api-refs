@@ -56,7 +56,7 @@ public class State_Circle : FSMStateBase
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00cf: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00e1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00e7: Unknown result type (might be due to invalid IL or missing references)
 		if (!GetCircleOrigin(out var origin))
 		{
 			return EFSMStateStatus.Failure;
@@ -64,13 +64,13 @@ public class State_Circle : FSMStateBase
 		float num = radius + radiusOffset;
 		Quaternion val = Quaternion.LookRotation(((Component)Owner).transform.position - origin);
 		float num2 = (((Quaternion)(ref val)).eulerAngles.y + 5f * (float)(clockWise ? 1 : (-1))) * (MathF.PI / 180f);
-		Vector3 targetPositionNS = origin + new Vector3(Mathf.Sin(num2), 0f, Mathf.Cos(num2)) * num;
-		targetPositionNS.y = Mathf.Lerp(origin.y, ((Component)Owner).transform.position.y, Mathf.InverseLerp(0f, Vector3.Distance(origin, ((Component)Owner).transform.position), num));
-		if (base.Agent.Raycast(targetPositionNS, out var _))
+		Vector3 val2 = origin + new Vector3(Mathf.Sin(num2), 0f, Mathf.Cos(num2)) * num;
+		val2.y = Mathf.Lerp(origin.y, ((Component)Owner).transform.position.y, Mathf.InverseLerp(0f, Vector3.Distance(origin, ((Component)Owner).transform.position), num));
+		if (base.Agent.Raycast(val2, out var _))
 		{
 			return EFSMStateStatus.Failure;
 		}
-		if (!base.Agent.SetDestinationWithParams(targetPositionNS, autoBraking: false, speed))
+		if (!base.Agent.SetDestinationWithParams(base.Agent.WorldToNavSpace(val2), autoBraking: false, speed))
 		{
 			return EFSMStateStatus.Failure;
 		}

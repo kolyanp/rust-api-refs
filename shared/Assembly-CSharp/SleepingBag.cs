@@ -1256,8 +1256,8 @@ public class SleepingBag : DecayEntity
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_MakeBed(RPCMessage msg)
 	{
 		if (!canBePublic || !IsPublic() || !CanAccessBed(msg.player))
@@ -1324,8 +1324,8 @@ public class SleepingBag : DecayEntity
 		NotifyPlayer(deployerUserID);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_ShowOnCompass(RPCMessage msg)
 	{
 		if (msg.player.CanInteract() && deployerUserID == (ulong)msg.player.userID)

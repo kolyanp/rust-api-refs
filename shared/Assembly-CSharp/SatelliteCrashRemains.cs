@@ -110,7 +110,8 @@ public class SatelliteCrashRemains : BaseCombatEntity
 
 	private void SetCooled()
 	{
-		SetFlag(Flags.Reserved2, b: true);
+		using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+		flagsUpdateScope.Set(Flags.Reserved2, b: true);
 	}
 
 	public override void PostServerLoad()
@@ -175,12 +176,11 @@ public class SatelliteCrashRemains : BaseCombatEntity
 			{
 				GiveThrusterModules(info.InitiatorPlayer);
 			}
-			SetFlag(Flags.Reserved1, b: true);
+			using FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate);
+			flagsUpdateScope.Set(Flags.Reserved1, b: true);
+			return;
 		}
-		else
-		{
-			base.OnAttacked(info);
-		}
+		base.OnAttacked(info);
 	}
 
 	private bool IsHarvestCollider(uint hitBone)

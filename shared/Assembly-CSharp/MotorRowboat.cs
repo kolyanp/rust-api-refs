@@ -215,6 +215,11 @@ public class MotorRowboat : BaseBoat
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
+	public override void ResetState()
+	{
+		base.ResetState();
+	}
+
 	public override void InitShared()
 	{
 		base.InitShared();

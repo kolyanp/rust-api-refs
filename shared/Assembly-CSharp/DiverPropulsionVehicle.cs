@@ -65,8 +65,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float minWaterDepth = 0.75f;
 
-	[Header("DPV - Control stability")]
 	[SerializeField]
+	[Header("DPV - Control stability")]
 	private float rotStability = 0.05f;
 
 	[SerializeField]
@@ -84,8 +84,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private float maxRollDegrees = 30f;
 
-	[SerializeField]
 	[Header("DPV - UI")]
+	[SerializeField]
 	private Canvas dashboardCanvas;
 
 	[SerializeField]
@@ -106,8 +106,8 @@ public class DiverPropulsionVehicle : BaseMountable, IEngineControllerUser, IEnt
 	[SerializeField]
 	private RustText healthWarningText;
 
-	[Header("DPV - FX")]
 	[SerializeField]
+	[Header("DPV - FX")]
 	private Transform leftHandGrip;
 
 	[SerializeField]

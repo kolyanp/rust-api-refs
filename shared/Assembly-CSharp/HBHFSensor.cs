@@ -19,7 +19,7 @@ public class HBHFSensor : BaseDetector
 
 	public GameObjectRef uiPanelPrefab;
 
-	public const Flags Flag_IncludeOthers = Flags.Reserved2;
+	public const Flags Flag_IncludeOthers = Flags.Reserved4;
 
 	public const Flags Flag_IncludeAuthed = Flags.Reserved3;
 
@@ -218,9 +218,9 @@ public class HBHFSensor : BaseDetector
 		return num;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void SetConfig(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -231,7 +231,7 @@ public class HBHFSensor : BaseDetector
 			using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
 			{
 				flagsUpdateScope.Set(Flags.Reserved3, b);
-				flagsUpdateScope.Set(Flags.Reserved2, b2);
+				flagsUpdateScope.Set(Flags.Reserved4, b2);
 			}
 			int num = msg.read.Int32();
 			SetRange(num);
@@ -340,7 +340,7 @@ public class HBHFSensor : BaseDetector
 
 	public bool ShouldIncludeOthers()
 	{
-		return HasFlag(Flags.Reserved2);
+		return HasFlag(Flags.Reserved4);
 	}
 
 	public override void Save(SaveInfo info)

@@ -23,6 +23,8 @@ public static class Server
 		public string ServerId;
 
 		public string ServerToken;
+
+		public string Secret;
 	}
 
 	private class TestConnectionResponse
@@ -30,11 +32,11 @@ public static class Server
 		public List<string> Messages;
 	}
 
-	private const string ApiEndpoint = "https://companion-rust.facepunch.com/api/server";
-
 	public static readonly ChatLog TeamChat = new ChatLog();
 
 	internal static string Token;
+
+	internal static string Secret;
 
 	public static Listener Listener { get; private set; }
 
@@ -133,19 +135,29 @@ public static class Server
 
 	private static async void PostInitializeServer()
 	{
-		await SetupServerRegistration();
-		await CheckConnectivity();
+		string text = await App.GetPublicIPAsync();
+		if (string.IsNullOrEmpty(text))
+		{
+			Debug.LogError((object)"Failed to determine public IP address for Rust+ while setting up registration. Disabling Rust+ features because we wouldn't know what IP to tell Rust+ to connect to.");
+			SetServerId(null);
+		}
+		else
+		{
+			await SetupServerRegistration(text, App.port);
+			await CheckConnectivity();
+		}
 	}
 
-	private static async Task SetupServerRegistration()
+	private static async Task SetupServerRegistration(string address, int port)
 	{
-		_ = 3;
+		string arg = Uri.EscapeDataString(ConVar.Server.hostname ?? string.Empty);
+		string query = $"?address={address}&port={port}&name={arg}";
 		try
 		{
 			if (TryLoadServerRegistration(out var _, out var serverToken))
 			{
 				StringContent refreshContent = new StringContent(serverToken, Encoding.UTF8, "text/plain");
-				HttpResponseMessage httpResponseMessage = await AutoRetry(() => WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/server/refresh", refreshContent));
+				HttpResponseMessage httpResponseMessage = await AutoRetry(() => WebUtil.HttpClient.PostAsync(App.endpoint + "/server/refresh" + query, refreshContent));
 				if (httpResponseMessage.IsSuccessStatusCode)
 				{
 					SetServerRegistration(await httpResponseMessage.Content.ReadAsStringAsync());
@@ -153,13 +165,13 @@ public static class Server
 				}
 				Debug.LogWarning((object)"Failed to refresh server ID - registering a new one");
 			}
-			HttpResponseMessage obj = await AutoRetry(() => WebUtil.HttpClient.GetAsync("https://companion-rust.facepunch.com/api/server/register"));
+			HttpResponseMessage obj = await AutoRetry(() => WebUtil.HttpClient.GetAsync(App.endpoint + "/server/register" + query));
 			obj.EnsureSuccessStatusCode();
 			SetServerRegistration(await obj.Content.ReadAsStringAsync());
 		}
-		catch (Exception arg)
+		catch (Exception arg2)
 		{
-			Debug.LogError((object)$"Failed to setup companion server registration: {arg}");
+			Debug.LogError((object)$"Failed to setup companion server registration: {arg2}");
 		}
 	}
 
@@ -199,6 +211,7 @@ public static class Server
 		}
 		SetServerId(registerResponse?.ServerId);
 		Token = registerResponse?.ServerToken;
+		Secret = registerResponse?.Secret;
 		if (registerResponse == null)
 		{
 			return;
@@ -222,14 +235,13 @@ public static class Server
 		}
 		try
 		{
-			string publicIp = await App.GetPublicIPAsync();
-			if (string.IsNullOrEmpty(publicIp))
+			if (string.IsNullOrEmpty(Token))
 			{
-				Debug.LogError((object)"Failed to determine public IP address for Rust+ while running the connectivity test. Disabling Rust+ features because we wouldn't know what IP to tell Rust+ to connect to.");
-				SetServerId(null);
+				Debug.LogWarning((object)"Skipping Rust+ connectivity test because the server is not registered.");
+				return;
 			}
-			StringContent testContent = new StringContent("", Encoding.UTF8, "text/plain");
-			HttpResponseMessage testResponse = await AutoRetry(() => WebUtil.HttpClient.PostAsync("https://companion-rust.facepunch.com/api/server" + $"/test_connection?address={publicIp}&port={App.port}", testContent));
+			StringContent testContent = new StringContent(Token, Encoding.UTF8, "text/plain");
+			HttpResponseMessage testResponse = await AutoRetry(() => WebUtil.HttpClient.PostAsync(App.endpoint + "/server/test_connection", testContent));
 			string text = await testResponse.Content.ReadAsStringAsync();
 			TestConnectionResponse testConnectionResponse = null;
 			try

@@ -298,11 +298,10 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0071: Unknown result type (might be due to invalid IL or missing references)
-		//IL_007d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
+		//IL_008e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RootMotionPlayer:PlayServerTick"))
 		{
 			Vector3 location = ((Component)base.baseEntity).transform.position;
@@ -312,7 +311,7 @@ public class RootMotionPlayer : EntityComponent<BaseEntity>, IServerComponent
 			{
 				if (currentPlayState.constrainToNavmesh)
 				{
-					Agent.Move(location - ((Component)base.baseEntity).transform.position);
+					Agent.Move(Agent.WorldToNavSpace(location) - Agent.WorldToNavSpace(((Component)base.baseEntity).transform.position));
 				}
 				else
 				{

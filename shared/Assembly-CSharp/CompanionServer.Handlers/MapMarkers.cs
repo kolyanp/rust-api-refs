@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using ConVar;
 using Facepunch;
 using ProtoBuf;
 using UnityEngine;
@@ -7,9 +9,14 @@ namespace CompanionServer.Handlers;
 
 public class MapMarkers : BasePlayerHandler<AppEmpty>
 {
-	public override void Execute()
+	public override ValueTask Execute()
 	{
-		//IL_00b3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d7: Unknown result type (might be due to invalid IL or missing references)
+		if (!ConVar.Server.mapenabled || ConVar.Server.fogofwar)
+		{
+			SendError("no_map");
+			return default(ValueTask);
+		}
 		AppMapMarkers val = Pool.Get<AppMapMarkers>();
 		val.markers = Pool.Get<List<AppMarker>>();
 		RelationshipManager.PlayerTeam playerTeam = RelationshipManager.ServerInstance.FindPlayersTeam(base.UserId);
@@ -38,6 +45,7 @@ public class MapMarkers : BasePlayerHandler<AppEmpty>
 		AppResponse val2 = Pool.Get<AppResponse>();
 		val2.mapMarkers = val;
 		Send(val2);
+		return default(ValueTask);
 	}
 
 	private static AppMarker GetPlayerMarker(BasePlayer player)

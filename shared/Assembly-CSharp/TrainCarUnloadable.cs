@@ -34,8 +34,8 @@ public class TrainCarUnloadable : TrainCar
 	[SerializeField]
 	private Transform orePlaneColliderWorld;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	public float vacuumStretchPercent;
 
 	[SerializeField]
@@ -117,14 +117,14 @@ public class TrainCarUnloadable : TrainCar
 
 	protected override void OnChildAdded(BaseEntity child)
 	{
-		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		base.OnChildAdded(child);
 		if (IsDead() || base.IsDestroyed)
 		{
 			return;
 		}
 		LootContainer lootContainer = default(LootContainer);
-		if (((Component)child).TryGetComponent<LootContainer>(ref lootContainer) && base.isServer && Application.isLoadingSave)
+		if (((Component)child).TryGetComponent<LootContainer>(ref lootContainer) && !(lootContainer is LockedByEntCrate) && base.isServer && Application.isLoadingSave)
 		{
 			lootContainers.Add(new EntityRef<LootContainer>(lootContainer.net.ID));
 		}
