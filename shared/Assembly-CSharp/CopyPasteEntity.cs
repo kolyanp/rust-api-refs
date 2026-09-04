@@ -106,9 +106,9 @@ public class CopyPasteEntity : PointEntity
 			select Path.GetFileNameWithoutExtension(x)).ToArray();
 	}
 
+	[RPC_Server]
 	[RPC_Server.IgnoreProtoFieldOperationLimit]
 	[RPC_Server.IgnoreProtoFieldOrder]
-	[RPC_Server]
 	public void Paste(RPCMessage rpc)
 	{
 		//IL_004d: Unknown result type (might be due to invalid IL or missing references)

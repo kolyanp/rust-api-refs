@@ -34,8 +34,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RawImage opponentAvatar;
 
-	[SerializeField]
 	[Header("Current Turn")]
+	[SerializeField]
 	private GameObject localTurnBall;
 
 	[SerializeField]
@@ -57,8 +57,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private Color eightBallColour;
 
-	[SerializeField]
 	[Tooltip("Contains the 15 ball displays in left-to-right order.")]
+	[SerializeField]
 	private Transform ballDisplayRoot;
 
 	public bool ShouldUpdateShadows => true;

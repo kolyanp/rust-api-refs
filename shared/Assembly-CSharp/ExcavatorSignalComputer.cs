@@ -198,8 +198,8 @@ public class ExcavatorSignalComputer : BaseCombatEntity
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RequestSupplies(RPCMessage rpc)
 	{
 		//IL_005e: Unknown result type (might be due to invalid IL or missing references)

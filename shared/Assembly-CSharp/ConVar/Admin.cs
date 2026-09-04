@@ -57,8 +57,8 @@ public class Admin : ConsoleSystem
 		public ulong TeamID;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct PlayerIDInfo
 	{
 		public string SteamID;
@@ -72,8 +72,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;
@@ -128,8 +128,8 @@ public class Admin : ConsoleSystem
 		public string Help;
 	}
 
-	[JsonModel]
 	[Preserve]
+	[JsonModel]
 	public struct ServerUGCInfo(IUGCBrowserEntity fromEntity)
 	{
 		public ulong entityId = fromEntity.UgcEntity.net.ID.Value;

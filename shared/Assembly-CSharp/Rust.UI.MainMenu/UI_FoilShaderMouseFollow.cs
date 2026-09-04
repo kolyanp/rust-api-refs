@@ -22,8 +22,8 @@ public class UI_FoilShaderMouseFollow : MonoBehaviour
 	[SerializeField]
 	private float _maxTilt = 10f;
 
-	[SerializeField]
 	[Header("Global Settings")]
+	[SerializeField]
 	private bool _useGlobal;
 
 	[SerializeField]

@@ -8,6 +8,8 @@ public class Composter : BaseOven
 	[Tooltip("If enabled, entire item stacks will be composted each tick, instead of a single item of a stack.")]
 	public bool CompostEntireStack;
 
+	protected override bool AutomaticallyStartCooking => true;
+
 	public override bool CanRunWithNoFuel
 	{
 		protected get
@@ -15,8 +17,6 @@ public class Composter : BaseOven
 			return true;
 		}
 	}
-
-	protected override bool AutomaticallyStartCooking => true;
 
 	public override bool ShowFuelInLootPanel => false;
 

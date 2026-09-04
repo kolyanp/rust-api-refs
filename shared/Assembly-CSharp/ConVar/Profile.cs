@@ -185,14 +185,14 @@ public class Profile : ConsoleSystem
 	{
 	}
 
-	[ServerVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
 	[ClientVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
+	[ServerVar(Help = "(Generated) Stops the active Unity Profiler binary log recording and finalises the file")]
 	public static void stop(Arg arg)
 	{
 	}
 
-	[ServerVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
 	[ClientVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
+	[ServerVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
 	public static void flush_analytics(Arg arg)
 	{
 	}

@@ -12,9 +12,9 @@ namespace GamePhysicsJobs;
 internal static class Util
 {
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate int FindFreeSlot_00008A39_0024PostfixBurstDelegate(int rayInd, in NativeArray<RaycastHit> hits, int maxHitsPerRay, out int endInd);
+	internal delegate int FindFreeSlot_00008A42_0024PostfixBurstDelegate(int rayInd, in NativeArray<RaycastHit> hits, int maxHitsPerRay, out int endInd);
 
-	internal static class FindFreeSlot_00008A39_0024BurstDirectCall
+	internal static class FindFreeSlot_00008A42_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -25,7 +25,7 @@ internal static class Util
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<FindFreeSlot_00008A39_0024PostfixBurstDelegate>((FindFreeSlot_00008A39_0024PostfixBurstDelegate)FindFreeSlot).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<FindFreeSlot_00008A42_0024PostfixBurstDelegate>((FindFreeSlot_00008A42_0024PostfixBurstDelegate)FindFreeSlot).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -52,9 +52,9 @@ internal static class Util
 	}
 
 	[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-	internal delegate int FindFreeSlot_00008A3A_0024PostfixBurstDelegate(int rayInd, in ReadOnly<RaycastHit> hits, int maxHitsPerRay, out int endInd);
+	internal delegate int FindFreeSlot_00008A43_0024PostfixBurstDelegate(int rayInd, in ReadOnly<RaycastHit> hits, int maxHitsPerRay, out int endInd);
 
-	internal static class FindFreeSlot_00008A3A_0024BurstDirectCall
+	internal static class FindFreeSlot_00008A43_0024BurstDirectCall
 	{
 		private static IntPtr Pointer;
 
@@ -65,7 +65,7 @@ internal static class Util
 			//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 			if (Pointer == (IntPtr)0)
 			{
-				Pointer = BurstCompiler.CompileFunctionPointer<FindFreeSlot_00008A3A_0024PostfixBurstDelegate>((FindFreeSlot_00008A3A_0024PostfixBurstDelegate)GamePhysicsJobs.Util.FindFreeSlot).Value;
+				Pointer = BurstCompiler.CompileFunctionPointer<FindFreeSlot_00008A43_0024PostfixBurstDelegate>((FindFreeSlot_00008A43_0024PostfixBurstDelegate)GamePhysicsJobs.Util.FindFreeSlot).Value;
 			}
 			P_0 = Pointer;
 		}
@@ -92,17 +92,17 @@ internal static class Util
 	}
 
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008A39_0024PostfixBurstDelegate))]
+	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008A42_0024PostfixBurstDelegate))]
 	public static int FindFreeSlot(int rayInd, in NativeArray<RaycastHit> hits, int maxHitsPerRay, out int endInd)
 	{
-		return FindFreeSlot_00008A39_0024BurstDirectCall.Invoke(rayInd, in hits, maxHitsPerRay, out endInd);
+		return FindFreeSlot_00008A42_0024BurstDirectCall.Invoke(rayInd, in hits, maxHitsPerRay, out endInd);
 	}
 
+	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008A43_0024PostfixBurstDelegate))]
 	[BurstCompile]
-	[MonoPInvokeCallback(typeof(GamePhysicsJobs_002EFindFreeSlot_00008A3A_0024PostfixBurstDelegate))]
 	public static int FindFreeSlot(int rayInd, in ReadOnly<RaycastHit> hits, int maxHitsPerRay, out int endInd)
 	{
-		return FindFreeSlot_00008A3A_0024BurstDirectCall.Invoke(rayInd, in hits, maxHitsPerRay, out endInd);
+		return FindFreeSlot_00008A43_0024BurstDirectCall.Invoke(rayInd, in hits, maxHitsPerRay, out endInd);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

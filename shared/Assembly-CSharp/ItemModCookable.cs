@@ -156,6 +156,12 @@ public class ItemModCookable : ItemMod
 	public override void OnItemCreated(Item itemcreated)
 	{
 		itemcreated.cookTimeLeft = cookTime;
-		itemcreated.onCycle += CycleCooking;
+		SubscribeCycleCooking(itemcreated);
+	}
+
+	public static void SubscribeCycleCooking(Item item)
+	{
+		item.onCycle -= CycleCooking;
+		item.onCycle += CycleCooking;
 	}
 }

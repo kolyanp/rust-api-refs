@@ -11,8 +11,8 @@ using UnityEngine.Assertions;
 
 public class ShutterFrame : PhotoFrame, IFlagNotify
 {
-	[Header("Shutter Frame")]
 	[Tooltip("Tiling for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]
+	[Header("Shutter Frame")]
 	public Vector2 shutterDefaultTiling;
 
 	[Tooltip("Offsets for the shutter material UVs, needs to be set because it will be overwritten during animation if not")]

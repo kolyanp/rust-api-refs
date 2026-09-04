@@ -14,8 +14,8 @@ public class Powergrid : ConsoleSystem
 	[Help("Required powergrid stage for green recyclers to return to baseline efficiency. If < 0 then will use the default values.")]
 	public static int greenRecyclerFullEfficiencyStage = -1;
 
-	[ServerVar]
 	[Help("Pretend there are this many additional heavy fuses currently plugged into the power plant. Can input negative numbers to negate the effect of any currently plugged in fuses.")]
+	[ServerVar]
 	public static int simulatePowerPlantFuses = 0;
 
 	[ServerVar(Help = "How long a heavy fuse plugged into the power plant lasts while it is decaying at the full rate (how long the worst fuses in the power plant survive for). If <= 0 then fuses last forever.", Saved = true)]

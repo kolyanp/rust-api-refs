@@ -897,8 +897,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SV_OpenMenu(RPCMessage msg)
 	{
 		if ((Object)(object)vendingMachine == (Object)null)

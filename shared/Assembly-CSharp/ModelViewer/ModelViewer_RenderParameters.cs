@@ -31,8 +31,8 @@ public class ModelViewer_RenderParameters
 	[Header("Anti Aliasing")]
 	public PostProcessLayer.Antialiasing antialiasing;
 
-	[Range(1f, 4f)]
 	[Header("Shadows")]
+	[Range(1f, 4f)]
 	public int shadowCascades;
 
 	[Range(1f, 3f)]
@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias;
 
-	[Header("                ")]
 	[Header("Contact Shadows")]
+	[Header("                ")]
 	public bool enableContactShadows;
 
 	[Range(0f, 1f)]
@@ -98,8 +98,8 @@ public class ModelViewer_RenderParameters
 	[Tooltip("Power exponent attenuation of the occlusion.")]
 	public float PowerExponent;
 
-	[Range(0f, 0.99f)]
 	[Tooltip("Controls the initial occlusion contribution offset.")]
+	[Range(0f, 0.99f)]
 	public float Bias;
 
 	[Tooltip("Controls the thickness occlusion contribution.")]
@@ -132,8 +132,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 16f)]
 	public float FadeToPowerExponent;
 
-	[Tooltip("Final Thickness parameter.")]
 	[Range(0f, 1f)]
+	[Tooltip("Final Thickness parameter.")]
 	public float FadeToThickness;
 
 	[Header("                ")]

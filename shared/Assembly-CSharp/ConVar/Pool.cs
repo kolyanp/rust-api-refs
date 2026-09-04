@@ -20,20 +20,20 @@ public class Pool : ConsoleSystem
 	[ClientVar(ClientAdmin = true)]
 	public static int mode = 2;
 
-	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
+	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static bool prewarm = true;
 
-	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
 	[ClientVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	public static bool debug = false;
 
-	[ServerVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
 	[ClientVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
+	[ServerVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
 	public static bool UseMutexPool
 	{
 		get
@@ -270,8 +270,8 @@ public class Pool : ConsoleSystem
 		Pool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ServerVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
 	[ClientVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
+	[ServerVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
 	public static void clear_prefabs(Arg arg)
 	{
 		string filter = arg.GetString(0, string.Empty);
@@ -285,8 +285,8 @@ public class Pool : ConsoleSystem
 		AssetPool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ServerVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
 	[ClientVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
+	[ServerVar(Help = "(Generated) Exports the current prefab pool contents to a prefabs.csv file listing pool ID, prefab short name, and instance count")]
 	public static void export_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;

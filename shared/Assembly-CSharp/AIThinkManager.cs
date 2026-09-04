@@ -26,8 +26,8 @@ public class AIThinkManager : BaseMonoBehaviour, IServerComponent
 	[ServerVar]
 	public static float framebudgetms = 2f;
 
-	[ServerVar]
 	[Help("How many miliseconds to budget for processing animal AI entities per server frame")]
+	[ServerVar]
 	public static float animalframebudgetms = 2f;
 
 	[ServerVar]

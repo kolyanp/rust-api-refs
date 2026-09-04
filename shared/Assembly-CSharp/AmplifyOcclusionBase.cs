@@ -13,8 +13,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity;
 
 	public Color Tint;
@@ -29,8 +29,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	public int PixelRadiusLimit;
 
 	[NonSerialized]
-	[Range(0f, 2f)]
 	[Tooltip("Occlusion contribution amount on relation to radius.")]
+	[Range(0f, 2f)]
 	public float RadiusIntensity;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -48,8 +48,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
 	public bool Downsample;
 
-	[Tooltip("Control parameters at faraway.")]
 	[Header("Distance Fade")]
+	[Tooltip("Control parameters at faraway.")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance in Unity unities that start to fade.")]
@@ -72,8 +72,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 16f)]
 	public float FadeToPowerExponent;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToThickness;
 
 	[Header("Bilateral Blur")]
@@ -91,16 +91,16 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 20f)]
 	public float BlurSharpness;
 
-	[Tooltip("Accumulates the effect over the time.")]
 	[Header("Temporal Filter")]
+	[Tooltip("Accumulates the effect over the time.")]
 	public bool FilterEnabled;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
+	[Range(0f, 1f)]
 	public float FilterBlending;
 
-	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
 	public float FilterResponse;
 
 	[NonSerialized]

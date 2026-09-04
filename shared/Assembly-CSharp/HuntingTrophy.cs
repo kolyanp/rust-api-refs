@@ -184,8 +184,8 @@ public class HuntingTrophy : StorageContainer
 		return base.ItemFilter(player, item, targetSlot);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void ServerRequestSubmit()
 	{
 		Item slot = base.inventory.GetSlot(0);
@@ -223,8 +223,8 @@ public class HuntingTrophy : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void ServerRequestClear(RPCMessage msg)
 	{
 		if (CurrentTrophyData != null)

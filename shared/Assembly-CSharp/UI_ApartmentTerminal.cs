@@ -11,8 +11,8 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObjectRef plotRowPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustText timeText;
 
 	[SerializeField]
@@ -21,9 +21,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private RustText occupiedText;
 
-	[SerializeField]
 	[Header("Opening")]
 	[Space]
+	[SerializeField]
 	private RectTransform crtScreen;
 
 	[SerializeField]
@@ -57,9 +57,9 @@ public class UI_ApartmentTerminal : UI_Window
 	[SerializeField]
 	private GameObject shopsPanel;
 
-	[Header("Shops")]
-	[Space]
 	[SerializeField]
+	[Space]
+	[Header("Shops")]
 	private RectTransform shopList;
 
 	[SerializeField]

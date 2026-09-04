@@ -35,8 +35,8 @@ public class ItemBlueprint : MonoBehaviour
 
 		public int amount = 1;
 
-		[Range(0f, 1f)]
 		[Tooltip("Chance (0-1) this surplus item is created when crafted at a workbench with the surplus upgrade.")]
+		[Range(0f, 1f)]
 		public float chance = 0.1f;
 	}
 
@@ -59,8 +59,8 @@ public class ItemBlueprint : MonoBehaviour
 	[Header("Workbench")]
 	public int workbenchLevelRequired;
 
-	[Header("Surplus")]
 	[Tooltip("Items that may be produced as surplus when crafted at a workbench with the surplus upgrade installed. Leave null/empty for no surplus.")]
+	[Header("Surplus")]
 	public List<SurplusEntry> surplusItems;
 
 	[Header("Scrap")]

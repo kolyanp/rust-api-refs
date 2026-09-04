@@ -12,8 +12,8 @@ public struct SilhouetteSweepJob : IJobParallelFor
 	[ReadOnly]
 	public NativeArray<float4> Segments;
 
-	[ReadOnly]
 	[NativeDisableParallelForRestriction]
+	[ReadOnly]
 	public NativeArray<float2> Bounds;
 
 	[ReadOnly]

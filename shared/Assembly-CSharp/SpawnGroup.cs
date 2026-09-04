@@ -302,13 +302,14 @@ public class SpawnGroup : BaseMonoBehaviour, IServerComponent, ISpawnPointUser, 
 				{
 					baseEntity.enableSaving = false;
 				}
-				PoolableEx.AwakeFromInstantiate(((Component)baseEntity).gameObject);
-				baseEntity.Spawn();
-				PostSpawnProcess(baseEntity, spawnPoint);
 				SpawnPointInstance spawnPointInstance = ((Component)baseEntity).gameObject.AddComponent<SpawnPointInstance>();
 				spawnPointInstance.parentSpawnPointUser = this;
 				spawnPointInstance.parentSpawnPoint = spawnPoint;
 				spawnPointInstance.Entity = baseEntity;
+				spawnPointInstance.blockSpawnHandlerRespawns = true;
+				PoolableEx.AwakeFromInstantiate(((Component)baseEntity).gameObject);
+				baseEntity.Spawn();
+				PostSpawnProcess(baseEntity, spawnPoint);
 				spawnPointInstance.Notify();
 			}
 		}

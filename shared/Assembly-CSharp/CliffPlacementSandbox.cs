@@ -59,8 +59,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private static readonly Color FootprintInactiveColor;
 
-	[Header("Level URL download")]
 	[Tooltip("Paste the whole thing a server's `levelurl` prints, then press Download below. The file is cached next to the project and MapFilePath is pointed at it, ready to Initialize.")]
+	[Header("Level URL download")]
 	public string LevelUrl;
 
 	[Tooltip("Where downloaded maps are cached. A relative path is taken from the project root, i.e. alongside Assets rather than inside it, so Unity never tries to import them.")]
@@ -86,12 +86,12 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus;
 
-	[Header("Terrain source")]
 	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
+	[Header("Terrain source")]
 	public TerrainSource Source;
 
-	[Header("Procedural (real Rust base heightmap)")]
 	[Tooltip("World seed fed to the real generator. Also supplies the seed for the pre-cliff T0 bake in Map File Region mode when the map came from a levelurl - uploaded maps have the seed stripped out of their name, so run `seed` on the server and paste the value here. A map taken from the server's own root folder carries it in the name and overwrites this field on load. 0 = auto.")]
+	[Header("Procedural (real Rust base heightmap)")]
 	public uint Seed;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -105,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle;
 
-	[Header("Terrain")]
 	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
+	[Header("Terrain")]
 	public int HeightmapResolution;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -149,8 +149,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Procedural-generation scene the one-click 'Bake pre-cliff T0' button drives to capture T0. Must be a full generator scene (engine bootstrap + generating World Setup), e.g. the shipped 'Procedural Map' scene. Only used by the editor bake button.")]
 	public string GenerationScenePath;
 
-	[Header("Placement")]
 	[Tooltip("The cliff prefab instance to place. Assign via the inspector dropdown or drag one in.")]
+	[Header("Placement")]
 	public Transform cliffRoot;
 
 	[Tooltip("Anchor solve mode. PlaceCliffs uses MaximizeHeight for the first cliff of a chain.")]

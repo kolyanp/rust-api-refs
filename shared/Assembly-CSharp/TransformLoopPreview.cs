@@ -21,23 +21,23 @@ public class TransformLoopPreview : MonoBehaviour
 	[SerializeField]
 	private float movementDistance = 10f;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float movementSpeed = 5f;
 
-	[SerializeField]
 	[Tooltip("Uses the object's rotated local axes instead of world axes.")]
+	[SerializeField]
 	private bool useLocalAxis = true;
 
 	[SerializeField]
 	private MovementAxis movementAxis = MovementAxis.PositiveZ;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 originPosition;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool originCaptured;
 
 	[HideInInspector]

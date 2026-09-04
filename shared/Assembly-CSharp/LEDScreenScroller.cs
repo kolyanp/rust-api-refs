@@ -55,7 +55,7 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 	[Tooltip("Optional explicit reference. Auto-found via GetComponentInParent<BoomBox>() if left unset.")]
 	public BoomBox SourceBoomBox;
 
-	[Header("Editor Debug")]
 	[Tooltip("Vertical size of the scene-view bounds gizmo only - purely visual, has no effect on clipping (which is horizontal-only).")]
+	[Header("Editor Debug")]
 	public float DebugGizmoHeight = 0.2f;
 }

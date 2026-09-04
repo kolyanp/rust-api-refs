@@ -41,12 +41,12 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private GameObject navButtonsGroup;
 
-	[SerializeField]
 	[Header("Drag")]
+	[SerializeField]
 	private float inertiaDecay;
 
-	[Header("Pan")]
 	[SerializeField]
+	[Header("Pan")]
 	private Vector2 panLimitX;
 
 	[SerializeField]

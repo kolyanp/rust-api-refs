@@ -23,9 +23,9 @@ public class TriggerRadiation : TriggerBase
 
 	public Vector3 falloffPerAxis;
 
-	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
-	[FormerlySerializedAs("UseColliderRadius")]
 	[Space]
+	[FormerlySerializedAs("UseColliderRadius")]
+	[Tooltip("Use sphere collider size instead of the transform scale. For sphere triggers only (doesn't make sense for boxes)")]
 	public bool DontScaleRadiationSize;
 
 	public bool UseLOSCheck;

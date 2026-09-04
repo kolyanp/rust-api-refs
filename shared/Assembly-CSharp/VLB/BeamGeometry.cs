@@ -4,9 +4,9 @@ using UnityEngine.Rendering;
 
 namespace VLB;
 
+[ExecuteInEditMode]
 [AddComponentMenu("")]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-lightbeam/")]
-[ExecuteInEditMode]
 public class BeamGeometry : MonoBehaviour
 {
 	private VolumetricLightBeam m_Master;

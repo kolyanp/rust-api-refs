@@ -6,8 +6,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_StoreCheckoutResultPage : UI_Window
 {
-	[Space]
 	[SerializeField]
+	[Space]
 	private FlexTransition crossFadeTransition;
 
 	[SerializeField]
@@ -29,8 +29,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	private RectTransform buttonsParent;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GraphicRaycaster footerGraphicRaycaster;
 
 	[SerializeField]
@@ -74,8 +74,8 @@ public class UI_StoreCheckoutResultPage : UI_Window
 	[SerializeField]
 	protected HttpImage iconImage;
 
-	[SerializeField]
 	[Header("Intro Sequence")]
+	[SerializeField]
 	private CanvasGroup fadeOverlay;
 
 	[SerializeField]

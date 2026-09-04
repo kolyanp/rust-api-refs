@@ -61,8 +61,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) When enabled, logs ping estimation results to the console; useful for debugging regional latency measurement accuracy")]
 	[ServerVar(Help = "(Generated) When enabled, logs ping estimation results to the console; useful for debugging regional latency measurement accuracy")]
+	[ClientVar(Help = "(Generated) When enabled, logs ping estimation results to the console; useful for debugging regional latency measurement accuracy")]
 	public static bool ping_estimate_logging
 	{
 		get

@@ -53,8 +53,8 @@ public class ModularCarAudio : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionLurchMinTimeBetweenSounds = 0.25f;
 
-	[SerializeField]
 	[Header("Wheels")]
+	[SerializeField]
 	private SoundDefinition tyreRollingSoundDef;
 
 	[SerializeField]

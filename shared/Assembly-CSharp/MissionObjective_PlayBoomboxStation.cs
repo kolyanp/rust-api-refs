@@ -11,14 +11,14 @@ public class MissionObjective_PlayBoomboxStation : MissionObjective
 	[BaseMission.PositionGenerator.PositionPoint]
 	public string requireProximityToPosition;
 
-	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
 	[Min(0f)]
+	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
 	public float minimumDistanceToMissionPoint;
 
 	public bool shouldHideCompassMarkerWhenClose;
 
-	[Min(0f)]
 	[Tooltip("If \"Should Hide Compass Marker When Close\" is enabled and player is within this distance of the mission point then hide the compass marker, else the compass marker is visible.")]
+	[Min(0f)]
 	public float hideCompassMarkerDistance = 50f;
 
 	private float sqrDistanceToMissionPoint;

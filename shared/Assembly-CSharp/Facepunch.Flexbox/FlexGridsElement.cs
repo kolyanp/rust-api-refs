@@ -6,9 +6,9 @@ using UnityEngine.Serialization;
 
 namespace Facepunch.Flexbox;
 
+[DisallowMultipleComponent]
 [ExecuteAlways]
 [RequireComponent(typeof(RectTransform))]
-[DisallowMultipleComponent]
 public class FlexGridsElement : FlexElementBase
 {
 	private struct GridSlot
@@ -31,13 +31,13 @@ public class FlexGridsElement : FlexElementBase
 	[Min(0f)]
 	public float Gap;
 
-	[Tooltip("The number of columns to use when using a fixed number of columns.")]
 	[Min(1f)]
+	[Tooltip("The number of columns to use when using a fixed number of columns.")]
 	public int ColumnCount = 1;
 
 	[FormerlySerializedAs("ColumnWidth")]
-	[Min(1f)]
 	[Tooltip("The minimum width of each column when not using a fixed number of columns.")]
+	[Min(1f)]
 	public int ColumnMinWidth = 100;
 
 	public bool FixedRowCount;

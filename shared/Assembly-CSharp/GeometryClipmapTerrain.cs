@@ -29,8 +29,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[Range(1f, 8f)]
 	public int minVertLOD;
 
-	[Range(1f, 10f)]
 	[SerializeField]
+	[Range(1f, 10f)]
 	protected int lodGlobalScale;
 
 	[SerializeField]
@@ -62,8 +62,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[Range(0f, 4f)]
 	protected int vertexDensity;
 
-	[SerializeField]
 	[Range(0f, 4f)]
+	[SerializeField]
 	protected int vertexDensityReduction;
 
 	public bool debugCullingOn;

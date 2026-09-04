@@ -387,8 +387,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		BuyItem(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_RequestLongTermData(RPCMessage msg)
 	{
 		SV_RequestLongTermData(msg);
@@ -401,15 +401,15 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		SV_RequestPurchaseData(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_DeleteSellOrderDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteSellOrder(msg);
 	}
 
-	[RPC_Server.MaxDistance(9f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(9f)]
 	private void RPC_DeleteAllSellOrdersDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteAllSellOrders(msg);

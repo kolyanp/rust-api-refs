@@ -558,7 +558,7 @@ public static class EACServer
 		int size;
 		if (client == IntPtr.Zero)
 		{
-			Debug.LogError((object)("EAC network packet from invalid connection: " + message.connection.userid));
+			Debug.LogWarning((object)("EAC network packet from invalid connection: " + message.connection.userid));
 		}
 		else if (message.read.TemporaryBytesWithSize(out buffer, out size))
 		{

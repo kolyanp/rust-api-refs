@@ -1078,9 +1078,9 @@ public class BallistaGun : BaseVehicleSeat
 	}
 
 	[RPC_Server]
-	[RPC_Server.FromMounted]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.FromMounted]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1345,9 +1345,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1374,9 +1374,9 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
+	[RPC_Server]
 	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

@@ -115,8 +115,8 @@ public class ApartmentDoor : Door
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void BreakIn(RPCMessage rpc)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)

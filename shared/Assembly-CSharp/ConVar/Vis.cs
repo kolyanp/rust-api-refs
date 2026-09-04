@@ -3,17 +3,17 @@ namespace ConVar;
 [Factory("vis")]
 public class Vis : ConsoleSystem
 {
-	[ClientVar]
 	[Help("Turns on debug display of lerp")]
+	[ClientVar]
 	public static bool lerp;
 
-	[ServerVar]
 	[Help("Turns on debug display of damages")]
+	[ServerVar]
 	public static bool damage;
 
-	[Help("Turns on debug display of attacks")]
 	[ClientVar]
 	[ServerVar]
+	[Help("Turns on debug display of attacks")]
 	public static bool attack;
 
 	[ServerVar]
@@ -29,8 +29,8 @@ public class Vis : ConsoleSystem
 	[Help("Show trigger entries")]
 	public static bool triggers;
 
-	[Help("Turns on debug display of hitboxes")]
 	[ServerVar]
+	[Help("Turns on debug display of hitboxes")]
 	public static bool hitboxes;
 
 	[ServerVar]

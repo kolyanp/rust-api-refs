@@ -5,8 +5,8 @@ public class MeleeWeaponAnimationSubSystem : ChildAnimatorSubSystem
 	[SerializeField]
 	private AvatarMask TwoHandMask;
 
-	[Tooltip("Fade out both layers by this curve based on the PlayerVelocityCap")]
 	[SerializeField]
+	[Tooltip("Fade out both layers by this curve based on the PlayerVelocityCap")]
 	private AnimationCurve PlayerVelocityMultiplier = AnimationCurve.Linear(0f, 1f, 1f, 0.8f);
 
 	[SerializeField]

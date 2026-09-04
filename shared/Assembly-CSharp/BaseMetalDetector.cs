@@ -276,10 +276,10 @@ public class BaseMetalDetector : HeldEntity
 		inRangeValidSources.Clear();
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void RPC_RequestFlag(RPCMessage rpc)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -300,8 +300,8 @@ public class BaseMetalDetector : HeldEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(6uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(6uL)]
 	[RPC_Server.FromOwner]
 	public void SV_SetSweetspotScanning(RPCMessage msg)
 	{

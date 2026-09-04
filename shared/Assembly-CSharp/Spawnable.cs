@@ -44,8 +44,8 @@ public class Spawnable : MonoBehaviour, IServerComponent
 		//IL_000c: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_001d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0082: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0088: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0095: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		SpawnPosition = ((Component)this).transform.position;
 		SpawnRotation = ((Component)this).transform.rotation;
 		if (!Object.op_Implicit((Object)(object)SingletonComponent<SpawnHandler>.Instance))
@@ -59,7 +59,8 @@ public class Spawnable : MonoBehaviour, IServerComponent
 		else if (Application.isLoading && !Application.isLoadingSave)
 		{
 			BaseEntity component = ((Component)this).GetComponent<BaseEntity>();
-			if ((Object)(object)component != (Object)null && component.enableSaving && !component.syncPosition)
+			SpawnPointInstance spawnPointInstance = default(SpawnPointInstance);
+			if ((Object)(object)component != (Object)null && component.enableSaving && !component.syncPosition && (!((Component)this).TryGetComponent<SpawnPointInstance>(ref spawnPointInstance) || !spawnPointInstance.blockSpawnHandlerRespawns))
 			{
 				SingletonComponent<SpawnHandler>.Instance.AddRespawn(new SpawnIndividual(component.prefabID, SpawnPosition, SpawnRotation));
 			}

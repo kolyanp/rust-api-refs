@@ -3733,8 +3733,8 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		return axis;
 	}
 
-	[RPC_Server.FromOwnerOrMounted]
 	[RPC_Server]
+	[RPC_Server.FromOwnerOrMounted]
 	private void BroadcastSignalFromClient(RPCMessage msg)
 	{
 		uint num = StringPool.Get("BroadcastSignalFromClient");

@@ -76,7 +76,7 @@ public class RuntimePath : IAIPath
 		}
 		if (iAIPathInterestNode == null)
 		{
-			Debug.LogError((object)"Returning default interest zone");
+			Debug.LogWarning((object)"Returning default interest zone");
 			iAIPathInterestNode = interestNodes[0];
 		}
 		return iAIPathInterestNode;

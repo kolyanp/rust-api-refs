@@ -4,6 +4,8 @@ public class Stove : BaseOven
 
 	public override bool ShowFuelInLootPanel => false;
 
+	protected override bool AutomaticallyStartCooking => true;
+
 	public override bool CanRunWithNoFuel
 	{
 		protected get
@@ -11,6 +13,4 @@ public class Stove : BaseOven
 			return true;
 		}
 	}
-
-	protected override bool AutomaticallyStartCooking => true;
 }

@@ -139,8 +139,8 @@ public static class EnvironmentVolumeMath
 		CalculateTransformationBoundsBurst_00006020_0024BurstDirectCall.Invoke(in transformationMatrix, in capsule, out bounds);
 	}
 
-	[MonoPInvokeCallback(typeof(MultiplyPoint3X4_00006021_0024PostfixBurstDelegate))]
 	[BurstCompile]
+	[MonoPInvokeCallback(typeof(MultiplyPoint3X4_00006021_0024PostfixBurstDelegate))]
 	private static void MultiplyPoint3X4(in float4x4 transformationMatrix, in float3 point, out float3 result)
 	{
 		MultiplyPoint3X4_00006021_0024BurstDirectCall.Invoke(in transformationMatrix, in point, out result);

@@ -14,8 +14,8 @@ public abstract class BaseSpawnPoint : MonoBehaviour, IServerComponent
 	public SpawnPointType spawnPointType;
 
 	[SerializeField]
-	[Range(1f, 25f)]
 	[Tooltip("Min distance between the spawn area and any human players")]
+	[Range(1f, 25f)]
 	protected float playerCheckMargin = 2f;
 
 	public static Dictionary<SpawnPointType, List<BaseSpawnPoint>> spawnPoints = new Dictionary<SpawnPointType, List<BaseSpawnPoint>>();

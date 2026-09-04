@@ -13,7 +13,7 @@ public class ItemModCompostable : ItemMod
 		if (TotalFertilizerProduced > 0f)
 		{
 			itemcreated.cookTimeLeft = Server.composterUpdateInterval;
-			itemcreated.onCycle += ItemModCookable.CycleCooking;
+			ItemModCookable.SubscribeCycleCooking(itemcreated);
 		}
 	}
 }

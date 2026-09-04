@@ -6,8 +6,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ConnectModal : UI_Window
 {
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private RustText _title;
 
 	[SerializeField]
@@ -103,8 +103,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private RustText _wipedText;
 
-	[SerializeField]
 	[Header("Nexus")]
+	[SerializeField]
 	private GameObject _zoneCountObject;
 
 	[SerializeField]

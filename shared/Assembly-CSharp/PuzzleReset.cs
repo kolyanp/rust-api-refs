@@ -4,6 +4,7 @@ using ConVar;
 using Facepunch;
 using Facepunch.Extend;
 using Facepunch.Rust;
+using Network;
 using ProtoBuf;
 using Rust;
 using UnityEngine;
@@ -100,8 +101,12 @@ public class PuzzleReset : FacepunchBehaviour
 	{
 		//IL_0045: Unknown result type (might be due to invalid IL or missing references)
 		//IL_004a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01b8: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02e4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0251: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0268: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01c6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
 		info.msg.puzzleReset = Pool.Get<PuzzleReset>();
 		info.msg.puzzleReset.playerBlocksReset = playersBlockReset;
 		if ((Object)(object)playerDetectionOrigin != (Object)null)
@@ -130,9 +135,24 @@ public class PuzzleReset : FacepunchBehaviour
 			}
 			foreach (SpawnPointInstance spawnInstance in spawnGroup.SpawnInstances)
 			{
-				if ((Object)(object)spawnInstance != (Object)null && spawnInstance.Entity.IsValid())
+				if ((Object)(object)spawnInstance != (Object)null && spawnInstance.Entity.IsValid() && spawnInstance.Entity.enableSaving)
 				{
 					info.msg.puzzleReset.danglingSpawnedInstances.Add(spawnInstance.Entity.net.ID);
+				}
+			}
+		}
+		if (danglingSpawnedInstances != null && danglingSpawnedInstances.Count > 0)
+		{
+			PuzzleReset puzzleReset = info.msg.puzzleReset;
+			if (puzzleReset.danglingSpawnedInstances == null)
+			{
+				puzzleReset.danglingSpawnedInstances = Pool.Get<List<NetworkableId>>();
+			}
+			foreach (NetworkableId danglingSpawnedInstance in danglingSpawnedInstances)
+			{
+				if (!info.msg.puzzleReset.danglingSpawnedInstances.Contains(danglingSpawnedInstance))
+				{
+					info.msg.puzzleReset.danglingSpawnedInstances.Add(danglingSpawnedInstance);
 				}
 			}
 		}
@@ -149,8 +169,11 @@ public class PuzzleReset : FacepunchBehaviour
 	public void Load(BaseNetworkable.LoadInfo info)
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
-		//IL_018d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0192: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0137: Unknown result type (might be due to invalid IL or missing references)
+		//IL_013c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0142: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01cc: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01d1: Unknown result type (might be due to invalid IL or missing references)
 		playersBlockReset = info.msg.puzzleReset.playerBlocksReset;
 		if ((Object)(object)playerDetectionOrigin != (Object)null)
 		{
@@ -173,6 +196,10 @@ public class PuzzleReset : FacepunchBehaviour
 		if (info.msg.puzzleReset.danglingSpawnedInstances != null)
 		{
 			danglingSpawnedInstances = List.ShallowClonePooled<NetworkableId>(info.msg.puzzleReset.danglingSpawnedInstances);
+			foreach (NetworkableId danglingSpawnedInstance in danglingSpawnedInstances)
+			{
+				Net.sv.RegisterUID(danglingSpawnedInstance.Value);
+			}
 		}
 		if (info.msg.puzzleReset.resetPositions != null && info.msg.puzzleReset.resetPositions.Count > 0)
 		{

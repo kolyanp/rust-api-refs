@@ -22,8 +22,8 @@ public class UI_ServerAdminUGCEntryStub : MonoBehaviour
 	[SerializeField]
 	private UI_ServerAdminUGCEntrySculpture sculptureWidget;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RustButton editHistoryButton;
 
 	[SerializeField]

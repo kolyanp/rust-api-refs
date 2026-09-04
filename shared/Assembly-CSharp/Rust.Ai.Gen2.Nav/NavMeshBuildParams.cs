@@ -14,12 +14,12 @@ public struct NavMeshBuildParams(bool dummy = true)
 		Layers
 	}
 
-	[Tooltip("The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	[Min(0f)]
+	[Tooltip("The xz-plane cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	public float cellSize = agentRadius / 3f;
 
-	[Tooltip("The y-axis cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	[Min(0f)]
+	[Tooltip("The y-axis cell size to use for fields. [Limit: > 0] [Units: wu]")]
 	public float cellHeight = cellSize;
 
 	[Min(0f)]

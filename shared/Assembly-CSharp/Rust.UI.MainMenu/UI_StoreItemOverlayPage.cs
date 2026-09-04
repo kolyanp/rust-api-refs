@@ -201,14 +201,14 @@ public class UI_StoreItemOverlayPage : UI_Window
 	[SerializeField]
 	private float autoCycleInterval = 10f;
 
-	[SerializeField]
 	[Header("Skin Viewer")]
+	[SerializeField]
 	private UI_SkinViewerControls skinViewerControls;
 
 	[SerializeField]
 	private CoverImage skinViewerImage;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private PageContent pageContent;
 }

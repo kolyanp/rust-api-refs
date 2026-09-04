@@ -88,8 +88,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	private StoreSource source;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_StoreItemTile skinItemTilePrefab;
 
 	[SerializeField]

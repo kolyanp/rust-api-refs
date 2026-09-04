@@ -25,8 +25,8 @@ public class Unsafe : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
 	[ServerVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
+	[ClientVar(Help = "Controls DebugMTLock checks, which help track down thread races. Has minor perf impact, so prefer to keep disabled")]
 	public static bool EnableDebugMTLock
 	{
 		get
@@ -39,8 +39,8 @@ public class Unsafe : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "How many frames of a stack to emit", Default = "5")]
 	[ServerVar(Help = "How many frames of a stack to emit", Default = "5")]
+	[ClientVar(Help = "How many frames of a stack to emit", Default = "5")]
 	public static int DebugMTLockMaxFrames
 	{
 		get

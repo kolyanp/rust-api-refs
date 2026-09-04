@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-[SoftRequireComponent(typeof(BlackboardComponent), typeof(NPCEncounterTimer))]
 [SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
+[SoftRequireComponent(typeof(BlackboardComponent), typeof(NPCEncounterTimer))]
 public class FSMComponent : EntityComponent<BaseEntity>
 {
 	public class TickFSMWorkQueue : PersistentObjectWorkQueue<FSMComponent>

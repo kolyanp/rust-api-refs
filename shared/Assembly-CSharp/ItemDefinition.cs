@@ -148,8 +148,8 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 	[Tooltip("If true, this item will support item ownership even if it's stacksize is >1")]
 	public bool supportsStackableOwnership;
 
-	[Tooltip("How rare this item is and how much it costs to research")]
 	[Header("Spawn Tables")]
+	[Tooltip("How rare this item is and how much it costs to research")]
 	public Rarity rarity;
 
 	public Rarity despawnRarity;
@@ -447,10 +447,9 @@ public class ItemDefinition : MonoBehaviour, IEqualityComparer<ItemDefinition>
 		{
 			return _worldModelMass;
 		}
-		GameObject val = worldModelPrefab?.Get();
-		if ((Object)(object)val != (Object)null)
+		if (worldModelPrefab.isValid)
 		{
-			WorldModel component = val.GetComponent<WorldModel>();
+			WorldModel component = worldModelPrefab.Get().GetComponent<WorldModel>();
 			if ((Object)(object)component != (Object)null && component.mass != 0f)
 			{
 				_worldModelMass = component.mass;

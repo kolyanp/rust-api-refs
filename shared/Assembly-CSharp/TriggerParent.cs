@@ -307,8 +307,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[NonSerialized]
 	public int StableIndex = -1;
 
-	[Header("General")]
 	[SerializeField]
+	[Header("General")]
 	[Tooltip("Deparent if the parented entity clips into an obstacle")]
 	protected bool doClippingCheck;
 
@@ -337,8 +337,8 @@ public class TriggerParent : TriggerBase, IServerComponent
 	[Tooltip("Requires associatedMountable to be set. Prevents players entering the trigger if there's something between their feet and the bottom of the parent trigger")]
 	public bool checkForObjUnderFeet;
 
-	[SerializeField]
 	[Header("You probably don't need it")]
+	[SerializeField]
 	private bool doExpensivePlayerClippingChecks;
 
 	[Tooltip("TickMode 1 only - Allow trigger to sleep if it hasn't moved on selected axis. Set to None if it should never ignore")]

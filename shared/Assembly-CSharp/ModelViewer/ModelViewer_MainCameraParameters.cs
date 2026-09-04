@@ -68,13 +68,13 @@ public class ModelViewer_MainCameraParameters
 	public bool debugMode;
 
 	[Range(0f, 360f)]
-	[Header("                ")]
 	[Header("Motion Blur")]
+	[Header("                ")]
 	public float shutterAngle;
 
+	[Range(-100f, 100f)]
 	[Header("Distortion")]
 	[Header("                ")]
-	[Range(-100f, 100f)]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]
@@ -98,12 +98,12 @@ public class ModelViewer_MainCameraParameters
 
 	public float limit;
 
-	[Header("God Rays")]
 	[Header("                ")]
+	[Header("God Rays")]
 	public bool GodRays;
 
-	[Header("Bloom")]
 	[Header("                ")]
+	[Header("Bloom")]
 	public float Brightness;
 
 	public float Threshold;
@@ -121,14 +121,14 @@ public class ModelViewer_MainCameraParameters
 
 	public Color Color;
 
-	[Header("Vignette")]
 	[Header("                ")]
+	[Header("Vignette")]
 	public float Darkness;
 
 	public float Sharpness;
 
-	[Header("                ")]
 	[Header("Grain")]
+	[Header("                ")]
 	public bool Coloured;
 
 	[Range(0f, 1f)]

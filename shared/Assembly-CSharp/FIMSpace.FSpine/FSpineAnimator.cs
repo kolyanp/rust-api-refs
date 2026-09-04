@@ -8,8 +8,8 @@ using UnityEngine.EventSystems;
 
 namespace FIMSpace.FSpine;
 
-[DefaultExecutionOrder(-11)]
 [AddComponentMenu("FImpossible Creations/Spine Animator 2")]
+[DefaultExecutionOrder(-11)]
 public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IFHierarchyIcon, IClientComponent
 {
 	public enum EFSpineEditorCategory
@@ -722,8 +722,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool forceRefreshCollidersData;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	public float SpineAnimatorAmount;
 
 	private Quaternion Rotate180;
@@ -850,16 +850,16 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Generating offset runtime only, allows you to adjust it on prefabs on scene")]
 	public bool PivotOffsetOnStart;
 
-	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
+	[Range(0f, 1f)]
 	public float PosSmoother;
 
 	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	public float RotSmoother;
 
-	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	[Range(0f, 1f)]
+	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	public float MaxStretching;
 
 	[Range(0f, 1f)]
@@ -874,8 +874,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float LimitSmoother;
 
-	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
 	[Range(0f, 15f)]
+	[Tooltip("How fast spine should be rotated to straight pose when your character moves.")]
 	public float StraightenSpeed;
 
 	public bool TurboStraighten;
@@ -888,8 +888,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float Springiness;
 
-	[Range(0f, 1f)]
 	[Tooltip("How much effect on spine chain should have character movement.")]
+	[Range(0f, 1f)]
 	public float MotionInfluence;
 
 	[Tooltip("Useful when your creature jumps on moving platform, so when platform moves spine is not reacting, by default world space is used (null).")]
@@ -937,8 +937,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If you want to continue checking collision if segment collides with one collider (very useful for example when you using gravity power with ground)")]
 	public bool DetailedCollision;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private bool _CheckedPivot;
 
 	private bool updateSpineAnimator;

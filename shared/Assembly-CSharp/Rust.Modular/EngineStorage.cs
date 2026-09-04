@@ -36,8 +36,8 @@ public class EngineStorage : StorageContainer
 	[SerializeField]
 	public int topSpeedBoostSlots;
 
-	[ReadOnly]
 	[SerializeField]
+	[ReadOnly]
 	public int fuelEconomyBoostSlots;
 
 	public bool isUsable { get; set; }

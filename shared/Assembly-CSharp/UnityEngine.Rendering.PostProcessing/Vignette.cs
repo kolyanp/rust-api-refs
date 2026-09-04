@@ -19,12 +19,12 @@ public sealed class Vignette : PostProcessEffectSettings
 	[Range(0f, 1f)]
 	public FloatParameter intensity;
 
-	[Tooltip("Smoothness of the vignette borders.")]
 	[Range(0.01f, 1f)]
+	[Tooltip("Smoothness of the vignette borders.")]
 	public FloatParameter smoothness;
 
-	[Tooltip("Lower values will make a square-ish vignette.")]
 	[Range(0f, 1f)]
+	[Tooltip("Lower values will make a square-ish vignette.")]
 	public FloatParameter roundness;
 
 	[Tooltip("Set to true to mark the vignette to be perfectly round. False will make its shape dependent on the current aspect ratio.")]

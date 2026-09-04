@@ -34,8 +34,8 @@ public class TrainCarUnloadable : TrainCar
 	[SerializeField]
 	private Transform orePlaneColliderWorld;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	public float vacuumStretchPercent;
 
 	[SerializeField]
@@ -405,8 +405,8 @@ public class TrainCarUnloadable : TrainCar
 		return num;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Open(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

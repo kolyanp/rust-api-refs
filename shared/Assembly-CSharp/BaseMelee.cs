@@ -323,10 +323,10 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromOwner]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)
@@ -637,8 +637,8 @@ public class BaseMelee : AttackEntity
 		return true;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	public void PlayerAttack(RPCMessage msg)
 	{
 		//IL_023c: Unknown result type (might be due to invalid IL or missing references)

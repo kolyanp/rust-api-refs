@@ -9,27 +9,38 @@ public class SpawnPointInstance : MonoBehaviour
 
 	public BaseSpawnPoint parentSpawnPoint;
 
+	private bool notified;
+
+	public bool blockSpawnHandlerRespawns { get; set; }
+
 	public void Notify()
 	{
-		if (!ObjectEx.IsUnityNull(parentSpawnPointUser))
+		if (!notified)
 		{
-			parentSpawnPointUser.ObjectSpawned(this);
-		}
-		if (Object.op_Implicit((Object)(object)parentSpawnPoint))
-		{
-			parentSpawnPoint.ObjectSpawned(this);
+			if (!ObjectEx.IsUnityNull(parentSpawnPointUser))
+			{
+				parentSpawnPointUser.ObjectSpawned(this);
+			}
+			if (Object.op_Implicit((Object)(object)parentSpawnPoint))
+			{
+				parentSpawnPoint.ObjectSpawned(this);
+			}
+			notified = true;
 		}
 	}
 
 	public void Retire()
 	{
-		if (!ObjectEx.IsUnityNull(parentSpawnPointUser))
+		if (notified)
 		{
-			parentSpawnPointUser.ObjectRetired(this);
-		}
-		if (Object.op_Implicit((Object)(object)parentSpawnPoint))
-		{
-			parentSpawnPoint.ObjectRetired(this);
+			if (!ObjectEx.IsUnityNull(parentSpawnPointUser))
+			{
+				parentSpawnPointUser.ObjectRetired(this);
+			}
+			if (Object.op_Implicit((Object)(object)parentSpawnPoint))
+			{
+				parentSpawnPoint.ObjectRetired(this);
+			}
 		}
 	}
 

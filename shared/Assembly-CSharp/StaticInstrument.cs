@@ -106,6 +106,7 @@ public class StaticInstrument : BaseMountable
 	}
 
 	[RPC_Server.FromMounted]
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(int),
@@ -113,7 +114,6 @@ public class StaticInstrument : BaseMountable
 		typeof(int),
 		typeof(float)
 	})]
-	[RPC_Server]
 	private void Server_PlayNote(RPCMessage msg)
 	{
 		int arg = msg.read.Int32();

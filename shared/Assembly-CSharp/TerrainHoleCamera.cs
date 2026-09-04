@@ -1,8 +1,8 @@
 using UnityEngine;
 
 [ExecuteAlways]
-[RequireComponent(typeof(Camera))]
 [RequireComponent(typeof(CommandBufferManager))]
+[RequireComponent(typeof(Camera))]
 public class TerrainHoleCamera : MonoBehaviour, IClientComponent
 {
 }
