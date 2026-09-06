@@ -10,15 +10,15 @@ public class Build
 
 		public static readonly string Comment = "Merge branch 'main' into production";
 
-		public static readonly string Date = "2026-09-03 17:47:00 +0200";
+		public static readonly string Date = "2026-09-06 15:39:42 +0200";
 
 		public static readonly string Tag = "production_build";
 
-		public static readonly string HashShort = "613397b";
+		public static readonly string HashShort = "21063e8";
 
-		public static readonly string HashLong = "613397b21a937f295723ea5988f4e7d069ef7454";
+		public static readonly string HashLong = "21063e8490adf412101bcc7d1cfe9d6280f61e80";
 
-		public static readonly string Url = "https://github.com/CarbonCommunity/Carbon/commit/613397b21a937f295723ea5988f4e7d069ef7454";
+		public static readonly string Url = "https://github.com/CarbonCommunity/Carbon/commit/21063e8490adf412101bcc7d1cfe9d6280f61e80";
 	}
 
 	public static bool IsDebug => false;

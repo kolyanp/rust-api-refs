@@ -178,13 +178,15 @@ public class Category_Static
 			{
 				//IL_002a: Unknown result type (might be due to invalid IL or missing references)
 				//IL_002f: Unknown result type (might be due to invalid IL or missing references)
-				//IL_012c: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0136: Unknown result type (might be due to invalid IL or missing references)
-				//IL_013d: Expected O, but got Unknown
-				//IL_0167: Unknown result type (might be due to invalid IL or missing references)
-				//IL_0219: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01d3: Unknown result type (might be due to invalid IL or missing references)
-				//IL_01d8: Unknown result type (might be due to invalid IL or missing references)
+				//IL_023b: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0153: Unknown result type (might be due to invalid IL or missing references)
+				//IL_015d: Unknown result type (might be due to invalid IL or missing references)
+				//IL_0164: Expected O, but got Unknown
+				//IL_018e: Unknown result type (might be due to invalid IL or missing references)
+				//IL_00f8: Unknown result type (might be due to invalid IL or missing references)
+				//IL_00fd: Unknown result type (might be due to invalid IL or missing references)
+				//IL_01f5: Unknown result type (might be due to invalid IL or missing references)
+				//IL_01fa: Unknown result type (might be due to invalid IL or missing references)
 				if (Community.Runtime == null || Enumerable.Contains(Filters, strCommand))
 				{
 					return true;
@@ -202,9 +204,11 @@ public class Category_Static
 					{
 						return true;
 					}
-					MonoBehaviour obj = ((Option)(ref options)).Connection?.player;
+					Connection connection = ((Option)(ref options)).Connection;
+					MonoBehaviour obj = connection?.player;
 					BasePlayer val = (BasePlayer)(object)((obj is BasePlayer) ? obj : null);
-					List<Command> list = (((Object)(object)val == (Object)null) ? Community.Runtime.CommandManager.RCon : Community.Runtime.CommandManager.ClientConsole);
+					bool flag = connection == null;
+					List<Command> list = (flag ? Community.Runtime.CommandManager.RCon : Community.Runtime.CommandManager.ClientConsole);
 					if (Community.Runtime.Config.Aliases.TryGetValue(text, out var value))
 					{
 						text = value;
@@ -213,6 +217,11 @@ public class Category_Static
 					Command val2 = default(Command);
 					if (Community.Runtime.CommandManager.Contains((IList<Command>)list, text, ref val2))
 					{
+						if (!flag && (Object)(object)val == (Object)null)
+						{
+							__result = new CommandResult((CommandResultType)3, (string)null, (Command)null);
+							return false;
+						}
 						string text2 = " ";
 						if (args != null && args.Length != 0)
 						{
@@ -233,7 +242,7 @@ public class Category_Static
 						((Args)val4).Type = val2.Type;
 						((Args)val4).Arguments = array;
 						val4.Player = val;
-						((Args)val4).IsServer = (Object)(object)val == (Object)null;
+						((Args)val4).IsServer = flag;
 						((Args)val4).PrintOutput = ((Option)(ref options)).PrintOutput || (Object)(object)val != (Object)null;
 						Command.FromRcon = false;
 						Community.Runtime.CommandManager.Execute(val2, (Args)(object)val4);

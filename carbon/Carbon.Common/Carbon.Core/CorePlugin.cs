@@ -4146,6 +4146,8 @@ public class CorePlugin : CarbonPlugin
 				playerArgs.Type = outCommand.Type;
 				playerArgs.Arguments = args;
 				playerArgs.Player = player;
+				playerArgs.IsServer = false;
+				playerArgs.IsRCon = false;
 				playerArgs.PrintOutput = true;
 				Community.Runtime.CommandManager.Execute(outCommand, playerArgs);
 				Pool.Free<PlayerArgs>(ref playerArgs);
@@ -4153,12 +4155,12 @@ public class CorePlugin : CarbonPlugin
 			}
 			if (player.Connection.authLevel < prefix.SuggestionAuthLevel)
 			{
-				goto IL_0289;
+				goto IL_0299;
 			}
 			IEnumerable<Suggestions.SuggestionResult> source = Suggestions.Lookup(command, Community.Runtime.CommandManager.Chat.Select((API.Commands.Command x) => x.Name), 3, 5);
 			if (!source.Any())
 			{
-				goto IL_0289;
+				goto IL_0299;
 			}
 			CorePlugin core = Community.Runtime.Core;
 			string message2 = core.lang.GetMessage("unknown_chat_cmd_2", core, player.UserIDString);
@@ -4172,7 +4174,7 @@ public class CorePlugin : CarbonPlugin
 				text
 			});
 			goto end_IL_001b;
-			IL_0289:
+			IL_0299:
 			CorePlugin core2 = Community.Runtime.Core;
 			string message5 = core2.lang.GetMessage("unknown_chat_cmd_1", core2, player.UserIDString);
 			string text2 = string.Format(message5, message);

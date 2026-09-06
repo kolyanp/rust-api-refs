@@ -4,6 +4,7 @@ using API.Commands;
 using API.Hooks;
 using Carbon.Core;
 using ConVar;
+using UnityEngine;
 
 namespace Carbon.Hooks;
 
@@ -26,7 +27,7 @@ public class Category_Player
 			public static bool IsValidCommand(string input, BasePlayer player, out Prefix prefix)
 			{
 				prefix = null;
-				if (string.IsNullOrEmpty(input))
+				if ((Object)(object)player == (Object)null || string.IsNullOrEmpty(input))
 				{
 					return false;
 				}

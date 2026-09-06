@@ -29,6 +29,10 @@ public class Command : Library
 			{
 				object player = playerArgs.Player;
 				BasePlayer val = (BasePlayer)((player is BasePlayer) ? player : null);
+				if ((Object)(object)val == (Object)null && !args.IsServer && !args.IsRCon)
+				{
+					return false;
+				}
 				AuthenticatedCommand authenticatedCommand = cmd as AuthenticatedCommand;
 				if ((Object)(object)val != (Object)null && authenticatedCommand != null)
 				{
