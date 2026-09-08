@@ -146,8 +146,8 @@ public class RFBroadcaster : IOEntity, IRFObject
 		return true;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	public void ServerSetFrequency(RPCMessage msg)
 	{
@@ -223,10 +223,10 @@ public class RFBroadcaster : IOEntity, IRFObject
 		base.DoServerDestroy();
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	public void SERVER_RequestOpenPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

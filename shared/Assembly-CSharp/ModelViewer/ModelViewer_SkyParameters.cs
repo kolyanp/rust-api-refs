@@ -25,8 +25,8 @@ public class ModelViewer_SkyParameters
 	[Tooltip("Current year.")]
 	public int Year = 2000;
 
-	[Range(-90f, 90f)]
 	[Tooltip("Latitude of the current location in degrees.")]
+	[Range(-90f, 90f)]
 	public float Latitude = -10f;
 
 	[Tooltip("Longitude of the current location in degrees.")]
@@ -37,8 +37,8 @@ public class ModelViewer_SkyParameters
 	[Range(-14f, 14f)]
 	public float UTC;
 
-	[Header("                ")]
 	[Header("Atmosphere")]
+	[Header("                ")]
 	public float skyContrast = 1.2f;
 
 	public float skyFogginess = 0.2f;

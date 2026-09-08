@@ -401,8 +401,8 @@ public class RentableShopVendingMachine : InvisibleVendingMachine, IPowergridEnt
 		SV_RequestPurchaseData(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(9f)]
+	[RPC_Server]
 	private void RPC_DeleteSellOrderDistanceCheckOnly(RPCMessage msg)
 	{
 		RPC_DeleteSellOrder(msg);

@@ -65,8 +65,8 @@ public class CarSettings
 	[Range(0.01f, 1f)]
 	public float handbrakeGripMultiplier = 0.55f;
 
-	[Range(0.01f, 1f)]
 	[Header("Drift")]
+	[Range(0.01f, 1f)]
 	public float rearTraction = 0.7f;
 
 	[Range(0.01f, 1f)]

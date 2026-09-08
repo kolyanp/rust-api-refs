@@ -280,8 +280,8 @@ public class MortarEntityOld : StorageContainer
 		flagsUpdateScope.Set(IsIncreasingAngleFlag, !HasFlag(IsIncreasingAngleFlag));
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void AdjustAngle(RPCMessage rpc)
 	{
 		bool flag = rpc.read.Bool();
@@ -290,8 +290,8 @@ public class MortarEntityOld : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetAdjustmentMode(RPCMessage rpc)
 	{
 		bool b = rpc.read.Bool();

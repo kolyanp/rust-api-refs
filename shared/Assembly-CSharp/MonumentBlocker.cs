@@ -72,9 +72,10 @@ public class MonumentBlocker : StagedResourceEntity, LookatHealth.IHealthBarDisp
 
 	public override void ServerInit()
 	{
-		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		base.ServerInit();
+		UpdateStage();
 		RebuildNavigation();
 		HealthSync = health;
 		if (CanDecay)

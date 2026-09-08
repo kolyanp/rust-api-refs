@@ -36,8 +36,8 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 		}
 	}
 
-	[SerializeField]
 	[Header("Helicopter")]
+	[SerializeField]
 	public float engineThrustMax;
 
 	[SerializeField]
@@ -64,13 +64,13 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[SerializeField]
 	public GameObjectRef crashEffect;
 
-	[Tooltip("Lower values mean more lift is produced at high angles.")]
 	[Range(0.1f, 0.95f)]
+	[Tooltip("Lower values mean more lift is produced at high angles.")]
 	[SerializeField]
 	public float liftDotMax = 0.75f;
 
-	[Range(0.1f, 0.95f)]
 	[SerializeField]
+	[Range(0.1f, 0.95f)]
 	public float altForceDotMin = 0.85f;
 
 	[Range(0.1f, 0.95f)]

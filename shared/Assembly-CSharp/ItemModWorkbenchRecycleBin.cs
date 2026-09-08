@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ItemModWorkbenchRecycleBin : ItemModWorkbenchUpgrade
 {
-	[Header("Recycle Bin")]
 	[Tooltip("Maximum fraction of each ingredient that can be refunded (0-1). A random value between 0 and this is rolled each craft.")]
+	[Header("Recycle Bin")]
 	[Range(0f, 0.5f)]
 	public float maxRefundFraction = 0.1f;
 

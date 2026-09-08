@@ -67,7 +67,7 @@ public class PlayerStateManager
 	public PlayerState GetCached(ulong playerId)
 	{
 		PlayerState result = default(PlayerState);
-		if (_cache.TryGetValue(playerId, ref result))
+		if (_cache.TryGetValueReadOnly(playerId, ref result))
 		{
 			return result;
 		}

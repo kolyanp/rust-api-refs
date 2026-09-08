@@ -25,8 +25,8 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 	[SerializeField]
 	private CanvasGroup screenCanvas;
 
-	[Space]
 	[Header("PROTECTED TIME")]
+	[Space]
 	public RustText protectedTimeText;
 
 	public int decayWarningThreshold = 130;
@@ -35,8 +35,8 @@ public class BuildingPrivilegeRetroScreen : FacepunchBehaviour, INotifyLOD, ICli
 
 	public GameObject decayingGroup;
 
-	[Header("UPKEEP")]
 	[Space]
+	[Header("UPKEEP")]
 	public VirtualItemIcon[] costIcons;
 
 	public RustText[] paginationTexts;

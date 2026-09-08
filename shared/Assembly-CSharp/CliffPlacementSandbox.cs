@@ -59,8 +59,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private static readonly Color FootprintInactiveColor;
 
-	[Tooltip("Paste the whole thing a server's `levelurl` prints, then press Download below. The file is cached next to the project and MapFilePath is pointed at it, ready to Initialize.")]
 	[Header("Level URL download")]
+	[Tooltip("Paste the whole thing a server's `levelurl` prints, then press Download below. The file is cached next to the project and MapFilePath is pointed at it, ready to Initialize.")]
 	public string LevelUrl;
 
 	[Tooltip("Where downloaded maps are cached. A relative path is taken from the project root, i.e. alongside Assets rather than inside it, so Unity never tries to import them.")]
@@ -86,12 +86,12 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus;
 
-	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	[Header("Terrain source")]
+	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	public TerrainSource Source;
 
-	[Tooltip("World seed fed to the real generator. Also supplies the seed for the pre-cliff T0 bake in Map File Region mode when the map came from a levelurl - uploaded maps have the seed stripped out of their name, so run `seed` on the server and paste the value here. A map taken from the server's own root folder carries it in the name and overwrites this field on load. 0 = auto.")]
 	[Header("Procedural (real Rust base heightmap)")]
+	[Tooltip("World seed fed to the real generator. Also supplies the seed for the pre-cliff T0 bake in Map File Region mode when the map came from a levelurl - uploaded maps have the seed stripped out of their name, so run `seed` on the server and paste the value here. A map taken from the server's own root folder carries it in the name and overwrites this field on load. 0 = auto.")]
 	public uint Seed;
 
 	[Tooltip("Square map size in metres. Real maps are thousands; smaller = quicker but less varied.")]
@@ -105,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle;
 
-	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	[Header("Terrain")]
+	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
 	public int HeightmapResolution;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -173,8 +173,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Measure and fill each cliff's TerrainFootprint during recalc, the way the generator does just before the prefab is added. The gap readout is always reported; turn this off to see what the terrain looks like without the fill while still being told how deep the gap is.")]
 	public bool ApplyTerrainFootprintOnRecalc;
 
-	[Header("Placement gizmos (play mode)")]
 	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
+	[Header("Placement gizmos (play mode)")]
 	public bool ShowPlacementGizmos;
 
 	[Tooltip("Include TerrainAnchor gizmos (vertical solve range + radius).")]

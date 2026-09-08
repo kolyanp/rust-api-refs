@@ -11,8 +11,8 @@ public class LEDScreenScroller : MonoBehaviour, IClientComponent, INotifyLOD
 		public Mesh Mesh;
 	}
 
-	[Header("Glyphs")]
 	[Tooltip("One pre-made mesh plane per supported letter/number, UV mapped into the shared atlas. Matching is case-insensitive.")]
+	[Header("Glyphs")]
 	public CharacterGlyph[] Glyphs;
 
 	[Tooltip("Shown for spaces and any character with no entry in Glyphs (e.g. punctuation).")]

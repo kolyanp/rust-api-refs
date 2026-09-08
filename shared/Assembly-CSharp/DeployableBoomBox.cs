@@ -273,8 +273,8 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 	}
 
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
 		BoxController.ServerTogglePlay(msg);
@@ -288,9 +288,9 @@ public class DeployableBoomBox : ContainerIOEntity, ICassettePlayer, IAudioConne
 		BoxController.Server_UpdateRadioIP(msg);
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.IsVisible(3f)]
 	private void Server_UpdateVolume(RPCMessage msg)
 	{
 		if (IsOn())

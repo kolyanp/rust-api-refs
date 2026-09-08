@@ -751,8 +751,8 @@ public class MLRS : BaseMountable
 	}
 
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
@@ -763,8 +763,8 @@ public class MLRS : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_Fire_Rockets(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

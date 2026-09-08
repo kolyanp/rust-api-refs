@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class TubeRenderer : FacepunchBehaviour
 {
-	[Range(3f, 64f)]
 	[Header("Settings")]
+	[Range(3f, 64f)]
 	public int Segments = 12;
 
 	public float Radius = 0.1f;

@@ -128,8 +128,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 32f)]
 	public float FadeToRadius;
 
-	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
+	[Tooltip("Final PowerExponent parameter.")]
 	public float FadeToPowerExponent;
 
 	[Range(0f, 1f)]

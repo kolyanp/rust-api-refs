@@ -15,8 +15,8 @@ public class MissionObjective_AcquireItem : MissionObjective
 
 	public bool acceptExistingItems;
 
-	[FormerlySerializedAs("requireProximityToPosition")]
 	[BaseMission.PositionGenerator.PositionPoint]
+	[FormerlySerializedAs("requireProximityToPosition")]
 	public string position;
 
 	[Tooltip("If true, objective progress will reset upon no longer having the required item.")]

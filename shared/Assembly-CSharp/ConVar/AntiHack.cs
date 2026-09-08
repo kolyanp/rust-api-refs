@@ -73,7 +73,7 @@ public class AntiHack : ConsoleSystem
 
 	[ServerVar]
 	[Help("use parent position history for mounted player projectile validation (more accurate, uses ~192 bytes per mounted player)")]
-	public static bool parenthistory = true;
+	public static bool parenthistory = false;
 
 	[ServerVar]
 	[Help("the rate at which violation values go back down")]

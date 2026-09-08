@@ -8,8 +8,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private Animator animator;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	public SoundPlayer breathingSound;
 
 	[SerializeField]
@@ -41,8 +41,8 @@ public class RidableHorseAudio : FacepunchBehaviour, IClientComponent
 	[SerializeField]
 	private string BaseFolder;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private SoundDefinition skidLoopSoundDef;
 
 	[SerializeField]

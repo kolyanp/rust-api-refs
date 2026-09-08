@@ -10,8 +10,8 @@ public class MissionObjective_MetalDetectorDeepSeaTreasure : MissionObjective
 	[Min(0f)]
 	public int minimumDigAttempts;
 
-	[Tooltip("After this many dug up metal detector sources treasure spawn is guaranteed.")]
 	[Min(0f)]
+	[Tooltip("After this many dug up metal detector sources treasure spawn is guaranteed.")]
 	public int maximumDigAttempts;
 
 	[Range(0f, 1f)]

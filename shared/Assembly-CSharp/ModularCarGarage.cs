@@ -909,9 +909,9 @@ public class ModularCarGarage : ContainerIOEntity
 		flagsUpdateScope.Set(Flags.Reserved6, b: false);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public unsafe void RPC_RepairItem(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -947,8 +947,8 @@ public class ModularCarGarage : ContainerIOEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenEditing(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -959,9 +959,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_DiedWithKeypadOpen(RPCMessage msg)
 	{
 		using (FlagsUpdateScope flagsUpdateScope = StartSetFlags(FlagsUpdateMode.SendNetworkUpdate))
@@ -1019,8 +1019,8 @@ public class ModularCarGarage : ContainerIOEntity
 		Interface.CallHook("OnVehicleModuleSelected", vehicleItem, this, player);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_DeselectedLootItem(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1043,8 +1043,8 @@ public class ModularCarGarage : ContainerIOEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestAddLock(RPCMessage msg)
 	{
 		//IL_00c6: Unknown result type (might be due to invalid IL or missing references)
@@ -1084,9 +1084,9 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	public void RPC_RequestNewCode(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
@@ -1106,10 +1106,10 @@ public class ModularCarGarage : ContainerIOEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_StartDestroyingChassis(RPCMessage msg)
 	{
 		if (carOccupant.HasAnyModules)
@@ -1122,9 +1122,9 @@ public class ModularCarGarage : ContainerIOEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_StopDestroyingChassis(RPCMessage msg)
 	{
 		StopChassisDestroy();

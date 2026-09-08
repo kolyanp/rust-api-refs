@@ -27,8 +27,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float gearMissCooldown = 5f;
 
-	[SerializeField]
 	[Header("Suspension")]
+	[SerializeField]
 	private SoundDefinition suspensionDef;
 
 	[SerializeField]
@@ -43,8 +43,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve suspensionUpAngleDeltaGain;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -66,8 +66,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve movementLoopGainCurve;
 
-	[Header("Brakes")]
 	[SerializeField]
+	[Header("Brakes")]
 	private SoundDefinition brakeLoopDef;
 
 	[SerializeField]
@@ -76,8 +76,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float brakeHissCooldown = 2f;
 
-	[SerializeField]
 	[Header("Misc")]
+	[SerializeField]
 	private SoundDefinition angryHornSoundDef;
 
 	[SerializeField]

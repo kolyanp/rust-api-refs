@@ -617,8 +617,8 @@ public class MobilePhone : HeldEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	public void ClearCurrentUser(RPCMessage msg)
 	{
 		Controller.ClearCurrentUser(msg);
@@ -631,8 +631,8 @@ public class MobilePhone : HeldEntity
 		Controller.SetCurrentUser(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	public void InitiateCall(RPCMessage msg)
 	{
 		Controller.InitiateCall(msg);
@@ -658,9 +658,9 @@ public class MobilePhone : HeldEntity
 		Controller.DestroyShared();
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void UpdatePhoneName(RPCMessage msg)
 	{
 		Controller.RPC_UpdatePhoneName(msg);
@@ -682,8 +682,8 @@ public class MobilePhone : HeldEntity
 		Controller.Server_AddSavedNumber(msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.FromOwner]
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void Server_RemoveSavedNumber(RPCMessage msg)
 	{
@@ -704,17 +704,17 @@ public class MobilePhone : HeldEntity
 		Controller.ServerSendVoicemail(msg);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.FromOwner]
 	public void ServerPlayVoicemail(RPCMessage msg)
 	{
 		Controller.ServerPlayVoicemail(msg);
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void ServerStopVoicemail(RPCMessage msg)
 	{
 		Controller.ServerStopVoicemail(msg);

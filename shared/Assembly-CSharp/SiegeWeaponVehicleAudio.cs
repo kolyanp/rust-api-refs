@@ -24,8 +24,8 @@ public class SiegeWeaponVehicleAudio : GroundVehicleAudio
 	[SerializeField]
 	private float movementRattleGainChangeSpeed = 1f;
 
-	[SerializeField]
 	[Header("Wheels")]
+	[SerializeField]
 	private SoundDefinition tyreRollingSoundDef;
 
 	[SerializeField]

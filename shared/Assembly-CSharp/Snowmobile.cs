@@ -644,8 +644,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

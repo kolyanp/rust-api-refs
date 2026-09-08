@@ -19,8 +19,8 @@ public class CatapultSounds : GroundVehicleAudio
 	[SerializeField]
 	private float suspensionMinTimeBetweenSounds = 0.25f;
 
-	[Header("Tires")]
 	[SerializeField]
+	[Header("Tires")]
 	private SoundDefinition tireDirtSoundDef;
 
 	[SerializeField]
@@ -35,8 +35,8 @@ public class CatapultSounds : GroundVehicleAudio
 	[SerializeField]
 	private AnimationCurve tireGainCurve;
 
-	[Header("Movement")]
 	[SerializeField]
+	[Header("Movement")]
 	private SoundDefinition movementLoopDef;
 
 	[SerializeField]

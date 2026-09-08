@@ -6,8 +6,8 @@ public class SnowmobileAudio : GroundVehicleAudio
 	[SerializeField]
 	private EngineAudioSet engineAudioSet;
 
-	[SerializeField]
 	[Header("Skis")]
+	[SerializeField]
 	private AnimationCurve skiGainCurve;
 
 	[SerializeField]

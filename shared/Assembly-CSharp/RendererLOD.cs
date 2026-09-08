@@ -31,6 +31,9 @@ public class RendererLOD : InstancedLODComponent, IPrefabPreProcess, ICustomMate
 		public Material[] stateMaterials;
 
 		[ReadOnly]
+		public Material[] defaultMaterials;
+
+		[ReadOnly]
 		public ShadowCastingMode cachedShadowMode;
 
 		[ReadOnly]

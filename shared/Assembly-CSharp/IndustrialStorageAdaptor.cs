@@ -599,9 +599,9 @@ public class IndustrialStorageAdaptor : IndustrialEntity, IIndustrialStorage
 		goto IL_006b;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxRepeatedElements(64)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void UpdatedStorageSettings(RPCMessage msg)
 	{
 		SortSettings val = msg.read.Proto<SortSettings>((SortSettings)null);

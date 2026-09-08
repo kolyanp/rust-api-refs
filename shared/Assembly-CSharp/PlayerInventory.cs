@@ -548,8 +548,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		return CanMoveFromResponse.Success();
 	}
 
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.FromOwner]
+	[BaseEntity.RPC_Server]
 	private void ItemCmd(BaseEntity.RPCMessage msg)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
@@ -639,9 +639,9 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 	}
 
-	[BaseEntity.RPC_Server.FromOwner]
-	[BaseEntity.RPC_Server]
 	[BaseEntity.RPC_Server.CallsPerSecond(2uL)]
+	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.FromOwner]
 	private void UpdateAccessoryOnItem(BaseEntity.RPCMessage msg)
 	{
 		//IL_0030: Unknown result type (might be due to invalid IL or missing references)
@@ -897,8 +897,8 @@ public class PlayerInventory : EntityComponent<BasePlayer>, IAmmoContainer
 		}
 	}
 
-	[BaseEntity.RPC_Server.FromOwner]
 	[BaseEntity.RPC_Server]
+	[BaseEntity.RPC_Server.FromOwner]
 	public void SwapHotbar(BaseEntity.RPCMessage msg)
 	{
 		if (msg.player.IsAdmin || msg.player.IsDeveloper)

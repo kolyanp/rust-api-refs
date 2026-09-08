@@ -16827,10 +16827,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		Pool.FreeUnmanaged<BaseMountable>(ref list);
 	}
 
-	[RPC_Server]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void RPC_ReqForceSwapSeat(RPCMessage rpc)
 	{
 		if (!isMounted || !IsRestrained || IsDead() || IsSleeping() || IsWounded() || (Object)(object)rpc.player == (Object)null)
@@ -17984,10 +17984,10 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		SendNetworkUpdate_Position();
 	}
 
+	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.CallsPerSecond(10uL)]
 	[RPC_Server.FromOwner]
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(10uL)]
-	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	private void UpdateSpectatePositionFromDebugCamera(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
@@ -19687,9 +19687,9 @@ public class BasePlayer : BaseCombatEntity, LootPanel.IHasLootPanel, IIdealSlotE
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.FromOwner]
 	private void PlayerRequestedTutorialStart(RPCMessage msg)
 	{
 		if (ConVar.Server.tutorialEnabled)

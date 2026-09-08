@@ -156,8 +156,8 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 
 	public bool HideInEyesView;
 
-	[Header("First Person Legs")]
 	[Tooltip("If this is true, we'll hide this item in the first person view. Usually done for items that you definitely won't see in first person view, like facemasks and hats.")]
+	[Header("First Person Legs")]
 	public bool HideInFirstPerson;
 
 	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]

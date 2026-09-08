@@ -305,10 +305,10 @@ public class RemoteControlEntity : BaseCombatEntity, IRemoteControllable, IAdmin
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public void SERVER_RequestOpenRCPanel(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

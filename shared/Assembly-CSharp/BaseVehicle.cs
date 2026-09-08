@@ -713,7 +713,7 @@ public class BaseVehicle : BaseMountable, VehicleSpawner.IVehicleSpawnUser
 		foreach (Collider item in list)
 		{
 			BaseEntity baseEntity = GameObjectEx.ToBaseEntity(item);
-			if (!((Object)(object)baseEntity == (Object)null) && !baseEntity.isClient && (Object)(object)baseEntity != (Object)(object)this && !EqualNetID((BaseNetworkable)baseEntity) && (Object)(object)mountable != (Object)(object)this && !mountable.EqualNetID((BaseNetworkable)baseEntity))
+			if ((!((Object)(object)baseEntity != (Object)null) || !baseEntity.isClient) && (Object)(object)baseEntity != (Object)(object)this && !EqualNetID((BaseNetworkable)baseEntity) && (Object)(object)mountable != (Object)(object)this && !mountable.EqualNetID((BaseNetworkable)baseEntity))
 			{
 				Pool.FreeUnmanaged<Collider>(ref list);
 				return true;

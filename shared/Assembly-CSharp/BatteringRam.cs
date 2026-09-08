@@ -777,10 +777,17 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	private void ScanEntities(BasePlayer driver)
 	{
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0046: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0060: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0065: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0073: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009b: Unknown result type (might be due to invalid IL or missing references)
 		List<BaseEntity> entities = Pool.Get<List<BaseEntity>>();
 		Vis.Entities(damagePoint.position, 1f, entities, 1210286337, (QueryTriggerInteraction)1);
-		FilterEntities(entities, driver);
+		Vector3 lineOfSightOrigin = damagePoint.position - damagePoint.forward * 0.5f;
+		FilterEntities(entities, driver, lineOfSightOrigin);
 		bool flag = entities.Count != 0;
 		if (!flag)
 		{
@@ -804,13 +811,22 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 		}, 0.5f);
 	}
 
-	private void FilterEntities(List<BaseEntity> entityList, BasePlayer driver)
+	private bool CanHeadReach(BaseEntity ent, Vector3 origin)
 	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		return GamePhysics.LineOfSight(origin, ent.ClosestPoint(origin), 1075904768, ent);
+	}
+
+	private void FilterEntities(List<BaseEntity> entityList, BasePlayer driver, Vector3 lineOfSightOrigin)
+	{
+		//IL_004e: Unknown result type (might be due to invalid IL or missing references)
 		List<BaseEntity> list = Pool.Get<List<BaseEntity>>();
 		for (int i = 0; i < entityList.Count; i++)
 		{
 			BaseEntity baseEntity = entityList[i];
-			if (baseEntity.isServer && !list.Contains(baseEntity) && (!((Object)(object)driver != (Object)null) || !((Object)(object)baseEntity == (Object)(object)driver)) && !((Object)(object)baseEntity == (Object)(object)this) && !((Object)(object)baseEntity == (Object)(object)Head))
+			if (baseEntity.isServer && !list.Contains(baseEntity) && (!((Object)(object)driver != (Object)null) || !((Object)(object)baseEntity == (Object)(object)driver)) && !((Object)(object)baseEntity == (Object)(object)this) && !((Object)(object)baseEntity == (Object)(object)Head) && CanHeadReach(baseEntity, lineOfSightOrigin))
 			{
 				list.Add(baseEntity);
 			}

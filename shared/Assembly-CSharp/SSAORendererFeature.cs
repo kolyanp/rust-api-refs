@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Rendering/RustRendererFeatures/AmbientOcclusion")]
 public class SSAORendererFeature : RustRendererFeature
 {
-	[Tooltip("How the occlusion result is composited into the frame.")]
 	[Header("Ambient Occlusion")]
+	[Tooltip("How the occlusion result is composited into the frame.")]
 	public ApplicationMethod ApplyMethod;
 
 	[Tooltip("Number of samples per occlusion pass.")]
@@ -80,16 +80,16 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("0 = blurred / 1 = sharpened.")]
 	public float BlurSharpness;
 
-	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	[Header("Temporal Filter")]
+	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
 	public bool FilterEnabled;
 
 	[Range(0f, 1f)]
 	[Tooltip("Accumulation decay. 0 = fast update (more flicker). 1 = slow update (ghosting).")]
 	public float FilterBlending;
 
-	[Range(0f, 1f)]
 	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
+	[Range(0f, 1f)]
 	public float FilterResponse;
 
 	[Header("Shaders")]

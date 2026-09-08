@@ -13,8 +13,8 @@ public class Compass : HeldEntity
 	[Tooltip("Change this if it does not feel like the needle direction is accurate.")]
 	private float needleYawAngleOffset;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	private float needleStiffness = 50f;
 
 	[SerializeField]
@@ -25,13 +25,13 @@ public class Compass : HeldEntity
 	[Min(0f)]
 	private float maxAcceleration = 1500f;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	private float maxSpeed = 360f;
 
-	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
-	[MinMax(0f, 180f)]
 	[SerializeField]
+	[MinMax(0f, 180f)]
+	[Tooltip("Random variance in how far off the needle will be from target when first deployed.")]
 	private MinMax startingAngleDelta;
 
 	[SerializeField]

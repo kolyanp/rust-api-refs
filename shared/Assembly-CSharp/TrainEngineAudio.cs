@@ -30,8 +30,8 @@ public class TrainEngineAudio : TrainCarAudio
 	[SerializeField]
 	private Transform hornSoundPosition;
 
-	[Header("Engine")]
 	[SerializeField]
+	[Header("Engine")]
 	private SoundDefinition engineStartSound;
 
 	[SerializeField]
@@ -78,8 +78,8 @@ public class TrainEngineAudio : TrainCarAudio
 	[SerializeField]
 	private SoundDefinition hornStart;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private SoundDefinition lightsToggleSound;
 
 	[SerializeField]

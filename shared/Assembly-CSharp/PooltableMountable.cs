@@ -215,9 +215,9 @@ public class PooltableMountable : BaseMountable
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(30uL)]
+	[RPC_Server.FromMounted]
+	[RPC_Server]
 	public void RPC_UpdateSplineDistance(RPCMessage msg)
 	{
 		if (!((Object)(object)poolTable == (Object)null) && !((Object)(object)msg.player == (Object)null) && poolTable.CanPlayerMove(msg.player.userID))

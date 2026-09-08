@@ -108,8 +108,8 @@ public class HeldBoomBox : HeldEntity, ICassettePlayer
 		BoxController.HurtCallback = HurtCallback;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server.CallsPerSecond(2uL)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
@@ -117,8 +117,8 @@ public class HeldBoomBox : HeldEntity, ICassettePlayer
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(2uL)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(2uL)]
 	private void Server_UpdateRadioIP(RPCMessage msg)
 	{
 		BoxController.Server_UpdateRadioIP(msg);

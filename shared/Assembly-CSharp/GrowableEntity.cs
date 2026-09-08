@@ -1085,8 +1085,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		TakeClones(msg.player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void RPC_TakeCloneAll(RPCMessage msg)
 	{
@@ -1230,9 +1230,9 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	public void RPC_PickFruit(RPCMessage msg)
 	{
 		PickFruit(msg.player);
@@ -1246,9 +1246,9 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		PickFruit(msg.player, eat: true);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_PickFruitAll(RPCMessage msg)
 	{
 		if ((Object)(object)GetParentEntity() != (Object)null)
@@ -1479,8 +1479,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_RequestQualityUpdate(RPCMessage msg)
 	{
 		if ((Object)(object)msg.player != (Object)null)

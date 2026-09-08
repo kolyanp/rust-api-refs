@@ -1425,10 +1425,10 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(100uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(100uL)]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

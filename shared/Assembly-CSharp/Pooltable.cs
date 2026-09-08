@@ -594,8 +594,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestShoot(RPCMessage msg)
 	{
 		//IL_0050: Unknown result type (might be due to invalid IL or missing references)
@@ -630,8 +630,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))
