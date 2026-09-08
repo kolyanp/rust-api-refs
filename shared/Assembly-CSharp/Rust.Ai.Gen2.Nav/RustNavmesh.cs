@@ -874,7 +874,7 @@ public class RustNavmesh : IDisposable
 				{
 					ManagedNavPayload managedNavPayload = new ManagedNavPayload
 					{
-						payloadVersion = 1,
+						payloadVersion = 4,
 						buildParams = BuildParams,
 						buildParamsHiRes = BuildParamsHiRes,
 						currentNavmeshBounds = CurrentNavmeshBounds,
@@ -938,7 +938,7 @@ public class RustNavmesh : IDisposable
 					return null;
 				}
 				ManagedNavPayload payload = System.Runtime.CompilerServices.Unsafe.Read<ManagedNavPayload>((void*)managedBlob);
-				if (payload.payloadVersion != 1)
+				if (payload.payloadVersion != 4)
 				{
 					RustNavigation.LogError($"Unsupported managed payload version {payload.payloadVersion}");
 					return null;
