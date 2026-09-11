@@ -51,6 +51,13 @@ public class CompoundBowWeapon : BowWeapon
 				}
 				using (TimeWarning.New("RPC_StringHoldStatus"))
 				{
+					using (TimeWarning.New("Conditions"))
+					{
+						if (!RPC_Server.FromOwner.Test(618693016u, "RPC_StringHoldStatus", this, player))
+						{
+							return true;
+						}
+					}
 					try
 					{
 						using (TimeWarning.New("Call"))
@@ -119,6 +126,7 @@ public class CompoundBowWeapon : BowWeapon
 		{
 			CancelInvoke(ServerMovementCheck);
 			CancelInvoke(UpdateConditionLoss);
+			stringHoldTimeStart = 0f;
 		}
 		else
 		{
@@ -127,6 +135,7 @@ public class CompoundBowWeapon : BowWeapon
 		}
 	}
 
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	public void RPC_StringHoldStatus(RPCMessage msg)
 	{

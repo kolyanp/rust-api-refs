@@ -22,7 +22,7 @@
     <Reference Include="Rust.UI" />
     <Reference Include="Rust.Data" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Facepunch.Nexus" />
     <Reference Include="Facepunch.Unity" />
@@ -80,7 +80,7 @@
     <Reference Include="Rust.RenderPipeline" />
     <Reference Include="UnityEngine.WindModule" />
     <Reference Include="System.Net.Http">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Net.Http.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.DirectorModule" />
     <Reference Include="Unity.Timeline" />
@@ -108,7 +108,7 @@
     <Reference Include="Rust.Demo" />
     <Reference Include="UnityEngine.ImageConversionModule" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="TimeZoneConverter" />
     <Reference Include="LZ4" />

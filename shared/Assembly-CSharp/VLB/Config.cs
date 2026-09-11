@@ -15,14 +15,14 @@ public class Config : ScriptableObject
 
 	public bool forceSinglePass;
 
-	[HighlightNull]
 	[SerializeField]
+	[HighlightNull]
 	private Shader beamShader1Pass;
 
-	[FormerlySerializedAs("BeamShader")]
-	[SerializeField]
-	[FormerlySerializedAs("beamShader")]
 	[HighlightNull]
+	[FormerlySerializedAs("beamShader")]
+	[SerializeField]
+	[FormerlySerializedAs("BeamShader")]
 	private Shader beamShader2Pass;
 
 	public int sharedMeshSides;

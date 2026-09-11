@@ -12,8 +12,8 @@ public sealed class ScreenSpaceReflections : PostProcessEffectSettings
 		value = ScreenSpaceReflectionPreset.Medium
 	};
 
-	[Tooltip("Maximum number of steps in the raymarching pass. Higher values mean more reflections.")]
 	[Range(0f, 256f)]
+	[Tooltip("Maximum number of steps in the raymarching pass. Higher values mean more reflections.")]
 	public IntParameter maximumIterationCount = new IntParameter
 	{
 		value = 16

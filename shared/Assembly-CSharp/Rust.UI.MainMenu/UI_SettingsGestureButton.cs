@@ -12,8 +12,8 @@ public class UI_SettingsGestureButton : UI_SettingsGestureDraggable
 	[SerializeField]
 	private StyleAsset lockedStyle;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private GameObject boundLine;
 
 	[SerializeField]
@@ -35,7 +35,7 @@ public class UI_SettingsGestureButton : UI_SettingsGestureDraggable
 	[SerializeField]
 	private RawImage videoRawTexture;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject deleteButton;
 }

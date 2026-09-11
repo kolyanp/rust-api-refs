@@ -16,7 +16,7 @@ using UnityEngine;
 
 public class ConsoleGen
 {
-	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2229]
+	public static ConsoleSystem.Command[] All = new ConsoleSystem.Command[2230]
 	{
 		new ConsoleSystem.Command
 		{
@@ -19923,6 +19923,21 @@ public class ConsoleGen
 			Call = delegate(ConsoleSystem.Arg arg)
 			{
 				ConVar.Server.listvendingmachines(arg);
+			}
+		},
+		new ConsoleSystem.Command
+		{
+			Name = "log_invalid_packet_lengths",
+			Parent = "server",
+			FullName = "server.log_invalid_packet_lengths",
+			ServerAdmin = true,
+			Saved = true,
+			Description = "Logs network packets rejected for being empty or not byte-aligned",
+			Variable = true,
+			GetOveride = () => ConVar.Server.log_invalid_packet_lengths.ToString(),
+			SetOveride = delegate(string str)
+			{
+				ConVar.Server.log_invalid_packet_lengths = StringExtensions.ToBool(str);
 			}
 		},
 		new ConsoleSystem.Command

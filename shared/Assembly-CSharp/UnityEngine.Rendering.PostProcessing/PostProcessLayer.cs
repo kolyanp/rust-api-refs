@@ -7,11 +7,11 @@ using UnityEngine.Scripting;
 
 namespace UnityEngine.Rendering.PostProcessing;
 
-[DisallowMultipleComponent]
-[ExecuteAlways]
-[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [RequireComponent(typeof(Camera))]
+[AddComponentMenu("Rendering/Post-process Layer", 1000)]
 [ImageEffectAllowedInSceneView]
+[ExecuteAlways]
+[DisallowMultipleComponent]
 public class PostProcessLayer : MonoBehaviour
 {
 	private enum ScalingMode
@@ -68,8 +68,8 @@ public class PostProcessLayer : MonoBehaviour
 	[SerializeField]
 	private PostProcessResources m_Resources;
 
-	[Preserve]
 	[SerializeField]
+	[Preserve]
 	private bool m_ShowToolkit;
 
 	[SerializeField]

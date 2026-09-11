@@ -15,8 +15,8 @@ public class ItemModWearable : ItemMod
 
 	public UIBlackoutOverlay.blackoutType occlusionType = UIBlackoutOverlay.blackoutType.NONE;
 
-	[Range(0f, 1f)]
 	[Tooltip("Muffles world audio for the local player while this is worn. Drives the HeavyHelmet mixer snapshot.")]
+	[Range(0f, 1f)]
 	public float audioMuffleAmount;
 
 	public bool blocksAiming;

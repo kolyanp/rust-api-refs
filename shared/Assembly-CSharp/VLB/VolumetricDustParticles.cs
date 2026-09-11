@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace VLB;
 
-[ExecuteInEditMode]
-[DisallowMultipleComponent]
 [HelpURL("http://saladgamer.com/vlb-doc/comp-dustparticles/")]
+[DisallowMultipleComponent]
+[ExecuteInEditMode]
 [RequireComponent(typeof(VolumetricLightBeam))]
 public class VolumetricDustParticles : MonoBehaviour
 {

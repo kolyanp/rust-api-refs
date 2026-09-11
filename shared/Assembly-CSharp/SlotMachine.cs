@@ -321,8 +321,8 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		return component.inventory.GetSlot(0)?.amount ?? 0;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void RPC_Spin(RPCMessage rpc)
 	{
 		if (IsSpinning || (Object)(object)rpc.player != (Object)(object)GetMounted())
@@ -366,8 +366,8 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		Invoke(CheckPayout, SpinDuration);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_Deposit(RPCMessage rpc)
 	{
 		BasePlayer player = rpc.player;
@@ -491,8 +491,8 @@ public class SlotMachine : BaseMountable, INotifyLOD
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	private void Server_RequestMultiplierChange(RPCMessage msg)
 	{

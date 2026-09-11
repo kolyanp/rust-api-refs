@@ -45,13 +45,13 @@ public class Socket_Free_Snappable : Socket_Free
 	public static bool DebugSnapping = false;
 
 	[Header("Snapping - General")]
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float generalPadding;
 
 	[Range(-1f, 1f)]
-	[SerializeField]
 	[Header("Snapping - Walls")]
+	[SerializeField]
 	private float snappingPadding;
 
 	[Header("Snapping - Corners")]
@@ -62,12 +62,12 @@ public class Socket_Free_Snappable : Socket_Free
 	[Range(-1f, 1f)]
 	private float cornerPadding = -0.01f;
 
-	[Header("Snapping - Same Deployable")]
 	[SerializeField]
+	[Header("Snapping - Same Deployable")]
 	private bool allowSnappingToSameDeployable = true;
 
-	[SerializeField]
 	[Range(-1f, 1f)]
+	[SerializeField]
 	private float sameDeployablePadding;
 
 	private BaseEntity staticEntity;

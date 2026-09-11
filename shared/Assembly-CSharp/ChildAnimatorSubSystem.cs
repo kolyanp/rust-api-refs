@@ -5,7 +5,7 @@ public class ChildAnimatorSubSystem : AnimationSubSystem
 	[SerializeField]
 	protected RuntimeAnimatorController ChildController;
 
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	protected float Weight;
 }

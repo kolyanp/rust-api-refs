@@ -8,8 +8,8 @@ namespace ConVar;
 [Factory("world")]
 public class World : ConsoleSystem
 {
-	[ClientVar(Help = "(Generated) When enabled, caches world data for faster loading; disabled by default in editor server builds to ensure fresh data during development")]
 	[ServerVar]
+	[ClientVar(Help = "(Generated) When enabled, caches world data for faster loading; disabled by default in editor server builds to ensure fresh data during development")]
 	public static bool cache = true;
 
 	[ClientVar(Help = "(Generated) When enabled, world assets are streamed in and out based on proximity; disable to force all world data to stay loaded at once")]

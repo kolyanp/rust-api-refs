@@ -7,12 +7,12 @@ public class MissionObjective_PlayBoomboxStation : MissionObjective
 	[Tooltip("If true, the boombox must be a static environment boombox for this objective to complete.")]
 	public bool boomboxMustBeStatic;
 
-	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
 	[BaseMission.PositionGenerator.PositionPoint]
+	[Tooltip("The boombox must be nearby this mission point for the objective to complete.")]
 	public string requireProximityToPosition;
 
-	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
 	[Min(0f)]
+	[Tooltip("If RequireProximityToPosition is set, this defines the minimum proximity between the boombox and the mission point.")]
 	public float minimumDistanceToMissionPoint;
 
 	public bool shouldHideCompassMarkerWhenClose;

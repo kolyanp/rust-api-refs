@@ -809,9 +809,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_OpenStore(RPCMessage msg)
 	{
 		if (CanPlayerOpenShop(msg.player) && Interface.CallHook("OnRentableShopOpen", this, msg.player) == null)
@@ -953,8 +953,8 @@ public class RentableShop : BaseEntity
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_OpenStoreInventory(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && ((ulong)msg.player.userID == ShopOwnerId || IsIntruder(msg.player.userID)))
@@ -967,9 +967,9 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void Server_RetrieveAllStoredItems(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -1121,8 +1121,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void Server_CloseStore(RPCMessage rpc)
 	{
 		if (!((Object)(object)rpc.player == (Object)null) && (ulong)rpc.player.userID == ShopOwnerId)

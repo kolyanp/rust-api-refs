@@ -21,12 +21,12 @@
     </Reference>
     <Reference Include="UniTask" />
     <Reference Include="System.Net.Http">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Net.Http.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="websocket-sharp" />
     <Reference Include="BouncyCastle.Cryptography" />
     <Reference Include="System.Core">
-      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.11/System.Core.dll</HintPath>
+      <HintPath>../../../../../../../usr/share/dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json" />
     <Reference Include="Oxide.Core">

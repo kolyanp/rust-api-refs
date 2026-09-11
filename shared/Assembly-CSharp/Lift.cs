@@ -14,6 +14,8 @@ public class Lift : AnimatedBuildingBlock
 
 	public float resetDelay = 5f;
 
+	private Collider cabinTrigger;
+
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
 		using (TimeWarning.New("Lift.OnRpcMessage"))
@@ -59,14 +61,51 @@ public class Lift : AnimatedBuildingBlock
 		return base.OnRpcMessage(player, rpc, msg);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	private void RPC_UseLift(RPCMessage rpc)
 	{
-		if (rpc.player.CanInteract() && Interface.CallHook("OnLiftUse", this, rpc.player) == null)
+		if (rpc.player.CanInteract() && Interface.CallHook("OnLiftUse", this, rpc.player) == null && PlayerIsAtCabin(rpc.player))
 		{
 			MoveUp();
 		}
+	}
+
+	private bool PlayerIsAtCabin(BasePlayer player)
+	{
+		//IL_001e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0023: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)cabinTrigger == (Object)null && !ResolveCabinTrigger())
+		{
+			return false;
+		}
+		Bounds val = cabinTrigger.bounds;
+		return ((Bounds)(ref val)).SqrDistance(player.eyes.position) <= 9f;
+	}
+
+	private bool ResolveCabinTrigger()
+	{
+		foreach (BaseEntity child in children)
+		{
+			if (child.prefabID != triggerPrefab.resourceID)
+			{
+				continue;
+			}
+			TriggerParent[] componentsInChildren = ((Component)child).GetComponentsInChildren<TriggerParent>();
+			foreach (TriggerParent triggerParent in componentsInChildren)
+			{
+				if (!((Object)(object)GameObjectEx.ToBaseEntity(((Component)triggerParent).gameObject) != (Object)(object)child))
+				{
+					cabinTrigger = ((Component)triggerParent).GetComponent<Collider>();
+					if ((Object)(object)cabinTrigger != (Object)null)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private void MoveUp()

@@ -34,8 +34,8 @@ public class PlaceDecorRoadside : ProceduralComponent
 	[Tooltip("Metres the candidate position is randomly jittered each placement attempt")]
 	public float Dithering;
 
-	[Min(1f)]
 	[Tooltip("Dithered positions to try per side before giving up on this road step")]
+	[Min(1f)]
 	public int PlacementAttempts = 1;
 
 	private static Quaternion rot90;

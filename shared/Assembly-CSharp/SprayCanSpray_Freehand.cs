@@ -33,8 +33,6 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01fb: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0211: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("SprayCanSpray_Freehand.OnRpcMessage"))
 		{
 			if (rpc == 2020094435 && (Object)(object)player != (Object)null)
@@ -91,31 +89,6 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 				{
 					using (msg.read.UseRepeatedElementLimit(60))
 					{
-						using (TimeWarning.New("Conditions"))
-						{
-							long position2 = msg.read.Position;
-							msg.read.Read<int>();
-							SprayList val = msg.read.Proto<SprayList>((SprayList)null);
-							try
-							{
-								foreach (LinePoint linePoint in val.linePoints)
-								{
-									if (!RPC_Server.InputValidation.Test(linePoint.localPosition))
-									{
-										return true;
-									}
-									if (!RPC_Server.InputValidation.Test(linePoint.worldNormal))
-									{
-										return true;
-									}
-								}
-								msg.read.Position = position2;
-							}
-							finally
-							{
-								((IDisposable)val)?.Dispose();
-							}
-						}
 						try
 						{
 							using (TimeWarning.New("Call"))
@@ -196,12 +169,12 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 		width = lineWidth;
 	}
 
+	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[]
 	{
 		typeof(Vector3),
 		typeof(Vector3)
 	})]
-	[RPC_Server]
 	private void Server_AddPointMidSpray(RPCMessage msg)
 	{
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
@@ -249,11 +222,6 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 	}
 
 	[RPC_Server]
-	[RPC_Server.InputValidation(new Type[]
-	{
-		typeof(int),
-		typeof(SprayList)
-	})]
 	[RPC_Server.MaxRepeatedElements(60)]
 	private void Server_FinishEditing(RPCMessage msg)
 	{
@@ -269,14 +237,14 @@ public class SprayCanSpray_Freehand : SprayCanSpray
 			return;
 		}
 		bool allowNewSprayImmediately = msg.read.Int32() == 1;
-		if ((Object)(object)basePlayer != (Object)null && (Object)(object)basePlayer.GetHeldEntity() != (Object)null && basePlayer.GetHeldEntity() is SprayCan sprayCan)
-		{
-			sprayCan.ClearPaintingLine(allowNewSprayImmediately);
-		}
-		editingPlayer.Set(null);
 		SprayList val = msg.read.Proto<SprayList>((SprayList)null);
 		try
 		{
+			if ((Object)(object)basePlayer != (Object)null && (Object)(object)basePlayer.GetHeldEntity() != (Object)null && basePlayer.GetHeldEntity() is SprayCan sprayCan)
+			{
+				sprayCan.ClearPaintingLine(allowNewSprayImmediately);
+			}
+			editingPlayer.Set(null);
 			int count = val.linePoints.Count;
 			if (count > 70)
 			{

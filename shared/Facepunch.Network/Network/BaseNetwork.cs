@@ -223,14 +223,25 @@ public abstract class BaseNetwork
 
 	public void ProcessDecrypt(NetRead read)
 	{
-		Decrypt(read.connection, read);
-		if (Multithreading)
+		if (read.Length < 1)
 		{
-			EnqueueRead(read);
+			if (this is Server && Server.LogInvalidPacketLengths)
+			{
+				Debug.LogWarning((object)$"Dropping invalid network packet from {read.ipaddress}: {read.Length} bytes");
+			}
+			read.RemoveReference();
 		}
 		else
 		{
-			ProcessRead(read);
+			Decrypt(read.connection, read);
+			if (Multithreading)
+			{
+				EnqueueRead(read);
+			}
+			else
+			{
+				ProcessRead(read);
+			}
 		}
 	}
 

@@ -8,8 +8,8 @@ using UnityEngine.Assertions;
 
 public class Mortar : Cannon
 {
-	[SerializeField]
 	[Header("Mortar")]
+	[SerializeField]
 	private Vector2 minMaxDistance;
 
 	[SerializeField]
@@ -43,8 +43,8 @@ public class Mortar : Cannon
 	[Header("Condition")]
 	private float conditionLossPerShot;
 
-	[SerializeField]
 	[Header("Recoil")]
+	[SerializeField]
 	private AnimationClip recoilLowAnimation;
 
 	[SerializeField]
@@ -66,8 +66,8 @@ public class Mortar : Cannon
 	[SerializeField]
 	private AnimationCurve handleMinMaxRotation;
 
-	[Header("Display")]
 	[SerializeField]
+	[Header("Display")]
 	private MortarDisplay mortarDisplayPrefab;
 
 	[ClientVar(ClientAdmin = true)]

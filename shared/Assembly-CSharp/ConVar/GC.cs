@@ -70,15 +70,15 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Triggers an immediate full managed garbage collection pass; useful after large allocations for memory profiling")]
 	[ClientVar(Help = "(Generated) Triggers an immediate full managed garbage collection pass; useful after large allocations for memory profiling")]
+	[ServerVar(Help = "(Generated) Triggers an immediate full managed garbage collection pass; useful after large allocations for memory profiling")]
 	public static void collect()
 	{
 		Rust.GC.Collect();
 	}
 
-	[ClientVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
 	[ServerVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
+	[ClientVar(Help = "(Generated) Calls Resources.UnloadUnusedAssets() to unload assets no longer referenced by any object, freeing RAM and VRAM")]
 	public static void unload()
 	{
 		Resources.UnloadUnusedAssets();

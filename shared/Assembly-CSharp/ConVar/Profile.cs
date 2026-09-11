@@ -191,8 +191,8 @@ public class Profile : ConsoleSystem
 	{
 	}
 
-	[ClientVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
 	[ServerVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
+	[ClientVar(Help = "(Generated) Flushes any buffered analytics events immediately to the analytics backend rather than waiting for the next scheduled flush")]
 	public static void flush_analytics(Arg arg)
 	{
 	}

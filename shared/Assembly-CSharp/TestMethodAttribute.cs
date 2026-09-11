@@ -1,8 +1,8 @@
 using System;
 using JetBrains.Annotations;
 
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 [MeansImplicitUse]
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class TestMethodAttribute : Attribute
 {
 	public object[] TestParameters { get; private set; }

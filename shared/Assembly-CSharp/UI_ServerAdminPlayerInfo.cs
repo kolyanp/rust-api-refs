@@ -9,8 +9,8 @@ public class UI_ServerAdminPlayerInfo : UI_Window
 
 	private static readonly Phrase PermanentPhrase;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RawImage avatarImage;
 
 	[SerializeField]

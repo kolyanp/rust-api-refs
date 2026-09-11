@@ -320,8 +320,8 @@ public class ItemBasedFlowRestrictor : IOEntity, IContainerSounds, PlayerInvento
 		MarkDirty();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void RPC_OpenLoot(RPCMessage rpc)
 	{
 		if (inventory != null)

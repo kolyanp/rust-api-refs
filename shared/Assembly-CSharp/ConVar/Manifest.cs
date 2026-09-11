@@ -4,15 +4,15 @@ namespace ConVar;
 
 public class Manifest
 {
-	[ServerVar(Help = "(Generated) Prints the Facepunch application manifest in a formatted summary showing app name, version, and platform details")]
 	[ClientVar(Help = "(Generated) Prints the Facepunch application manifest in a formatted summary showing app name, version, and platform details")]
+	[ServerVar(Help = "(Generated) Prints the Facepunch application manifest in a formatted summary showing app name, version, and platform details")]
 	public static object PrintManifest()
 	{
 		return Application.Manifest;
 	}
 
-	[ClientVar(Help = "(Generated) Prints the raw contents of the Facepunch manifest file as an unformatted string")]
 	[ServerVar(Help = "(Generated) Prints the raw contents of the Facepunch manifest file as an unformatted string")]
+	[ClientVar(Help = "(Generated) Prints the raw contents of the Facepunch manifest file as an unformatted string")]
 	public static object PrintManifestRaw()
 	{
 		return Manifest.Contents;

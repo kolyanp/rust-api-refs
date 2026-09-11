@@ -3,22 +3,22 @@ namespace ConVar;
 [Factory("vis")]
 public class Vis : ConsoleSystem
 {
-	[Help("Turns on debug display of lerp")]
 	[ClientVar]
+	[Help("Turns on debug display of lerp")]
 	public static bool lerp;
 
-	[Help("Turns on debug display of damages")]
 	[ServerVar]
+	[Help("Turns on debug display of damages")]
 	public static bool damage;
 
-	[ClientVar]
 	[ServerVar]
 	[Help("Turns on debug display of attacks")]
+	[ClientVar]
 	public static bool attack;
 
-	[ServerVar]
-	[ClientVar]
 	[Help("Turns on debug display of protection")]
+	[ClientVar]
+	[ServerVar]
 	public static bool protection;
 
 	[ServerVar]

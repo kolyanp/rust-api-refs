@@ -7,27 +7,27 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.BloomRenderer), "Unity/Bloom", true)]
 public sealed class Bloom : PostProcessEffectSettings
 {
-	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
 	[Min(0f)]
+	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
 	public FloatParameter intensity;
 
-	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	[Min(0f)]
+	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	public FloatParameter threshold;
 
-	[Range(0f, 1f)]
 	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
+	[Range(0f, 1f)]
 	public FloatParameter softKnee;
 
 	[Tooltip("Clamps pixels to control the bloom amount. Value is in gamma-space.")]
 	public FloatParameter clamp;
 
-	[Range(1f, 10f)]
 	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
+	[Range(1f, 10f)]
 	public FloatParameter diffusion;
 
-	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	[Range(-1f, 1f)]
+	[Tooltip("Distorts the bloom to give an anamorphic look. Negative values distort vertically, positive values distort horizontally.")]
 	public FloatParameter anamorphicRatio;
 
 	[ColorUsage(false, true)]
@@ -38,13 +38,13 @@ public sealed class Bloom : PostProcessEffectSettings
 	[FormerlySerializedAs("mobileOptimized")]
 	public BoolParameter fastMode;
 
-	[DisplayName("Texture")]
 	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
+	[DisplayName("Texture")]
 	public TextureParameter dirtTexture;
 
+	[Tooltip("The intensity of the lens dirtiness.")]
 	[DisplayName("Intensity")]
 	[Min(0f)]
-	[Tooltip("The intensity of the lens dirtiness.")]
 	public FloatParameter dirtIntensity;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

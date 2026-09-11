@@ -110,8 +110,6 @@ public class WireTool : HeldEntity
 	{
 		//IL_01c8: Unknown result type (might be due to invalid IL or missing references)
 		//IL_01cd: Unknown result type (might be due to invalid IL or missing references)
-		//IL_023e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0281: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("WireTool.OnRpcMessage"))
 		{
 			if (rpc == 2640128661u && (Object)(object)player != (Object)null)
@@ -184,40 +182,9 @@ public class WireTool : HeldEntity
 								{
 									return true;
 								}
-								long position = msg.read.Position;
-								WireConnectionMessage val2 = msg.read.Proto<WireConnectionMessage>((WireConnectionMessage)null);
-								try
+								if (!RPC_Server.IsActiveItem.Test(2571821359u, "RPC_MakeConnection", this, player))
 								{
-									foreach (Vector3 linePoint in val2.linePoints)
-									{
-										if (!RPC_Server.InputValidation.Test(linePoint))
-										{
-											return true;
-										}
-									}
-									foreach (WireLineAnchorInfo lineAnchor in val2.lineAnchors)
-									{
-										if (!RPC_Server.InputValidation.Test(lineAnchor.position))
-										{
-											return true;
-										}
-									}
-									foreach (float slackLevel in val2.slackLevels)
-									{
-										if (!RPC_Server.InputValidation.Test(slackLevel))
-										{
-											return true;
-										}
-									}
-									msg.read.Position = position;
-									if (!RPC_Server.IsActiveItem.Test(2571821359u, "RPC_MakeConnection", this, player))
-									{
-										return true;
-									}
-								}
-								finally
-								{
-									((IDisposable)val2)?.Dispose();
+									return true;
 								}
 							}
 							try
@@ -416,9 +383,9 @@ public class WireTool : HeldEntity
 		return false;
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_WireStarted(RPCMessage msg)
 	{
@@ -454,17 +421,16 @@ public class WireTool : HeldEntity
 		}
 	}
 
+	[RPC_Server.FromOwner]
+	[RPC_Server]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxRepeatedElements(54)]
 	[RPC_Server.IgnoreConditional("HasUnlimitedIo", new Type[]
 	{
 		typeof(RPC_Server.MaxRepeatedElements),
 		typeof(RPC_Server.IgnoreProtoFieldOperationLimit)
 	})]
-	[RPC_Server]
-	[RPC_Server.InputValidation(new Type[] { typeof(WireConnectionMessage) })]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.FromOwner]
-	[RPC_Server.IsActiveItem]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -610,10 +576,10 @@ public class WireTool : HeldEntity
 		return true;
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)
@@ -797,10 +763,10 @@ public class WireTool : HeldEntity
 		val2.Dispose();
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server.FromOwner]
 	public void RPC_CancelPendingWire(RPCMessage msg)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)

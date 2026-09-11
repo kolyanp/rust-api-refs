@@ -95,11 +95,10 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 		}
 	}
 
-	[RPC_Server]
-	[RPC_Server.InputValidation(new Type[] { typeof(Design) })]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxRepeatedElements(35)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxRepeatedElements(35)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void ServerSetFireworkDesign(RPCMessage rpc)
 	{
 		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
@@ -221,7 +220,6 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 
 	public override bool OnRpcMessage(BasePlayer player, uint rpc, Message msg)
 	{
-		//IL_00d1: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("PatternFirework.OnRpcMessage"))
 		{
 			if (rpc == 3850129568u && (Object)(object)player != (Object)null)
@@ -241,26 +239,9 @@ public class PatternFirework : MortarFirework, IUGCBrowserEntity
 							{
 								return true;
 							}
-							long position = msg.read.Position;
-							Design val = msg.read.Proto<Design>((Design)null);
-							try
+							if (!RPC_Server.IsVisible.Test(3850129568u, "ServerSetFireworkDesign", this, player, 3f))
 							{
-								foreach (Star star in val.stars)
-								{
-									if (!RPC_Server.InputValidation.Test(star.position))
-									{
-										return true;
-									}
-								}
-								msg.read.Position = position;
-								if (!RPC_Server.IsVisible.Test(3850129568u, "ServerSetFireworkDesign", this, player, 3f))
-								{
-									return true;
-								}
-							}
-							finally
-							{
-								((IDisposable)val)?.Dispose();
+								return true;
 							}
 						}
 						try

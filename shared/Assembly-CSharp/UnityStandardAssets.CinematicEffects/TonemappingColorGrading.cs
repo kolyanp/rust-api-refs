@@ -4,8 +4,8 @@ using UnityEngine;
 namespace UnityStandardAssets.CinematicEffects;
 
 [ExecuteInEditMode]
-[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 [ImageEffectAllowedInSceneView]
+[AddComponentMenu("Image Effects/Cinematic/Tonemapping and Color Grading")]
 public class TonemappingColorGrading : MonoBehaviour
 {
 	[AttributeUsage(AttributeTargets.Field)]
@@ -77,8 +77,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("The highest possible exposure value; adjust this value to modify the darkest areas of your level.")]
 		public float max;
 
-		[Min(0f)]
 		[Tooltip("Speed of linear adaptation. Higher is faster.")]
+		[Min(0f)]
 		public float speed;
 
 		[Tooltip("Displays a luminosity helper in the GameView.")]
@@ -114,8 +114,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Min(0f)]
 		[Tooltip("Adjusts the overall exposure of the scene.")]
+		[Min(0f)]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -162,8 +162,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Custom lookup texture (strip format, e.g. 256x16).")]
 		public Texture texture;
 
-		[Tooltip("Blending factor.")]
 		[Range(0f, 1f)]
+		[Tooltip("Blending factor.")]
 		public float contribution;
 
 		public static LUTSettings defaultSettings => new LUTSettings
@@ -209,21 +209,21 @@ public class TonemappingColorGrading : MonoBehaviour
 	[Serializable]
 	public struct BasicsSettings
 	{
-		[Range(-2f, 2f)]
 		[Tooltip("Sets the white balance to a custom color temperature.")]
+		[Range(-2f, 2f)]
 		public float temperatureShift;
 
 		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		[Range(-2f, 2f)]
 		public float tint;
 
-		[Range(-0.5f, 0.5f)]
 		[Space]
 		[Tooltip("Shift the hue of all colors.")]
+		[Range(-0.5f, 0.5f)]
 		public float hue;
 
-		[Tooltip("Pushes the intensity of all colors.")]
 		[Range(0f, 2f)]
+		[Tooltip("Pushes the intensity of all colors.")]
 		public float saturation;
 
 		[Range(-1f, 1f)]
@@ -234,8 +234,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Brightens or darkens all colors.")]
 		public float value;
 
-		[Range(0f, 2f)]
 		[Space]
+		[Range(0f, 2f)]
 		[Tooltip("Expands or shrinks the overall range of tonal values.")]
 		public float contrast;
 
@@ -243,8 +243,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Contrast gain curve. Controls the steepness of the curve.")]
 		public float gain;
 
-		[Range(0.01f, 5f)]
 		[Tooltip("Applies a pow function to the source.")]
+		[Range(0.01f, 5f)]
 		public float gamma;
 
 		public static BasicsSettings defaultSettings => new BasicsSettings
@@ -348,8 +348,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Internal LUT precision. \"Normal\" is 256x16, \"High\" is 1024x32. Prefer \"Normal\" on mobile devices.")]
 		public ColorGradingPrecision precision;
 
-		[ColorWheelGroup]
 		[Space]
+		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
 		[IndentedGroup]
@@ -360,12 +360,12 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public CurvesSettings curves;
 
-		[Space]
 		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
+		[Space]
 		public bool useDithering;
 
 		[Tooltip("Displays the generated LUT in the top left corner of the GameView.")]
@@ -393,16 +393,16 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SerializeField]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private TonemappingSettings m_Tonemapping = TonemappingSettings.defaultSettings;
 
 	[SettingsGroup]
 	[SerializeField]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SerializeField]
 	[SettingsGroup]
+	[SerializeField]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]

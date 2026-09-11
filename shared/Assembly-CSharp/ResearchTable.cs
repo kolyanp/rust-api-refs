@@ -269,8 +269,8 @@ public class ResearchTable : StorageContainer
 		base.PlayerStoppedLooting(player);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void DoResearch(RPCMessage msg)
 	{
 		//IL_00fb: Unknown result type (might be due to invalid IL or missing references)

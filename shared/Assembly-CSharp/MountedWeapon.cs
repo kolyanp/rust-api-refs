@@ -55,12 +55,12 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[SerializeField]
 	[ItemSelector]
+	[SerializeField]
 	private ItemDefinition _ammoItem;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Weapon")]
+	[SerializeField]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -81,8 +81,8 @@ public class MountedWeapon : StorageContainer
 	[ItemSelector]
 	public ItemDefinition AmmoDef;
 
-	[Header("Mounted Weapon - Second Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Second Weapon")]
 	private ItemDefinition _weapon2;
 
 	[SerializeField]
@@ -139,8 +139,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private ViewModel _viewmodel;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Aim Movement Sounds")]
+	[SerializeField]
 	private SoundDefinition aimMovementSoundDef;
 
 	[SerializeField]
@@ -388,31 +388,9 @@ public class MountedWeapon : StorageContainer
 						{
 							return true;
 						}
-						long position = msg.read.Position;
-						ServersideMountedWeaponSnapshot val = msg.read.Proto<ServersideMountedWeaponSnapshot>((ServersideMountedWeaponSnapshot)null);
-						try
+						if (!RPC_Server.MaxDistance.Test(2998965234u, "SV_ReceiveClientAim", this, player, 3f))
 						{
-							if (!RPC_Server.InputValidation.Test(val.time))
-							{
-								return true;
-							}
-							if (!RPC_Server.InputValidation.Test(val.pitch))
-							{
-								return true;
-							}
-							if (!RPC_Server.InputValidation.Test(val.yaw))
-							{
-								return true;
-							}
-							msg.read.Position = position;
-							if (!RPC_Server.MaxDistance.Test(2998965234u, "SV_ReceiveClientAim", this, player, 3f))
-							{
-								return true;
-							}
-						}
-						finally
-						{
-							((IDisposable)val)?.Dispose();
+							return true;
 						}
 					}
 					try
@@ -1425,10 +1403,9 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(ServersideMountedWeaponSnapshot) })]
+	[RPC_Server.CallsPerSecond(100uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(100uL)]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

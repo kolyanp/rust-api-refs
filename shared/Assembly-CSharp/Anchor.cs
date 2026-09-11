@@ -223,8 +223,8 @@ public class Anchor : DecayEntity, global::IBoatBuildingPiece
 	}
 
 	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void LowerAnchor(RPCMessage msg)
 	{
 		LowerAnchor(msg.player);

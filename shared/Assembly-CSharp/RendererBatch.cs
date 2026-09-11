@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class RendererBatch : MonoBehaviour, IClientComponent, ICustomMaterialReplacer, IWorkshopPreview
 {
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	public int MaxVertexCountOverride;
 
 	[SerializeField]

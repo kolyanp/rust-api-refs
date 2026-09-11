@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DoorWithLock : Door
 {
-	[ItemSelector]
 	[Header("Lock Settings")]
+	[ItemSelector]
 	public GameObjectRef lockObject;
 }

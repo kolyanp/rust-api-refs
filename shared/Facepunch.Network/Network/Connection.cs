@@ -34,15 +34,16 @@ public class Connection
 
 		public void Set(string k, string v)
 		{
+			int num = 0;
 			if (info.TryGetValue(k, out var value))
 			{
-				length -= k.Length + value.Length;
-				info.Remove(v);
+				num = k.Length + value.Length;
 			}
-			if (length + k.Length + v.Length <= MaxClientInfoSize)
+			long num2 = (long)length - (long)num + k.Length + v.Length;
+			if (num2 <= MaxClientInfoSize)
 			{
-				length += k.Length + v.Length;
 				info[k] = v;
+				length = (int)num2;
 			}
 		}
 

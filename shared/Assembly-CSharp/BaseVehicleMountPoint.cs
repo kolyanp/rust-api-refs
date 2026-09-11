@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class BaseVehicleMountPoint : BaseMountable
 {
-	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
 	[Header("BaseVehicleMountPoint")]
+	[Tooltip("Only Set this if you definitely need a VehicleFixedUpdate tick on the seat for some reason")]
 	public bool RequiresVehicleFixedUpdateOnSeat;
 
 	public override bool DirectlyMountable()

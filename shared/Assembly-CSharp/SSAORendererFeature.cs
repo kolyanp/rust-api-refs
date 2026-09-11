@@ -34,15 +34,15 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(0f, 0.99f)]
 	public float Bias;
 
-	[Tooltip("Controls thickness-based occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls thickness-based occlusion contribution.")]
 	public float Thickness;
 
 	[Tooltip("Compute occlusion and blur at half resolution.")]
 	public bool Downsample;
 
-	[Header("Distance Fade")]
 	[Tooltip("Fade the effect out at a distance.")]
+	[Header("Distance Fade")]
 	public bool FadeEnabled;
 
 	[Tooltip("Distance (Unity units) where fading begins.")]
@@ -68,8 +68,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled;
 
-	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	[Range(1f, 4f)]
+	[Tooltip("Blur kernel radius in screen pixels (1–4).")]
 	public int BlurRadius;
 
 	[Range(1f, 4f)]
@@ -80,8 +80,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("0 = blurred / 1 = sharpened.")]
 	public float BlurSharpness;
 
-	[Header("Temporal Filter")]
 	[Tooltip("Accumulate occlusion over multiple frames to reduce noise.")]
+	[Header("Temporal Filter")]
 	public bool FilterEnabled;
 
 	[Range(0f, 1f)]

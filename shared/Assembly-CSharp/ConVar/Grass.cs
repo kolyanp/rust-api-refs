@@ -2,8 +2,8 @@ using Development.Attributes;
 
 namespace ConVar;
 
-[Factory("grass")]
 [ResetStaticFields]
+[Factory("grass")]
 public class Grass : ConsoleSystem
 {
 }

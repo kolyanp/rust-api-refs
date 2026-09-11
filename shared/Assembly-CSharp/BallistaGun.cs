@@ -35,8 +35,8 @@ public class BallistaGun : BaseVehicleSeat
 		Down
 	}
 
-	[Header("Ballista")]
 	[SerializeField]
+	[Header("Ballista")]
 	private bool isMountedOnVehicle;
 
 	[SerializeField]
@@ -69,8 +69,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	protected BaseProjectile.Magazine magazine;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	protected Transform muzzle;
 
 	[SerializeField]
@@ -85,8 +85,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	protected Animator animator;
 
-	[SerializeField]
 	[Tooltip("Applies all of the pitch/yaw transform in late update to allow for blending with animators.")]
+	[SerializeField]
 	protected bool runInLateUpdate;
 
 	[SerializeField]
@@ -112,8 +112,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	public Transform rightHandTarget;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	private FiringEffect[] muzzleFireEffects;
 
 	[SerializeField]
@@ -1077,10 +1077,10 @@ public class BallistaGun : BaseVehicleSeat
 		mounted.inventory.ServerUpdate(0f);
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxRepeatedElements(1)]
-	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server]
 	[RPC_Server.FromMounted]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void SERVER_FireClientProjectile(RPCMessage msg)
 	{
 		//IL_00e4: Unknown result type (might be due to invalid IL or missing references)
@@ -1345,9 +1345,9 @@ public class BallistaGun : BaseVehicleSeat
 		return false;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server.FromMounted]
 	[RPC_Server]
+	[RPC_Server.FromMounted]
+	[RPC_Server.CallsPerSecond(3uL)]
 	private void SERVER_ReloadStart(RPCMessage msg)
 	{
 		//IL_0086: Unknown result type (might be due to invalid IL or missing references)
@@ -1374,9 +1374,9 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server]
-	[RPC_Server.FromMounted]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server.FromMounted]
+	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

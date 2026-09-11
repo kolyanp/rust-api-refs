@@ -8,8 +8,8 @@ public class UI_ServerAdmin : UI_Window
 {
 	public static UI_ServerAdmin Instance;
 
-	[Header("Player List")]
 	[SerializeField]
+	[Header("Player List")]
 	private GameObjectRef playerEntryPrefab;
 
 	[SerializeField]
@@ -43,8 +43,8 @@ public class UI_ServerAdmin : UI_Window
 	[SerializeField]
 	private RectTransform serverInfoParent;
 
-	[SerializeField]
 	[Header("Convars")]
+	[SerializeField]
 	private GameObjectRef convarInfoEntryPrefab;
 
 	[SerializeField]

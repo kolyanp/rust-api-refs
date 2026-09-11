@@ -32,8 +32,8 @@ public abstract class UI_DevListBase : UI_Window
 	[SerializeField]
 	protected FlexVirtualScroll virtualScrollFlex;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected RustButton favouritesButton;
 
 	[SerializeField]

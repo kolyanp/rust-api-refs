@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class ChargeUpIOEntity : IOEntity
 {
-	[Header("ChargeUp IO")]
 	[Tooltip("This amount will be added to the charge meter every second.")]
+	[Header("ChargeUp IO")]
 	public int powerConsumptionWhileCharging = 1;
 
 	public float chargeRequiredToBecomeActive = 10f;

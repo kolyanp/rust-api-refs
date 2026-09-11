@@ -15,6 +15,8 @@ public abstract class Server : BaseNetwork
 
 	public static int MaxReceiveTime = 20;
 
+	public static bool LogInvalidPacketLengths = false;
+
 	public static int MaxReadQueueLength = 5000;
 
 	public static int MaxWriteQueueLength = 5000;

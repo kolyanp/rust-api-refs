@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class UIBackgroundBlur : ListComponent<UIBackgroundBlur>, IClientComponent
 {
-	[SerializeField]
 	[Range(0f, 1f)]
+	[SerializeField]
 	private float amount = 1f;
 
 	[SerializeField]

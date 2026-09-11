@@ -86,8 +86,8 @@ public class DigitSendCodeLock : CodeLock
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.CallsPerSecond(4uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(4uL)]
 	private void OnDigitEntered(RPCMessage rpc)
 	{
 		int num = rpc.read.Int16();

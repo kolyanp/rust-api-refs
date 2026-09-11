@@ -12,8 +12,8 @@ public class DensitySpawnPopulation : SpawnPopulationBase
 {
 	[Header("Spawn Info")]
 	[Tooltip("Usually per square km")]
-	[SerializeField]
 	[FormerlySerializedAs("TargetDensity")]
+	[SerializeField]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;

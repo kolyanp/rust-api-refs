@@ -9,12 +9,12 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 	[Tooltip("The ambient occlusion method to use. \"Multi Scale Volumetric Obscurance\" is higher quality and faster on desktop & console platforms but requires compute shader support.")]
 	public AmbientOcclusionModeParameter mode;
 
-	[Tooltip("The degree of darkness added by ambient occlusion. Higher values produce darker areas.")]
 	[Range(0f, 4f)]
+	[Tooltip("The degree of darkness added by ambient occlusion. Higher values produce darker areas.")]
 	public FloatParameter intensity;
 
-	[Tooltip("The custom color to use for the ambient occlusion. The default is black.")]
 	[ColorUsage(false)]
+	[Tooltip("The custom color to use for the ambient occlusion. The default is black.")]
 	public ColorParameter color;
 
 	[Tooltip("Check this box to mark this Volume as to only affect ambient lighting. This mode is only available with the Deferred rendering path and HDR rendering. Objects rendered with the Forward rendering path won't get any ambient occlusion.")]
@@ -29,8 +29,8 @@ public sealed class AmbientOcclusion : PostProcessEffectSettings
 	[Range(-12f, -1f)]
 	public FloatParameter upsampleTolerance;
 
-	[Range(1f, 10f)]
 	[Tooltip("This modifies the thickness of occluders. It increases the size of dark areas and also introduces a dark halo around objects.")]
+	[Range(1f, 10f)]
 	public FloatParameter thicknessModifier;
 
 	[Range(0f, 1f)]

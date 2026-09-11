@@ -11,8 +11,8 @@ public class ModelViewer_SkyParameters
 	public float skyBrightness = 1f;
 
 	[Tooltip("Current hour of the day.")]
-	[Header("Time of Day")]
 	[Header("                ")]
+	[Header("Time of Day")]
 	public float Hour = 9f;
 
 	[Tooltip("Current day of the month.")]
@@ -37,8 +37,8 @@ public class ModelViewer_SkyParameters
 	[Range(-14f, 14f)]
 	public float UTC;
 
-	[Header("Atmosphere")]
 	[Header("                ")]
+	[Header("Atmosphere")]
 	public float skyContrast = 1.2f;
 
 	public float skyFogginess = 0.2f;

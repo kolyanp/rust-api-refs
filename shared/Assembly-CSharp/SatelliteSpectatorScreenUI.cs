@@ -24,8 +24,8 @@ public class SatelliteSpectatorScreenUI : MonoBehaviour
 	[SerializeField]
 	private RectTransform lockedCrashRect;
 
-	[Header("Text")]
 	[SerializeField]
+	[Header("Text")]
 	private RustText statusText;
 
 	[SerializeField]

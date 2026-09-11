@@ -30,8 +30,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 
 	public RustButton worldmodelButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SkinInfoPanel skinInfoPanel;
 
 	[SerializeField]
@@ -45,8 +45,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float inertiaDecay;
 
-	[SerializeField]
 	[Header("Pan")]
+	[SerializeField]
 	private Vector2 panLimitX;
 
 	[SerializeField]
@@ -62,8 +62,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private Vector2 minMaxFov;
 
-	[Header("Idle")]
 	[SerializeField]
+	[Header("Idle")]
 	private float idleSwaySpeed;
 
 	[SerializeField]

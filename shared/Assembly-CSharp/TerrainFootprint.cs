@@ -34,8 +34,8 @@ public class TerrainFootprint : PrefabAttribute
 	[Tooltip("Falloff distance outside the ring, so filled ground meets untouched terrain without a lip.")]
 	public float Feather;
 
-	[Range(0f, 1f)]
 	[Tooltip("Strength of the raise. Below 1 the fill only partially closes the gap.")]
+	[Range(0f, 1f)]
 	public float Opacity;
 
 	[Tooltip("Fill the whole interior of a closed ring, not just the band at its edge. On is almost always right: a gutter that runs under the rock has to be filled all the way across, or its two banks get raised and the trench between them is left behind as a pair of shoulders. Turn it off only for arches and overhangs, whose passable space this would seal.")]

@@ -74,8 +74,8 @@ public class TimedExplosive : BaseEntity, ServerProjectile.IProjectileImpact
 	[Header("Water")]
 	public float underwaterExplosionDepth;
 
-	[MinMax(0f, 100f)]
 	[Tooltip("Optional: Will fall back to underwaterExplosionEffect or explosionEffect if not assigned.")]
+	[MinMax(0f, 100f)]
 	public MinMax watersurfaceExplosionDepth;
 
 	public bool waterCausesExplosion;

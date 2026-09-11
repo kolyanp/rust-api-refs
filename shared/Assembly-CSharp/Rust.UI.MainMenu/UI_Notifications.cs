@@ -4,8 +4,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_Notifications : UI_Window
 {
-	[Header("Prefab & Container")]
 	[SerializeField]
+	[Header("Prefab & Container")]
 	private GameObjectRef entryPrefab;
 
 	[SerializeField]

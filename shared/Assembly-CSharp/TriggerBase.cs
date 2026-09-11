@@ -46,8 +46,8 @@ public class TriggerBase : BaseMonoBehaviour
 
 	public bool HasAnyEntityContents => !CollectionEx.IsNullOrEmpty(entityContents);
 
-	[ServerVar(Help = "(Generated) When enabled, triggers use an exclude layer mask to filter out specific physics layers from trigger detection; toggling clears or sets all active triggers")]
 	[ClientVar(Help = "(Generated) When enabled, triggers use an exclude layer mask to filter out specific physics layers from trigger detection; toggling clears or sets all active triggers")]
+	[ServerVar(Help = "(Generated) When enabled, triggers use an exclude layer mask to filter out specific physics layers from trigger detection; toggling clears or sets all active triggers")]
 	public static bool UseExcludeLayers
 	{
 		get

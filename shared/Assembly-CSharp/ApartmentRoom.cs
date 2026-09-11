@@ -86,8 +86,8 @@ public class ApartmentRoom : BaseEntity
 	[NonSerialized]
 	public List<BaseEntity> Furniture = new List<BaseEntity>();
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private List<FurnitureSpawn> furnitureSpawns = new List<FurnitureSpawn>();
 
 	private TriggerSafeZoneOverride safeZoneOverrideTrigger;

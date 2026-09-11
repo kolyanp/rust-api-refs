@@ -21,8 +21,8 @@ public class TransformLoopPreview : MonoBehaviour
 	[Min(0.001f)]
 	private float movementDistance = 10f;
 
-	[Min(0f)]
 	[SerializeField]
+	[Min(0f)]
 	private float movementSpeed = 5f;
 
 	[SerializeField]

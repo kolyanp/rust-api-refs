@@ -22,8 +22,8 @@ public class UICornerCut : UIPrimitiveBase
 	[SerializeField]
 	private bool m_makeColumns;
 
-	[SerializeField]
 	[Header("Color the cut bars differently")]
+	[SerializeField]
 	private bool m_useColorUp;
 
 	[SerializeField]

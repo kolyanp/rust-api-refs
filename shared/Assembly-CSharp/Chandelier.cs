@@ -192,8 +192,8 @@ public class Chandelier : IOEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	private void SERVER_AdjustChandelierLength(RPCMessage msg)
 	{
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)

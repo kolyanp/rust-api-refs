@@ -36,28 +36,28 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private WorldSpline worldSpline;
 
+	[SerializeField]
 	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	[Range(0f, 0.75f)]
-	[SerializeField]
 	private float splineTableCloseness;
 
-	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	[SerializeField]
+	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
 	private bool runWalkClippingChecks;
 
 	[SerializeField]
 	[Tooltip("Player body volume tested at each candidate walk pose, in MOUNTABLE space: origin is the pulled spline point, +z points at the cue ball, y=0 is 1m above the player's feet.")]
 	private Bounds walkAreaCheck;
 
-	[Header("Server")]
 	[SerializeField]
+	[Header("Server")]
 	private GameObjectRef mountableRef;
 
 	[SerializeField]
 	private GameObjectRef winEffect;
 
-	[Header("Client")]
 	[SerializeField]
+	[Header("Client")]
 	private List<GameObject> clientRenderingPoolBalls;
 
 	[SerializeField]
@@ -87,13 +87,13 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval;
 
+	[Header("Ball Return")]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
 	[SerializeField]
-	[Header("Ball Return")]
 	private WorldSpline ballReturnPath;
 
-	[SerializeField]
 	[Tooltip("Preplaced basket balls enabled in order as balls arrive, independent of ball ID.")]
+	[SerializeField]
 	private GameObject[] basketBalls;
 
 	[SerializeField]
@@ -488,8 +488,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_StartSinglePlayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -630,8 +630,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))
@@ -640,8 +640,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestCancelGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanCancelGame(msg.player))

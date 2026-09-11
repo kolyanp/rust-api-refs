@@ -770,8 +770,8 @@ public class BoatAI : BaseEntity
 	[CompilerGenerated]
 	private Vector3 _003CProtectionCenter_003Ek__BackingField;
 
-	[Header("Boat AI - Scientists")]
 	[SerializeField]
+	[Header("Boat AI - Scientists")]
 	private bool _autoFillWithScientists;
 
 	[SerializeField]
@@ -807,8 +807,8 @@ public class BoatAI : BaseEntity
 
 	public const string DeepSeaPTBoatPath = "assets/content/vehicles/boats/ptboat/ptboat.deepsea.prefab";
 
-	[Header("Boat AI")]
 	[SerializeField]
+	[Header("Boat AI")]
 	private BaseBoat _boat;
 
 	[Header("Boat AI - General")]
@@ -824,8 +824,8 @@ public class BoatAI : BaseEntity
 	[SerializeField]
 	private float _searchRange = 50f;
 
-	[SerializeField]
 	[Header("Boat AI - Collision Avoidance")]
+	[SerializeField]
 	private float _awarenessAngle;
 
 	[SerializeField]

@@ -27,8 +27,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Image gestureIcon;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform wheelCenter;
 
 	[SerializeField]

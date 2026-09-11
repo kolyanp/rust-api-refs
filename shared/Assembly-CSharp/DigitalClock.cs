@@ -76,26 +76,9 @@ public class DigitalClock : IOEntity, INotifyLOD
 							{
 								return true;
 							}
-							long position = msg.read.Position;
-							DigitalClockMessage val = msg.read.Proto<DigitalClockMessage>((DigitalClockMessage)null);
-							try
+							if (!RPC_Server.IsVisible.Test(2287159130u, "RPC_SetAlarms", this, player, 3f))
 							{
-								foreach (DigitalClockAlarm alarm in val.alarms)
-								{
-									if (!RPC_Server.InputValidation.Test(alarm.time))
-									{
-										return true;
-									}
-								}
-								msg.read.Position = position;
-								if (!RPC_Server.IsVisible.Test(2287159130u, "RPC_SetAlarms", this, player, 3f))
-								{
-									return true;
-								}
-							}
-							finally
-							{
-								((IDisposable)val)?.Dispose();
+								return true;
 							}
 						}
 						try
@@ -196,11 +179,10 @@ public class DigitalClock : IOEntity, INotifyLOD
 		}
 	}
 
-	[RPC_Server.InputValidation(new Type[] { typeof(DigitalClockMessage) })]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxRepeatedElements(5)]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RPC_SetAlarms(RPCMessage msg)
 	{
 		if (!CanPlayerAdmin(msg.player))

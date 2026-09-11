@@ -38,7 +38,7 @@ public abstract class AnimationSubSystem : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected bool DisableSpineIK;
 
-	[SerializeField]
 	[SubSystemVariable]
+	[SerializeField]
 	private PriorityLevels Priority = PriorityLevels.Medium;
 }

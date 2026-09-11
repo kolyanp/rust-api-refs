@@ -20,8 +20,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 
 	private Action resetBlockExcludeLayersAction;
 
-	[Header("BaseSculpture")]
 	[SerializeField]
+	[Header("BaseSculpture")]
 	private MeshFilter targetMesh;
 
 	[SerializeField]
@@ -338,8 +338,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		flagsUpdateScope.Set(Flags.Locked, b: true);
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void SV_UnlockSculpture(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract() || !CanUpdateSculpture(msg.player, ignoreLock: true))
@@ -380,8 +380,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 		ServerUpdateProcessQueue.Clear();
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.MaxDistance(3f)]
 	private void SV_SendSculptureUpdate(RPCMessage msg)
 	{

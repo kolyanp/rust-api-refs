@@ -722,8 +722,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool forceRefreshCollidersData;
 
-	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
 	[FPD_Percentage(0f, 1f, false, true, "%", false)]
+	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
 	public float SpineAnimatorAmount;
 
 	private Quaternion Rotate180;
@@ -854,12 +854,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float PosSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
+	[Range(0f, 1f)]
 	public float RotSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
+	[Range(0f, 1f)]
 	public float MaxStretching;
 
 	[Range(0f, 1f)]
@@ -870,8 +870,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
 	public float AngleLimit;
 
-	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
 	[Range(0f, 1f)]
+	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
 	public float LimitSmoother;
 
 	[Range(0f, 15f)]
@@ -937,8 +937,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If you want to continue checking collision if segment collides with one collider (very useful for example when you using gravity power with ground)")]
 	public bool DetailedCollision;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private bool _CheckedPivot;
 
 	private bool updateSpineAnimator;

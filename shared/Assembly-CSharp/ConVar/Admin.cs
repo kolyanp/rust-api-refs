@@ -26,8 +26,8 @@ public class Admin : ConsoleSystem
 		Downgrade
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct PlayerInfo
 	{
 		public string SteamID;
@@ -57,8 +57,8 @@ public class Admin : ConsoleSystem
 		public ulong TeamID;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct PlayerIDInfo
 	{
 		public string SteamID;
@@ -72,8 +72,8 @@ public class Admin : ConsoleSystem
 		public ulong EntityId;
 	}
 
-	[Preserve]
 	[JsonModel]
+	[Preserve]
 	public struct ServerInfoOutput
 	{
 		public string Hostname;

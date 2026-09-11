@@ -46,8 +46,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private UI_ServerMap _map;
 
-	[SerializeField]
 	[Header("References - System Config")]
+	[SerializeField]
 	private GameObject _requiredSystemConfigSection;
 
 	[SerializeField]
@@ -72,8 +72,8 @@ public class UI_ConnectModal : UI_Window
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[Header("Info Box References")]
 	[SerializeField]
+	[Header("Info Box References")]
 	private RustText _playerCount;
 
 	[SerializeField]

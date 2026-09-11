@@ -808,6 +808,19 @@ public class Server : ConsoleSystem
 		}
 	}
 
+	[ServerVar(Saved = true, Help = "Logs network packets rejected for being empty or not byte-aligned")]
+	public static bool log_invalid_packet_lengths
+	{
+		get
+		{
+			return Network.Server.LogInvalidPacketLengths;
+		}
+		set
+		{
+			Network.Server.LogInvalidPacketLengths = value;
+		}
+	}
+
 	[ServerVar(Help = "(Generated) Maximum number of simultaneous connections allowed from the same IP address; helps mitigate connection-flooding attacks (clamped 1–1000)")]
 	public static int maxconnectionsperip
 	{
