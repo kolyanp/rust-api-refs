@@ -457,6 +457,7 @@ public class RustNavmesh : IDisposable
 		//IL_006d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0077: Unknown result type (might be due to invalid IL or missing references)
 		//IL_007c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00ab: Unknown result type (might be due to invalid IL or missing references)
 		if (!CullTilesFarFromShore)
 		{
 			return false;
@@ -471,15 +472,23 @@ public class RustNavmesh : IDisposable
 		{
 			return false;
 		}
-		Bounds val = rcExpandTileBounds(rcCalcTileBounds(new Vector2Int(tx, ty)));
-		float coarseDistanceToShore = texturing.GetCoarseDistanceToShore(((Bounds)(ref val)).center);
+		Bounds worldBounds = rcExpandTileBounds(rcCalcTileBounds(new Vector2Int(tx, ty)));
+		float coarseDistanceToShore = texturing.GetCoarseDistanceToShore(((Bounds)(ref worldBounds)).center);
 		if (!float.IsFinite(coarseDistanceToShore))
 		{
 			return false;
 		}
-		Vector2 val2 = new Vector2(((Bounds)(ref val)).extents.x, ((Bounds)(ref val)).extents.z);
-		float magnitude = ((Vector2)(ref val2)).magnitude;
-		return coarseDistanceToShore - magnitude > maxShoreDistance;
+		Vector2 val = new Vector2(((Bounds)(ref worldBounds)).extents.x, ((Bounds)(ref worldBounds)).extents.z);
+		float magnitude = ((Vector2)(ref val)).magnitude;
+		if (coarseDistanceToShore - magnitude <= maxShoreDistance)
+		{
+			return false;
+		}
+		if (!RustNavigation.HasTunnelRegions || (Object)(object)RustNavigation.Instance == (Object)null)
+		{
+			return true;
+		}
+		return !RustNavigation.Instance.IsInTunnelRegion(worldBounds);
 	}
 
 	public bool GetTilePolysInternal(int tx, int ty, List<Vector3> polys)
@@ -874,7 +883,7 @@ public class RustNavmesh : IDisposable
 				{
 					ManagedNavPayload managedNavPayload = new ManagedNavPayload
 					{
-						payloadVersion = 4,
+						payloadVersion = 5,
 						buildParams = BuildParams,
 						buildParamsHiRes = BuildParamsHiRes,
 						currentNavmeshBounds = CurrentNavmeshBounds,
@@ -938,9 +947,9 @@ public class RustNavmesh : IDisposable
 					return null;
 				}
 				ManagedNavPayload payload = System.Runtime.CompilerServices.Unsafe.Read<ManagedNavPayload>((void*)managedBlob);
-				if (payload.payloadVersion != 4)
+				if (payload.payloadVersion != 5)
 				{
-					RustNavigation.LogError($"Unsupported managed payload version {payload.payloadVersion}");
+					RustNavigation.LogWarning($"Saved navmesh is payload version {payload.payloadVersion}, this build wants {5}. Rebuilding from scratch.");
 					return null;
 				}
 				if (payload.pendingTileCount < 0 || managedBlobSize != System.Runtime.CompilerServices.Unsafe.SizeOf<ManagedNavPayload>() + payload.pendingTileCount * 4 * 2)

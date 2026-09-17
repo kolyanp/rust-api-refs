@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using ConVar;
+using Rust.Ai;
+using Rust.Ai.Gen2.Nav;
 using UnityEngine;
 
 public class GenerateDungeonBase : ProceduralComponent
@@ -795,6 +798,56 @@ public class GenerateDungeonBase : ProceduralComponent
 			wakeAIZ.size = ((Bounds)(ref aIInformationZone.bounds)).extents + new Vector3(100f, 100f, 100f);
 			wakeAIZ.Init(aIInformationZone);
 		}
+	}
+
+	public static void SetupNavmesh()
+	{
+		//IL_0099: Unknown result type (might be due to invalid IL or missing references)
+		//IL_009e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a6: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00d5: Unknown result type (might be due to invalid IL or missing references)
+		if (AI.useUnityNavmesh || AiManager.nav_disable || !AI.npc_enable || (Object)(object)TerrainMeta.Path == (Object)null || TerrainMeta.Path.DungeonBaseEntrances == null)
+		{
+			return;
+		}
+		if ((Object)(object)RustNavigation.Instance == (Object)null)
+		{
+			NavMeshTools.LogWarning("No RustNavigation instance, the underwater labs will have no navmesh at all.");
+			return;
+		}
+		foreach (DungeonBaseInfo dungeonBaseEntrance in TerrainMeta.Path.DungeonBaseEntrances)
+		{
+			if (!((Object)(object)dungeonBaseEntrance == (Object)null))
+			{
+				if (!TryGetStructureBounds(dungeonBaseEntrance, out var bounds))
+				{
+					NavMeshTools.LogWarning("Underwater lab " + ((Object)dungeonBaseEntrance).name + " has no bakeable colliders, it will have no navmesh at all.");
+					continue;
+				}
+				GameObject val = new GameObject("LabNavmesh");
+				val.transform.position = ((Bounds)(ref bounds)).center;
+				val.transform.SetParent(((Component)dungeonBaseEntrance).gameObject.transform, true);
+				IndependantNavmesh independantNavmesh = val.AddComponent<IndependantNavmesh>();
+				independantNavmesh.size = ((Bounds)(ref bounds)).size;
+				independantNavmesh.forceHiRes = true;
+				RustNavigation.Instance.AddNavmesh(independantNavmesh);
+			}
+		}
+	}
+
+	private static bool TryGetStructureBounds(DungeonBaseInfo dungeon, out Bounds bounds)
+	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		bool hasFootprint = false;
+		bounds = default(Bounds);
+		NavMeshTools.EncapsulateNavmeshColliders(((Component)dungeon).gameObject, ref bounds, ref hasFootprint);
+		foreach (GameObject link in dungeon.Links)
+		{
+			NavMeshTools.EncapsulateNavmeshColliders(link, ref bounds, ref hasFootprint);
+		}
+		return hasFootprint;
 	}
 
 	public GenerateDungeonBase()

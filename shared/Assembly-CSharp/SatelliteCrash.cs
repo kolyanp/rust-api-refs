@@ -137,8 +137,8 @@ public class SatelliteCrash : BaseCombatEntity
 
 	public float startHeight = 200f;
 
-	[Tooltip("Maps satellite mass (kg) to the loot multiplier. The multiplier scales fireball count and the total crate loot budget (crate count up to Max Crates Per Crash, overflow into extra items per crate). Flat outside the first/last key.")]
 	[Header("Loot Scaling")]
+	[Tooltip("Maps satellite mass (kg) to the loot multiplier. The multiplier scales fireball count and the total crate loot budget (crate count up to Max Crates Per Crash, overflow into extra items per crate). Flat outside the first/last key.")]
 	public AnimationCurve massToLootScale = AnimationCurve.Linear(1000f, 0.5f, 6000f, 3f);
 
 	[Tooltip("Hard cap on crates spawned per crash, regardless of the loot multiplier. Budget beyond this goes into extra items per crate.")]

@@ -12,8 +12,8 @@ public struct CheckBoundsJobIndirect : IJob
 	[WriteOnly]
 	public NativeList<int> OverlapIndices;
 
-	[ReadOnly]
 	[NativeDisableContainerSafetyRestriction]
+	[ReadOnly]
 	public CoarseQueryGrid Grid;
 
 	[ReadOnly]

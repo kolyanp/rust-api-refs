@@ -25,8 +25,8 @@ public class MissionObjective_Move : MissionObjective
 	[Tooltip("If set, player must be mounted on this mountable for objective to complete.")]
 	public BaseMountable requiredMountable;
 
-	[InspectorName("Should Ping (Tutorial Only)")]
 	[Tooltip("If true, displays a UI objective marker for this objective. Only works if at Tutorial Island.")]
+	[InspectorName("Should Ping (Tutorial Only)")]
 	public bool shouldPing;
 
 	[SerializeField]

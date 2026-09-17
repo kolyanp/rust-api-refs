@@ -55,12 +55,12 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private bool _clientAuthority;
 
-	[ItemSelector]
 	[SerializeField]
+	[ItemSelector]
 	private ItemDefinition _ammoItem;
 
-	[Header("Mounted Weapon - Weapon")]
 	[SerializeField]
+	[Header("Mounted Weapon - Weapon")]
 	private ItemDefinition _weapon;
 
 	[SerializeField]
@@ -132,8 +132,8 @@ public class MountedWeapon : StorageContainer
 	[SerializeField]
 	private float _fovMultiplier = 1f;
 
-	[SerializeField]
 	[Header("Mounted Weapon - Viewmodel")]
+	[SerializeField]
 	private bool _useViewmodel;
 
 	[SerializeField]
@@ -1403,9 +1403,9 @@ public class MountedWeapon : StorageContainer
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(100uL)]
 	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(100uL)]
 	private void SV_ReceiveClientAim(RPCMessage msg)
 	{
 		//IL_00a3: Unknown result type (might be due to invalid IL or missing references)

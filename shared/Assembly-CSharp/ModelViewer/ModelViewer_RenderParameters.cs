@@ -52,8 +52,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 2f)]
 	public float sunShadowBias;
 
-	[Header("                ")]
 	[Header("Contact Shadows")]
+	[Header("                ")]
 	public bool enableContactShadows;
 
 	[Range(0f, 1f)]
@@ -90,8 +90,8 @@ public class ModelViewer_RenderParameters
 
 	public Color Tint;
 
-	[Tooltip("Radius spread of the occlusion.")]
 	[Range(0f, 32f)]
+	[Tooltip("Radius spread of the occlusion.")]
 	public float Radius;
 
 	[Tooltip("Power exponent attenuation of the occlusion.")]
@@ -102,8 +102,8 @@ public class ModelViewer_RenderParameters
 	[Range(0f, 0.99f)]
 	public float Bias;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the thickness occlusion contribution.")]
+	[Range(0f, 1f)]
 	public float Thickness;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -124,16 +124,16 @@ public class ModelViewer_RenderParameters
 
 	public Color FadeToTint;
 
-	[Tooltip("Final Radius parameter.")]
 	[Range(0f, 32f)]
+	[Tooltip("Final Radius parameter.")]
 	public float FadeToRadius;
 
 	[Tooltip("Final PowerExponent parameter.")]
 	[Range(0f, 16f)]
 	public float FadeToPowerExponent;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Thickness parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToThickness;
 
 	[Header("Reflections")]

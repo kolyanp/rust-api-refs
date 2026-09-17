@@ -122,8 +122,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[NonSerialized]
 	public HorseModifiers modifiers;
 
-	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
 	[ServerVar]
+	[Help("Scale all rideable animal dung production rates by this value. 0 will disable dung production.")]
 	public static float dungTimeScale;
 
 	private float nextEatTime;
@@ -242,8 +242,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	private float nextDecayTime;
 
-	[Header("Horse")]
 	[SerializeField]
+	[Header("Horse")]
 	private Animator animator;
 
 	[SerializeField]
@@ -303,9 +303,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public AnimationCurve slopeAngleSpeedFactor;
 
-	[Header("Collision Damage")]
 	[SerializeField]
 	[Space]
+	[Header("Collision Damage")]
 	private GameObjectRef collisionEffect;
 
 	[Tooltip("Ignore low magnitude so e.g. Players running into stationary vehicles doesn't trigger damage or FX")]
@@ -316,8 +316,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[SerializeField]
 	private float maxCollisionDamageForce;
 
-	[SerializeField]
 	[Tooltip("Adjust this away from 1.0 if collision damage to this vehicle seems too high or low")]
+	[SerializeField]
 	private float collisionDamageMultiplier;
 
 	[SerializeField]
@@ -384,8 +384,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 
 	public Sprite SwapToDoubleIcon;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	protected bool[] hasItemTokenCache;
 
 	[Space]
@@ -426,8 +426,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 	[Min(0f)]
 	public float healingMultiplier;
 
-	[Min(0f)]
 	[Tooltip("How much stamina to replenish when healing. Value is not final - scaled further if we have a high stamina core.")]
+	[Min(0f)]
 	public float staminaReplenishAmount;
 
 	public ItemDefinition[] prohibitedMedicalItems;
@@ -1037,8 +1037,8 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	private void SERVER_OpenLoot(RPCMessage rpc)
 	{
 		if (storageInventory == null)
@@ -3076,9 +3076,9 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	public void SERVER_Lead(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -3542,10 +3542,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}, 1f);
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SERVER_RequestTow(RPCMessage msg)
 	{
 		//IL_0039: Unknown result type (might be due to invalid IL or missing references)
@@ -3557,10 +3557,10 @@ public class RidableHorse : BaseVehicle, IInventoryProvider, IDetector, HitchTro
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void SERVER_RequestDetach(RPCMessage msg)
 	{
 		//IL_0049: Unknown result type (might be due to invalid IL or missing references)

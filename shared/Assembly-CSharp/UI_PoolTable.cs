@@ -34,8 +34,8 @@ public class UI_PoolTable : UIDialog, IShadowGroupVisibility
 	[SerializeField]
 	private RawImage opponentAvatar;
 
-	[Header("Current Turn")]
 	[SerializeField]
+	[Header("Current Turn")]
 	private GameObject localTurnBall;
 
 	[SerializeField]

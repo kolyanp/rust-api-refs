@@ -14,8 +14,8 @@ public class Pooltable : BaseCombatEntity
 
 	private TimeSince timeSinceLastMove;
 
-	[SerializeField]
 	[Header("Shared")]
+	[SerializeField]
 	private float ballRadius;
 
 	[SerializeField]
@@ -37,12 +37,12 @@ public class Pooltable : BaseCombatEntity
 	private WorldSpline worldSpline;
 
 	[SerializeField]
-	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	[Range(0f, 0.75f)]
+	[Tooltip("Fraction of the gap between the walking spline and the table edge to close, so players stand the same bit closer everywhere on the loop.")]
 	private float splineTableCloseness;
 
-	[SerializeField]
 	[Tooltip("Block walking the mountable into geometry (e.g. an adjacent boat's hull). Turn off to restore pre-check behaviour.")]
+	[SerializeField]
 	private bool runWalkClippingChecks;
 
 	[SerializeField]
@@ -87,8 +87,8 @@ public class Pooltable : BaseCombatEntity
 	[SerializeField]
 	private float ballCollisionSoundInterval;
 
-	[Header("Ball Return")]
 	[Tooltip("All pocketed balls spawn a fake visual at the start of this path and follow it into the basket.")]
+	[Header("Ball Return")]
 	[SerializeField]
 	private WorldSpline ballReturnPath;
 
@@ -498,8 +498,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_StartMultiplayerGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract())
@@ -546,8 +546,8 @@ public class Pooltable : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_JoinGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && msg.player.CanInteract() && gameController != null)
@@ -630,8 +630,8 @@ public class Pooltable : BaseCombatEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_RequestResetGame(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && CanResetGame(msg.player))

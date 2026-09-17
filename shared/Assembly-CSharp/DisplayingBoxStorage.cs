@@ -50,8 +50,8 @@ public class DisplayingBoxStorage : BoxStorage, IPrivilegeUpdateReceiver
 	[Header("WARNING: DO NOT REARRANGE, please only replace prefabs with upgraded versions if necessary, don't change the order of existing ones")]
 	public GameObjectRef[] itemDisplayPrefabs;
 
-	[Header("Okay you're good now. You can rearrange these.")]
 	[Tooltip("Overrides for specific items to display in certain categories.")]
+	[Header("Okay you're good now. You can rearrange these.")]
 	public List<DisplayItemOverride> displayItemOverrides;
 
 	[Tooltip("Anchors for displaying the conditional prefabs, add as many as you want.")]

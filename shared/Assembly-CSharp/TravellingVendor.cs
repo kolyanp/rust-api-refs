@@ -64,8 +64,8 @@ public class TravellingVendor : BaseEntity, VehicleChassisVisuals<TravellingVend
 
 	public SoundPlayer BuySound;
 
-	[Header("References")]
 	[SerializeField]
+	[Header("References")]
 	private VisualCarWheel wheelFL;
 
 	[SerializeField]

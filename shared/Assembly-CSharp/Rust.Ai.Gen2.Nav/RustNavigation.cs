@@ -27,6 +27,10 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 
 	private static readonly RecastWrapper.LogCallback logMessageDelegate = LogMessage;
 
+	private const int TUNNEL_REGION_CELL_SIZE = 32;
+
+	private readonly Dictionary<(int x, int z), List<Bounds>> tunnelRegions = new Dictionary<(int, int), List<Bounds>>();
+
 	private static readonly HashSet<BasePlayer> drawViewers = new HashSet<BasePlayer>();
 
 	private static readonly Dictionary<IndependantNavmesh, int> drawNavIds = new Dictionary<IndependantNavmesh, int>();
@@ -74,6 +78,8 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		}
 	}
 
+	public static bool HasTunnelRegions { get; private set; }
+
 	[MonoPInvokeCallback(typeof(RecastWrapper.LogCallback))]
 	public static void LogMessage(string message)
 	{
@@ -87,7 +93,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 	{
 		if (AI.useUnityNavmesh)
 		{
-			LogError("Trying to use new navmesh despite -useNewNavmesh not being set on server boot.");
+			LogError("Trying to use new navmesh despite -useOldNavmesh being set on server boot.");
 		}
 		return !AI.useUnityNavmesh;
 	}
@@ -96,7 +102,7 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 	{
 		if (!AI.useUnityNavmesh)
 		{
-			LogError("Trying to use unity navmesh despite -useNewNavmesh being set on server boot.");
+			LogError("Trying to use unity navmesh despite -useOldNavmesh not being set on server boot.");
 		}
 		return AI.useUnityNavmesh;
 	}
@@ -199,6 +205,99 @@ public class RustNavigation : FacepunchBehaviour, IServerComponent
 		{
 			Navmeshes.Remove(navmesh);
 		}
+	}
+
+	public void AddTunnelRegion(Bounds worldBounds)
+	{
+		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0059: Unknown result type (might be due to invalid IL or missing references)
+		GetTunnelCellRange(worldBounds, out var minX, out var maxX, out var minZ, out var maxZ);
+		for (int i = minX; i <= maxX; i++)
+		{
+			for (int j = minZ; j <= maxZ; j++)
+			{
+				if (!tunnelRegions.TryGetValue((i, j), out var value))
+				{
+					value = new List<Bounds>();
+					tunnelRegions.Add((i, j), value);
+				}
+				if (!value.Contains(worldBounds))
+				{
+					value.Add(worldBounds);
+				}
+			}
+		}
+		HasTunnelRegions = tunnelRegions.Count > 0;
+	}
+
+	public void ClearTunnelRegions()
+	{
+		tunnelRegions.Clear();
+		HasTunnelRegions = false;
+	}
+
+	public bool IsInTunnelRegion(Bounds worldBounds)
+	{
+		//IL_000f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
+		//IL_002d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0067: Unknown result type (might be due to invalid IL or missing references)
+		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0070: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0075: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0079: Unknown result type (might be due to invalid IL or missing references)
+		//IL_007e: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0080: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0087: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0090: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0097: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b0: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b7: Unknown result type (might be due to invalid IL or missing references)
+		if (tunnelRegions.Count == 0)
+		{
+			return false;
+		}
+		GetTunnelCellRange(worldBounds, out var minX, out var maxX, out var minZ, out var maxZ);
+		Vector3 min = ((Bounds)(ref worldBounds)).min;
+		Vector3 max = ((Bounds)(ref worldBounds)).max;
+		for (int i = minX; i <= maxX; i++)
+		{
+			for (int j = minZ; j <= maxZ; j++)
+			{
+				if (!tunnelRegions.TryGetValue((i, j), out var value))
+				{
+					continue;
+				}
+				foreach (Bounds item in value)
+				{
+					Bounds current = item;
+					Vector3 min2 = ((Bounds)(ref current)).min;
+					Vector3 max2 = ((Bounds)(ref current)).max;
+					if (min2.x <= max.x && max2.x >= min.x && min2.z <= max.z && max2.z >= min.z)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private static void GetTunnelCellRange(Bounds worldBounds, out int minX, out int maxX, out int minZ, out int maxZ)
+	{
+		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
+		//IL_001c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
+		//IL_004f: Unknown result type (might be due to invalid IL or missing references)
+		minX = Mathf.FloorToInt(((Bounds)(ref worldBounds)).min.x / 32f);
+		maxX = Mathf.FloorToInt(((Bounds)(ref worldBounds)).max.x / 32f);
+		minZ = Mathf.FloorToInt(((Bounds)(ref worldBounds)).min.z / 32f);
+		maxZ = Mathf.FloorToInt(((Bounds)(ref worldBounds)).max.z / 32f);
 	}
 
 	public void Tick()

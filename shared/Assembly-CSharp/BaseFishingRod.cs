@@ -291,8 +291,8 @@ public class BaseFishingRod : HeldEntity
 	}
 
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
-	[RPC_Server]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
 	private void Server_RequestCast(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -386,10 +386,10 @@ public class BaseFishingRod : HeldEntity
 		ClientRPC(RpcTarget.NetworkGroup("Client_ResetLine"), (int)reason);
 	}
 
-	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(1uL)]
 	private void Server_OverfishingCheck(RPCMessage msg)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
@@ -672,8 +672,8 @@ public class BaseFishingRod : HeldEntity
 		Server_Cancel(FailReason.Success);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void Server_Cancel(RPCMessage msg)
 	{
 		if (CurrentState != CatchState.Caught)

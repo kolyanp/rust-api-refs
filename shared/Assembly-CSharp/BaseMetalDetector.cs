@@ -276,10 +276,10 @@ public class BaseMetalDetector : HeldEntity
 		inRangeValidSources.Clear();
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
+	[RPC_Server.FromOwner]
+	[RPC_Server]
 	private void RPC_RequestFlag(RPCMessage rpc)
 	{
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)

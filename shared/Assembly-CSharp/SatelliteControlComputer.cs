@@ -94,15 +94,15 @@ public class SatelliteControlComputer : BaseMountable
 	[Header("Satellite Computer")]
 	public GameObjectRef menuPrefab;
 
-	[Tooltip("Pre-spawned world-space monitor UI (a child of this entity's prefab, sitting just behind the glass) that renders the read-only crash map for everyone nearby. Initialised in ClientInit.")]
 	[Header("Spectator Screen")]
+	[Tooltip("Pre-spawned world-space monitor UI (a child of this entity's prefab, sitting just behind the glass) that renders the read-only crash map for everyone nearby. Initialised in ClientInit.")]
 	public SatelliteSpectatorScreenUI spectatorScreen;
 
 	[Tooltip("Pre-spawned world-space monitor UI (a prefab child like the spectator screen) that shows only the countdown to impact. Initialised in ClientInit.")]
 	public SatelliteCountdownScreenUI countdownScreen;
 
-	[Tooltip("Items the player must have, and which are consumed, to power up the terminal. amount is the minimum required/consumed; set maxAmount higher to roll a random cost in that range each session (leave maxAmount at -1/0 for a fixed cost).")]
 	[Header("Power")]
+	[Tooltip("Items the player must have, and which are consumed, to power up the terminal. amount is the minimum required/consumed; set maxAmount higher to roll a random cost in that range each session (leave maxAmount at -1/0 for a fixed cost).")]
 	public List<ItemAmountRanged> powerCost = new List<ItemAmountRanged>();
 
 	private List<int> resolvedPowerCost = new List<int>();
@@ -120,8 +120,8 @@ public class SatelliteControlComputer : BaseMountable
 	[Tooltip("Prevent-building volume spawned at the locked crash site to reserve the area during descent")]
 	public GameObjectRef preventBuildingPrefab;
 
-	[Header("Siren")]
 	[Tooltip("Pre-spawned child of this entity's prefab (must live inside the entity prefab, not the launch site — monument-authored references don't reach the client entity). Leave disabled in the prefab; enabled only while a satellite is descending. Optional — skipped when unset.")]
+	[Header("Siren")]
 	public Transform launchSiren;
 
 	[Tooltip("Inverse of launchSiren — enabled whenever launchSiren is not. Same prefab rules: must be a pre-spawned child of this entity's prefab. Optional — skipped when unset.")]
@@ -603,8 +603,8 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void RPC_RequestControlState(RPCMessage msg)
 	{
 		if (!((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -640,8 +640,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server.CallsPerSecond(2uL)]
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_PowerUp(RPCMessage msg)
 	{
 		if (HasFlag(Flags.Reserved8) || HasFlag(Flags.Reserved10))
@@ -799,8 +799,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server]
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenFuelStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;
@@ -835,9 +835,9 @@ public class SatelliteControlComputer : BaseMountable
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_SelectSatellite(RPCMessage msg)
 	{
 		if (State == ControlState.Ready && !((Object)(object)msg.player == (Object)null) && !((Object)(object)msg.player != (Object)(object)GetMounted()))
@@ -1152,8 +1152,8 @@ public class SatelliteControlComputer : BaseMountable
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	public void RPC_LockTrajectory(RPCMessage msg)
 	{
 		//IL_0051: Unknown result type (might be due to invalid IL or missing references)
@@ -1573,8 +1573,8 @@ public class SatelliteControlComputer : BaseMountable
 
 	[Menu.ShowIf("Menu_LoadFuel_ShowIf")]
 	[Menu.Icon("open")]
-	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
 	[Menu("satcomp.loadfuel", "Open Inventory", Order = 10)]
+	[Menu.Description("satcomp.loadfuel_desc", "Open the terminal's storage")]
 	public void Menu_LoadFuel(BasePlayer player)
 	{
 	}

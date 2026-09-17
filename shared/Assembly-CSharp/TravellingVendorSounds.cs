@@ -66,8 +66,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve movementLoopGainCurve;
 
-	[SerializeField]
 	[Header("Brakes")]
+	[SerializeField]
 	private SoundDefinition brakeLoopDef;
 
 	[SerializeField]
@@ -76,8 +76,8 @@ public class TravellingVendorSounds : MonoBehaviour
 	[SerializeField]
 	private float brakeHissCooldown = 2f;
 
-	[Header("Misc")]
 	[SerializeField]
+	[Header("Misc")]
 	private SoundDefinition angryHornSoundDef;
 
 	[SerializeField]

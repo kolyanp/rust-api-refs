@@ -16,8 +16,8 @@ public abstract class ProceduralComponent : MonoBehaviour
 	[Space]
 	public string Description = "Procedural Component";
 
-	[Space]
 	[Header("Map Creator Settings")]
+	[Space]
 	public bool HideInMapCreator;
 
 	public string MapCreatorCategory = "";

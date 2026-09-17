@@ -17,15 +17,15 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 
 	private List<UI_Page> pageInstances = new List<UI_Page>();
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_Popup _genericPopupPrefab;
 
 	[SerializeField]
 	private Transform _genericPopupParent;
 
-	[SerializeField]
 	[Header("Background Image Settings")]
+	[SerializeField]
 	private CanvasGroup _homeVideoOverlay;
 
 	[SerializeField]

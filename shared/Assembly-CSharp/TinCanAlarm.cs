@@ -417,8 +417,8 @@ public class TinCanAlarm : StorageContainer, IDetector
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void SERVER_StartArming(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

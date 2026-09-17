@@ -515,44 +515,45 @@ public class BackgroundTileBuilder : IDisposable
 		//IL_0038: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003d: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0072: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ea: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0100: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0105: Unknown result type (might be due to invalid IL or missing references)
-		//IL_010c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0111: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0201: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_020f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_021d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0224: Unknown result type (might be due to invalid IL or missing references)
+		//IL_00b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0112: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0128: Unknown result type (might be due to invalid IL or missing references)
+		//IL_012d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0134: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0139: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0229: Unknown result type (might be due to invalid IL or missing references)
-		//IL_022e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0233: Unknown result type (might be due to invalid IL or missing references)
-		//IL_01c9: Unknown result type (might be due to invalid IL or missing references)
-		//IL_024b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0252: Unknown result type (might be due to invalid IL or missing references)
-		//IL_025e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0268: Unknown result type (might be due to invalid IL or missing references)
-		//IL_026d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_027b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0282: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0287: Unknown result type (might be due to invalid IL or missing references)
-		//IL_028c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0291: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02ac: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02d6: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02db: Unknown result type (might be due to invalid IL or missing references)
-		//IL_02f9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0232: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0237: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0245: Unknown result type (might be due to invalid IL or missing references)
+		//IL_024c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0251: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0256: Unknown result type (might be due to invalid IL or missing references)
+		//IL_025b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_01f1: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0273: Unknown result type (might be due to invalid IL or missing references)
+		//IL_027a: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0286: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0290: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0295: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02a3: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02aa: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02af: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b4: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02b9: Unknown result type (might be due to invalid IL or missing references)
+		//IL_02d4: Unknown result type (might be due to invalid IL or missing references)
 		//IL_02fe: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0348: Unknown result type (might be due to invalid IL or missing references)
-		//IL_034f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0354: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0359: Unknown result type (might be due to invalid IL or missing references)
-		//IL_035e: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0335: Unknown result type (might be due to invalid IL or missing references)
-		//IL_033a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_031c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0303: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0321: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0326: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0370: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0377: Unknown result type (might be due to invalid IL or missing references)
+		//IL_037c: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0381: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0386: Unknown result type (might be due to invalid IL or missing references)
+		//IL_035d: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0362: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0344: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0349: Unknown result type (might be due to invalid IL or missing references)
 		using (TimeWarning.New("RustNavigation.DoInitialWorkOnMainThread"))
 		{
 			long num = BakeStats.Timestamp();
@@ -560,7 +561,7 @@ public class BackgroundTileBuilder : IDisposable
 			Bounds tileBounds = collectRequest.navmesh.rcCalcTileBounds(new Vector2Int(collectRequest.tx, collectRequest.ty));
 			tileBounds = collectRequest.navmesh.rcExpandTileBounds(tileBounds);
 			BakeStats.AddStage(BakeStats.Stage.CollectBounds, BakeStats.Timestamp() - num2);
-			int layerMask = 1612808449;
+			int layerMask = 1629585665;
 			int areaFromName = NavMesh.GetAreaFromName("Walkable");
 			List<ThreadSafeNavMeshBuildSource> list = Pool.Get<List<ThreadSafeNavMeshBuildSource>>();
 			PooledList<Collider> val = Pool.Get<PooledList<Collider>>();
@@ -570,6 +571,10 @@ public class BackgroundTileBuilder : IDisposable
 				GamePhysics.OverlapBounds(tileBounds, (List<Collider>)(object)val, layerMask, (QueryTriggerInteraction)2);
 				BakeStats.AddStage(BakeStats.Stage.CollectOverlap, BakeStats.Timestamp() - num2);
 				bool flag = collectRequest.navmesh.ForceHiRes;
+				if (!flag && RustNavigation.HasTunnelRegions && (Object)(object)RustNavigation.Instance != (Object)null && RustNavigation.Instance.IsInTunnelRegion(tileBounds))
+				{
+					flag = true;
+				}
 				num2 = BakeStats.Timestamp();
 				foreach (Collider item2 in (List<Collider>)(object)val)
 				{
@@ -599,7 +604,7 @@ public class BackgroundTileBuilder : IDisposable
 								flag = true;
 							}
 						}
-						if ((BaseNetworkableEx.Is<TreeEntity>((Object)(object)baseEntity, out TreeEntity castedUnityObject2) && !castedUnityObject2.IncludeInNavmesh) || (BaseNetworkableEx.Is<Door>((Object)(object)baseEntity, out Door castedUnityObject3) && castedUnityObject3.canNpcOpen) || item2.isTrigger || (0x20000000 & (1 << ((Component)item2).gameObject.layer)) != 0)
+						if ((BaseNetworkableEx.Is<TreeEntity>((Object)(object)baseEntity, out TreeEntity castedUnityObject2) && !castedUnityObject2.IncludeInNavmesh) || (BaseNetworkableEx.Is<Door>((Object)(object)baseEntity, out Door castedUnityObject3) && castedUnityObject3.IsNpcOpenable) || item2.isTrigger || (0x20000000 & (1 << ((Component)item2).gameObject.layer)) != 0)
 						{
 							continue;
 						}
@@ -612,21 +617,21 @@ public class BackgroundTileBuilder : IDisposable
 							item.shape = (NavMeshBuildSourceShape)0;
 							item.sourceObjectID = ((Object)castedUnityObject4.sharedMesh).GetInstanceID();
 							MeshCache.Get(castedUnityObject4.sharedMesh);
-							goto IL_0367;
+							goto IL_038f;
 						}
 						if (BaseNetworkableEx.Is<BoxCollider>((Object)(object)item2, out BoxCollider castedUnityObject5))
 						{
 							item.shape = (NavMeshBuildSourceShape)2;
 							item.size = castedUnityObject5.size;
 							item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject5.center);
-							goto IL_0367;
+							goto IL_038f;
 						}
 						if (BaseNetworkableEx.Is<SphereCollider>((Object)(object)item2, out SphereCollider castedUnityObject6))
 						{
 							item.shape = (NavMeshBuildSourceShape)2;
 							item.size = Vector3.one * castedUnityObject6.radius * 2f;
 							item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject6.center);
-							goto IL_0367;
+							goto IL_038f;
 						}
 						if (!BaseNetworkableEx.Is<CapsuleCollider>((Object)(object)item2, out CapsuleCollider castedUnityObject7))
 						{
@@ -651,8 +656,8 @@ public class BackgroundTileBuilder : IDisposable
 							item.size = new Vector3(num3, castedUnityObject7.height, num3);
 						}
 						item.transform = ((Component)item2).transform.localToWorldMatrix * Matrix4x4.Translate(castedUnityObject7.center);
-						goto IL_0367;
-						IL_0367:
+						goto IL_038f;
+						IL_038f:
 						list.Add(item);
 					}
 					finally

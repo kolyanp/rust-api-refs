@@ -130,8 +130,8 @@ public class CardReader : IOEntity
 		Effect.server.Run(accessGrantedEffect.resourcePath, audioPosition.position, Vector3.up);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void ServerCardSwiped(RPCMessage msg)
 	{
 		//IL_0016: Unknown result type (might be due to invalid IL or missing references)

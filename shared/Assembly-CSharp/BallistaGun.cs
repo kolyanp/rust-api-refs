@@ -105,8 +105,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	private Ammo[] ammoPrefabs;
 
-	[SerializeField]
 	[Header("IK")]
+	[SerializeField]
 	public Transform leftHandTarget;
 
 	[SerializeField]
@@ -143,8 +143,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool runSideChecks;
 
 	[SerializeField]

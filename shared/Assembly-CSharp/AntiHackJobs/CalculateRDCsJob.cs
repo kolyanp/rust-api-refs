@@ -8,8 +8,8 @@ namespace AntiHackJobs;
 [BurstCompile]
 public struct CalculateRDCsJob : IJobFor
 {
-	[WriteOnly]
 	[NativeDisableParallelForRestriction]
+	[WriteOnly]
 	public NativeArray<RDC> RDCs;
 
 	public ReadOnly<BasePlayer.CachedState> States;

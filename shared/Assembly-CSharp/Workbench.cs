@@ -929,8 +929,8 @@ public class Workbench : StorageContainer
 		return base.PlayerOpenLoot(player, panelToOpen, doPositionChecks);
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_OpenUpgradeInventory(RPCMessage msg)
 	{
 		if (isLootable && !Static)
@@ -943,8 +943,8 @@ public class Workbench : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RPC_TechTreeUnlock(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

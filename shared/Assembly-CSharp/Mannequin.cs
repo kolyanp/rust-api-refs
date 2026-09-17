@@ -280,8 +280,8 @@ public class Mannequin : StorageContainer
 		container.flags = ItemContainer.Flag.Clothing;
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void Server_ChangePose(RPCMessage msg)
 	{
@@ -303,8 +303,8 @@ public class Mannequin : StorageContainer
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server.CallsPerSecond(1uL)]
+	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
 	private void Server_RequestSwap(RPCMessage msg)
 	{

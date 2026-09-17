@@ -251,8 +251,8 @@ public class ChickenCoop : StorageContainer
 		((ObjectWorkQueue<ChickenCoop>)CoopWorkQueue).Add(this);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void SubmitEggForHatching(RPCMessage msg)
 	{
 		//IL_0080: Unknown result type (might be due to invalid IL or missing references)

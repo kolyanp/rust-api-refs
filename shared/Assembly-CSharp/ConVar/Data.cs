@@ -6,8 +6,8 @@ namespace ConVar;
 [Factory("data")]
 public class Data : ConsoleSystem
 {
-	[ServerVar(Help = "(Generated) Exports a named terrain map layer (splatmap, heightmap, biomemap, topologymap, alphamap, watermap) to a .raw file in the persistent data path")]
 	[ClientVar(Help = "(Generated) Exports a named terrain map layer (splatmap, heightmap, biomemap, topologymap, alphamap, watermap) to a .raw file in the persistent data path")]
+	[ServerVar(Help = "(Generated) Exports a named terrain map layer (splatmap, heightmap, biomemap, topologymap, alphamap, watermap) to a .raw file in the persistent data path")]
 	public static void export(Arg args)
 	{
 		string text = args.GetString(0, "none");

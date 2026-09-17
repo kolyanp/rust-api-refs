@@ -5,8 +5,8 @@ namespace Rust.UI.MainMenu;
 
 public class UI_ServerEntry : FacepunchBehaviour
 {
-	[SerializeField]
 	[Header("References")]
+	[SerializeField]
 	private RustButton _button;
 
 	[SerializeField]
@@ -53,8 +53,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _friendsTooltip;
 
-	[Header("References - Queue")]
 	[SerializeField]
+	[Header("References - Queue")]
 	private RustText _queueText;
 
 	[SerializeField]

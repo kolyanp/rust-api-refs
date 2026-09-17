@@ -102,8 +102,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 	[SerializeField]
 	public int cellWidth;
 
-	[SerializeField]
 	[Min(0f)]
+	[SerializeField]
 	public int cellHeight;
 
 	public bool fixedGrid;
@@ -133,8 +133,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 
 	public bool dynamicContent;
 
-	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
 	[SerializeField]
+	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
 	private List<UI_StoreItemGrid> excludeItemsFromGrids;
 
 	[SerializeField]

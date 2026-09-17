@@ -732,9 +732,9 @@ public class RentableShop : BaseEntity
 		return false;
 	}
 
+	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	private void Server_OpenVendingAdmin(RPCMessage msg)
 	{
 		VendingMachine vendingMachine = SpawnedVendingMachineRef.Get(base.isServer);
@@ -967,8 +967,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server.CallsPerSecond(1uL)]
 	[RPC_Server]
 	private void Server_RetrieveAllStoredItems(RPCMessage msg)
 	{
@@ -1121,8 +1121,8 @@ public class RentableShop : BaseEntity
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	private void Server_CloseStore(RPCMessage rpc)
 	{
 		if (!((Object)(object)rpc.player == (Object)null) && (ulong)rpc.player.userID == ShopOwnerId)

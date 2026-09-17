@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Rust.Ai.Gen2;
 
-[SoftRequireComponent(typeof(BlackboardComponent), typeof(NpcBarkManager))]
 [SoftRequireComponent(typeof(NpcZoneComponent), typeof(NPCEncounterTimer), typeof(NpcShootingComponent))]
+[SoftRequireComponent(typeof(BlackboardComponent), typeof(NpcBarkManager))]
 [SoftRequireComponent(typeof(RustNavMeshAgent), typeof(RootMotionPlayer), typeof(SenseComponent))]
 public class Scientist2FSM : FSMComponent
 {

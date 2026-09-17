@@ -71,20 +71,20 @@ public class MLRS : BaseMountable
 	[SerializeField]
 	public float vRotSpeed = 10f;
 
-	[Range(50f, 90f)]
 	[SerializeField]
+	[Range(50f, 90f)]
 	public float vRotMax = 85f;
 
 	[SerializeField]
 	private Transform hydraulics;
 
+	[SerializeField]
 	[Tooltip("Minimum distance from the MLRS to a targeted hit point. In metres.")]
 	[Header("MLRS Weaponry")]
-	[SerializeField]
 	public float minRange = 200f;
 
-	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	[SerializeField]
+	[Tooltip("The size of the area that the rockets may hit, minus rocket damage radius.")]
 	public float targetAreaRadius = 30f;
 
 	[SerializeField]
@@ -750,8 +750,8 @@ public class MLRS : BaseMountable
 		return false;
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server.InputValidation(new Type[] { typeof(Vector3) })]
 	public void RPC_SetTargetHitPos(RPCMessage msg)
 	{

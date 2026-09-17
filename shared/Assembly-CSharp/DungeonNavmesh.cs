@@ -46,8 +46,6 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 
 	private int agentTypeId;
 
-	private IndependantNavmesh independantNavmesh;
-
 	public bool IsBuilding
 	{
 		get
@@ -60,11 +58,7 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 				}
 				return true;
 			}
-			if ((Object)(object)independantNavmesh != (Object)null)
-			{
-				return !independantNavmesh.IsBuilt();
-			}
-			return true;
+			return false;
 		}
 	}
 
@@ -231,12 +225,34 @@ public class DungeonNavmesh : FacepunchBehaviour, IServerComponent
 		}
 		else
 		{
-			if (!((Component)this).TryGetComponent<IndependantNavmesh>(ref independantNavmesh))
+			RegisterTunnelRegions(roots);
+		}
+	}
+
+	private static void RegisterTunnelRegions(IEnumerable<GameObject> roots)
+	{
+		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0043: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)RustNavigation.Instance == (Object)null)
+		{
+			return;
+		}
+		foreach (GameObject root in roots)
+		{
+			if (!((Object)(object)root == (Object)null))
 			{
-				independantNavmesh = ((Component)this).gameObject.AddComponent<IndependantNavmesh>();
+				bool hasFootprint = false;
+				Bounds footprint = default(Bounds);
+				NavMeshTools.EncapsulateNavmeshColliders(root, ref footprint, ref hasFootprint);
+				if (hasFootprint)
+				{
+					RustNavigation.Instance.AddTunnelRegion(footprint);
+				}
+				else if (AI.logIssues)
+				{
+					NavMeshTools.LogWarning("Tunnel cell " + ((Object)root).name + " has no bakeable colliders, its tiles stay subject to the open sea cull.");
+				}
 			}
-			independantNavmesh.size = ((Bounds)(ref Bounds)).size;
-			RustNavigation.Instance.AddNavmesh(independantNavmesh);
 		}
 	}
 

@@ -77,8 +77,8 @@ public class NexusFerrySounds : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private Vector3 sideSoundLineBow;
 
-	[Header("Dock")]
 	[SerializeField]
+	[Header("Dock")]
 	private SoundDefinition dockArrivalSoundDef;
 
 	[SerializeField]

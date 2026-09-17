@@ -20,6 +20,31 @@ public static class NavMeshTools
 		Debug.LogWarning((object)("[UnityNavmesh] " + message));
 	}
 
+	public static void EncapsulateNavmeshColliders(GameObject root, ref Bounds footprint, ref bool hasFootprint)
+	{
+		//IL_0056: Unknown result type (might be due to invalid IL or missing references)
+		//IL_005b: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0048: Unknown result type (might be due to invalid IL or missing references)
+		if ((Object)(object)root == (Object)null)
+		{
+			return;
+		}
+		Collider[] componentsInChildren = root.GetComponentsInChildren<Collider>(false);
+		foreach (Collider val in componentsInChildren)
+		{
+			if (!val.isTrigger && val.enabled && (0x20000000 & (1 << ((Component)val).gameObject.layer)) == 0)
+			{
+				if (hasFootprint)
+				{
+					((Bounds)(ref footprint)).Encapsulate(val.bounds);
+					continue;
+				}
+				footprint = val.bounds;
+				hasFootprint = true;
+			}
+		}
+	}
+
 	public static IEnumerator CollectSourcesAsync(Bounds bounds, int mask, NavMeshCollectGeometry geometry, int area, bool useBakedTerrainMesh, int cellSize, List<NavMeshBuildSource> sources, Action<List<NavMeshBuildSource>> append, Action callback, Transform customNavMeshDataRoot, HashSet<Transform> ignoreRoots = null)
 	{
 		//IL_0007: Unknown result type (might be due to invalid IL or missing references)

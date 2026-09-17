@@ -14,8 +14,8 @@ public class MissionObjective_SpeakWithTargetNPC : MissionObjective
 	[Tooltip("The target NPC must be nearby this mission point for the objective to complete.")]
 	public string RequireProximityToPosition;
 
-	[Min(0f)]
 	[Tooltip("This defines the minimum proximity between the target NPC and the mission point.")]
+	[Min(0f)]
 	public float MinimumDistanceToMissionPoint;
 
 	public bool destroyReturnItems;

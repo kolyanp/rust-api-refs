@@ -850,20 +850,20 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Generating offset runtime only, allows you to adjust it on prefabs on scene")]
 	public bool PivotOffsetOnStart;
 
-	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
 	[Range(0f, 1f)]
+	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
 	public float PosSmoother;
 
-	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	[Range(0f, 1f)]
+	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
 	public float RotSmoother;
 
-	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	[Range(0f, 1f)]
+	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
 	public float MaxStretching;
 
-	[Range(0f, 1f)]
 	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
+	[Range(0f, 1f)]
 	public float Slithery;
 
 	[Range(1f, 91f)]
@@ -884,12 +884,12 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Range(0f, 1f)]
 	public float GoBackSpeed;
 
-	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	[Range(0f, 1f)]
+	[Tooltip("Elastic spring effect good for tails to make them more 'meaty'.")]
 	public float Springiness;
 
-	[Tooltip("How much effect on spine chain should have character movement.")]
 	[Range(0f, 1f)]
+	[Tooltip("How much effect on spine chain should have character movement.")]
 	public float MotionInfluence;
 
 	[Tooltip("Useful when your creature jumps on moving platform, so when platform moves spine is not reacting, by default world space is used (null).")]
@@ -898,8 +898,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Fade rotations to sides or rotation up/down with this parameter - can be helpful for character jump handling")]
 	public Vector2 RotationsFade;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private Transform mainPivotOffsetTransform;
 
 	[Tooltip("<! Most models can not need this !> Offset for bones rotations, thanks to that animation is able to rotate to segments in a correct way, like from center of mass.")]

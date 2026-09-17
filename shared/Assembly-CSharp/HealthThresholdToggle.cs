@@ -6,8 +6,8 @@ public class HealthThresholdToggle : FacepunchBehaviour, IPrefabPreProcess
 	[Serializable]
 	public struct ThresholdEntry
 	{
-		[Range(0f, 1f)]
 		[Tooltip("Active while health fraction is above this. At or below, the objects are disabled.")]
+		[Range(0f, 1f)]
 		public float disableAtHealthFraction;
 
 		public GameObject[] targets;

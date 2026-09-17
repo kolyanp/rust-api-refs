@@ -4,8 +4,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Graphic))]
-[DisallowMultipleComponent]
 [AddComponentMenu("UI/Effects/Rounded Corners")]
+[DisallowMultipleComponent]
 public class UIRoundedCorners : BaseMeshEffect
 {
 	[SerializeField]
@@ -20,8 +20,8 @@ public class UIRoundedCorners : BaseMeshEffect
 	[SerializeField]
 	private float bottomLeft = 16f;
 
-	[SerializeField]
 	[Range(1f, 32f)]
+	[SerializeField]
 	private int segmentsPerCorner = 8;
 
 	private static readonly List<UIVertex> stream = new List<UIVertex>();

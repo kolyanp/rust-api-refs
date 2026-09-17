@@ -46,8 +46,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 		}
 	}
 
-	[Header("Player Helicopter")]
 	[SerializeField]
+	[Header("Player Helicopter")]
 	public Wheel[] wheels;
 
 	[SerializeField]
@@ -124,8 +124,8 @@ public class PlayerHelicopter : BaseHelicopter, IEngineControllerUser, IEntity, 
 	[SerializeField]
 	public float maxYawAnim = 1f;
 
-	[SerializeField]
 	[Header("Fuel")]
+	[SerializeField]
 	public GameObjectRef fuelStoragePrefab;
 
 	[SerializeField]

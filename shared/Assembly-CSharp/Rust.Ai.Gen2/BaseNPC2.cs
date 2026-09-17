@@ -52,6 +52,7 @@ public class BaseNPC2 : BaseCombatEntity
 		{
 			startHealth *= AI.npcHealthMultiplier;
 			startHealth = Mathf.Max(1f, startHealth);
+			HasBrain = true;
 			Query.Server.AddBrain(this);
 		}
 	}

@@ -7,23 +7,23 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.BloomRenderer), "Unity/Bloom", true)]
 public sealed class Bloom : PostProcessEffectSettings
 {
-	[Min(0f)]
 	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
+	[Min(0f)]
 	public FloatParameter intensity;
 
-	[Min(0f)]
 	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
+	[Min(0f)]
 	public FloatParameter threshold;
 
-	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
 	[Range(0f, 1f)]
+	[Tooltip("Makes transitions between under/over-threshold gradual. 0 for a hard threshold, 1 for a soft threshold).")]
 	public FloatParameter softKnee;
 
 	[Tooltip("Clamps pixels to control the bloom amount. Value is in gamma-space.")]
 	public FloatParameter clamp;
 
-	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
 	[Range(1f, 10f)]
+	[Tooltip("Changes the extent of veiling effects. For maximum quality, use integer values. Because this value changes the internal iteration count, You should not animating it as it may introduce issues with the perceived radius.")]
 	public FloatParameter diffusion;
 
 	[Range(-1f, 1f)]
@@ -34,17 +34,17 @@ public sealed class Bloom : PostProcessEffectSettings
 	[Tooltip("Global tint of the bloom filter.")]
 	public ColorParameter color;
 
-	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	[FormerlySerializedAs("mobileOptimized")]
+	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	public BoolParameter fastMode;
 
-	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
 	[DisplayName("Texture")]
+	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
 	public TextureParameter dirtTexture;
 
-	[Tooltip("The intensity of the lens dirtiness.")]
-	[DisplayName("Intensity")]
 	[Min(0f)]
+	[DisplayName("Intensity")]
+	[Tooltip("The intensity of the lens dirtiness.")]
 	public FloatParameter dirtIntensity;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

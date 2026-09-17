@@ -131,7 +131,7 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 		{
 			NetworkInitRaknet();
 		}
-		AI.useUnityNavmesh = !CommandLine.HasSwitch("-useNewNavmesh");
+		AI.useUnityNavmesh = CommandLine.HasSwitch("-useOldNavmesh");
 		AI.checkTileValid = CommandLine.HasSwitch("-checkTileValid");
 		if (!Application.isEditor)
 		{
@@ -504,11 +504,18 @@ public class Bootstrap : SingletonComponent<Bootstrap>
 				}
 				if (Object.op_Implicit((Object)(object)TerrainMeta.Path) && World.SpawnedPrefabs.TryGetValue("DungeonBase", out var value2))
 				{
-					DungeonNavmesh dungeonNavmesh2 = new GameObject("DungeonBaseNavMesh").AddComponent<DungeonNavmesh>();
-					dungeonNavmesh2.NavmeshResolutionModifier = 0.3f;
-					dungeonNavmesh2.NavMeshCollectGeometry = (NavMeshCollectGeometry)1;
-					dungeonNavmesh2.LayerMask = LayerMask.op_Implicit(65537);
-					yield return ((MonoBehaviour)dungeonNavmesh2).StartCoroutine(dungeonNavmesh2.UpdateNavMeshAndWait(value2));
+					if (AI.useUnityNavmesh)
+					{
+						DungeonNavmesh dungeonNavmesh2 = new GameObject("DungeonBaseNavMesh").AddComponent<DungeonNavmesh>();
+						dungeonNavmesh2.NavmeshResolutionModifier = 0.3f;
+						dungeonNavmesh2.NavMeshCollectGeometry = (NavMeshCollectGeometry)1;
+						dungeonNavmesh2.LayerMask = LayerMask.op_Implicit(65537);
+						yield return ((MonoBehaviour)dungeonNavmesh2).StartCoroutine(dungeonNavmesh2.UpdateNavMeshAndWait(value2));
+					}
+					else
+					{
+						GenerateDungeonBase.SetupNavmesh();
+					}
 				}
 				else
 				{

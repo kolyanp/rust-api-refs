@@ -1077,8 +1077,8 @@ public class GrowableEntity : BaseCombatEntity, IInstanceDataReceiver, IHeatSour
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
 	public void RPC_TakeClone(RPCMessage msg)
 	{

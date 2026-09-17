@@ -84,13 +84,22 @@ public class NPCSpawner : SpawnGroup
 
 	public bool WaitingForNavMesh()
 	{
+		//IL_0027: Unknown result type (might be due to invalid IL or missing references)
 		if ((Object)(object)monumentNavMesh != (Object)null)
 		{
 			return monumentNavMesh.IsBuilding;
 		}
-		if (!AI.useUnityNavmesh && !RustNavigation.Instance.IsDefaultNavmeshBuilt())
+		if (!AI.useUnityNavmesh)
 		{
-			return true;
+			IndependantNavmesh independantNavmesh = IndependantNavmesh.FindNavmeshAtPosition(((Component)this).transform.position);
+			if ((Object)(object)independantNavmesh != (Object)null)
+			{
+				return !independantNavmesh.IsBuilt();
+			}
+			if (!RustNavigation.Instance.IsDefaultNavmeshBuilt())
+			{
+				return true;
+			}
 		}
 		if (!DungeonNavmesh.NavReady())
 		{

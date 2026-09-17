@@ -775,8 +775,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Range(0f, 1f)]
 	public float CollisionSlippery;
 
-	[Range(0f, 1f)]
 	[Tooltip("If tail colliding objects should fit to colliders (0) or be reflect from them (Reflecting Only with 'Slithery' parameter greater than ~0.2)")]
+	[Range(0f, 1f)]
 	public float ReflectCollision;
 
 	public AnimationCurve CollidersScaleCurve;
@@ -899,16 +899,16 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("How much IK motion sohuld be used in tail animator motion -> 0: turned off")]
 	public float IKBlend;
 
-	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	[Tooltip("If syncing with animator then applying motion of keyframe animation for IK")]
+	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
 	public float IKAnimatorBlend;
 
-	[Range(1f, 32f)]
 	[Tooltip("How much iterations should do CCDIK algorithm in one frame")]
+	[Range(1f, 32f)]
 	public int IKReactionQuality;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing reactions in CCD IK algorithm")]
+	[Range(0f, 1f)]
 	public float IKSmoothing;
 
 	[Range(0f, 1.5f)]
@@ -1060,8 +1060,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Max distance to main camera / target object to smoothly turn off tail animator.")]
 	public float MaximumDistance;
 
-	[Range(0f, 1f)]
 	[Tooltip("If object in range should be detected only when is nearer than 'MaxDistance' to avoid stuttery enabled - disable switching")]
+	[Range(0f, 1f)]
 	public float MaxOutDistanceFactor;
 
 	[Tooltip("If distance should be measured not using Up (y) axis")]
@@ -1070,8 +1070,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Offsetting point from which we want to measure distance to target")]
 	public Vector3 DistanceMeasurePoint;
 
-	[Tooltip("Disable fade duration in seconds")]
 	[Range(0.25f, 2f)]
+	[Tooltip("Disable fade duration in seconds")]
 	public float FadeDuration;
 
 	private bool maxDistanceExceed;
@@ -1138,8 +1138,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	private bool fixedAllow;
 
-	[Tooltip("Making tail segment deflection influence back segments")]
 	[Range(0f, 1f)]
+	[Tooltip("Making tail segment deflection influence back segments")]
 	public float Deflection;
 
 	[FPD_Suffix(1f, 89f, FPD_SuffixAttribute.SuffixMode.FromMinToMaxRounded, "°", true, 0)]
@@ -1209,20 +1209,20 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 
 	protected bool preAutoCorrect;
 
-	[Range(0f, 1.2f)]
 	[Tooltip("Blending Slithery - smooth & soft tentacle like movement (value = 1)\nwith more stiff & springy motion (value = 0)\n\n0: Stiff somewhat like tree branch\n1: Soft like squid tentacle / Animal tail")]
+	[Range(0f, 1.2f)]
 	public float Slithery;
 
-	[Range(0f, 1f)]
 	[Tooltip("How curly motion should be applied to tail segments")]
+	[Range(0f, 1f)]
 	public float Curling;
 
-	[Range(0f, 1f)]
 	[Tooltip("Elastic spring effect making motion more 'meaty'")]
+	[Range(0f, 1f)]
 	public float Springiness;
 
-	[Range(0f, 1f)]
 	[Tooltip("If you want to limit stretching/gumminess of position motion when object moves fast. Recommended adjust to go with it under 0.3 value.\nValue = 1: Unlimited stretching")]
+	[Range(0f, 1f)]
 	public float MaxStretching;
 
 	[Tooltip("Limiting max rotation angle for each tail segment")]
@@ -1243,8 +1243,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("If your object moves very fast making tail influenced by speed too much then you can controll it with this parameter")]
 	public float MotionInfluence;
 
-	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
 	[Range(0f, 1f)]
+	[Tooltip("Additional Y influence controll useful when your character is jumping (works only when MotionInfluence value is other than 100%)")]
 	public float MotionInfluenceInY;
 
 	[Tooltip("If first bone of chain should also be affected with whole chain")]
@@ -1262,8 +1262,8 @@ public class TailAnimator2 : MonoBehaviour, IDropHandler, IEventSystemHandler, I
 	[Tooltip("Sustain is similar to reaction speed in reverse, but providing sustain motion effect when increased")]
 	public float Sustain;
 
-	[Range(0f, 1f)]
 	[Tooltip("Rotation speed is defining how fast tail segments will return to target rotation, it gives animation more lazy feeling if it's lower")]
+	[Range(0f, 1f)]
 	public float RotationRelevancy;
 
 	[Tooltip("Smoothing motion values change over time style to be applied for 'Reaction Speed' and 'Rotation Relevancy' parameters")]

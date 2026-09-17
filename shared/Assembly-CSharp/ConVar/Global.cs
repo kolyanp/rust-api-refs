@@ -23,12 +23,12 @@ public class Global : ConsoleSystem
 {
 	private static int _developer;
 
-	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	[ServerVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
+	[ClientVar(Help = "(Generated) Maximum number of Unity job system worker threads; controls the background thread pool size for job dispatching")]
 	public static int maxthreads = 8;
 
-	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	[ServerVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
+	[ClientVar(Help = "(Generated) When enabled, asset bundles are unloaded from memory after their assets are extracted, saving memory; disable to keep bundles resident")]
 	public static bool forceUnloadBundles = true;
 
 	[ServerVar(Help = "(Generated) When true, the server network position is updated to match the debug camera world position while spectating; useful for testing position-dependent server logic from the spectator view")]
@@ -246,8 +246,8 @@ public class Global : ConsoleSystem
 		args.ReplyWith(strValue);
 	}
 
-	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	[ClientVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
+	[ServerVar(Help = "(Generated) Prints the current state of server-side stability check and surroundings update queues; reports nothing useful on client")]
 	public static void queue(Arg args)
 	{
 		string text = "";
@@ -1330,15 +1330,15 @@ public class Global : ConsoleSystem
 		}));
 	}
 
-	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	[ClientVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
+	[ServerVar(Help = "(Generated) Prints a summary of the current machine hardware and OS info including CPU, GPU, RAM, and platform")]
 	public static void sysinfo(Arg arg)
 	{
 		arg.ReplyWith(SystemInfoGeneralText.currentInfo);
 	}
 
-	[ClientVar(Help = "(Generated) Prints the unique device identifier for the current machine as reported by Unity SystemInfo.deviceUniqueIdentifier")]
 	[ServerVar(Help = "(Generated) Prints the unique device identifier for the current machine as reported by Unity SystemInfo.deviceUniqueIdentifier")]
+	[ClientVar(Help = "(Generated) Prints the unique device identifier for the current machine as reported by Unity SystemInfo.deviceUniqueIdentifier")]
 	public static void sysuid(Arg arg)
 	{
 		arg.ReplyWith(SystemInfo.deviceUniqueIdentifier);
@@ -1369,8 +1369,8 @@ public class Global : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	[ClientVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
+	[ServerVar(Help = "(Generated) Prints a table of active network group subscriptions for the calling player, showing realm and group ID; supports --json flag")]
 	public static void subscriptions(Arg arg)
 	{
 		//IL_0052: Unknown result type (might be due to invalid IL or missing references)
@@ -1572,8 +1572,8 @@ public class Global : ConsoleSystem
 		Pool.FreeUnmanaged<DroppedItem>(ref list);
 	}
 
-	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	[ClientVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
+	[ServerVar(Help = "(Generated) Prints all scenes registered in the build settings with their build index and asset path")]
 	public static string printAllScenesInBuild(Arg args)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

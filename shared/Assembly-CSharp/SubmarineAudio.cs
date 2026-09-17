@@ -18,8 +18,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private AnimationCurve engineLoopPitchCurve;
 
-	[SerializeField]
 	[Header("Water")]
+	[SerializeField]
 	private SoundDefinition underwaterLoopDef;
 
 	[SerializeField]
@@ -68,8 +68,8 @@ public class SubmarineAudio : MonoBehaviour
 	[SerializeField]
 	private GameObject dashboardAudioPoint;
 
-	[SerializeField]
 	[Header("Other")]
+	[SerializeField]
 	private SoundDefinition climbOrDiveLoopSound;
 
 	[SerializeField]

@@ -94,15 +94,15 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 	[FormerlySerializedAs("internalAccessFuelTank")]
 	private bool internalAccessStorage;
 
-	[SerializeField]
 	[Header("Submarine Weaponry")]
+	[SerializeField]
 	public GameObjectRef torpedoStoragePrefab;
 
 	[SerializeField]
 	public Transform torpedoFiringPoint;
 
-	[SerializeField]
 	[FormerlySerializedAs("maxFireRate")]
+	[SerializeField]
 	public float reloadTime = 1.5f;
 
 	[Header("Submarine Audio & FX")]
@@ -929,8 +929,8 @@ public class BaseSubmarine : BaseVehicle, IPoolVehicle, IEngineControllerUser, I
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

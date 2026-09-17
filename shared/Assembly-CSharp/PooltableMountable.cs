@@ -9,13 +9,13 @@ public class PooltableMountable : BaseMountable
 	[HideInInspector]
 	public float SplineDistance;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private ViewModel poolCueViewmodel;
 
 	[SerializeField]
-	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	[Header("3p Cue")]
+	[Tooltip("World-space 3p cue prop, locked to the right-hand prop bone each frame (like darts' held prop).")]
 	private Transform cueHeldProp;
 
 	[SerializeField]
@@ -26,9 +26,9 @@ public class PooltableMountable : BaseMountable
 	[SerializeField]
 	private Vector3 cueHeldPropEulerOffset;
 
-	[Header("Cue Material")]
 	[Tooltip("Cue material for the player in seat 0 (whoever started the game). Applies to the 3p prop and the viewmodel. Leave empty to keep whatever the prefabs ship with.")]
 	[SerializeField]
+	[Header("Cue Material")]
 	private Material player1CueMaterial;
 
 	[Tooltip("Cue material for the player in seat 1 (the joiner).")]
@@ -215,9 +215,9 @@ public class PooltableMountable : BaseMountable
 		}
 	}
 
+	[RPC_Server.CallsPerSecond(30uL)]
 	[RPC_Server]
 	[RPC_Server.FromMounted]
-	[RPC_Server.CallsPerSecond(30uL)]
 	public void RPC_UpdateSplineDistance(RPCMessage msg)
 	{
 		if (!((Object)(object)poolTable == (Object)null) && !((Object)(object)msg.player == (Object)null) && poolTable.CanPlayerMove(msg.player.userID))

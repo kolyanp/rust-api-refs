@@ -8,8 +8,8 @@ namespace ConVar;
 [Factory("vehicle")]
 public class vehicle : ConsoleSystem
 {
-	[ServerVar]
 	[Help("how long until boat corpses despawn (excluding tugboat - use tugboat_corpse_seconds)")]
+	[ServerVar]
 	public static float boat_corpse_seconds = 300f;
 
 	[ServerVar(Help = "(Generated) When enabled, wheel colliders are disabled on vehicles that have gone to sleep in the physics engine, reducing CPU overhead for parked vehicles")]

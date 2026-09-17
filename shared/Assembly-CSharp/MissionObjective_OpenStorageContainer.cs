@@ -4,12 +4,12 @@ public class MissionObjective_OpenStorageContainer : MissionObjective
 {
 	public BaseEntity TargetEntity;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("If set, the objective world location will be set to this position.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string SetObjectiveLocation;
 
-	[BaseMission.PositionGenerator.PositionPoint]
 	[Tooltip("The opened container must be nearby this mission point for the objective to complete.")]
+	[BaseMission.PositionGenerator.PositionPoint]
 	public string RequireProximityToPosition;
 
 	[Min(0f)]

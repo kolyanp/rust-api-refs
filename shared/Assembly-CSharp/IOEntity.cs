@@ -338,8 +338,8 @@ public class IOEntity : DecayEntity
 	[Help("How many milliseconds to budget for processing kinetic io entities per server frame (monuments)")]
 	public static float frameBudgetKineticMs = 1f;
 
-	[ServerVar]
 	[Help("How many milliseconds to budget for processing generic io entities per server frame (unused for now)")]
+	[ServerVar]
 	public static float frameBudgetGenericMs = 1f;
 
 	[ServerVar]

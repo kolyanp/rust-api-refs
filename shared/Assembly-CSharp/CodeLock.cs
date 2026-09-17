@@ -378,8 +378,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		MarkGroupUpkeepDirty();
 	}
 
-	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f, CheckParent = true)]
 	private void TryUnlock(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && IsLocked() && Interface.CallHook("CanUnlock", rpc.player, this) == null && !IsCodeEntryBlocked() && whitelistPlayers.Contains(rpc.player.userID))
@@ -411,8 +411,8 @@ public class CodeLock : BaseLock, IReskinCallback
 		wrongCodes = 0;
 	}
 
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f, CheckParent = true)]
+	[RPC_Server]
 	private void UnlockWithCode(RPCMessage rpc)
 	{
 		if (!rpc.player.CanInteract() || !IsLocked() || IsCodeEntryBlocked())

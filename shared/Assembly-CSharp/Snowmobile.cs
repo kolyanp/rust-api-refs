@@ -25,8 +25,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 
 	public TimeSince timeSinceTerrainModCheck;
 
-	[SerializeField]
 	[Header("Snowmobile")]
+	[SerializeField]
 	private Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -644,8 +644,8 @@ public class Snowmobile : GroundVehicle, CarPhysics<Snowmobile>.ICar, TriggerHur
 		}
 	}
 
-	[RPC_Server.MaxDistance(3f)]
 	[RPC_Server]
+	[RPC_Server.MaxDistance(3f)]
 	public void RPC_OpenItemStorage(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

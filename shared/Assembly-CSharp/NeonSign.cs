@@ -350,8 +350,8 @@ public class NeonSign : Signage
 		info.msg.neonSign.animationSpeed = animationSpeed;
 	}
 
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.MaxDistance(3f)]
 	public void SetAnimationSpeed(RPCMessage msg)
 	{
@@ -369,8 +369,8 @@ public class NeonSign : Signage
 	}
 
 	[RPC_Server.MaxDistance(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server]
 	public void UpdateNeonColors(RPCMessage msg)
 	{
 		//IL_0043: Unknown result type (might be due to invalid IL or missing references)

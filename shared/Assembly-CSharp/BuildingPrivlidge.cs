@@ -1294,8 +1294,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		return baseLock.OnTryToOpen(player);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	private void AddAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player))
@@ -1334,8 +1334,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void RemoveSelfAuthorize(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardDeauthorize", this, rpc.player) == null)
@@ -1345,8 +1345,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		}
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void ClearList(RPCMessage rpc)
 	{
 		if (rpc.player.CanInteract() && CanAdministrate(rpc.player) && Interface.CallHook("OnCupboardClearList", this, rpc.player) == null)
@@ -1369,8 +1369,8 @@ public class BuildingPrivlidge : StorageContainer, IPrivilege
 		UpdatePrivilegeReceivers();
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void RPC_Rotate(RPCMessage msg)
 	{
 		//IL_0074: Unknown result type (might be due to invalid IL or missing references)

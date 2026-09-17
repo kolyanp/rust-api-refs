@@ -27,8 +27,8 @@ public class FBasic_TPPCameraBehaviour : MonoBehaviour
 
 	private Vector2 animatedSphericRotation;
 
-	[Tooltip("Sensitivity value for rotating camera around following object")]
 	[Space(10f)]
+	[Tooltip("Sensitivity value for rotating camera around following object")]
 	public float RotationSensitivity;
 
 	[Range(0.1f, 1f)]

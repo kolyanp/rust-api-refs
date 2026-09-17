@@ -44,7 +44,7 @@ public abstract class GroundVehicleAudio : MonoBehaviour, IClientComponent
 	[SerializeField]
 	private SoundDefinition brakeStopSoundDef;
 
-	[SerializeField]
 	[Header("Lights")]
+	[SerializeField]
 	protected SoundDefinition lightsToggleSound;
 }

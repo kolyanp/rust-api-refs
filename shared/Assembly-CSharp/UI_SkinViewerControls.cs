@@ -20,7 +20,7 @@ public class UI_SkinViewerControls : MonoBehaviour
 	[SerializeField]
 	private float responseCurve = 1.5f;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private bool fullScreenOnly;
 }

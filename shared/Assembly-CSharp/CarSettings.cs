@@ -76,7 +76,7 @@ public class CarSettings
 
 	public float driftRecoverySpeed = 20f;
 
-	[Range(0f, 1f)]
 	[Header("Front/Rear Vehicle Balance")]
+	[Range(0f, 1f)]
 	public float handlingBias = 0.5f;
 }

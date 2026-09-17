@@ -9,9 +9,9 @@ namespace UnityEngine.Rendering.PostProcessing;
 
 [RequireComponent(typeof(Camera))]
 [AddComponentMenu("Rendering/Post-process Layer", 1000)]
+[DisallowMultipleComponent]
 [ImageEffectAllowedInSceneView]
 [ExecuteAlways]
-[DisallowMultipleComponent]
 public class PostProcessLayer : MonoBehaviour
 {
 	private enum ScalingMode

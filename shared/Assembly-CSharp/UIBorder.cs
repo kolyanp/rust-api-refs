@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteAlways]
-[DisallowMultipleComponent]
 [RequireComponent(typeof(RectTransform))]
+[DisallowMultipleComponent]
+[ExecuteAlways]
 public class UIBorder : MonoBehaviour
 {
 	private const string ChildName = "_UIBorder";

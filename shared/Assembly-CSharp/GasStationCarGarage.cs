@@ -120,8 +120,8 @@ public class GasStationCarGarage : ModularCarGarage
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_ToggleLiftHeight(RPCMessage msg)
 	{
 		bool flag = msg.read.Bool();

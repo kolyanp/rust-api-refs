@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace Smaa;
 
-[RequireComponent(typeof(Camera))]
 [AddComponentMenu("Image Effects/Subpixel Morphological Antialiasing")]
+[RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
 public class SMAA : MonoBehaviour
 {

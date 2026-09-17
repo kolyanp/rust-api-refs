@@ -86,8 +86,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	private string _preCliffStatus;
 
-	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	[Header("Terrain source")]
+	[Tooltip("ProceduralReal runs the game's real base heightmap generator (GenerateHeight). CannedPatch uses a simple analytic patch.")]
 	public TerrainSource Source;
 
 	[Tooltip("World seed fed to the real generator. Also supplies the seed for the pre-cliff T0 bake in Map File Region mode when the map came from a levelurl - uploaded maps have the seed stripped out of their name, so run `seed` on the server and paste the value here. A map taken from the server's own root folder carries it in the name and overwrites this field on load. 0 = auto.")]
@@ -105,8 +105,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 
 	public int SlopeFinderMaxAngle;
 
-	[Header("Terrain")]
 	[Tooltip("Unity heightmap resolution. Snapped to the nearest 2^n+1 by Unity.")]
+	[Header("Terrain")]
 	public int HeightmapResolution;
 
 	[Tooltip("World-space size of the sandbox terrain (x/z = extent, y = height range).")]
@@ -118,8 +118,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Which canned height patch to seed the terrain with.")]
 	public TerrainPatch CurrentPatch;
 
-	[Header("Map file region (real .map crop)")]
 	[Tooltip("Path to a real, shipped .map file. Use the inspector's drag/drop or picker to set it.")]
+	[Header("Map file region (real .map crop)")]
 	public string MapFilePath;
 
 	[Tooltip("World-space X/Z centre of the region to crop out of the map (Y is ignored).")]
@@ -173,8 +173,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Measure and fill each cliff's TerrainFootprint during recalc, the way the generator does just before the prefab is added. The gap readout is always reported; turn this off to see what the terrain looks like without the fill while still being told how deep the gap is.")]
 	public bool ApplyTerrainFootprintOnRecalc;
 
-	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
 	[Header("Placement gizmos (play mode)")]
+	[Tooltip("Draw TerrainAnchor / TerrainModifier gizmos in the Game view while playing (the built-in gizmos only show in the Scene view and are disabled in play mode).")]
 	public bool ShowPlacementGizmos;
 
 	[Tooltip("Include TerrainAnchor gizmos (vertical solve range + radius).")]
@@ -208,8 +208,8 @@ public class CliffPlacementSandbox : MonoBehaviour
 	[Tooltip("Height of the scale-reference capsule in metres (Rust player is about 1.8m).")]
 	public float PlayerReferenceHeight;
 
-	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
 	[Header("Camera (play-mode freecam)")]
+	[Tooltip("Hold right-mouse in Game view to fly: WASD move, Q/E down/up, Shift sprint, scroll = speed.")]
 	public bool EnableFreecam;
 
 	[Tooltip("Base freecam move speed in metres/second (adjust live with the scroll wheel while flying).")]

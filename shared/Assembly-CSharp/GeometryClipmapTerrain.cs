@@ -62,8 +62,8 @@ public class GeometryClipmapTerrain : MonoBehaviour, IClientComponent
 	[SerializeField]
 	protected int vertexDensity;
 
-	[Range(0f, 4f)]
 	[SerializeField]
+	[Range(0f, 4f)]
 	protected int vertexDensityReduction;
 
 	public bool debugCullingOn;

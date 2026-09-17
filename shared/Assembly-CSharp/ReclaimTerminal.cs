@@ -67,8 +67,8 @@ public class ReclaimTerminal : StorageContainer
 	}
 
 	[RPC_Server.CallsPerSecond(1uL)]
-	[RPC_Server]
 	[RPC_Server.MaxDistance(3f)]
+	[RPC_Server]
 	public void RPC_ReloadLoot(RPCMessage msg)
 	{
 		BasePlayer player = msg.player;

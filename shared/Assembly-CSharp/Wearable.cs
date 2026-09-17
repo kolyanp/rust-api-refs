@@ -160,8 +160,8 @@ public class Wearable : MonoBehaviour, IItemSetup, IPrefabPreProcess
 	[Header("First Person Legs")]
 	public bool HideInFirstPerson;
 
-	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]
 	[Range(0f, 5f)]
+	[Tooltip("Use this if the clothing item clips into the player view. It'll push the chest legs model backwards.")]
 	public float ExtraLeanBack;
 
 	[Tooltip("Enable this to check for BoneRetargets which need to be preserved in first person view")]

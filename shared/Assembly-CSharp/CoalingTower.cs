@@ -57,8 +57,8 @@ public class CoalingTower : IOEntity, INotifyEntityTrigger
 	[SerializeField]
 	private float vacuumStartDelay = 2f;
 
-	[SerializeField]
 	[FormerlySerializedAs("unloadingFXContainer")]
+	[SerializeField]
 	private ParticleSystemContainer unloadingFXContainerOre;
 
 	[SerializeField]

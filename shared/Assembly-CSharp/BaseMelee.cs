@@ -222,8 +222,8 @@ public class BaseMelee : AttackEntity
 		return player.GetInheritedThrowVelocity(direction);
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server.IsActiveItem]
 	[RPC_Server]
 	private void CLEntityThrow(RPCMessage msg)
 	{
@@ -323,10 +323,10 @@ public class BaseMelee : AttackEntity
 	{
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.MaxRepeatedElements(1)]
+	[RPC_Server.FromOwner]
 	private void CLProject(RPCMessage msg)
 	{
 		//IL_01b6: Unknown result type (might be due to invalid IL or missing references)

@@ -24,8 +24,8 @@ public class VolumetricLightBeam : MonoBehaviour
 	[Range(0f, 1f)]
 	public float alphaInside;
 
-	[FormerlySerializedAs("alpha")]
 	[Range(0f, 1f)]
+	[FormerlySerializedAs("alpha")]
 	public float alphaOutside;
 
 	public BlendingMode blendingMode;

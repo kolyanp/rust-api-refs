@@ -160,8 +160,8 @@ public class Shield : HeldEntity
 		return AssetNameCache.GetName(ShieldCollider.sharedMaterial);
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server.CallsPerSecond(10uL)]
+	[RPC_Server.FromOwner]
 	[RPC_Server]
 	private void ServerToggleBlock(RPCMessage msg)
 	{

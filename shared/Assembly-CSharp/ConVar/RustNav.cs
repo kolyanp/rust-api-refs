@@ -55,7 +55,7 @@ public class RustNav : ConsoleSystem
 	{
 		if (AI.useUnityNavmesh)
 		{
-			arg.ReplyWith("Restart the server with command line argument -useNewNavmesh");
+			arg.ReplyWith("Restart the server without command line argument -useOldNavmesh");
 			return;
 		}
 		if ((Object)(object)RustNavigation.Instance == (Object)null || RustNavigation.Instance.DefaultNavmesh == null || !RustNavigation.Instance.DefaultNavmesh.IsValid())
@@ -84,7 +84,7 @@ public class RustNav : ConsoleSystem
 	{
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
-			arg.ReplyWith("Restart the server with command line argument -useNewNavmesh");
+			arg.ReplyWith("Restart the server without command line argument -useOldNavmesh");
 		}
 		else if (!((Object)(object)RustNavigation.Instance == (Object)null))
 		{
@@ -105,7 +105,7 @@ public class RustNav : ConsoleSystem
 	{
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
-			arg.ReplyWith("Restart the server with command line argument -useNewNavmesh");
+			arg.ReplyWith("Restart the server without command line argument -useOldNavmesh");
 		}
 		else if (arg.GetBool(0))
 		{
@@ -127,7 +127,7 @@ public class RustNav : ConsoleSystem
 	{
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
-			arg.ReplyWith("Restart the server with command line argument -useNewNavmesh");
+			arg.ReplyWith("Restart the server without command line argument -useOldNavmesh");
 		}
 		else
 		{
@@ -140,7 +140,7 @@ public class RustNav : ConsoleSystem
 	{
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
-			arg.ReplyWith("Restart the server with command line argument -useNewNavmesh");
+			arg.ReplyWith("Restart the server without command line argument -useOldNavmesh");
 			return;
 		}
 		RustNavmesh defaultNavmesh = RustNavigation.Instance.DefaultNavmesh;
@@ -175,7 +175,7 @@ public class RustNav : ConsoleSystem
 	{
 		if (!RustNavigation.EnsureNewNavmesh())
 		{
-			arg.ReplyWith("Restart the server with command line argument -useNewNavmesh");
+			arg.ReplyWith("Restart the server without command line argument -useOldNavmesh");
 			return;
 		}
 		bool synchronous = arg.GetBool(0);

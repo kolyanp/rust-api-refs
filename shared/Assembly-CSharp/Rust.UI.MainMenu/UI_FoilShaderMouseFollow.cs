@@ -26,7 +26,7 @@ public class UI_FoilShaderMouseFollow : MonoBehaviour
 	[SerializeField]
 	private bool _useGlobal;
 
-	[Range(0f, 1f)]
 	[SerializeField]
+	[Range(0f, 1f)]
 	private float _normalisedMaxGlobalDistance;
 }

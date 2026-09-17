@@ -16,24 +16,24 @@ namespace ConVar;
 [Factory("pool")]
 public class Pool : ConsoleSystem
 {
-	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	[ClientVar(ClientAdmin = true)]
+	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static int mode = 2;
 
-	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	[ServerVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
+	[ClientVar(Help = "(Generated) When enabled, object pools are pre-allocated at startup to avoid first-use latency; increases startup time but reduces runtime GC stutter")]
 	public static bool prewarm = true;
 
 	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled = true;
 
-	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	[ClientVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
+	[ServerVar(Help = "(Generated) When enabled, logs additional diagnostic information about pool hits, misses, and spills to the console")]
 	public static bool debug = false;
 
-	[ServerVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
 	[ClientVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
+	[ServerVar(Help = "Whether to use original pool implementation (slower, but tested). Default is false")]
 	public static bool UseMutexPool
 	{
 		get
@@ -177,8 +177,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Prints a table of all prefab pool entries showing prefab name, miss count, current count, target capacity, and push/pop counts; supports --json")]
 	[ClientVar(Help = "(Generated) Prints a table of all prefab pool entries showing prefab name, miss count, current count, target capacity, and push/pop counts; supports --json")]
+	[ServerVar(Help = "(Generated) Prints a table of all prefab pool entries showing prefab name, miss count, current count, target capacity, and push/pop counts; supports --json")]
 	public static void print_prefabs(Arg arg)
 	{
 		PrefabPoolCollection pool = GameManager.server.pool;
@@ -227,8 +227,8 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	[ServerVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
+	[ClientVar(Help = "(Generated) Prints a table of all asset pool entries showing asset type, current pooled count, and pool capacity")]
 	public static void print_assets(Arg arg)
 	{
 		if (AssetPool.storage.Count == 0)
@@ -263,23 +263,23 @@ public class Pool : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
 	[ServerVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
+	[ClientVar(Help = "(Generated) Clears all entries from the object memory pool matching the optional name filter; freed pooled objects are garbage collected")]
 	public static void clear_memory(Arg arg)
 	{
 		Pool.Clear(arg.GetString(0, string.Empty));
 	}
 
-	[ClientVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
 	[ServerVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
+	[ClientVar(Help = "(Generated) Clears all cached prefab instances from the prefab pool matching the optional filter, across client, server, and generic pools")]
 	public static void clear_prefabs(Arg arg)
 	{
 		string filter = arg.GetString(0, string.Empty);
 		GameManager.server.pool.Clear(filter);
 	}
 
-	[ClientVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	[ServerVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
+	[ClientVar(Help = "(Generated) Clears all cached entries from the asset pool matching the optional name filter")]
 	public static void clear_assets(Arg arg)
 	{
 		AssetPool.Clear(arg.GetString(0, string.Empty));

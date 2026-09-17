@@ -64,9 +64,9 @@ public abstract class BaseHelicopter : BaseVehicle, SeekerTarget.ISeekerTargetOw
 	[SerializeField]
 	public GameObjectRef crashEffect;
 
-	[Tooltip("Lower values mean more lift is produced at high angles.")]
-	[SerializeField]
 	[Range(0.1f, 0.95f)]
+	[SerializeField]
+	[Tooltip("Lower values mean more lift is produced at high angles.")]
 	public float liftDotMax = 0.75f;
 
 	[SerializeField]

@@ -30,9 +30,9 @@ public class EnvironmentVolume : MonoBehaviour, IPrefabPreProcess
 	[CompilerGenerated]
 	private Vector3 _003CFalloffPositive_003Ek__BackingField;
 
-	[CompilerGenerated]
 	[Tooltip("Controls the falloff amount of the negative axes of spatially aware volumes.")]
 	[SerializeField]
+	[CompilerGenerated]
 	private Vector3 _003CFalloffNegative_003Ek__BackingField;
 
 	[NonSerialized]

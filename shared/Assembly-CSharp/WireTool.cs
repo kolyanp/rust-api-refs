@@ -421,16 +421,16 @@ public class WireTool : HeldEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
-	[RPC_Server]
-	[RPC_Server.IsActiveItem]
-	[RPC_Server.CallsPerSecond(5uL)]
-	[RPC_Server.MaxRepeatedElements(54)]
 	[RPC_Server.IgnoreConditional("HasUnlimitedIo", new Type[]
 	{
 		typeof(RPC_Server.MaxRepeatedElements),
 		typeof(RPC_Server.IgnoreProtoFieldOperationLimit)
 	})]
+	[RPC_Server.CallsPerSecond(5uL)]
+	[RPC_Server.MaxRepeatedElements(54)]
+	[RPC_Server.IsActiveItem]
+	[RPC_Server]
+	[RPC_Server.FromOwner]
 	public void RPC_MakeConnection(RPCMessage rpc)
 	{
 		//IL_002b: Unknown result type (might be due to invalid IL or missing references)
@@ -577,9 +577,9 @@ public class WireTool : HeldEntity
 	}
 
 	[RPC_Server]
-	[RPC_Server.CallsPerSecond(5uL)]
 	[RPC_Server.IsActiveItem]
 	[RPC_Server.FromOwner]
+	[RPC_Server.CallsPerSecond(5uL)]
 	public void RPC_RequestClear(RPCMessage msg)
 	{
 		//IL_000d: Unknown result type (might be due to invalid IL or missing references)

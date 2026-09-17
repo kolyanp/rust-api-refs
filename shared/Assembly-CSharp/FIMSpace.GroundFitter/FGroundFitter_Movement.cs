@@ -94,12 +94,12 @@ public class FGroundFitter_Movement : MonoBehaviour
 	[Tooltip("If you want to set some animator parameter during being grounded")]
 	public string SetIsGroundedParam;
 
-	[HideInInspector]
 	[Tooltip("If you want to set some animator parameter during accelerating moving")]
+	[HideInInspector]
 	public string SetIsMovingParam;
 
-	[HideInInspector]
 	[Tooltip("If using physical move with collider, assigning to the collider sliding material")]
+	[HideInInspector]
 	public bool UseSlidingMat;
 
 	private static PhysicsMaterial pm_Sliding = null;

@@ -150,8 +150,8 @@ public class ModularCarRadio : BaseCombatEntity
 		return false;
 	}
 
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
 	public void ServerTogglePlay(RPCMessage msg)
 	{
@@ -159,8 +159,8 @@ public class ModularCarRadio : BaseCombatEntity
 	}
 
 	[RPC_Server.IsVisible(3f)]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(2uL)]
+	[RPC_Server]
 	private void Server_UpdateRadioIP(RPCMessage msg)
 	{
 		CarRadio.Server_UpdateRadioIP(msg);

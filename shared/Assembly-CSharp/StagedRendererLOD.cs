@@ -39,8 +39,8 @@ public class StagedRendererLOD : InstancedLODComponent, IHLODMeshSource
 
 	public MeshFilter TargetFilter;
 
-	[Header("LOD Levels")]
 	[Tooltip("Distance at which each LOD level becomes active. LOD levels the active stage has no mesh for are culled.")]
+	[Header("LOD Levels")]
 	public State[] States = Array.Empty<State>();
 
 	public StagedDestructionEntityInfo FindStageInfo()

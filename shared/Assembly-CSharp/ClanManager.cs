@@ -3657,9 +3657,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[AsyncStateMachine(typeof(_003CServer_GetScoreEvents_003Ed__4))]
 	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_GetScoreEvents_003Ed__4))]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_GetScoreEvents(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3675,8 +3675,8 @@ public class ClanManager : BaseEntity
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetInvitations_003Ed__5))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public UniTaskVoid Server_GetInvitations(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3692,8 +3692,8 @@ public class ClanManager : BaseEntity
 	}
 
 	[AsyncStateMachine(typeof(_003CServer_GetLeaderboard_003Ed__8))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
 	public UniTaskVoid Server_GetLeaderboard(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3742,9 +3742,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_SetMotd_003Ed__11))]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetMotd(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3793,9 +3793,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
-	[RPC_Server]
 	[RPC_Server.CallsPerSecond(3uL)]
+	[RPC_Server]
+	[AsyncStateMachine(typeof(_003CServer_AcceptInvitation_003Ed__14))]
 	public UniTaskVoid Server_AcceptInvitation(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3844,9 +3844,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[AsyncStateMachine(typeof(_003CServer_SetPlayerRole_003Ed__17))]
 	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetPlayerRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3861,9 +3861,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_SetPlayerNotes_003Ed__18))]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SetPlayerNotes(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3879,8 +3879,8 @@ public class ClanManager : BaseEntity
 	}
 
 	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_CreateRole_003Ed__19))]
+	[RPC_Server]
 	public UniTaskVoid Server_CreateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3895,9 +3895,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
+	[AsyncStateMachine(typeof(_003CServer_UpdateRole_003Ed__20))]
 	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
-	[AsyncStateMachine(typeof(_003CServer_UpdateRole_003Ed__20))]
 	public UniTaskVoid Server_UpdateRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3912,9 +3912,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_DeleteRole_003Ed__21))]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_DeleteRole(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
@@ -3929,9 +3929,9 @@ public class ClanManager : BaseEntity
 		return ((AsyncUniTaskVoidMethodBuilder)(ref obj._003C_003Et__builder)).Task;
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
-	[RPC_Server]
 	[AsyncStateMachine(typeof(_003CServer_SwapRoles_003Ed__22))]
+	[RPC_Server]
+	[RPC_Server.CallsPerSecond(3uL)]
 	public UniTaskVoid Server_SwapRoles(RPCMessage msg)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)

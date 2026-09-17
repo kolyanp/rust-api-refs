@@ -6,8 +6,8 @@ namespace UnityEngine.UI.Extensions;
 [AddComponentMenu("UI/Extensions/Primitives/UI Circle Simple")]
 public class UICircleSimple : UIPrimitiveBase
 {
-	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	[Range(0f, 1000f)]
+	[Tooltip("The Arc Steps property defines the number of segments that the Arc will be divided into.")]
 	public int ArcSteps;
 
 	public bool Fill;

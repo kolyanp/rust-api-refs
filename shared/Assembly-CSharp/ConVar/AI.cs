@@ -250,7 +250,7 @@ public class AI : ConsoleSystem
 	[ServerVar(Help = "(Generated) Radius in metres within which a thrown smoke grenade suppresses NPC vision and targeting")]
 	public static float smokeGrenadeNpcRadius = 4f;
 
-	public static bool useUnityNavmesh = true;
+	public static bool useUnityNavmesh = false;
 
 	public static bool checkTileValid = false;
 

@@ -470,8 +470,8 @@ public class BaseLiquidVessel : AttackEntity
 		nextFreeTime = Time.realtimeSinceStartup - 1f;
 	}
 
-	[RPC_Server.IsActiveItem]
 	[RPC_Server]
+	[RPC_Server.IsActiveItem]
 	private void DoDrink(RPCMessage msg)
 	{
 		if (!msg.player.CanInteract())
@@ -565,8 +565,8 @@ public class BaseLiquidVessel : AttackEntity
 		}
 	}
 
-	[RPC_Server.FromOwner]
 	[RPC_Server]
+	[RPC_Server.FromOwner]
 	private void SendFilling(RPCMessage msg)
 	{
 		bool filling = msg.read.Bit();

@@ -14,8 +14,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private RustButton rightArrowButton;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SettingsGestureWidget[] gestureWidgets;
 
 	[SerializeField]
@@ -27,8 +27,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Image gestureIcon;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform wheelCenter;
 
 	[SerializeField]
@@ -41,8 +41,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[Space]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]
@@ -61,8 +61,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[SerializeField]
 	private Canvas buttonListCanvas;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private GameObject hoveredGestureTexts;
 
 	[SerializeField]

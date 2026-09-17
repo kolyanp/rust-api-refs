@@ -207,8 +207,8 @@ public class MortarEntityOld : StorageContainer
 		return IsMortarAmmo(item);
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void FireGun(RPCMessage rpc)
 	{
 		if (!CanFireGun())
@@ -290,8 +290,8 @@ public class MortarEntityOld : StorageContainer
 		SendNetworkUpdate();
 	}
 
-	[RPC_Server.IsVisible(3f)]
 	[RPC_Server]
+	[RPC_Server.IsVisible(3f)]
 	public void SetAdjustmentMode(RPCMessage rpc)
 	{
 		bool b = rpc.read.Bool();

@@ -7,15 +7,15 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 {
 	public RustButton button;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private RustText titleText;
 
 	[SerializeField]
 	private RustText subtitleText;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private CoverImage takeoverImage;
 
 	[SerializeField]
@@ -29,7 +29,7 @@ public class UI_StoreCheckoutResultButton : MonoBehaviour
 	private Image gaugeImage;
 
 	[Space]
-	[Header("Animation")]
 	[SerializeField]
+	[Header("Animation")]
 	private CanvasGroup canvasGroup;
 }

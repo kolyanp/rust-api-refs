@@ -103,8 +103,8 @@ public class BaseNpc : BaseCombatEntity
 			Player
 		}
 
-		[Tooltip("Ai will be less likely to fight animals that are larger than them, and more likely to flee from them.")]
 		[Range(0f, 1f)]
+		[Tooltip("Ai will be less likely to fight animals that are larger than them, and more likely to flee from them.")]
 		public float Size;
 
 		[Tooltip("How fast we can move")]
@@ -116,8 +116,8 @@ public class BaseNpc : BaseCombatEntity
 		[Tooltip("How fast can we turn around")]
 		public float TurnSpeed;
 
-		[Range(0f, 1f)]
 		[Tooltip("Determines things like how near we'll allow other species to get")]
+		[Range(0f, 1f)]
 		public float Tolerance;
 
 		[Tooltip("How far this NPC can see")]
@@ -292,8 +292,8 @@ public class BaseNpc : BaseCombatEntity
 
 	public float nextAttackTime;
 
-	[InspectorFlags]
 	[SerializeField]
+	[InspectorFlags]
 	public Enum topologyPreference;
 
 	[InspectorFlags]
