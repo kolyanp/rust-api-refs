@@ -16,8 +16,8 @@ public class EntityFlag_Toggle : EntityComponent<BaseEntity>, IOnPostNetworkUpda
 
 	public BaseEntity.Flags flag;
 
-	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
 	[SerializeField]
+	[Tooltip("If multiple flags are defined in 'flag', should they all be set, or any?")]
 	private FlagCheck flagCheck;
 
 	[SerializeField]

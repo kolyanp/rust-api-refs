@@ -14,12 +14,12 @@ public class MissionObjective_Move : MissionObjective
 	[Tooltip("If true, this objective will no longer be marked as completed if the objective criteria are no longer met.")]
 	public bool canBeReset;
 
-	[Tooltip("If \"Can Be Reset\" is true, then distance ")]
 	[InspectorName("Distance For Reset (m)")]
+	[Tooltip("If \"Can Be Reset\" is true, then distance ")]
 	public float distanceForReset = 3f;
 
-	[FormerlySerializedAs("use2D")]
 	[Tooltip("If true, disregards distance on the y-plane.")]
+	[FormerlySerializedAs("use2D")]
 	public bool use2DDistance;
 
 	[Tooltip("If set, player must be mounted on this mountable for objective to complete.")]

@@ -3,8 +3,8 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteInEditMode]
 [RequireComponent(typeof(CanvasRenderer))]
+[ExecuteInEditMode]
 public class PieShape : Graphic
 {
 	[Range(0f, 1f)]

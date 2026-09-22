@@ -68,12 +68,12 @@ public class PostProcessLayer : MonoBehaviour
 	[SerializeField]
 	private PostProcessResources m_Resources;
 
-	[SerializeField]
 	[Preserve]
+	[SerializeField]
 	private bool m_ShowToolkit;
 
-	[SerializeField]
 	[Preserve]
+	[SerializeField]
 	private bool m_ShowCustomSorter;
 
 	public bool breakBeforeColorGrading;

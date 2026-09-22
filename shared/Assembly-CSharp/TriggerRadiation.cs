@@ -15,8 +15,8 @@ public class TriggerRadiation : TriggerBase
 	public bool ScaleByArmor;
 
 	[Space]
-	[Min(0f)]
 	[Tooltip("The fraction of the radius where we fade in from 0-1 dosage.")]
+	[Min(0f)]
 	public float falloff = 0.1f;
 
 	public bool usePerAxisFalloff;

@@ -40,22 +40,22 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 
 	private float throttleInput;
 
-	[Header("Battering Ram")]
 	[SerializeField]
+	[Header("Battering Ram")]
 	private Animator animator;
 
 	[SerializeField]
 	private Transform damagePoint;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private float timeBetweenFire = 2f;
 
 	[SerializeField]
 	private float maxForwardSpeed = 1.5f;
 
-	[Header("Head")]
 	[Space]
+	[Header("Head")]
 	[SerializeField]
 	private BatteringRamHead headPrefab;
 
@@ -89,8 +89,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[SerializeField]
 	private Transform steeringWheel;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Vector3 steerAngle;
 
 	public VehicleModuleEngine.Engine engine;
@@ -109,8 +109,8 @@ public class BatteringRam : BaseSiegeWeapon, IEngineControllerUser, IEntity, Veh
 	[ServerVar(ClientAdmin = true, Default = "2", Help = "(Generated) Maximum building block upgrade grade (0=twig,1=wood,2=stone,3=metal,4=top tier) that the battering ram can damage; default 2 (stone)")]
 	public static int maxBuildingBlockGrade = 2;
 
-	[SerializeField]
 	[Header("Door")]
+	[SerializeField]
 	private Transform doorTransform;
 
 	[SerializeField]

@@ -21,8 +21,8 @@ public class Tooltip : BaseMonoBehaviour, IClientComponent, ILocalize
 	public DelayType delayBeforeAppearing;
 
 	[Space(10f)]
-	[Header("Advanced Settings - Position")]
 	[Tooltip("What position relative to the object that the tooltip should be spawned on.")]
+	[Header("Advanced Settings - Position")]
 	public TooltipContainer.PositionMode positionMode;
 
 	[Tooltip("Spawn the tooltip relative to the mouse position rather than the objects.")]

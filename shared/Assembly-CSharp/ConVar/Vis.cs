@@ -12,8 +12,8 @@ public class Vis : ConsoleSystem
 	public static bool damage;
 
 	[Help("Turns on debug display of attacks")]
-	[ServerVar]
 	[ClientVar]
+	[ServerVar]
 	public static bool attack;
 
 	[Help("Turns on debug display of protection")]
@@ -21,23 +21,23 @@ public class Vis : ConsoleSystem
 	[ServerVar]
 	public static bool protection;
 
-	[Help("Turns on debug display of weakspots")]
 	[ServerVar]
+	[Help("Turns on debug display of weakspots")]
 	public static bool weakspots;
 
 	[ServerVar]
 	[Help("Show trigger entries")]
 	public static bool triggers;
 
-	[Help("Turns on debug display of hitboxes")]
 	[ServerVar]
+	[Help("Turns on debug display of hitboxes")]
 	public static bool hitboxes;
 
-	[ServerVar]
 	[Help("Turns on debug display of line of sight checks")]
+	[ServerVar]
 	public static bool lineofsight;
 
-	[ServerVar]
 	[Help("Turns on debug display of senses, which are received by Ai")]
+	[ServerVar]
 	public static bool sense;
 }

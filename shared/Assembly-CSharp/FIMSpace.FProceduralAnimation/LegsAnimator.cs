@@ -2603,8 +2603,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 		[Range(0f, 1.001f)]
 		public float FootMiddlePosition;
 
-		[Space(5f)]
 		[FPD_Suffix(-45f, 45f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "°", true, 0)]
+		[Space(5f)]
 		public float AnkleYawCorrection;
 
 		private bool _StepSent;
@@ -5978,8 +5978,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 		[FPD_FixedCurveWindow(0f, 0f, 1f, 1f, 1f, 0.6f, 0.6f, 1f)]
 		public AnimationCurve PushHipsOnMoveCurve;
 
-		[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0f, 1f, 1f, 1f)]
 		[Tooltip("Extra foot ankle rotation animation curve evaluated on step animation duration.")]
+		[FPD_FixedCurveWindow(0f, -1f, 1f, 1f, 0f, 1f, 1f, 1f)]
 		public AnimationCurve FootRotationCurve;
 
 		public void RefreshDefaultCurves()
@@ -6721,8 +6721,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("Whole body lift effect blend")]
 	public float HipsHeightStepBlend;
 
-	[Range(0f, 1f)]
 	[Tooltip("How fast body should adjust up/down")]
+	[Range(0f, 1f)]
 	public float HipsHeightStepSpeed;
 
 	public EHipsAdjustStyle HipsAdjustStyle;
@@ -6855,8 +6855,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("If it's human leg limb with foot, then turn it on for the foot bone animation and alignments. But if it's something like spider leg, then disable it")]
 	public bool AnimateFeet;
 
-	[Tooltip("If feet rotation is above this value, feet rotation will be limited to avoid weird foot rotation pose")]
 	[FPD_Suffix(0f, 90f, FPD_SuffixAttribute.SuffixMode.FromMinToMax, "°", true, 0)]
+	[Tooltip("If feet rotation is above this value, feet rotation will be limited to avoid weird foot rotation pose")]
 	public float LimitFeetYaw;
 
 	[Range(-0.05f, 0.15f)]
@@ -6867,8 +6867,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	private bool _wasInstantTriggered;
 
-	[HideInInspector]
 	[SerializeField]
+	[HideInInspector]
 	private ReferencePose setupPose;
 
 	[HideInInspector]
@@ -6974,8 +6974,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Tooltip("Physics detection ray volume size. Sphere Cast can provide more smooth transitions on the edges but costs a bit more.")]
 	public ERaycastMode RaycastShape;
 
-	[Tooltip("Shift spherecast hit point result towards original XZ position instead of hit position. Can be helpful to prevent spider legs from being bent too much in narrow spaces.")]
 	[Range(0f, 1f)]
+	[Tooltip("Shift spherecast hit point result towards original XZ position instead of hit position. Can be helpful to prevent spider legs from being bent too much in narrow spaces.")]
 	public float SpherecastRealign;
 
 	[Tooltip("Shift spherecast hit point result towards original XZ position instead of hit position. Can be helpful to prevent spider legs from being bent too much in narrow spaces.")]
@@ -6998,8 +6998,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 	[Space(3f)]
 	public float MaxBodyStepUp;
 
-	[Space(3f)]
 	[Tooltip("How fast should be applied fade-out when character starts being ungrounded. (jumping/falling)")]
+	[Space(3f)]
 	[Range(0f, 1f)]
 	public float UngroundFadeSpeed;
 
@@ -7012,8 +7012,8 @@ public class LegsAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, IF
 
 	private float _lastMainBlend;
 
-	[Tooltip("Total blend of the plugin effects. When zero it disables most of the calculations (but not all)")]
 	[FPD_Suffix(0f, 1f, FPD_SuffixAttribute.SuffixMode.From0to100, "%", true, 0)]
+	[Tooltip("Total blend of the plugin effects. When zero it disables most of the calculations (but not all)")]
 	public float LegsAnimatorBlend;
 
 	protected float cullingBlend;

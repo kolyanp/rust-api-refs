@@ -5,8 +5,8 @@ namespace ConVar;
 [Factory("ping")]
 public class Ping : ConsoleSystem
 {
-	[ServerVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
 	[ClientVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
+	[ServerVar(Help = "(Generated) Number of ping samples collected per estimation cycle; more samples give a more accurate average latency but take longer to complete")]
 	public static int ping_samples
 	{
 		get
@@ -19,8 +19,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, ping estimation sends samples to all servers in parallel for faster results; uses more bandwidth simultaneously")]
 	[ClientVar(Help = "(Generated) When enabled, ping estimation sends samples to all servers in parallel for faster results; uses more bandwidth simultaneously")]
+	[ServerVar(Help = "(Generated) When enabled, ping estimation sends samples to all servers in parallel for faster results; uses more bandwidth simultaneously")]
 	public static bool ping_parallel
 	{
 		get
@@ -33,8 +33,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
 	[ClientVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
+	[ServerVar(Help = "(Generated) Interval in minutes between automatic background ping estimation refreshes for server list region latency sorting")]
 	public static int ping_refresh_interval
 	{
 		get
@@ -75,8 +75,8 @@ public class Ping : ConsoleSystem
 		}
 	}
 
-	[ClientVar(Help = "(Generated) When enabled, the ping estimator collects latency samples to regional servers; disable to suppress background ping traffic")]
 	[ServerVar(Help = "(Generated) When enabled, the ping estimator collects latency samples to regional servers; disable to suppress background ping traffic")]
+	[ClientVar(Help = "(Generated) When enabled, the ping estimator collects latency samples to regional servers; disable to suppress background ping traffic")]
 	public static bool ping_estimation
 	{
 		get

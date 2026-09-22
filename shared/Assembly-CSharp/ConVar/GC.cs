@@ -28,8 +28,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) Read-only: reports whether Unity incremental garbage collection is enabled for this runtime; cannot be changed at runtime")]
 	[ClientVar(Help = "(Generated) Read-only: reports whether Unity incremental garbage collection is enabled for this runtime; cannot be changed at runtime")]
+	[ServerVar(Help = "(Generated) Read-only: reports whether Unity incremental garbage collection is enabled for this runtime; cannot be changed at runtime")]
 	public static bool incremental_enabled
 	{
 		get
@@ -56,8 +56,8 @@ public class GC : ConsoleSystem
 		}
 	}
 
-	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	[ClientVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
+	[ServerVar(Help = "(Generated) When enabled, this system is globally active; disable to deactivate the system for the current session")]
 	public static bool enabled
 	{
 		get
@@ -84,8 +84,8 @@ public class GC : ConsoleSystem
 		Resources.UnloadUnusedAssets();
 	}
 
-	[ServerVar(Help = "(Generated) Allocates a byte array of the given size (default 1 MB) as a GC pressure test; useful for profiling memory allocation throughput")]
 	[ClientVar(Help = "(Generated) Allocates a byte array of the given size (default 1 MB) as a GC pressure test; useful for profiling memory allocation throughput")]
+	[ServerVar(Help = "(Generated) Allocates a byte array of the given size (default 1 MB) as a GC pressure test; useful for profiling memory allocation throughput")]
 	public static void alloc(Arg args)
 	{
 		byte[] array = new byte[args.GetInt(0, 1048576)];

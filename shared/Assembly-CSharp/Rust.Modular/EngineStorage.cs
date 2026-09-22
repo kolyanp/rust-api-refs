@@ -28,8 +28,8 @@ public class EngineStorage : StorageContainer
 	[SerializeField]
 	public VehicleModuleEngineItems allEngineItems;
 
-	[SerializeField]
 	[ReadOnly]
+	[SerializeField]
 	public int accelerationBoostSlots;
 
 	[SerializeField]

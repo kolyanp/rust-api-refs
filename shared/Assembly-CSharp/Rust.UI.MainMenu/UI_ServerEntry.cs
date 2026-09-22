@@ -36,8 +36,8 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private Tooltip _distanceTooltip;
 
-	[SerializeField]
 	[Header("References - Last Played")]
+	[SerializeField]
 	private RustText _lastPlayedText;
 
 	[SerializeField]
@@ -80,7 +80,7 @@ public class UI_ServerEntry : FacepunchBehaviour
 	[SerializeField]
 	private StyleAsset _favouriteStyle;
 
-	[Header("Other")]
 	[SerializeField]
+	[Header("Other")]
 	private bool _joinOnClick;
 }

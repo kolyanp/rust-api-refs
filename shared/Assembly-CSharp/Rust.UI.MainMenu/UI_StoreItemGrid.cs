@@ -133,8 +133,8 @@ public class UI_StoreItemGrid : MonoBehaviour
 
 	public bool dynamicContent;
 
-	[SerializeField]
 	[Tooltip("Items already spawned by these grids won't spawn here again, avoids duplicates across grids")]
+	[SerializeField]
 	private List<UI_StoreItemGrid> excludeItemsFromGrids;
 
 	[SerializeField]

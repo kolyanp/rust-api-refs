@@ -13,16 +13,16 @@ public class NGSS_Directional : MonoBehaviour
 		SAMPLERS_64
 	}
 
-	[Range(0f, 0.02f)]
 	[Tooltip("Overall softness for both PCF and PCSS shadows.\nRecommended value: 0.01.")]
+	[Range(0f, 0.02f)]
 	public float PCSS_GLOBAL_SOFTNESS = 0.01f;
 
 	[Tooltip("PCSS softness when shadows is close to caster.\nRecommended value: 0.05.")]
 	[Range(0f, 1f)]
 	public float PCSS_FILTER_DIR_MIN = 0.05f;
 
-	[Range(0f, 0.5f)]
 	[Tooltip("PCSS softness when shadows is far from caster.\nRecommended value: 0.25.\nIf too high can lead to visible artifacts when early bailout is enabled.")]
+	[Range(0f, 0.5f)]
 	public float PCSS_FILTER_DIR_MAX = 0.25f;
 
 	[Range(0f, 10f)]

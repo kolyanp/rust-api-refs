@@ -722,8 +722,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 
 	private bool forceRefreshCollidersData;
 
-	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	[Tooltip("You can use this variable to blend intensity of spine animator motion over skeleton animation\n\nValue = 1: Animation with spine Animator motion\nValue = 0: Only skeleton animation")]
+	[FPD_Percentage(0f, 1f, false, true, "%", false)]
 	public float SpineAnimatorAmount;
 
 	private Quaternion Rotate180;
@@ -854,24 +854,24 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("If animation of changing segments position should be smoothed - creating a little gumy effect.")]
 	public float PosSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("If animation of changing segments rotation should be smoothed - making it more soft, but don't overuse it!")]
+	[Range(0f, 1f)]
 	public float RotSmoother;
 
-	[Range(0f, 1f)]
 	[Tooltip("We stretching segments to bigger value than bones are by default to create some extra effect which looks good but sometimes it can stretch to much if you using position smoothing, you can adjust it here.")]
+	[Range(0f, 1f)]
 	public float MaxStretching;
 
-	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	[Range(0f, 1f)]
+	[Tooltip("Making algorithm referencing back to static rotation if value = 0f | at 1 motion have more range and is more slithery.")]
 	public float Slithery;
 
-	[Range(1f, 91f)]
 	[Tooltip("Limiting rotation angle difference between each segment of spine.")]
+	[Range(1f, 91f)]
 	public float AngleLimit;
 
-	[Range(0f, 1f)]
 	[Tooltip("Smoothing how fast limiting should make segments go back to marginal pose.")]
+	[Range(0f, 1f)]
 	public float LimitSmoother;
 
 	[Range(0f, 15f)]
@@ -898,8 +898,8 @@ public class FSpineAnimator : MonoBehaviour, IDropHandler, IEventSystemHandler, 
 	[Tooltip("Fade rotations to sides or rotation up/down with this parameter - can be helpful for character jump handling")]
 	public Vector2 RotationsFade;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Transform mainPivotOffsetTransform;
 
 	[Tooltip("<! Most models can not need this !> Offset for bones rotations, thanks to that animation is able to rotate to segments in a correct way, like from center of mass.")]

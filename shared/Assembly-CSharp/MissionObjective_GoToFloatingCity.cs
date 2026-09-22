@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class MissionObjective_GoToFloatingCity : MissionObjective
 {
-	[InspectorName("Distance For Completion (m)")]
 	[Tooltip("Distance threshold to player for objective to complete (if distance is less that this value).")]
+	[InspectorName("Distance For Completion (m)")]
 	public float distanceForCompletion = 50f;
 
-	[InspectorName("Distance For Reset (m)")]
 	[Tooltip("Distance threshold to player for objective to reset (if distance is greater than this value).")]
+	[InspectorName("Distance For Reset (m)")]
 	public float distanceForReset = 50f;
 
 	[Tooltip("If true, disregards distance on the y-plane.")]

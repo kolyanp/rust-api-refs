@@ -23,8 +23,8 @@ public class TestScenario_RocketSplashDamage : TestScenarioPrefab
 
 	public Material defaultMaterial;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	public int currentTestCaseIndex;
 
 	[Space]

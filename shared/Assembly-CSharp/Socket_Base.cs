@@ -43,6 +43,8 @@ public class Socket_Base : PrefabAttribute
 
 	public OccupiedSocketCheck[] checkOccupiedSockets;
 
+	public virtual bool ConnectsBuildings => true;
+
 	public Socket_Base()
 	{
 		//IL_0017: Unknown result type (might be due to invalid IL or missing references)

@@ -13,8 +13,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
 	public PerPixelNormalSource PerPixelNormals;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity;
 
 	public Color Tint;
@@ -41,8 +41,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Range(0f, 0.99f)]
 	public float Bias;
 
-	[Tooltip("Controls the thickness occlusion contribution.")]
 	[Range(0f, 1f)]
+	[Tooltip("Controls the thickness occlusion contribution.")]
 	public float Thickness;
 
 	[Tooltip("Compute the Occlusion and Blur at half of the resolution.")]
@@ -58,14 +58,14 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Tooltip("Length distance to performe the transition.")]
 	public float FadeLength;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final Intensity parameter.")]
+	[Range(0f, 1f)]
 	public float FadeToIntensity;
 
 	public Color FadeToTint;
 
-	[Range(0f, 32f)]
 	[Tooltip("Final Radius parameter.")]
+	[Range(0f, 32f)]
 	public float FadeToRadius;
 
 	[Range(0f, 16f)]
@@ -79,28 +79,28 @@ public class AmplifyOcclusionBase : MonoBehaviour
 	[Header("Bilateral Blur")]
 	public bool BlurEnabled;
 
-	[Tooltip("Radius in screen pixels.")]
 	[Range(1f, 4f)]
+	[Tooltip("Radius in screen pixels.")]
 	public int BlurRadius;
 
-	[Tooltip("Number of times that the Blur will repeat.")]
 	[Range(1f, 4f)]
+	[Tooltip("Number of times that the Blur will repeat.")]
 	public int BlurPasses;
 
-	[Range(0f, 20f)]
 	[Tooltip("0 - Blured, 1 - Sharpened.")]
+	[Range(0f, 20f)]
 	public float BlurSharpness;
 
 	[Tooltip("Accumulates the effect over the time.")]
 	[Header("Temporal Filter")]
 	public bool FilterEnabled;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the accumulation decayment. 0 - Faster update, more flicker. 1 - Slow update (ghosting on moving objects), less flicker.")]
+	[Range(0f, 1f)]
 	public float FilterBlending;
 
-	[Range(0f, 1f)]
 	[Tooltip("Controls the discard sensibility based on the motion of the scene and objects. 0 - Discard less, reuse more (more ghost effect). 1 - Discard more, reuse less (less ghost effect).")]
+	[Range(0f, 1f)]
 	public float FilterResponse;
 
 	[NonSerialized]

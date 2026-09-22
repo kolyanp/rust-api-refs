@@ -17,15 +17,15 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 
 	private List<UI_Page> pageInstances = new List<UI_Page>();
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	private UI_Popup _genericPopupPrefab;
 
 	[SerializeField]
 	private Transform _genericPopupParent;
 
-	[Header("Background Image Settings")]
 	[SerializeField]
+	[Header("Background Image Settings")]
 	private CanvasGroup _homeVideoOverlay;
 
 	[SerializeField]
@@ -40,8 +40,8 @@ public class UI_MainMenuManager : SingletonComponent<UI_MainMenuManager>
 	[SerializeField]
 	private float _pageBackgroundOverlayAlpha = 0.98f;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SafeZoneWarning _safeZoneWarningPopup;
 
 	public static Action OnOpenStateChanged;

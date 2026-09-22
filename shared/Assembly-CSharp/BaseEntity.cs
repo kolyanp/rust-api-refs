@@ -2000,12 +2000,16 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		}
 	}
 
-	public void EntityLinkMessage<T, TCaller, TArg>(Action<T, TCaller, TArg> action, TCaller caller, TArg arg) where T : BaseEntity
+	public void EntityLinkMessage<T, TCaller, TArg>(Action<T, TCaller, TArg> action, TCaller caller, TArg arg, bool onlyBuildingConnections = false) where T : BaseEntity
 	{
 		List<EntityLink> entityLinks = GetEntityLinks();
 		for (int i = 0; i < entityLinks.Count; i++)
 		{
 			EntityLink entityLink = entityLinks[i];
+			if (onlyBuildingConnections && !entityLink.socket.ConnectsBuildings)
+			{
+				continue;
+			}
 			for (int j = 0; j < entityLink.connections.Count; j++)
 			{
 				EntityLink entityLink2 = entityLink.connections[j];
@@ -2087,7 +2091,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		}
 	}
 
-	public void EntityLinkBroadcast<T, TArg>(Action<T, TArg> action, TArg arg) where T : BaseEntity
+	public void EntityLinkBroadcast<T, TArg>(Action<T, TArg> action, TArg arg, bool onlyBuildingConnections = false) where T : BaseEntity
 	{
 		globalBroadcastProtocol++;
 		globalBroadcastQueue.Clear();
@@ -2103,6 +2107,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			for (int i = 0; i < entityLinks.Count; i++)
 			{
 				EntityLink entityLink = entityLinks[i];
+				if (onlyBuildingConnections && !entityLink.socket.ConnectsBuildings)
+				{
+					continue;
+				}
 				for (int j = 0; j < entityLink.connections.Count; j++)
 				{
 					BaseEntity owner = entityLink.connections[j].owner;
@@ -2120,7 +2128,7 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 		}
 	}
 
-	public void EntityLinkBroadcast()
+	public void EntityLinkBroadcast(bool onlyBuildingConnections = false)
 	{
 		globalBroadcastProtocol++;
 		globalBroadcastQueue.Clear();
@@ -2132,6 +2140,10 @@ public class BaseEntity : BaseNetworkable, IOnParentSpawning, IPrefabPreProcess
 			for (int i = 0; i < entityLinks.Count; i++)
 			{
 				EntityLink entityLink = entityLinks[i];
+				if (onlyBuildingConnections && !entityLink.socket.ConnectsBuildings)
+				{
+					continue;
+				}
 				for (int j = 0; j < entityLink.connections.Count; j++)
 				{
 					BaseEntity owner = entityLink.connections[j].owner;

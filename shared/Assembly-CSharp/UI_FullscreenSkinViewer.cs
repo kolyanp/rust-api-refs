@@ -45,8 +45,8 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[Header("Drag")]
 	private float inertiaDecay;
 
-	[SerializeField]
 	[Header("Pan")]
+	[SerializeField]
 	private Vector2 panLimitX;
 
 	[SerializeField]
@@ -55,15 +55,15 @@ public class UI_FullscreenSkinViewer : UI_Window
 	[SerializeField]
 	private float panSpeed;
 
-	[Header("Zoom")]
 	[SerializeField]
+	[Header("Zoom")]
 	private float zoomSpeed;
 
 	[SerializeField]
 	private Vector2 minMaxFov;
 
-	[Header("Idle")]
 	[SerializeField]
+	[Header("Idle")]
 	private float idleSwaySpeed;
 
 	[SerializeField]

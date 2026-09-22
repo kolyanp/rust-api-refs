@@ -77,8 +77,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("The highest possible exposure value; adjust this value to modify the darkest areas of your level.")]
 		public float max;
 
-		[Min(0f)]
 		[Tooltip("Speed of linear adaptation. Higher is faster.")]
+		[Min(0f)]
 		public float speed;
 
 		[Tooltip("Displays a luminosity helper in the GameView.")]
@@ -114,8 +114,8 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Tonemapping technique to use. ACES is the recommended one.")]
 		public Tonemapper tonemapper;
 
-		[Min(0f)]
 		[Tooltip("Adjusts the overall exposure of the scene.")]
+		[Min(0f)]
 		public float exposure;
 
 		[Tooltip("Custom tonemapping curve.")]
@@ -217,13 +217,13 @@ public class TonemappingColorGrading : MonoBehaviour
 		[Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
 		public float tint;
 
-		[Range(-0.5f, 0.5f)]
 		[Space]
 		[Tooltip("Shift the hue of all colors.")]
+		[Range(-0.5f, 0.5f)]
 		public float hue;
 
-		[Tooltip("Pushes the intensity of all colors.")]
 		[Range(0f, 2f)]
+		[Tooltip("Pushes the intensity of all colors.")]
 		public float saturation;
 
 		[Tooltip("Adjusts the saturation so that clipping is minimized as colors approach full saturation.")]
@@ -352,16 +352,16 @@ public class TonemappingColorGrading : MonoBehaviour
 		[ColorWheelGroup]
 		public ColorWheelsSettings colorWheels;
 
-		[IndentedGroup]
 		[Space]
+		[IndentedGroup]
 		public BasicsSettings basics;
 
-		[Space]
 		[ChannelMixer]
+		[Space]
 		public ChannelMixerSettings channelMixer;
 
-		[Space]
 		[IndentedGroup]
+		[Space]
 		public CurvesSettings curves;
 
 		[Tooltip("Use dithering to try and minimize color banding in dark areas.")]
@@ -393,16 +393,16 @@ public class TonemappingColorGrading : MonoBehaviour
 	[SettingsGroup]
 	private EyeAdaptationSettings m_EyeAdaptation = EyeAdaptationSettings.defaultSettings;
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private TonemappingSettings m_Tonemapping = TonemappingSettings.defaultSettings;
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private ColorGradingSettings m_ColorGrading = ColorGradingSettings.defaultSettings;
 
-	[SettingsGroup]
 	[SerializeField]
+	[SettingsGroup]
 	private LUTSettings m_Lut = LUTSettings.defaultSettings;
 
 	[SerializeField]

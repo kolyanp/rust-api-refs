@@ -6,15 +6,15 @@ namespace Rust.UI;
 
 public class UI_RustButtonGroup : MonoBehaviour
 {
-	[Header("Button Group")]
 	[SerializeField]
+	[Header("Button Group")]
 	protected List<RustButton> _buttons = new List<RustButton>();
 
 	[SerializeField]
 	protected bool _unpressSiblings;
 
-	[SerializeField]
 	[Tooltip("This button will appear 'pressed' at the beginning.")]
+	[SerializeField]
 	private RustButton _defaultButton;
 
 	[SerializeField]

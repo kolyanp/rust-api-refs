@@ -11,9 +11,9 @@ using UnityEngine.Serialization;
 public class DensitySpawnPopulation : SpawnPopulationBase
 {
 	[FormerlySerializedAs("TargetDensity")]
-	[SerializeField]
-	[Tooltip("Usually per square km")]
 	[Header("Spawn Info")]
+	[Tooltip("Usually per square km")]
+	[SerializeField]
 	public float _targetDensity = 1f;
 
 	public int ClusterSizeMin = 1;

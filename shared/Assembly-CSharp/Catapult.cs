@@ -70,8 +70,8 @@ public class Catapult : BaseSiegeWeapon
 
 	private TimeSince timeSinceLastFire;
 
-	[Header("Effects")]
 	[SerializeField]
+	[Header("Effects")]
 	public GameObjectRef dryFireEffectPrefab;
 
 	[SerializeField]

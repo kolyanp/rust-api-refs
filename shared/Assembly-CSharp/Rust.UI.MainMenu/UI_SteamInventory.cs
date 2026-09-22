@@ -9,8 +9,8 @@ public class UI_SteamInventory : UI_Page
 	[SerializeField]
 	private FlexVirtualScroll virtualScrollFlex;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private UI_SteamInventoryCrafting crafting;
 
 	[SerializeField]

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CornerSocket : Socket_Base
 {
+	public override bool ConnectsBuildings => false;
+
 	private void OnDrawGizmosSelected()
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)

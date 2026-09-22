@@ -5,8 +5,8 @@ namespace FIMSpace.GroundFitter;
 
 public abstract class FGroundFitter_Base_RootMotion : FGroundFitter_Base
 {
-	[Tooltip("Making ground fitter translate with root motion")]
 	[HideInInspector]
+	[Tooltip("Making ground fitter translate with root motion")]
 	public bool HandleRootMotion;
 
 	[HideInInspector]

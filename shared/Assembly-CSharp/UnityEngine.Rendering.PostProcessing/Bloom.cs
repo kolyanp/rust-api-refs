@@ -7,12 +7,12 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.BloomRenderer), "Unity/Bloom", true)]
 public sealed class Bloom : PostProcessEffectSettings
 {
-	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
 	[Min(0f)]
+	[Tooltip("Strength of the bloom filter. Values higher than 1 will make bloom contribute more energy to the final render.")]
 	public FloatParameter intensity;
 
-	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	[Min(0f)]
+	[Tooltip("Filters out pixels under this level of brightness. Value is in gamma-space.")]
 	public FloatParameter threshold;
 
 	[Range(0f, 1f)]
@@ -38,13 +38,13 @@ public sealed class Bloom : PostProcessEffectSettings
 	[Tooltip("Boost performance by lowering the effect quality. This settings is meant to be used on mobile and other low-end platforms but can also provide a nice performance boost on desktops and consoles.")]
 	public BoolParameter fastMode;
 
-	[DisplayName("Texture")]
 	[Tooltip("The lens dirt texture used to add smudges or dust to the bloom effect.")]
+	[DisplayName("Texture")]
 	public TextureParameter dirtTexture;
 
+	[Tooltip("The intensity of the lens dirtiness.")]
 	[Min(0f)]
 	[DisplayName("Intensity")]
-	[Tooltip("The intensity of the lens dirtiness.")]
 	public FloatParameter dirtIntensity;
 
 	public override bool IsEnabledAndSupported(PostProcessRenderContext context)

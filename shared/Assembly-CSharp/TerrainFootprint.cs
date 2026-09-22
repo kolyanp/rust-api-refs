@@ -17,12 +17,12 @@ public class TerrainFootprint : PrefabAttribute
 	[HideInInspector]
 	public bool[] RunClosed;
 
-	[Header("Seating")]
 	[Tooltip("Where the fill stops, relative to the ring. 0 lands the ground exactly on the line, which is the point of drawing the line where you want the ground: the fill can then never come up above it. Positive buries the base that much deeper, negative leaves it standing that much prouder.\n\nMetres, taken literally - not multiplied by the prefab's scale or widened by tilt, so what you type is what you get on every instance.")]
+	[Header("Seating")]
 	public float FillOffset;
 
-	[Tooltip("Safety ceiling on how far any one point of ground may be raised, in metres. Keep it ABOVE the deepest gutter you want bridged - the plane the ring lies in is already the natural ceiling, so this is a backstop rather than a tuning dial.\n\nSet it too low and it does real damage: the shallow ground either side of a gutter reaches the plane while the gutter itself stops short, leaving a step between them. A 2.5 m gutter under a footprint clamped at 1.5 m leaves a 1.65 m wall; at 4 m it comes out flush.")]
 	[Header("Fill")]
+	[Tooltip("Safety ceiling on how far any one point of ground may be raised, in metres. Keep it ABOVE the deepest gutter you want bridged - the plane the ring lies in is already the natural ceiling, so this is a backstop rather than a tuning dial.\n\nSet it too low and it does real damage: the shallow ground either side of a gutter reaches the plane while the gutter itself stops short, leaving a step between them. A 2.5 m gutter under a footprint clamped at 1.5 m leaves a 1.65 m wall; at 4 m it comes out flush.")]
 	public float MaxFill;
 
 	[Tooltip("Reject the placement outright when the ground has to come up further than this to meet the rock, in metres. 0 disables rejection, which is the default: the footprint then only ever fills, and cannot change which rocks the generator spawns.")]

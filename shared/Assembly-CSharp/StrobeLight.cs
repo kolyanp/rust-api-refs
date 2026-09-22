@@ -50,8 +50,8 @@ public class StrobeLight : IOEntity
 		return speedSlow;
 	}
 
-	[RPC_Server]
 	[RPC_Server.IsVisible(3f)]
+	[RPC_Server]
 	public void SetStrobe(RPCMessage msg)
 	{
 		bool strobe = msg.read.Bit();

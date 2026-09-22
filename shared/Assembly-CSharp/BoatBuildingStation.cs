@@ -42,8 +42,8 @@ public class BoatBuildingStation : DecayEntity
 
 	public const string ACHIEVEMENT_FINISH_BOAT_NAME = "BBS_FINISH_BOAT";
 
-	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
 	[ServerVar]
+	[Help("When disabled, any spawned static BBS will destroy themselves on spawn")]
 	public static bool StaticStationsEnabled;
 
 	[ServerVar]

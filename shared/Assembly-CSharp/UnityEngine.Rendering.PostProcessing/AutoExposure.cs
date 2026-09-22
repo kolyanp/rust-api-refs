@@ -21,17 +21,17 @@ public sealed class AutoExposure : PostProcessEffectSettings
 	[Tooltip("Maximum average luminance to consider for auto exposure. Unit is EV.")]
 	public FloatParameter maxLuminance;
 
-	[DisplayName("Exposure Compensation")]
 	[Min(0f)]
+	[DisplayName("Exposure Compensation")]
 	[Tooltip("Use this to scale the global exposure of the scene.")]
 	public FloatParameter keyValue;
 
-	[Tooltip("Use \"Progressive\" if you want auto exposure to be animated. Use \"Fixed\" otherwise.")]
 	[DisplayName("Type")]
+	[Tooltip("Use \"Progressive\" if you want auto exposure to be animated. Use \"Fixed\" otherwise.")]
 	public EyeAdaptationParameter eyeAdaptation;
 
-	[Tooltip("Adaptation speed from a dark to a light environment.")]
 	[Min(0f)]
+	[Tooltip("Adaptation speed from a dark to a light environment.")]
 	public FloatParameter speedUp;
 
 	[Min(0f)]

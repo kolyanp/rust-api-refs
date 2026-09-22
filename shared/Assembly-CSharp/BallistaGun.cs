@@ -35,8 +35,8 @@ public class BallistaGun : BaseVehicleSeat
 		Down
 	}
 
-	[SerializeField]
 	[Header("Ballista")]
+	[SerializeField]
 	private bool isMountedOnVehicle;
 
 	[SerializeField]
@@ -69,8 +69,8 @@ public class BallistaGun : BaseVehicleSeat
 	[SerializeField]
 	protected BaseProjectile.Magazine magazine;
 
-	[SerializeField]
 	[Space]
+	[SerializeField]
 	protected Transform muzzle;
 
 	[SerializeField]
@@ -143,8 +143,8 @@ public class BallistaGun : BaseVehicleSeat
 
 	private SoundModulation.Modulator aimMovementPitchGainMod;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private bool runSideChecks;
 
 	[SerializeField]
@@ -1374,8 +1374,8 @@ public class BallistaGun : BaseVehicleSeat
 	{
 	}
 
-	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server.FromMounted]
+	[RPC_Server.CallsPerSecond(3uL)]
 	[RPC_Server]
 	public void SERVER_CancelReload(RPCMessage msg)
 	{

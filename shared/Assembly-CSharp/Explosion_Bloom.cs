@@ -28,12 +28,12 @@ public class Explosion_Bloom : MonoBehaviour
 		[Tooltip("Blend factor of the result image.")]
 		public float intensity;
 
-		[SerializeField]
 		[Tooltip("Controls filter quality and buffer resolution.")]
+		[SerializeField]
 		public bool highQuality;
 
-		[SerializeField]
 		[Tooltip("Reduces flashing noise with an additional filter.")]
+		[SerializeField]
 		public bool antiFlicker;
 
 		public float thresholdGamma
@@ -74,8 +74,8 @@ public class Explosion_Bloom : MonoBehaviour
 	[SerializeField]
 	public Settings settings = Settings.defaultSettings;
 
-	[SerializeField]
 	[HideInInspector]
+	[SerializeField]
 	private Shader m_Shader;
 
 	private Material m_Material;

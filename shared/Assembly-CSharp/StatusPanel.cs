@@ -11,8 +11,8 @@ public class StatusPanel : MonoBehaviour
 	[SerializeField]
 	private Image onStatusImage;
 
-	[SerializeField]
 	[Header("Off Status")]
+	[SerializeField]
 	private RustText offStatusText;
 
 	[SerializeField]

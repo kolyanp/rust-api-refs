@@ -33,12 +33,12 @@ public class ModelViewer_SkyParameters
 	[Range(-180f, 180f)]
 	public float Longitude = -25f;
 
-	[Tooltip("UTC/GMT time zone of the current location in hours.")]
 	[Range(-14f, 14f)]
+	[Tooltip("UTC/GMT time zone of the current location in hours.")]
 	public float UTC;
 
-	[Header("                ")]
 	[Header("Atmosphere")]
+	[Header("                ")]
 	public float skyContrast = 1.2f;
 
 	public float skyFogginess = 0.2f;

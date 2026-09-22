@@ -6,8 +6,8 @@ namespace ConVar;
 [Factory("reports")]
 public class reports : ConsoleSystem
 {
-	[ClientVar(Default = "600", Help = "(Generated) Maximum character length of exception reports submitted to the crash reporter; clamped to a minimum of 250 characters")]
 	[ServerVar(Default = "600")]
+	[ClientVar(Default = "600", Help = "(Generated) Maximum character length of exception reports submitted to the crash reporter; clamped to a minimum of 250 characters")]
 	public static int ExceptionReportMaxLength
 	{
 		get

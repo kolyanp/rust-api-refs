@@ -53,8 +53,8 @@ public class ModelViewer_MainCameraParameters
 	[Range(0.01f, 100f)]
 	public float Ratio;
 
-	[Header("                ")]
 	[Header("Focus")]
+	[Header("                ")]
 	public bool depthOfField;
 
 	public float focalLength;
@@ -72,9 +72,9 @@ public class ModelViewer_MainCameraParameters
 	[Range(0f, 360f)]
 	public float shutterAngle;
 
-	[Range(-100f, 100f)]
 	[Header("                ")]
 	[Header("Distortion")]
+	[Range(-100f, 100f)]
 	public float barrelAndPincushion;
 
 	[Range(0f, 1f)]

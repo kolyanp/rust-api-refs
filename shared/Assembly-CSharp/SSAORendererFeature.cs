@@ -15,8 +15,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("Source used for per-pixel normals.")]
 	public PerPixelNormalSource PerPixelNormals;
 
-	[Range(0f, 1f)]
 	[Tooltip("Final applied intensity of the occlusion effect.")]
+	[Range(0f, 1f)]
 	public float Intensity;
 
 	[Tooltip("Tint colour blended with the occlusion shadow.")]
@@ -26,8 +26,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Tooltip("World-space radius of the occlusion kernel.")]
 	public float Radius;
 
-	[Range(0f, 16f)]
 	[Tooltip("Power exponent attenuation of the occlusion.")]
+	[Range(0f, 16f)]
 	public float PowerExponent;
 
 	[Tooltip("Initial occlusion contribution offset (reduces self-occlusion / acne).")]
@@ -76,8 +76,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(1f, 4f)]
 	public int BlurPasses;
 
-	[Tooltip("0 = blurred / 1 = sharpened.")]
 	[Range(0f, 20f)]
+	[Tooltip("0 = blurred / 1 = sharpened.")]
 	public float BlurSharpness;
 
 	[Header("Temporal Filter")]
@@ -88,8 +88,8 @@ public class SSAORendererFeature : RustRendererFeature
 	[Range(0f, 1f)]
 	public float FilterBlending;
 
-	[Range(0f, 1f)]
 	[Tooltip("Motion-discard sensitivity. 0 = reuse more. 1 = discard more.")]
+	[Range(0f, 1f)]
 	public float FilterResponse;
 
 	[Header("Shaders")]

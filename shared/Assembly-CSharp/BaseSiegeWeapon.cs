@@ -34,8 +34,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 
 	private float playerMovementThreshold = 0.01f;
 
-	[SerializeField]
 	[Header("Siege Weapon")]
+	[SerializeField]
 	protected Transform centreOfMassTransform;
 
 	[SerializeField]
@@ -46,8 +46,8 @@ public abstract class BaseSiegeWeapon : GroundVehicle, TriggerHurtNotChild.IHurt
 	[Header("Towing")]
 	public Transform towAnchor;
 
-	[Header("Pulling")]
 	[SerializeField]
+	[Header("Pulling")]
 	private List<ModifierDefintion> pullingPlayerModifiers;
 
 	public const Flags Flag_IsPulled = Flags.Reserved12;

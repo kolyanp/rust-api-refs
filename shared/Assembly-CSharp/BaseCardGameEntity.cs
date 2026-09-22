@@ -35,8 +35,8 @@ public abstract class BaseCardGameEntity : BaseVehicle
 		Blackjack
 	}
 
-	[Header("Card Game")]
 	[SerializeField]
+	[Header("Card Game")]
 	private GameObjectRef uiPrefab;
 
 	public ItemDefinition scrapItemDef;

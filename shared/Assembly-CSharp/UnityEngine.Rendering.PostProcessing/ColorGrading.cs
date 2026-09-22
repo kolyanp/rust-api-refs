@@ -6,8 +6,8 @@ namespace UnityEngine.Rendering.PostProcessing;
 [PostProcess(typeof(UnityEngine.Rendering.PostProcessing.ColorGradingRenderer), "Unity/Color Grading", true)]
 public sealed class ColorGrading : PostProcessEffectSettings
 {
-	[Tooltip("Select a color grading mode that fits your dynamic range and workflow. Use HDR if your camera is set to render in HDR and your target platform supports it. Use LDR for low-end mobiles or devices that don't support HDR. Use External if you prefer authoring a Log LUT in an external software.")]
 	[DisplayName("Mode")]
+	[Tooltip("Select a color grading mode that fits your dynamic range and workflow. Use HDR if your camera is set to render in HDR and your target platform supports it. Use LDR for low-end mobiles or devices that don't support HDR. Use External if you prefer authoring a Log LUT in an external software.")]
 	public GradingModeParameter gradingMode;
 
 	[Tooltip("A custom 3D log-encoded texture.")]
@@ -83,8 +83,8 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	public FloatParameter saturation;
 
 	[DisplayName("Brightness")]
-	[Range(-100f, 100f)]
 	[Tooltip("Makes the image brighter or darker.")]
+	[Range(-100f, 100f)]
 	public FloatParameter brightness;
 
 	[Tooltip("Adjusts the overall exposure of the scene in EV units. This is applied after the HDR effect and right before tonemapping so it won't affect previous effects in the chain.")]
@@ -160,9 +160,9 @@ public sealed class ColorGrading : PostProcessEffectSettings
 	[Trackball(TrackballAttribute.Mode.Gamma)]
 	public Vector4Parameter gamma;
 
-	[Trackball(TrackballAttribute.Mode.Gain)]
-	[Tooltip("Controls the lightest portions of the render.")]
 	[DisplayName("Gain")]
+	[Tooltip("Controls the lightest portions of the render.")]
+	[Trackball(TrackballAttribute.Mode.Gain)]
 	public Vector4Parameter gain;
 
 	public SplineParameter masterCurve;

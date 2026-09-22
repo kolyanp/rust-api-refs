@@ -49,11 +49,11 @@ public class ServerBuildingManager : BuildingManager
 
 	private bool ShouldSplit(Building building)
 	{
-		//IL_001f: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0020: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		if (building.HasBuildingBlocks())
 		{
-			building.buildingBlocks[0].EntityLinkBroadcast();
+			building.buildingBlocks[0].EntityLinkBroadcast(onlyBuildingConnections: true);
 			Enumerator<BuildingBlock> enumerator = building.buildingBlocks.GetEnumerator();
 			try
 			{
@@ -82,7 +82,7 @@ public class ServerBuildingManager : BuildingManager
 			BuildingBlock buildingBlock = oldBuilding.buildingBlocks[0];
 			uint num = BuildingManager.server.NewBuildingID();
 			Interface.CallHook("OnBuildingSplit", oldBuilding, num);
-			buildingBlock.EntityLinkBroadcast(_AttachToBuildingCallback, num);
+			buildingBlock.EntityLinkBroadcast(_AttachToBuildingCallback, num, onlyBuildingConnections: true);
 			Building building = BuildingManager.server.GetBuilding(num);
 			if (building != null)
 			{
@@ -131,7 +131,7 @@ public class ServerBuildingManager : BuildingManager
 		Building building = ent.GetBuilding();
 		if (building != null)
 		{
-			ent.EntityLinkMessage(_CheckMergeCallback, this, building);
+			ent.EntityLinkMessage(_CheckMergeCallback, this, building, onlyBuildingConnections: true);
 			if (AI.nav_carve_use_building_optimization)
 			{
 				building.isNavMeshCarvingDirty = true;

@@ -54,8 +54,8 @@ public class BaseSculpture : BaseCombatEntity, IUGCBrowserEntity, IServerFileRec
 	[SerializeField]
 	private CapsuleCollider playerPushCollider;
 
-	[Header("Mesh Painting")]
 	[SerializeField]
+	[Header("Mesh Painting")]
 	private GameObjectRef meshPaintDialogueRef;
 
 	[SerializeField]

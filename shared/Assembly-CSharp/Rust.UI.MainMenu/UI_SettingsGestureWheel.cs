@@ -41,8 +41,8 @@ public class UI_SettingsGestureWheel : MonoBehaviour
 	[Space]
 	private UI_SettingsGestureButton gestureButtonPrefab;
 
-	[Space]
 	[SerializeField]
+	[Space]
 	private RectTransform ownedButtonsParent;
 
 	[SerializeField]

@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class PlayerBelt
 {
-	public static int ClientAutoSelectSlot = -1;
+	public static int ClientAutoSelectSlot;
 
-	public static uint ClientAutoSeletItemUID = 0u;
+	public static ItemId ClientAutoSelectItemId;
 
-	public static EncryptedValue<int> SelectedSlot = -1;
+	public static EncryptedValue<int> SelectedSlot;
 
 	protected BasePlayer player;
 
@@ -142,5 +142,13 @@ public class PlayerBelt
 			return false;
 		}
 		return true;
+	}
+
+	static PlayerBelt()
+	{
+		//IL_000b: Unknown result type (might be due to invalid IL or missing references)
+		ClientAutoSelectSlot = -1;
+		ClientAutoSelectItemId = default(ItemId);
+		SelectedSlot = -1;
 	}
 }
